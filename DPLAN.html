@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arsan's 7+ Plan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .task-checkbox:checked + div {
+            text-decoration: line-through;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+
+        @media (min-width: 768px) {
+            .timeline-line { left: 23px; }
+        }
+
+        .month-completed-badge {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+        }
+        .is-completed .month-completed-badge {
+            opacity: 1;
+            transform: scale(1);
+            display: flex;
+        }
+
+        .tab-btn.active {
+            background-color: #2563eb;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        }
+        .tab-btn.inactive {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+        .tab-btn.inactive:hover {
+            background-color: #e2e8f0;
+        }
+        
+        /* Smooth fade for view switching */
+        .view-section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .view-section.active {
+            display: block;
+            opacity: 1;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased pb-24">
+
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 py-3">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tight">Arsan's 7+ Plan</h1>
+                    <p class="text-sm font-medium text-brand-600">Dynamic Daily & Weekly Execution Tracker</p>
+                </div>
+                
+                <div class="flex-1 max-w-md w-full">
+                    <div class="flex justify-between items-end mb-1">
+                        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Master Progress</span>
+                        <span id="global-progress-text" class="text-sm font-black text-brand-600">0%</span>
+                    </div>
+                    <div class="h-3 w-full bg-slate-200 rounded-full overflow-hidden shadow-inner">
+                        <div id="global-progress-bar" class="h-full bg-gradient-to-r from-brand-400 via-indigo-500 to-purple-600 rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 mt-6 space-y-6">
+
+        <!-- Controls & Navigation -->
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-2 rounded-2xl shadow-sm border border-slate-200">
+            <!-- View Tabs -->
+            <div class="flex p-1 bg-slate-100 rounded-xl w-full md:w-auto">
+                <button onclick="switchView('focus')" id="btn-focus" class="tab-btn active flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2">
+                    <span class="text-lg">🎯</span> Daily / Weekly Focus
+                </button>
+                <button onclick="switchView('timeline')" id="btn-timeline" class="tab-btn inactive flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2">
+                    <span class="text-lg">📅</span> Full 6-Month View
+                </button>
+            </div>
+            
+            <!-- Expert Tips Toggle -->
+            <button onclick="toggleTips()" class="w-full md:w-auto px-5 py-2.5 bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2">
+                💡 View Expert Breakthrough Strategy
+            </button>
+        </div>
+
+        <!-- Hidden by default: Expert Strategy Notes -->
+        <section id="expert-tips-section" class="hidden bg-white rounded-2xl shadow-lg border-2 border-amber-300 overflow-hidden">
+            <div class="bg-gradient-to-r from-amber-400 to-orange-500 px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl drop-shadow-md">💡</span>
+                    <h2 class="text-xl md:text-2xl font-black text-white tracking-wide">High-Score Breakthrough Strategy (Expert Notes)</h2>
+                </div>
+                <button onclick="toggleTips()" class="text-white hover:text-amber-100 font-bold p-2 text-xl">&times;</button>
+            </div>
+            
+            <div class="p-6 md:p-8 space-y-8 bg-amber-50/30">
+                <!-- Writing Philosophy Quote -->
+                <div class="bg-white border-l-4 border-amber-500 p-6 rounded-r-xl shadow-sm">
+                    <p class="text-slate-700 leading-relaxed font-medium italic">
+                        "At the higher score bands, IELTS Writing is no longer purely a language test, but rather a <strong class="text-brand-700">'logic and debate exam.'</strong> Many native English-speaking university students who take the test without preparation often only score a 6.5. This is because they think, 'My English is so good, I can just write whatever.' As a result, due to a lack of rigorous logic or going off-topic, their writing completely fails to meet the official IELTS requirements."
+                    </p>
+                </div>
+
+                <!-- Baseline Score -->
+                <div class="flex flex-wrap items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-amber-100">
+                    <div class="text-sm font-black text-slate-800 uppercase tracking-wider">Current Target Basis:</div>
+                    <div class="flex flex-wrap gap-2 text-sm font-bold">
+                        <span class="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg">Listening 7.0</span>
+                        <span class="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg">Reading 7.0</span>
+                        <span class="bg-rose-100 text-rose-700 px-3 py-1.5 rounded-lg">Writing 6.0</span>
+                        <span class="bg-rose-100 text-rose-700 px-3 py-1.5 rounded-lg">Speaking 6.0</span>
+                    </div>
+                    <div class="ml-auto text-lg font-black text-slate-800">Total: 26 <span class="text-amber-600 ml-2">Average: 6.5</span></div>
+                </div>
+
+                <!-- Strategic Pillars Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- L & R -->
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-blue-200 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-2 h-full bg-blue-500"></div>
+                            <h3 class="font-black text-slate-800 mb-3 text-lg flex items-center gap-2">🎧 Listening <span class="text-xs text-white bg-blue-600 px-2 py-1 rounded-full">Pushing for 7.5 - 8</span></h3>
+                            <p class="text-sm text-slate-700 leading-relaxed">
+                                Candidates scoring a 7 typically do not lose points in Part 1 and Part 2; their main stumbling blocks are <strong>Part 3 (multiple-choice for long conversations)</strong> and <strong>Part 4 (academic lecture fill-in-the-blanks)</strong>.<br><br>
+                                He no longer needs extensive general listening. It is recommended that he specifically tackles Part 3 multiple-choice questions daily to build his anti-interference ability to "read long options while listening." Simultaneously, he should compile common synonym replacements for Part 4 fill-in-the-blank questions.
+                            </p>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-emerald-200 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-2 h-full bg-emerald-500"></div>
+                            <h3 class="font-black text-slate-800 mb-3 text-lg flex items-center gap-2">📖 Reading <span class="text-xs text-white bg-emerald-600 px-2 py-1 rounded-full">Pushing for 7.5 - 8</span></h3>
+                            <p class="text-sm text-slate-700 leading-relaxed">
+                                Scoring a 7 in Reading indicates that vocabulary and the parsing of complex sentences are absolutely not an issue. Any further point loss is often because the candidate gets tangled in the convoluted logic of <strong>True/False/Not Given</strong> questions, or misses the mark when summarizing paragraph main ideas (<strong>Heading</strong> questions).<br><br>
+                                Have him isolate these two specific question types from his past mistakes. He shouldn't focus on doing more new practice tests, but rather on purely understanding what the "trap logic" set by the examiners actually is.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Writing Deep Dive -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-rose-200 lg:row-span-2 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-2 bg-rose-500"></div>
+                        <h3 class="font-black text-slate-800 mt-2 mb-4 text-lg flex items-center gap-2">✍️ Writing Strategy & Bottlenecks</h3>
+                        <ul class="space-y-4 text-sm text-slate-700">
+                            <li class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                <strong>High-Quality Grading (Most Important):</strong> Instead of watching videos and comparing essays on his own, it is much better to find a reliable IELTS teacher or use high-quality AI grading tools for detailed corrections. An external perspective is necessary to point out logical gaps and unnatural word choices.
+                            </li>
+                            <li class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                <strong>Deep Revision > Frantic Writing:</strong> Do not blindly rush. Write 2 essays a week, but each one must go through a closed loop: <em>"write -> get it graded -> summarize mistakes -> rewrite,"</em> until the logic and vocabulary reach the 7-band standard.
+                            </li>
+                            <li class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                <strong>Core of Band 7:</strong> Task 2's Task Response (perfectly addresses prompt, has depth) and Coherence & Cohesion (argument flows smoothly). Requires extensive outlining practice, not padding word count.
+                            </li>
+                            <li class="bg-rose-50 p-4 rounded-xl shadow-inner border border-rose-200 mt-4">
+                                <strong class="text-rose-800 block mb-3 text-base">⚠️ Persian Native "Hidden Bottlenecks"</strong>
+                                <span class="block mb-3 text-rose-900 leading-relaxed"><strong>1) Invisible point loss from "Articles and Prepositions":</strong> Persian does not have a strict definite/indefinite article system like "a/an/the". Many native speakers frequently omit "the" or misuse prepositions. IELTS examiners hold a high standard for GRA (Grammar). If riddled with these flaws, the score locks at 6.5.</span>
+                                <span class="block text-rose-900 leading-relaxed"><strong>2) "Too Ornate but Lack Direct Logic":</strong> Persian is poetic, leading to long, roundabout sentences. IELTS Academic Task 2 logic is extremely direct and "utilitarian"—examiners want straightforward arguments and rigorous deduction. Sacrificing clarity for fancy syntax will backfire.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Speaking Deep Dive -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-purple-200 lg:col-span-2 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-2 h-full bg-purple-500"></div>
+                        <h3 class="font-black text-slate-800 mb-4 text-lg flex items-center gap-2">🗣️ Speaking Tactics: Reaction Speed</h3>
+                        <p class="text-sm text-slate-600 mb-4 font-medium">He can collect common topics, predict subjects for conversation practice, and improve reaction speed.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-purple-50 p-4 rounded-lg border border-purple-100">
+                                <h4 class="font-bold text-purple-900 mb-2">1. "Legally" Lie & Abandon Depth</h4>
+                                <p class="text-xs text-slate-700 mb-2 leading-relaxed">In IELTS, "truth" is worthless; being "fluent" is king. Pick the simplest words and "make it up".</p>
+                                <div class="bg-white p-2 rounded text-xs text-slate-600 italic border border-slate-200">
+                                    "No way! It sounds super boring to me. I'm an energetic person and I prefer working outdoors or interacting with people rather than standing next to old objects all day."
+                                </div>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg border border-purple-100">
+                                <h4 class="font-bold text-purple-900 mb-2">2. Buy Time with "Nonsense" (Fillers)</h4>
+                                <p class="text-xs text-slate-700 mb-2 leading-relaxed">Memorize sets of native-like "buffering sentences".</p>
+                                <div class="bg-white p-2 rounded text-xs text-slate-600 italic border border-slate-200 space-y-1">
+                                    <p>"Well, to be honest, I've never really thought about it before, but off the top of my head I'd say..."</p>
+                                    <p>"That's quite an interesting question. If I had to choose, I suppose..."</p>
+                                </div>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg border border-purple-100">
+                                <h4 class="font-bold text-purple-900 mb-2">3. The Timeline (PPF) Method</h4>
+                                <p class="text-xs text-slate-700 mb-2 leading-relaxed">Surviving the "2-minute torture" using Past-Present-Future.</p>
+                                <ul class="text-xs text-slate-700 space-y-1">
+                                    <li><strong>Past:</strong> First watched his movie years ago, thought it was okay...</li>
+                                    <li><strong>Present:</strong> But recent work changed my view, acting is...</li>
+                                    <li><strong>Future:</strong> I heard he'll direct a new movie next year, I'll definitely go to the cinema...</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 1: FOCUS MODE (Weekly & Daily) -->
+        <section id="view-focus" class="view-section active space-y-6">
+            
+            <!-- Focus Controls -->
+            <div class="bg-indigo-900 text-white p-5 md:p-6 rounded-2xl shadow-xl flex flex-col md:flex-row gap-6 justify-between items-center relative overflow-hidden">
+                <div class="absolute right-0 top-0 opacity-10 pointer-events-none transform translate-x-1/4 -translate-y-1/4">
+                    <svg width="200" height="200" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg>
+                </div>
+                
+                <div>
+                    <h2 class="text-2xl font-black tracking-tight flex items-center gap-2">🎯 Action Dashboard</h2>
+                    <p class="text-indigo-200 text-sm font-medium mt-1">Break down the massive plan into manageable daily and weekly chunks.</p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto z-10">
+                    <div class="relative">
+                        <select id="focus-month-select" onchange="renderFocusView()" class="appearance-none w-full sm:w-40 bg-white/10 border border-white/20 text-white px-4 py-2.5 rounded-xl font-bold focus:outline-none focus:ring-2 focus:ring-white/50 cursor-pointer">
+                            <option value="1" class="text-slate-800">Month 1</option>
+                            <option value="2" class="text-slate-800">Month 2</option>
+                            <option value="3" class="text-slate-800">Month 3</option>
+                            <option value="4" class="text-slate-800">Month 4</option>
+                            <option value="5" class="text-slate-800">Month 5</option>
+                            <option value="6" class="text-slate-800">Month 6</option>
+                            <option value="0" class="text-slate-800">Placement Session</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-white">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                    
+                    <div class="relative" id="week-select-container">
+                        <select id="focus-week-select" onchange="renderFocusView()" class="appearance-none w-full sm:w-40 bg-white border border-transparent text-indigo-900 px-4 py-2.5 rounded-xl font-black shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-300 cursor-pointer">
+                            <option value="1">Week 1 (Days 1-7)</option>
+                            <option value="2">Week 2 (Days 8-14)</option>
+                            <option value="3">Week 3 (Days 15-21)</option>
+                            <option value="4">Week 4 (Days 22-30)</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-indigo-900">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Columns -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="focus-content">
+                <!-- JS will inject Daily and Weekly columns here -->
+            </div>
+        </section>
+
+        <!-- VIEW 2: FULL TIMELINE (Original view) -->
+        <section id="view-timeline" class="view-section">
+            <div class="flex items-center gap-3 mb-8 bg-slate-800 text-white p-4 md:p-5 rounded-2xl shadow-xl">
+                <span class="text-3xl">📅</span>
+                <div>
+                    <h2 class="text-2xl font-black tracking-tight">The Complete 6-Month Master Plan</h2>
+                    <p class="text-slate-300 text-sm font-medium mt-1">Every single detail, word count, and task mapped out for the entire journey.</p>
+                </div>
+            </div>
+
+            <div id="timeline-container" class="relative pl-2 md:pl-0">
+                <div class="timeline-line hidden md:block"></div>
+                <!-- JS will inject all timeline nodes here -->
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // STRICT REQUIREMENT: Absolutely nothing is omitted from the original text provided.
+        // Data Structure maps every single line from the prompt.
+        const studyPlan = [
+            {
+                id: 'month-0',
+                title: 'Placement Session',
+                sections: [
+                    {
+                        name: 'Mock Tests',
+                        icon: '🎯',
+                        color: 'brand',
+                        tasks: [
+                            { id: 'm0-t1', text: '1st Mock Test' },
+                            { id: 'm0-t2', text: '2nd Mock Test' },
+                            { id: 'm0-t3', text: '3rd Mock Test' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'month-1',
+                title: '1st Month',
+                sections: [
+                    {
+                        name: 'Speaking', icon: '🗣️', color: 'purple',
+                        tasks: [
+                            { id: 'm1-s1', text: 'Flash cards Topics: Job, Education, Family' },
+                            { id: 'm1-s2', text: 'Topic-based questions Part 1 - Part 3: Job, Education, Family' },
+                            { id: 'm1-s3', text: 'Cue Cards - Part 2: Describe a Person (5 cue cards)' },
+                            { id: 'm1-s4', text: 'Cue Cards - Part 2: Describe a place = (5 cue cards)' },
+                            { id: 'm1-s5', text: 'Grammar Days 1-30: Study 2 structures every day' }
+                        ]
+                    },
+                    {
+                        name: 'Listening', icon: '🎧', color: 'blue',
+                        tasks: [
+                            { id: 'm1-l1', text: 'Flash Cards Cambridge IELTS books 1-10 - 600 Words Days 1-30: 15 Flash Cards a day' },
+                            { id: 'm1-l2', text: 'Spelling Days 1-30: 15 Flash Cards a day' },
+                            { id: 'm1-l3', text: 'Podcasts = Cambridge books 1-10 = books 1-3 in first month: Days 1-20, 2 Audio files every day = Sections 1 + 4 on Even days // sections 2+3 on Odd days' },
+                            { id: 'm1-l4', text: 'Podcasts: Days 21-30 Review 4 Audio files a day = 30 minutes' },
+                            { id: 'm1-l5', text: 'www.mini-ielts.com Days 1-30: Take 1 Test a day - 10 Questions / 1 section ==== and please analyze the test - mind your mistakes' },
+                            { id: 'm1-l6', text: 'Cambridge vidoes = 1 full book Book 13 Videos: 1st Week Study videos from Test 1 and test 2' },
+                            { id: 'm1-l7', text: 'Cambridge vidoes Book 13: 2nd Week Study Videos from Test 3 and 4' }
+                        ]
+                    },
+                    {
+                        name: 'Reading', icon: '📖', color: 'emerald',
+                        tasks: [
+                            { id: 'm1-r1', text: 'Flash cards Days 1-30' },
+                            { id: 'm1-r2', text: 'Cambridge books 1-10- Full - دسته اصلی 1860 words: days 1-30 20 words a day' },
+                            { id: 'm1-r3', text: 'Cambridge IELTS book 13 = part 1: 165 = part 2 :391 words = 556: Days 1 - 30 20 words a day' },
+                            { id: 'm1-r4', text: 'Book 13 1st week: Test 1 - 1 passage every 2 day = 20 minutes watch the related video -' },
+                            { id: 'm1-r5', text: 'Book 13 2nd week: Test 2 - 1 passage every 2 day = 20 minutes watch the related video -' },
+                            { id: 'm1-r6', text: 'Book 13 3rd week: Test 3 - 1 passage every 2 day = 20 minutes watch the related video -' },
+                            { id: 'm1-r7', text: 'Book 13 4th week: Test 4 - 1 passage every 2 day = 20 minutes watch the related video -' }
+                        ]
+                    },
+                    {
+                        name: 'Writing', icon: '✍️', color: 'rose',
+                        tasks: [
+                            { id: 'm1-w1', text: '1st Month: Just watch some videos from Task 1 and Task 2 Channels' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'month-2',
+                title: '2nd Month',
+                sections: [
+                    {
+                        name: 'Speaking', icon: '🗣️', color: 'purple',
+                        tasks: [
+                            { id: 'm2-s1', text: 'Flash cards Topics: Friendship, hometown, home' },
+                            { id: 'm2-s2', text: 'Topic-based questions Part 1- Part 3: Frienship, hometown, home' },
+                            { id: 'm2-s3', text: 'Cue Cards: Describe an Object 5 cue cards' },
+                            { id: 'm2-s4', text: 'Cue Cards: Talk about a memory 5 Cue cards' },
+                            { id: 'm2-s5', text: 'Grammar Days 31-60: Study 2 Structures every day' }
+                        ]
+                    },
+                    {
+                        name: 'Listening', icon: '🎧', color: 'blue',
+                        tasks: [
+                            { id: 'm2-l1', text: 'Flash Cards Cambirdge IELTS books 1-10 - 600 Words: Days 1-10 15 Flash Cards a day' },
+                            { id: 'm2-l2', text: 'Flash Cards: Days 11-30 Start book 13 = 429 Words 15 Flash Cards a day' },
+                            { id: 'm2-l3', text: 'Spelling Days 1-30: 15 Flash Cards a day' },
+                            { id: 'm2-l4', text: 'Podcasts = Cambridge books 1-10 = books 4-6 in the second month: Days 1-20 2 Audio files every day = Sections 1 + 4 on Even days // sections 2+3 on Odd days' },
+                            { id: 'm2-l5', text: 'Podcasts: Days 21-30 Review 4 Audio files a day = 30 minutes (try to cover more = you are faster now)' },
+                            { id: 'm2-l6', text: 'www.mini-ielts.com Days 1-30: Take 1 Test a day - 10 Questions / 1 section ==== and please analyze the test - mind your mistakes' },
+                            { id: 'm2-l7', text: 'Cambridge vidoes = 1 full book Book 14 Videos: 1st Week Take the test first and then Study videos from Test 1 and test 2' },
+                            { id: 'm2-l8', text: 'Cambridge vidoes Book 14: 2nd Week Take the test first and then Study videos from Test 3 and test 4' }
+                        ]
+                    },
+                    {
+                        name: 'Reading', icon: '📖', color: 'emerald',
+                        tasks: [
+                            { id: 'm2-r1', text: 'Flash cards Days 1-30' },
+                            { id: 'm2-r2', text: 'Cambridge books 1-10- Full - دسته اصلی 1860 words (you have already covered 600 words): days 1-30 20 words a day' },
+                            { id: 'm2-r3', text: 'Cambridge IELTS book 14 = 341 words: Days 1 - 18 20 words a day' },
+                            { id: 'm2-r4', text: 'Cambridge IETLS book 15 = 235 words: Days 19 -30 20 words a day' },
+                            { id: 'm2-r5', text: 'Book 14 1st week: Test 1 - 1 passage every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm2-r6', text: 'Book 14 1st week: Test 2 - 1 passage every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm2-r7', text: 'Book 14 2nd week: Test 3 - 1 passage every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm2-r8', text: 'Book 14 2nd week: Test 4 - 1 passage every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm2-r9', text: 'Book 15 3rd week: Test 1 - 1 passage every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm2-r10', text: 'Book 15 3rd week: Test 2 - 1 passage every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm2-r11', text: 'Book 15 4th week: Test 3 - 1 passage every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm2-r12', text: 'Book 15 4th week: Test 4 - 1 passage every day = 20 minutes take the test - watch the related video -' }
+                        ]
+                    },
+                    {
+                        name: 'Writing', icon: '✍️', color: 'rose',
+                        tasks: [
+                            { id: 'm2-w1', text: 'Flash cards Topic-based flash Cards Task 1: Line graph = 63 words days 1-15 5 words a day' },
+                            { id: 'm2-w2', text: 'Flash cards Task 1: Pie chart = 72 words Days 16-30 5 words a day' },
+                            { id: 'm2-w3', text: 'Flash cards Task 2: Work and business = 41 words Days 1-8 5 words a day' },
+                            { id: 'm2-w4', text: 'Flash cards Task 2: Education = 70 words Days 9 - 30 5 words a day' },
+                            { id: 'm2-w5', text: '1 Grammar: 100 Task 2 - collocations = 58 words = Part 1 Days 1-12 5 words a day' },
+                            { id: 'm2-w6', text: '1 Grammar: 100 Task 2- Collocations = 60 words = Part 2 Days 13 - 25 5 words a day' },
+                            { id: 'm2-w7', text: '1 Grammar: 100 Task 2- Collocations = 50 words = Part 3 Days 26 -30 10 words a day' },
+                            { id: 'm2-w8', text: 'Task 1 video channel watch as much as you can' },
+                            { id: 'm2-w9', text: 'Task 2 Videos channel watch as much as you can' },
+                            { id: 'm2-w10', text: 'Cambridge book 13 First week: Write for Test 1 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm2-w11', text: 'Cambridge book 13 Second week: Write for Test 2 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm2-w12', text: 'Cambridge book 13 Third week: Write for Test 3 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm2-w13', text: 'Cambridge book 13 Fourth week: Write for Test 4 = both tasks 1-2 Compare your essay with the video' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'month-3',
+                title: '3rd Month',
+                sections: [
+                    {
+                        name: 'Speaking', icon: '🗣️', color: 'purple',
+                        tasks: [
+                            { id: 'm3-s1', text: 'Flash cards Topics: Hobbies, Holidays, Environment' },
+                            { id: 'm3-s2', text: 'Topic-based questions: Hobbies, Holidays, Environment' },
+                            { id: 'm3-s3', text: 'Cue Cards: Miscellaneous Topics = 5 topics' },
+                            { id: 'm3-s4', text: 'Cue Cards: Review Previous topics = Person and place' },
+                            { id: 'm3-s5', text: 'Grammar Days 31-60: Study 2 Structures every day' }
+                        ]
+                    },
+                    {
+                        name: 'Listening', icon: '🎧', color: 'blue',
+                        tasks: [
+                            { id: 'm3-l1', text: 'Flash Cards Books 13 + 14: Days 1- 9 = book 13 = rest of the words = 129 15 Flash Cards a day' },
+                            { id: 'm3-l2', text: 'Flash Cards Books 13 + 14: Days 10-30 Start book 14 = 197 Words 10 Flash Cards a day' },
+                            { id: 'm3-l3', text: 'Spelling Days 1-30 - you will have covered 1350 word by the end of the third month: 15 Flash Cards a day' },
+                            { id: 'm3-l4', text: 'Podcasts = Cambridge books 1-10 = books 7-10 in the second month: Days 1-20 3 Audio files every day = for example : Sections 1 + 2+3 on Even days // sections 4+1+2 of other test on Odd days' },
+                            { id: 'm3-l5', text: 'Podcasts Days 21-30: Review 5 Audio files a day = 30 minutes (try to cover more = you are faster now)' },
+                            { id: 'm3-l6', text: 'Cambridge vidoes = 2 full book Book 15 +16: Days 1 -15 = book 15 Take the test first and then Study videos' },
+                            { id: 'm3-l7', text: 'Cambridge vidoes: Days 16-30 = books 16 Take the test first and then Study videos' }
+                        ]
+                    },
+                    {
+                        name: 'Reading', icon: '📖', color: 'emerald',
+                        tasks: [
+                            { id: 'm3-r1', text: 'Flash cards Days 1-30' },
+                            { id: 'm3-r2', text: 'Cambridge books 1-10- Full - دسته اصلی 1860 words (you have already covered 1200 words): days 1-30 30 words a day' },
+                            { id: 'm3-r3', text: 'Cambridge IELTS book 16 = 210 words: Days 1 - 20 10 words a day' },
+                            { id: 'm3-r4', text: 'Cambridge IETLS book 17 = 137 words: Days 21-30 10 words a day' },
+                            { id: 'm3-r5', text: 'Book 16 1st week: Test 1 - 1 passage every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm3-r6', text: 'Book 16 1st week: Test 2 - 1 passage every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm3-r7', text: 'Book 16 2nd week: Test 3 - 1 passage every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm3-r8', text: 'Book 16 2nd week: Test 4 - 1 passage every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm3-r9', text: 'Book 17 3rd week: Test 1 - 1 passage every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm3-r10', text: 'Book 17 3rd week: Test 2 - 1 passage every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm3-r11', text: 'Book 17 4th week: Test 3 - 1 passage every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm3-r12', text: 'Book 17 4th week: Test 4 - 1 passage every day = 20 minutes take the test - watch the related video -' }
+                        ]
+                    },
+                    {
+                        name: 'Writing', icon: '✍️', color: 'rose',
+                        tasks: [
+                            { id: 'm3-w1', text: 'Flash cards Topic-based flash Cards Task 1: Process = 51 words Days 1-10 5 words a day' },
+                            { id: 'm3-w2', text: 'Flash cards Task 1: Map= 54 words Days 1-10 5 words a day' },
+                            { id: 'm3-w3', text: 'Flash cards Task 1: table and bar chart ???' },
+                            { id: 'm3-w4', text: 'Flash cards Task 2: Family and Children = 47 words Days 1-10 5 words a day' },
+                            { id: 'm3-w5', text: 'Flash cards Task 2: Technology= 66 words Days 11- 30 5 words a day' },
+                            { id: 'm3-w6', text: '320 words =دسته سوم you will have covered 150 words by the end of the month: Days 1-30 5 words a day' },
+                            { id: 'm3-w7', text: 'Grammar 1 structures a day' },
+                            { id: 'm3-w8', text: 'Cambridge book 14 First week: Write for Test 1 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm3-w9', text: 'Cambridge book 14 Second week: Write for Test 2 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm3-w10', text: 'Cambridge book 14 Third week: Write for Test 3 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm3-w11', text: 'Cambridge book 14 Fourth week: Write for Test 4 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm3-w12', text: 'Study some samples if you can' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'month-4',
+                title: '4th Month',
+                sections: [
+                    {
+                        name: 'Speaking', icon: '🗣️', color: 'purple',
+                        tasks: [
+                            { id: 'm4-s1', text: 'Flash cards Topics: Technology, Soical issues, Others' },
+                            { id: 'm4-s2', text: 'Topic-based questions: Technology, Social issues, Others' },
+                            { id: 'm4-s3', text: 'Cue Cards: Miscellaneous Topics = 5 topics' },
+                            { id: 'm4-s4', text: 'Cue Cards: Review Previous topics = Object and memory' },
+                            { id: 'm4-s5', text: 'Grammar Days 31-60: Study 2 Structures every day' }
+                        ]
+                    },
+                    {
+                        name: 'Listening', icon: '🎧', color: 'blue',
+                        tasks: [
+                            { id: 'm4-l1', text: 'Flash Cards Books 15 + 16+ 17 +18 and 19: Days 1-7 = book 15 = 94 words 15 Flash Cards a day' },
+                            { id: 'm4-l2', text: 'Flash Cards: Days 8-11 Start book 16 = 61 Words 15 Flash Cards a day' },
+                            { id: 'm4-l3', text: 'Flash Cards: Days 12-20 Start book 17 = 113 words 15 Flash cards a day' },
+                            { id: 'm4-l4', text: 'Flash Cards: Days 21- 24 Start book 18 = 42 words 10 Flash cards a day' },
+                            { id: 'm4-l5', text: 'Flash Cards: Days 25 -30 Start book 19 = 60 words 10 Flash cards a day' },
+                            { id: 'm4-l6', text: 'Spelling Days 1-30 - you will have covered 1350 word by the end of the third month: 15 Flash Cards a day' },
+                            { id: 'm4-l7', text: 'Cambridge vidoes = 3 full book Book 17 +18 and 19 Videos: days 1-10 book 17 Take the test first and then Study videos' },
+                            { id: 'm4-l8', text: 'Cambridge vidoes: Days 11-20 book 18 Take the test first and then Study videos' },
+                            { id: 'm4-l9', text: 'Cambridge vidoes: Days 21-30 book 19 Take the test first and then Study videos' }
+                        ]
+                    },
+                    {
+                        name: 'Reading', icon: '📖', color: 'emerald',
+                        tasks: [
+                            { id: 'm4-r1', text: 'Flash cards Days 1-30' },
+                            { id: 'm4-r2', text: 'Cambridge IELTS book 17 = 37 words: Days 1 - 4 10 words a day' },
+                            { id: 'm4-r3', text: 'Cambridge IETLS book 18 = 135 words: Days 5- 20 10 words a day' },
+                            { id: 'm4-r4', text: 'Cambridge IELTS book 19 = 171 words: Days 21-30 10 words a day' },
+                            { id: 'm4-r5', text: 'Book 18 1st week: Test 1 - 1 test every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm4-r6', text: 'Book 18 1st week: Test 2 - 1 test every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm4-r7', text: 'Book 18 1st week: Test 3 - 1 test every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm4-r8', text: 'Book 18 1st week: Test 4 - 1 test every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm4-r9', text: 'Book 19 2nd week: Test 1 - 1 test every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm4-r10', text: 'Book 19 2nd week: Test 2 - 1 test every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm4-r11', text: 'Book 19 2nd week: Test 3 - 1 test every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm4-r12', text: 'Book 19 2nd week: Test 4 - 1 test every day = 20 minutes take the test - watch the related video -' },
+                            { id: 'm4-r13', text: '3rd week: Take Full Mock Tests books 11 - 12 ????' }
+                        ]
+                    },
+                    {
+                        name: 'Writing', icon: '✍️', color: 'rose',
+                        tasks: [
+                            { id: 'm4-w1', text: 'Flash cards Topic-based flash Cards Task 2: Environment = 55 words Days 1-11 5 words a day' },
+                            { id: 'm4-w2', text: 'Flash cards Task 2: Crime = 66 words Days 11- 30 5 words a day' },
+                            { id: 'm4-w3', text: '320 words =دسته سوم you will have finished all flash cards by the end of the month: Days 1-30 5 words a day' },
+                            { id: 'm4-w4', text: 'Grammar 1 structures a day' },
+                            { id: 'm4-w5', text: 'Cambridge book 15 First week: Write for Test 1 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm4-w6', text: 'Cambridge book 15 Second week: Write for Test 2 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm4-w7', text: 'Cambridge book 15 Third week: Write for Test 3 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm4-w8', text: 'Cambridge book 15 Fourth week: Write for Test 4 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm4-w9', text: 'Study some samples if you can' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'month-5',
+                title: '5th Month',
+                sections: [
+                    {
+                        name: 'Speaking', icon: '🗣️', color: 'purple',
+                        tasks: [
+                            { id: 'm5-s1', text: 'Flash cards Finished' },
+                            { id: 'm5-s2', text: 'Speaking questions Topic-based questions Review: job, education, family, friendship, hometown, Home' },
+                            { id: 'm5-s3', text: 'Cue Cards: Miscellaneous Topics = 5' },
+                            { id: 'm5-s4', text: 'Cue Cards: Review Previous Topics = Person, place, object, memory' },
+                            { id: 'm5-s5', text: 'Grammar Days: Study 2 Structures every day' }
+                        ]
+                    },
+                    {
+                        name: 'Listening', icon: '🎧', color: 'blue',
+                        tasks: [
+                            { id: 'm5-l1', text: 'Spelling = you will have finished all words by the end of this month: Days 1-30 - you will have covered 1350 word by the end of the third month 15 Flash Cards a day' },
+                            { id: 'm5-l2', text: 'Just take Tests: Book 11 and 12' },
+                            { id: 'm5-l3', text: 'Just take Tests: book 20' },
+                            { id: 'm5-l4', text: 'Just take Tests: youtube, ieltsonlinetest.com, Actual books, Mock tests' }
+                        ]
+                    },
+                    {
+                        name: 'Reading', icon: '📖', color: 'emerald',
+                        tasks: [
+                            { id: 'm5-r1', text: 'Flash cards Days 1-30' },
+                            { id: 'm5-r2', text: 'Cambridge IELTS book 19 = 71 words: Days 1-7 10 words a day' },
+                            { id: 'm5-r3', text: 'Review Flash cards = push to another stage' }
+                        ]
+                    },
+                    {
+                        name: 'Writing', icon: '✍️', color: 'rose',
+                        tasks: [
+                            { id: 'm5-w1', text: 'Flash cards Topic-based flash Cards Task 1 = you will have finished all flash cards by the end of the month' },
+                            { id: 'm5-w2', text: 'Task 1- words and collocations = 115 words: Days 1- 30 5 words a day' },
+                            { id: 'm5-w3', text: 'Task 2: Health, life style = 20 words Days 1-5 5 words a day' },
+                            { id: 'm5-w4', text: 'Task 2: Advertisement & Media= 46 words Days 6- 15 5 words a day' },
+                            { id: 'm5-w5', text: 'Task 2: Government and Society = 30 words Days 16- 21 5 words a day' },
+                            { id: 'm5-w6', text: 'Task 2: Global issues = ? words Days 22- 30 5 words a day' },
+                            { id: 'm5-w7', text: 'Grammar 1 structures a day' },
+                            { id: 'm5-w8', text: 'Cambridge book 16 First week: Write for Test 1 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm5-w9', text: 'Cambridge book 16 Second week: Write for Test 2 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm5-w10', text: 'Cambridge book 16 Third week: Write for Test 3 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm5-w11', text: 'Cambridge book 16 Fourth week: Write for Test 4 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm5-w12', text: 'Study some samples if you can' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'month-6',
+                title: '6th Month',
+                sections: [
+                    {
+                        name: 'Speaking', icon: '🗣️', color: 'purple',
+                        tasks: [
+                            { id: 'm6-s1', text: 'Flash cards finished' },
+                            { id: 'm6-s2', text: 'Speaking questions Topic-based questions Review: Hobbies, Holidays, Environment, technology, soical issues, others' },
+                            { id: 'm6-s3', text: 'Cue Cards' }
+                        ]
+                    },
+                    {
+                        name: 'Listening', icon: '🎧', color: 'blue',
+                        tasks: [
+                            { id: 'm6-l1', text: 'Just take Tests: Book 11 and 12' },
+                            { id: 'm6-l2', text: 'Just take Tests: book 20' },
+                            { id: 'm6-l3', text: 'Just take Tests: youtube, ieltsonlinetest.com, Actual books, Mock tests' }
+                        ]
+                    },
+                    {
+                        name: 'Reading', icon: '📖', color: 'emerald',
+                        tasks: [
+                            { id: 'm6-r1', text: 'Take as many tests as possible = put techniques into practice' }
+                        ]
+                    },
+                    {
+                        name: 'Writing', icon: '✍️', color: 'rose',
+                        tasks: [
+                            { id: 'm6-w1', text: 'Flash cards Topic-based flash Cards Task 2' },
+                            { id: 'm6-w2', text: 'Grammar 1 structures a day' },
+                            { id: 'm6-w3', text: 'Cambridge book 17 -18 -19 First week: Write for Test 1 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm6-w4', text: 'Cambridge book 17 -18 -19 Second week: Write for Test 2 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm6-w5', text: 'Cambridge book 17 -18 -19 Third week: Write for Test 3 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm6-w6', text: 'Cambridge book 17 -18 -19 Fourth week: Write for Test 4 = both tasks 1-2 Compare your essay with the video' },
+                            { id: 'm6-w7', text: 'Write as many essays as possible and have them corrected by AI' }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        let taskState = {};
+        let dailyTaskState = {};
+        let masterTaskMeta = {};
+        let totalTicks = 0;
+        let currentView = 'focus'; // 'focus' or 'timeline'
+
+        // Utility to parse daily ranges from text
+        function parseTaskDates(text) {
+            let isDaily = false;
+            let start = 1;
+            let end = 30;
+            
+            const dayMatch = text.match(/Days?\s*(\d+)\s*-\s*(\d+)/i);
+            if (dayMatch) {
+                isDaily = true;
+                start = parseInt(dayMatch[1]);
+                end = parseInt(dayMatch[2]);
+            } else if (/(every day|a day|every 2 day)/i.test(text)) {
+                isDaily = true;
+                const weekMatch = text.match(/(1st|first|2nd|second|3rd|third|4th|fourth)\s+week/i);
+                if (weekMatch) {
+                    const wStr = weekMatch[1].toLowerCase();
+                    if (['1st', 'first'].includes(wStr)) { start = 1; end = 7; }
+                    else if (['2nd', 'second'].includes(wStr)) { start = 8; end = 14; }
+                    else if (['3rd', 'third'].includes(wStr)) { start = 15; end = 21; }
+                    else if (['4th', 'fourth'].includes(wStr)) { start = 22; end = 30; }
+                }
+            }
+            return { isDaily, start, end };
+        }
+
+        // Initialize state and calculate total progress ticks
+        studyPlan.forEach(month => {
+            month.sections.forEach(section => {
+                section.tasks.forEach(task => {
+                    const { isDaily, start, end } = parseTaskDates(task.text);
+                    if (isDaily) {
+                        const ticks = (end - start) + 1;
+                        totalTicks += ticks;
+                        masterTaskMeta[task.id] = { type: 'daily', total: ticks, start, end };
+                        for(let d=start; d<=end; d++) {
+                            dailyTaskState[`${task.id}-${d}`] = false;
+                        }
+                    } else {
+                        totalTicks += 1;
+                        masterTaskMeta[task.id] = { type: 'single', total: 1 };
+                        taskState[task.id] = false;
+                    }
+                });
+            });
+        });
+
+        function toggleTips() {
+            const section = document.getElementById('expert-tips-section');
+            if(section.classList.contains('hidden')) {
+                section.classList.remove('hidden');
+                section.classList.add('animate-[fadeIn_0.3s_ease]');
+            } else {
+                section.classList.add('hidden');
+            }
+        }
+
+        function switchView(viewName) {
+            currentView = viewName;
+            
+            document.getElementById('btn-focus').className = `tab-btn flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${viewName === 'focus' ? 'active' : 'inactive'}`;
+            document.getElementById('btn-timeline').className = `tab-btn flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${viewName === 'timeline' ? 'active' : 'inactive'}`;
+            
+            document.getElementById('view-focus').className = `view-section ${viewName === 'focus' ? 'active' : ''}`;
+            document.getElementById('view-timeline').className = `view-section ${viewName === 'timeline' ? 'active' : ''}`;
+            
+            if(viewName === 'focus') renderFocusView();
+        }
+
+        function updateProgress() {
+            let completedTicks = 0;
+            
+            Object.keys(masterTaskMeta).forEach(taskId => {
+                const meta = masterTaskMeta[taskId];
+                if (meta.type === 'single') {
+                    if (taskState[taskId]) completedTicks++;
+                } else {
+                    for (let d = meta.start; d <= meta.end; d++) {
+                        if (dailyTaskState[`${taskId}-${d}`]) completedTicks++;
+                    }
+                }
+            });
+
+            const percentage = totalTicks > 0 ? Math.round((completedTicks / totalTicks) * 100) : 0;
+            
+            document.getElementById('global-progress-bar').style.width = `${percentage}%`;
+            document.getElementById('global-progress-text').innerText = `${percentage}%`;
+        }
+
+        function handleSingleCheckbox(e, taskId) {
+            taskState[taskId] = e.target.checked;
+            updateProgress();
+            
+            document.querySelectorAll(`input[id="tl-${taskId}"], input[id="${taskId}"]`).forEach(cb => {
+                cb.checked = e.target.checked;
+            });
+            updateMonthBadges();
+        }
+
+        function handleMasterCheckbox(e, taskId) {
+            const isChecked = e.target.checked;
+            const meta = masterTaskMeta[taskId];
+            for(let d=meta.start; d<=meta.end; d++) {
+                dailyTaskState[`${taskId}-${d}`] = isChecked;
+            }
+            updateProgress();
+            if(currentView === 'focus') renderFocusView();
+            renderTimeline();
+            updateMonthBadges();
+        }
+
+        function toggleDaily(taskId, day) {
+            const key = `${taskId}-${day}`;
+            dailyTaskState[key] = !dailyTaskState[key];
+            updateProgress();
+            renderFocusView();
+            renderTimeline(); 
+            updateMonthBadges();
+        }
+
+        function updateMonthBadges() {
+            studyPlan.forEach(month => {
+                const monthNode = document.getElementById(`tl-${month.id}`);
+                if(monthNode) {
+                    let allDone = true;
+                    let hasTasks = false;
+                    
+                    month.sections.forEach(sec => {
+                        sec.tasks.forEach(task => {
+                            hasTasks = true;
+                            const meta = masterTaskMeta[task.id];
+                            if (meta.type === 'single') {
+                                if (!taskState[task.id]) allDone = false;
+                            } else {
+                                for(let d=meta.start; d<=meta.end; d++) {
+                                    if(!dailyTaskState[`${task.id}-${d}`]) allDone = false;
+                                }
+                            }
+                        });
+                    });
+                    
+                    const dot = monthNode.querySelector('.dot-indicator');
+                    if(allDone && hasTasks) {
+                        monthNode.classList.add('is-completed');
+                        if (dot) {
+                            dot.classList.remove('border-slate-300', 'bg-white');
+                            dot.classList.add('border-brand-500', 'bg-brand-500', 'shadow-[0_0_15px_rgba(59,130,246,0.6)]', 'scale-125');
+                        }
+                    } else {
+                        monthNode.classList.remove('is-completed');
+                        if (dot) {
+                            dot.classList.add('border-slate-300', 'bg-white');
+                            dot.classList.remove('border-brand-500', 'bg-brand-500', 'shadow-[0_0_15px_rgba(59,130,246,0.6)]', 'scale-125');
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderFocusView() {
+            const monthIdx = parseInt(document.getElementById('focus-month-select').value);
+            const weekIdx = parseInt(document.getElementById('focus-week-select').value) - 1; 
+            
+            const monthData = studyPlan[monthIdx];
+            const contentContainer = document.getElementById('focus-content');
+            const weekSelectContainer = document.getElementById('week-select-container');
+
+            if (monthIdx === 0) {
+                weekSelectContainer.style.display = 'none';
+                renderFocusColumns([], monthData.sections[0].tasks.map(t => ({...t, icon: '🎯', color: 'brand', category: 'Mock Tests'})), null, null);
+                return;
+            }
+            
+            weekSelectContainer.style.display = 'block';
+
+            const weekStartDay = weekIdx * 7 + 1;
+            const weekEndDay = (weekIdx === 3) ? 30 : (weekIdx + 1) * 7;
+
+            let dailyTasks = [];
+            let weeklyTasks = [];
+            
+            monthData.sections.forEach(sec => {
+                sec.tasks.forEach(task => {
+                    const { isDaily, start, end } = parseTaskDates(task.text);
+                    const enrichTask = {...task, icon: sec.icon, color: sec.color, category: sec.name};
+                    
+                    if (isDaily) {
+                        if (start <= weekEndDay && end >= weekStartDay) {
+                            enrichTask.dailyRange = {
+                                start: Math.max(start, weekStartDay),
+                                end: Math.min(end, weekEndDay)
+                            };
+                            dailyTasks.push(enrichTask);
+                        }
+                    } else {
+                        const weekMatch = task.text.match(/(1st|first|2nd|second|3rd|third|4th|fourth)\s+week/i);
+                        let belongsToCurrentWeek = true;
+                        
+                        if (weekMatch) {
+                            const wStr = weekMatch[1].toLowerCase();
+                            let targetWeekIdx = 0;
+                            if (['1st', 'first'].includes(wStr)) targetWeekIdx = 0;
+                            else if (['2nd', 'second'].includes(wStr)) targetWeekIdx = 1;
+                            else if (['3rd', 'third'].includes(wStr)) targetWeekIdx = 2;
+                            else if (['4th', 'fourth'].includes(wStr)) targetWeekIdx = 3;
+                            
+                            belongsToCurrentWeek = (targetWeekIdx === weekIdx);
+                        }
+                        
+                        if (belongsToCurrentWeek) {
+                            weeklyTasks.push(enrichTask);
+                        }
+                    }
+                });
+            });
+
+            renderFocusColumns(dailyTasks, weeklyTasks, weekStartDay, weekEndDay);
+        }
+
+        function renderFocusColumns(dailyTasks, weeklyTasks, startDay, endDay) {
+            const container = document.getElementById('focus-content');
+            
+            const formatText = (text) => text
+                .replace(/(Days \d+(-\d+)?)/gi, '<strong class="text-indigo-600 font-bold">$1</strong>')
+                .replace(/(\d+ words?| \d+ Flash Cards?| \d+ Audio files?| \d+ structures?| \d+ Cue cards?)/gi, '<strong class="text-rose-600 font-bold">$1</strong>')
+                .replace(/(Test \d+|Task \d+|1st week|2nd week|3rd week|4th week)/gi, '<strong class="text-slate-900 font-black bg-yellow-100 px-1 rounded">$1</strong>');
+
+            const createWeeklyTaskHtml = (task) => `
+                <label class="flex items-start gap-3 p-3.5 bg-white rounded-xl cursor-pointer transition-all duration-200 border border-slate-100 hover:border-${task.color}-300 hover:shadow-md group">
+                    <input type="checkbox" id="${task.id}" ${taskState[task.id] ? 'checked' : ''} onchange="handleSingleCheckbox(event, '${task.id}')" class="task-checkbox mt-0.5 w-5 h-5 text-${task.color}-600 rounded border-slate-300 focus:ring-${task.color}-500 transition duration-200 cursor-pointer flex-shrink-0">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-sm">${task.icon}</span>
+                            <span class="text-xs font-bold text-${task.color}-600 uppercase tracking-wider">${task.category}</span>
+                        </div>
+                        <div class="text-sm font-medium text-slate-700 leading-relaxed select-none group-hover:text-slate-900">${formatText(task.text)}</div>
+                    </div>
+                </label>
+            `;
+
+            const createDailyTaskHtml = (task) => {
+                let daysHtml = '';
+                for(let d = task.dailyRange.start; d <= task.dailyRange.end; d++) {
+                    const key = `${task.id}-${d}`;
+                    const isChecked = dailyTaskState[key];
+                    const bgClass = isChecked 
+                        ? `bg-${task.color}-500 text-white border-${task.color}-500 shadow-[0_2px_8px_rgba(0,0,0,0.15)] transform scale-110` 
+                        : `bg-slate-50 text-slate-500 border-slate-200 hover:border-${task.color}-300 hover:bg-${task.color}-50`;
+                    daysHtml += `
+                        <button onclick="toggleDaily('${task.id}', ${d})" class="w-8 h-8 md:w-9 md:h-9 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-200 ${bgClass}">
+                            ${d}
+                        </button>
+                    `;
+                }
+                
+                return `
+                    <div class="flex flex-col gap-3 p-4 bg-white rounded-xl transition-all duration-200 border border-slate-100 hover:border-${task.color}-300 hover:shadow-md group">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-sm">${task.icon}</span>
+                                    <span class="text-xs font-bold text-${task.color}-600 uppercase tracking-wider">${task.category}</span>
+                                </div>
+                                <div class="text-sm font-medium text-slate-700 leading-relaxed">${formatText(task.text)}</div>
+                            </div>
+                        </div>
+                        <div class="mt-2 bg-slate-50/50 p-2.5 rounded-lg border border-slate-100 flex flex-wrap gap-2 items-center">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1 w-full sm:w-auto">Daily Check-in:</span>
+                            ${daysHtml}
+                        </div>
+                    </div>
+                `;
+            };
+
+            let html = '';
+
+            html += `
+                <div class="bg-blue-50/50 rounded-2xl p-4 md:p-6 border border-blue-100 shadow-sm h-fit">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-xl shadow-inner">☀️</div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800">Daily Routine</h3>
+                            <p class="text-xs font-bold text-blue-600">Do these EVERY DAY this week ${startDay ? `(Days ${startDay}-${endDay})` : ''}</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        ${dailyTasks.length > 0 ? dailyTasks.map(t => createDailyTaskHtml(t)).join('') : '<p class="text-sm text-slate-500 italic p-4 text-center bg-white rounded-xl border border-dashed border-slate-300">No specific daily tasks for this period.</p>'}
+                    </div>
+                </div>
+            `;
+
+            html += `
+                <div class="bg-amber-50/50 rounded-2xl p-4 md:p-6 border border-amber-100 shadow-sm h-fit">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-xl shadow-inner">🎯</div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800">Weekly Milestones</h3>
+                            <p class="text-xs font-bold text-amber-600">Complete flexibly by end of week</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        ${weeklyTasks.length > 0 ? weeklyTasks.map(t => createWeeklyTaskHtml(t)).join('') : '<p class="text-sm text-slate-500 italic p-4 text-center bg-white rounded-xl border border-dashed border-slate-300">No specific milestones for this period.</p>'}
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('timeline-container');
+            container.innerHTML = '<div class="timeline-line hidden md:block"></div>';
+            
+            const formatText = (text) => text
+                .replace(/(Days \d+(-\d+)?)/gi, '<strong class="text-indigo-600 font-bold">$1</strong>')
+                .replace(/(\d+ words?| \d+ Flash Cards?| \d+ Audio files?| \d+ structures?| \d+ Cue cards?)/gi, '<strong class="text-rose-600 font-bold">$1</strong>')
+                .replace(/(Test \d+|Task \d+|1st week|2nd week|3rd week|4th week)/gi, '<strong class="text-slate-900 font-bold bg-yellow-100 px-1 rounded">$1</strong>');
+
+            studyPlan.forEach(month => {
+                const monthDiv = document.createElement('div');
+                monthDiv.id = `tl-${month.id}`;
+                monthDiv.className = 'relative md:pl-12 pb-14 group';
+                
+                let sectionsHtml = '';
+                month.sections.forEach(section => {
+                    let tasksHtml = '';
+                    section.tasks.forEach(task => {
+                        const meta = masterTaskMeta[task.id];
+                        
+                        if (meta.type === 'daily') {
+                            let doneDays = 0;
+                            for(let d=meta.start; d<=meta.end; d++) {
+                                if(dailyTaskState[`${task.id}-${d}`]) doneDays++;
+                            }
+                            const isAllDone = (doneDays === meta.total);
+                            
+                            tasksHtml += `
+                                <label class="flex items-start gap-3 p-3 hover:bg-white rounded-lg cursor-pointer transition-all duration-200 border border-transparent hover:border-slate-200 shadow-none hover:shadow-sm">
+                                    <input type="checkbox" id="tl-${task.id}" ${isAllDone ? 'checked' : ''} onchange="handleMasterCheckbox(event, '${task.id}')" class="task-checkbox mt-0.5 w-5 h-5 text-${section.color}-600 rounded border-slate-300 focus:ring-${section.color}-500 transition duration-200 cursor-pointer flex-shrink-0">
+                                    <div class="flex-1">
+                                        <div class="text-sm font-medium text-slate-700 leading-relaxed select-none">${formatText(task.text)}</div>
+                                        <div class="text-[11px] bg-${section.color}-50 text-${section.color}-600 px-2 py-0.5 rounded-full mt-1.5 inline-block font-bold border border-${section.color}-100">
+                                            ${doneDays} / ${meta.total} Days Done
+                                        </div>
+                                    </div>
+                                </label>
+                            `;
+                        } else {
+                            tasksHtml += `
+                                <label class="flex items-start gap-3 p-3 hover:bg-white rounded-lg cursor-pointer transition-all duration-200 border border-transparent hover:border-slate-200 shadow-none hover:shadow-sm">
+                                    <input type="checkbox" id="tl-${task.id}" ${taskState[task.id] ? 'checked' : ''} onchange="handleSingleCheckbox(event, '${task.id}')" class="task-checkbox mt-0.5 w-5 h-5 text-${section.color}-600 rounded border-slate-300 focus:ring-${section.color}-500 transition duration-200 cursor-pointer flex-shrink-0">
+                                    <div class="text-sm font-medium text-slate-700 leading-relaxed select-none">${formatText(task.text)}</div>
+                                </label>
+                            `;
+                        }
+                    });
+
+                    sectionsHtml += `
+                        <div class="bg-slate-50/50 rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300 relative">
+                            <div class="bg-white px-4 py-3 border-b border-slate-200 font-black text-slate-800 text-sm md:text-base flex items-center gap-2">
+                                <span class="text-xl">${section.icon}</span> ${section.name}
+                            </div>
+                            <div class="p-2 space-y-1">
+                                ${tasksHtml}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                monthDiv.innerHTML = `
+                    <div class="dot-indicator hidden md:block absolute left-[15px] top-2 w-5 h-5 rounded-full border-4 border-slate-300 bg-white z-10 transition-all duration-300"></div>
+                    <div class="flex items-center gap-4 mb-4">
+                        <h3 class="text-2xl font-black text-slate-800 tracking-tight">${month.title}</h3>
+                        <span class="month-completed-badge bg-green-100 text-green-700 border border-green-300 text-xs font-bold px-3 py-1 rounded-full items-center gap-1 shadow-sm">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            COMPLETED
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 relative z-10">
+                        ${sectionsHtml}
+                    </div>
+                `;
+                container.appendChild(monthDiv);
+            });
+        }
+
+        // Initialize Everything
+        renderTimeline();
+        renderFocusView();
+        updateProgress();
+        updateMonthBadges();
+
+    </script>
+</body>
+</html>

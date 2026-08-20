@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arsan's 7.0+ Master System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: '#4f46e5', secondary: '#ec4899',
+                        success: '#10b981', dark: '#0f172a',
+                        listen: '#3b82f6', read: '#10b981',
+                        write: '#8b5cf6', speak: '#f97316', vocab: '#64748b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #334155; -webkit-tap-highlight-color: transparent; }
+        
+        /* Custom Checkbox */
+        .task-checkbox:checked + label { text-decoration: line-through; color: #94a3b8; transition: all 0.2s ease; }
+        .task-checkbox {
+            appearance: none; background-color: #fff; margin: 0; font: inherit; color: currentColor;
+            width: 1.35em; height: 1.35em; border: 2px solid #cbd5e1; border-radius: 0.4em;
+            display: grid; place-content: center; cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; margin-top: 0.15rem;
+        }
+        .task-checkbox::before {
+            content: ""; width: 0.7em; height: 0.7em; transform: scale(0); transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em white; background-color: transform; transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+        .task-checkbox:checked { background-color: #10b981; border-color: #10b981; }
+        .task-checkbox:checked::before { transform: scale(1); }
+        
+        /* Accordion Fix - No max-height limit to prevent content cutoff */
+        .accordion-content { display: none; opacity: 0; }
+        .accordion-content.open { display: block; animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Progress & Effects */
+        .progress-fill { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease; }
+        .strategy-card { box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s ease, box-shadow 0.2s ease; border: 1px solid #e2e8f0; }
+        .strategy-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08); border-color: #cbd5e1; }
+        
+        .celebrate { animation: pulse-green 1.5s infinite; }
+        @keyframes pulse-green {
+            0% { transform: scale(1); color: #10b981; }
+            50% { transform: scale(1.05); color: #059669; }
+            100% { transform: scale(1); color: #10b981; }
+        }
+        
+        .type-badge { font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.4rem; border-radius: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-right: 0.3rem; margin-bottom: 0.2rem; display: inline-block; }
+    </style>
+</head>
+<body class="antialiased pb-24">
+
+    <!-- Sticky Header -->
+    <div class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-slate-200 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left flex items-center gap-3">
+                <div class="w-12 h-12 bg-indigo-100 text-primary rounded-xl flex items-center justify-center text-2xl shadow-inner">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black text-dark tracking-tight">Arsan's 7.0+ Master System</h1>
+                    <p class="text-xs font-bold text-secondary mt-0.5 tracking-wide bg-pink-50 inline-block px-2 py-0.5 rounded border border-pink-100">
+                        "Just 1 point away. I believe in you endlessly! ❤️"
+                    </p>
+                </div>
+            </div>
+            <div class="w-full md:w-72 flex flex-col items-center md:items-end">
+                <div class="text-sm font-bold text-slate-700 mb-1.5 flex justify-between w-full">
+                    <span>Target 7.0 Progress</span>
+                    <span id="progress-text" class="text-primary font-black text-base">0%</span>
+                </div>
+                <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200">
+                    <div id="main-progress-bar" class="progress-fill h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 mt-8">
+        
+        <!-- Girlfriend's 100% Verbatim Strategy Dashboard -->
+        <div class="mb-12">
+            <div class="bg-dark rounded-3xl p-6 md:p-10 text-white shadow-2xl relative overflow-hidden border border-slate-700">
+                <div class="absolute top-0 right-0 opacity-5 pointer-events-none">
+                    <i class="fa-solid fa-chess-king text-[250px] -mt-10 -mr-10"></i>
+                </div>
+                
+                <div class="flex items-center gap-4 mb-3 relative z-10">
+                    <div class="w-2 h-12 bg-gradient-to-b from-pink-500 to-purple-500 rounded-full"></div>
+                    <h2 class="text-3xl font-black tracking-tight">
+                        Girlfriend's Ultimate 7.0 Strategy Guide
+                    </h2>
+                </div>
+                <p class="text-slate-400 text-sm mb-8 max-w-3xl font-medium ml-6">
+                    Read this daily. We are combining your rigorous study schedule with J.W's high-efficiency tactics to overcome the 6.5 bottleneck!
+                </p>
+
+                <!-- Verbatim Content Section -->
+                <div class="space-y-6 relative z-10">
+                    
+                    <!-- Top Logic & Score Panel -->
+                    <div class="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 shadow-lg">
+                        <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2"><i class="fa-solid fa-brain text-purple-400"></i> The "Logic & Debate" Mindset</h3>
+                        <p class="text-sm leading-relaxed text-slate-300">
+                            At the higher score bands, IELTS Writing is no longer purely a language test, but rather a <strong class="text-pink-400">"logic and debate exam."</strong> Many native English-speaking university students who take the test without preparation often only score a 6.5. This is because they think, "My English is so good, I can just write whatever." As a result, due to a lack of rigorous logic or going off-topic, their writing completely fails to meet the official IELTS requirements.
+                        </p>
+                        <div class="mt-5 bg-black/40 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between border border-white/5 gap-3">
+                            <span class="text-emerald-400 font-bold text-sm">
+                                Current total score: Listening 7 + Reading 7 + Writing 6 + Speaking 6 = 26 points
+                            </span>
+                            <span class="bg-emerald-500/20 text-emerald-300 text-xs font-black px-4 py-1.5 rounded-full border border-emerald-500/30 text-center shadow-inner">
+                                Average: 6.5
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Listening & Reading Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gradient-to-br from-blue-900/40 to-slate-800/40 backdrop-blur-md rounded-2xl p-6 border border-blue-500/20 shadow-lg transition hover:border-blue-500/50">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="text-lg font-bold text-blue-300 flex items-center gap-2"><i class="fa-solid fa-headphones"></i> Listening</h3>
+                                <span class="bg-blue-500/20 text-blue-200 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded border border-blue-500/30">Key to 7.5 - 8</span>
+                            </div>
+                            <p class="text-sm leading-relaxed text-slate-300 mb-3">
+                                Candidates scoring a 7 typically do not lose points in Part 1 and Part 2; their main stumbling blocks are <strong class="text-blue-200 bg-blue-500/10 px-1 rounded">Part 3 (multiple-choice for long conversations)</strong> and <strong class="text-blue-200 bg-blue-500/10 px-1 rounded">Part 4 (academic lecture fill-in-the-blanks)</strong>. 
+                            </p>
+                            <div class="bg-black/30 p-3 rounded-lg border border-white/5">
+                                <p class="text-xs leading-relaxed text-blue-100/80">
+                                    He no longer needs extensive general listening. It is recommended that he specifically tackles Part 3 multiple-choice questions daily to build his anti-interference ability to "read long options while listening." Simultaneously, he should compile common synonym replacements for Part 4 fill-in-the-blank questions.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-emerald-900/40 to-slate-800/40 backdrop-blur-md rounded-2xl p-6 border border-emerald-500/20 shadow-lg transition hover:border-emerald-500/50">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="text-lg font-bold text-emerald-300 flex items-center gap-2"><i class="fa-solid fa-book-open"></i> Reading</h3>
+                                <span class="bg-emerald-500/20 text-emerald-200 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded border border-emerald-500/30">Key to 7.5 - 8</span>
+                            </div>
+                            <p class="text-sm leading-relaxed text-slate-300 mb-3">
+                                Scoring a 7 in Reading indicates that vocabulary and the parsing of complex sentences are absolutely not an issue. Any further point loss is often because the candidate gets tangled in the convoluted logic of <strong class="text-emerald-200 bg-emerald-500/10 px-1 rounded">True/False/Not Given questions</strong>, or misses the mark when summarizing paragraph main ideas (<strong class="text-emerald-200 bg-emerald-500/10 px-1 rounded">Heading questions</strong>).
+                            </p>
+                            <div class="bg-black/30 p-3 rounded-lg border border-white/5">
+                                <p class="text-xs leading-relaxed text-emerald-100/80">
+                                    Have him isolate these two specific question types from his past mistakes. He shouldn't focus on doing more new practice tests, but rather on purely understanding what the "trap logic" set by the examiners actually is.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Writing -->
+                    <div class="bg-gradient-to-br from-purple-900/40 to-slate-800/40 backdrop-blur-md rounded-2xl p-6 border border-purple-500/20 shadow-lg">
+                        <h3 class="text-lg font-bold text-purple-300 mb-5 flex items-center gap-2"><i class="fa-solid fa-pen-nib"></i> Writing Mastery</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3 bg-black/20 p-4 rounded-xl border border-white/5">
+                                <div class="mt-0.5 bg-purple-500/20 p-1.5 rounded-lg border border-purple-500/30 text-purple-300 shadow-sm"><i class="fa-solid fa-check text-xs"></i></div>
+                                <div class="text-sm leading-relaxed text-slate-300">
+                                    <strong class="text-purple-200 block mb-1 text-base">- Introduce "High-Quality Grading" (Most Important):</strong>
+                                    Instead of watching videos and comparing essays on his own, it is much better to find a reliable IELTS teacher or use high-quality AI grading tools for detailed corrections of his essays. An external perspective is necessary to point out logical gaps and unnatural word choices.
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-3 bg-black/20 p-4 rounded-xl border border-white/5">
+                                <div class="mt-0.5 bg-purple-500/20 p-1.5 rounded-lg border border-purple-500/30 text-purple-300 shadow-sm"><i class="fa-solid fa-check text-xs"></i></div>
+                                <div class="text-sm leading-relaxed text-slate-300">
+                                    <strong class="text-purple-200 block mb-1 text-base">- Deep Revision > Frantic Writing:</strong>
+                                    Do not blindly rush to write a massive number of essays just to feel productive. The correct approach is to write 2 essays a week, but each one must go through a closed loop: <em class="text-pink-300 font-semibold bg-pink-500/10 px-1 rounded">"write -> get it graded -> summarize mistakes -> rewrite,"</em> until the logic and vocabulary of that specific essay reach the 7-band standard.
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-3 bg-black/20 p-4 rounded-xl border border-white/5">
+                                <div class="mt-0.5 bg-purple-500/20 p-1.5 rounded-lg border border-purple-500/30 text-purple-300 shadow-sm"><i class="fa-solid fa-check text-xs"></i></div>
+                                <div class="text-sm leading-relaxed text-slate-300">
+                                    <strong class="text-purple-200 block mb-1 text-base">- The core of a Band 7 lies in Task 2's Task Response:</strong>
+                                    (whether it perfectly addresses the prompt and has depth in argumentation) and Coherence & Cohesion (whether the argument flows smoothly). This requires extensive outlining practice, not just padding the word count.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 bg-black/40 p-6 rounded-2xl border border-pink-500/30 relative overflow-hidden shadow-inner">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-pink-500 shadow-[0_0_15px_rgba(236,72,153,0.6)]"></div>
+                            <strong class="text-pink-400 block mb-4 text-base flex items-center gap-2">
+                                <i class="fa-solid fa-triangle-exclamation text-yellow-400"></i> - A Persian native language background might present a few typical "hidden bottlenecks" in writing:
+                            </strong>
+                            <div class="space-y-5 text-sm text-slate-300 pl-2">
+                                <div class="border-l border-white/10 pl-4 relative">
+                                    <div class="absolute -left-1.5 top-1.5 w-3 h-3 bg-slate-700 rounded-full border-2 border-pink-400"></div>
+                                    <strong class="text-white block mb-1.5 text-sm">1) Invisible point loss from "Articles and Prepositions":</strong>
+                                    Persian does not have a strict and high-frequency definite/indefinite article system like "a / an / the" in English. Many native Persian speakers, even those with advanced vocabulary and complex sentence structures, frequently omit "the" or misuse prepositions. IELTS examiners hold a very high standard for Grammatical Range and Accuracy (GRA) when awarding a 7. If the essay is riddled with these minor flaws, the score can easily get locked at 6.5.
+                                </div>
+                                <div class="border-l border-white/10 pl-4 relative">
+                                    <div class="absolute -left-1.5 top-1.5 w-3 h-3 bg-slate-700 rounded-full border-2 border-pink-400"></div>
+                                    <strong class="text-white block mb-1.5 text-sm">2) Expressions that are "Too Ornate but Lack Direct Logic":</strong>
+                                    Persian is a beautiful, highly poetic language. This often leads Iranian students to habitually write very long, complex, and sometimes roundabout sentences in English Task 2 essays. However, the underlying logic of IELTS Academic Writing (Task 2) is extremely direct and "utilitarian"—examiners want to see straightforward arguments and rigorous logical deduction. Sacrificing clarity for the sake of fancy vocabulary and complex syntax will backfire.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Speaking -->
+                    <div class="bg-gradient-to-br from-orange-900/40 to-slate-800/40 backdrop-blur-md rounded-2xl p-6 border border-orange-500/20 shadow-lg">
+                        <div class="mb-5 pb-3 border-b border-orange-500/20">
+                            <h3 class="text-lg font-bold text-orange-300 flex items-center gap-2"><i class="fa-solid fa-microphone"></i> Speaking Survival Kit</h3>
+                            <p class="text-sm text-orange-200/70 mt-1">He can collect common topics, predict subjects for conversation practice, and improve reaction speed.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 hover:border-orange-500/40 transition-all hover:-translate-y-1 shadow-md">
+                                <h4 class="font-bold text-sm text-orange-300 mb-3 flex items-center gap-2"><span class="bg-orange-500/20 px-2 py-0.5 rounded text-orange-200">1</span> Overcoming a Blank Mind</h4>
+                                <p class="text-xs text-slate-300 leading-relaxed mb-3 font-semibold text-white">"Legally" Lie and Abandon Depth</p>
+                                <p class="text-xs text-slate-300 leading-relaxed mb-4">In IELTS Speaking, "truth" is worthless; being "fluent" is king. When encountering an unexpected question, do not hesitate—pick the simplest words and just "make it up."</p>
+                                <div class="bg-slate-800/80 text-orange-100 p-3 rounded-lg text-xs italic border border-slate-700 shadow-inner">
+                                    (e.g., "No way! It sounds super boring to me. I'm an energetic person and I prefer working outdoors or interacting with people rather than standing next to old objects all day.")
+                                </div>
+                            </div>
+                            
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 hover:border-orange-500/40 transition-all hover:-translate-y-1 shadow-md">
+                                <h4 class="font-bold text-sm text-orange-300 mb-3 flex items-center gap-2"><span class="bg-orange-500/20 px-2 py-0.5 rounded text-orange-200">2</span> Buy Thinking Time</h4>
+                                <p class="text-xs text-slate-300 leading-relaxed mb-3 font-semibold text-white">Use Advanced "Nonsense" (Fillers)</p>
+                                <p class="text-xs text-slate-300 leading-relaxed mb-4">Memorize a few sets of native-like "buffering sentences" (Fillers).</p>
+                                <div class="bg-slate-800/80 text-orange-100 p-3 rounded-lg text-xs italic border border-slate-700 shadow-inner space-y-3">
+                                    <p>(e.g., "Well, to be honest, I've never really thought about it before, but off the top of my head I'd say..."</p>
+                                    <div class="w-full h-px bg-slate-700/50"></div>
+                                    <p>or "That's quite an interesting question. If I had to choose, I suppose...")</p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 hover:border-orange-500/40 transition-all hover:-translate-y-1 shadow-md">
+                                <h4 class="font-bold text-sm text-orange-300 mb-3 flex items-center gap-2"><span class="bg-orange-500/20 px-2 py-0.5 rounded text-orange-200">3</span> Surviving 2-Min Torture</h4>
+                                <p class="text-xs text-slate-300 leading-relaxed mb-3 font-semibold text-white">The Timeline (PPF) Expansion</p>
+                                <p class="text-[11px] text-slate-300 leading-relaxed mb-3">Apply the Past - Present - Future (PPF) timeline model. Take "favorite actor" as an example:</p>
+                                <ul class="text-[11px] text-slate-300 space-y-2 mb-3 bg-slate-800/50 p-2 rounded border border-white/5">
+                                    <li><strong class="text-orange-300">- Past:</strong> I first watched his movie a few years ago, and back then I thought it was just okay...</li>
+                                    <li><strong class="text-orange-300">- Present:</strong> But his recent work completely changed my perspective, his acting is...</li>
+                                    <li><strong class="text-orange-300">- Future:</strong> I heard he is going to direct a new movie next year, and I will definitely go to the cinema to support him.</li>
+                                </ul>
+                                <p class="text-[11px] text-orange-200/90 font-semibold bg-orange-900/30 p-2 rounded">Once the timeline is stretched out, two minutes won't even be enough time for him to finish talking.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 border-b-2 border-slate-200 pb-3">
+            <div>
+                <h2 class="text-3xl font-black text-slate-800 flex items-center tracking-tight">
+                    <i class="fa-solid fa-calendar-check text-primary mr-3"></i>Execution Engine
+                </h2>
+                <p class="text-sm text-slate-500 mt-1 font-medium">Your exact PDF syllabus fully preserved + Girlfriend's tactics injected.</p>
+            </div>
+            <div class="mt-3 md:mt-0 flex items-center gap-3">
+                <span class="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-full shadow-sm">
+                    <i class="fa-solid fa-cloud-arrow-up mr-1"></i>Auto-saving enabled
+                </span>
+            </div>
+        </div>
+        
+        <div id="plan-container" class="space-y-8">
+            <!-- Content will be injected here via JS -->
+        </div>
+    </div>
+
+    <script>
+        // 100% Data Preservation of His PDF Blueprint
+        const ieltsData = [
+            {
+                month: 1,
+                blueprint: {
+                    speak: "Topics: Job, Education, Family. Cue Cards: Person (5), Place (5). Grammar: Study 2 structures/day (Days 1-30).",
+                    listen: "Flashcards: Cam 1-10 (600 words) 15/day. Spelling: 15/day. Podcasts: Cam 1-3 (Days 1-20: 2 audios/day - Sec 1+4 even days, Sec 2+3 odd. Days 21-30: Review 4 audios). mini-ielts: 1 test/day (10Qs). Videos: Book 13.",
+                    read: "Flashcards: Cam 1-10 main (1860 words) 20/day, Cam 13 (556 words) 20/day. Execution: Book 13 (1 passage every 2 days).",
+                    write: "Execution: Just watch videos from Task 1 and Task 2 Channels."
+                },
+                weeks: [
+                    { w: 1, read: "Book 13 Test 1", listen: "Book 13 Videos (Test 1 & 2)", write: "Watch Task 1/2 Channels" },
+                    { w: 2, read: "Book 13 Test 2", listen: "Book 13 Videos (Test 1 & 2)", write: "Watch Task 1/2 Channels" },
+                    { w: 3, read: "Book 13 Test 3", listen: "Book 13 Videos (Test 3 & 4)", write: "Watch Task 1/2 Channels" },
+                    { w: 4, read: "Book 13 Test 4", listen: "Book 13 Videos (Test 3 & 4)", write: "Watch Task 1/2 Channels" }
+                ]
+            },
+            {
+                month: 2,
+                blueprint: {
+                    speak: "Topics: Friendship, hometown, home. Cue Cards: Object (5), Memory (5). Grammar: Study 2 structures/day.",
+                    listen: "Flashcards: Cam 1-10 (15/day) -> Start Bk 13 (429 words) 15/day. Podcasts: Cam 4-6 (2 audios/day). mini-ielts: 1 test/day. Videos: Book 14.",
+                    read: "Flashcards: Cam 1-10 main 20/day. Cam 14 (341w) 20/day. Cam 15 (235w) 20/day. Execution: Book 14 & 15 (1 passage/day).",
+                    write: "Flashcards: T1 Line graph (63w, 5/d), Pie chart (72w, 5/d). T2 Work/Biz (41w, 5/d), Edu (70w, 5/d). Collocations: 100 T2 Collocations (5-10/day). Execution: Book 13 writing."
+                },
+                weeks: [
+                    { w: 1, read: "Book 14 Test 1 & 2", listen: "Book 14 Videos (Test 1 & 2)", write: "Book 13 Test 1 (Both tasks)" },
+                    { w: 2, read: "Book 14 Test 3 & 4", listen: "Book 14 Videos (Test 3 & 4)", write: "Book 13 Test 2 (Both tasks)" },
+                    { w: 3, read: "Book 15 Test 1 & 2", listen: "Book 14 Videos Review", write: "Book 13 Test 3 (Both tasks)" },
+                    { w: 4, read: "Book 15 Test 3 & 4", listen: "Book 14 Videos Review", write: "Book 13 Test 4 (Both tasks)" }
+                ]
+            },
+            {
+                month: 3,
+                blueprint: {
+                    speak: "Topics: Hobbies, Holidays, Environment. Cue Cards: Misc (5), Review Person/Place. Grammar: 2 structures/day.",
+                    listen: "Flashcards: Bk 13 rest (129w) + Bk 14 (197w) 10-15/day. Podcasts: Cam 7-10 (3 audios/day). Videos: Book 15 + 16.",
+                    read: "Flashcards: Cam 1-10 (30/day), Cam 16 (210w, 10/day), Cam 17 (137w, 10/day). Execution: Book 16 & 17 (1 passage/day).",
+                    write: "Flashcards: T1 Process (51w), Map (54w). T2 Family/Child (47w), Tech (66w). 320 words list (5/day). Grammar: 1 structure/day. Execution: Book 14."
+                },
+                weeks: [
+                    { w: 1, read: "Book 16 Test 1 & 2", listen: "Book 15 Videos", write: "Book 14 Test 1 (Both tasks)" },
+                    { w: 2, read: "Book 16 Test 3 & 4", listen: "Book 15 Videos", write: "Book 14 Test 2 (Both tasks)" },
+                    { w: 3, read: "Book 17 Test 1 & 2", listen: "Book 16 Videos", write: "Book 14 Test 3 (Both tasks)" },
+                    { w: 4, read: "Book 17 Test 3 & 4", listen: "Book 16 Videos", write: "Book 14 Test 4 (Both tasks)" }
+                ]
+            },
+            {
+                month: 4,
+                blueprint: {
+                    speak: "Topics: Tech, Social issues, Others. Cue Cards: Misc (5), Review Object/Memory. Grammar: 2 structures/day.",
+                    listen: "Flashcards: Books 15,16,17,18,19 (10-15/day). Spelling 15/day. Videos: Book 17, 18, 19.",
+                    read: "Flashcards: Cam 17 (37w), 18 (135w), 19 (171w) 10/day. Execution: Book 18 & 19 (1 test/day). Full Mock Tests 11-12.",
+                    write: "Flashcards: T2 Env (55w), Crime (66w). 320 words list finish (5/d). Grammar: 1 structure/day. Execution: Book 15."
+                },
+                weeks: [
+                    { w: 1, read: "Book 18 Tests 1-4", listen: "Book 17 Videos", write: "Book 15 Test 1 (Both tasks)" },
+                    { w: 2, read: "Book 19 Tests 1-4", listen: "Book 18 Videos", write: "Book 15 Test 2 (Both tasks)" },
+                    { w: 3, read: "Full Mock Tests 11-12", listen: "Book 19 Videos", write: "Book 15 Test 3 (Both tasks)" },
+                    { w: 4, read: "Full Mock Tests 11-12", listen: "Book 19 Videos", write: "Book 15 Test 4 (Both tasks)" }
+                ]
+            },
+            {
+                month: 5,
+                blueprint: {
+                    speak: "Topics: Review all (Job, Edu, Family, Friendship, Home...). Cue Cards: Misc (5), Review all previous. Grammar: 2 structures/day.",
+                    listen: "Spelling: Finish all words! Tests: Book 11, 12, 20, youtube, ieltsonlinetest.",
+                    read: "Flashcards: Cam 19 (71w) 10/day. Review all flashcards.",
+                    write: "Flashcards: T1 words (115w). T2 Health (20w), Media (46w), Govt (30w), Global. Grammar: 1 structure/day. Execution: Book 16."
+                },
+                weeks: [
+                    { w: 1, read: "Mock Tests & Review", listen: "Book 11/12/20 Tests", write: "Book 16 Test 1 (Both tasks)" },
+                    { w: 2, read: "Mock Tests & Review", listen: "Book 11/12/20 Tests", write: "Book 16 Test 2 (Both tasks)" },
+                    { w: 3, read: "Mock Tests & Review", listen: "Book 11/12/20 Tests", write: "Book 16 Test 3 (Both tasks)" },
+                    { w: 4, read: "Mock Tests & Review", listen: "Book 11/12/20 Tests", write: "Book 16 Test 4 (Both tasks)" }
+                ]
+            },
+            {
+                month: 6,
+                blueprint: {
+                    speak: "Topics: Review Hobbies, Holidays, Env, Tech, Social, Others.",
+                    listen: "Execution: Just take tests! (Book 11, 12, 20, Mock tests).",
+                    read: "Execution: Take as many tests as possible = put techniques into practice.",
+                    write: "Execution: Book 17, 18, 19. Write as many essays as possible and have them corrected by AI."
+                },
+                weeks: [
+                    { w: 1, read: "Intense Mock Tests", listen: "Intense Mock Tests", write: "Book 17-19 Tests + AI Grading" },
+                    { w: 2, read: "Intense Mock Tests", listen: "Intense Mock Tests", write: "Book 17-19 Tests + AI Grading" },
+                    { w: 3, read: "Intense Mock Tests", listen: "Intense Mock Tests", write: "Book 17-19 Tests + AI Grading" },
+                    { w: 4, read: "Intense Mock Tests", listen: "Intense Mock Tests", write: "Book 17-19 Tests + AI Grading" }
+                ]
+            }
+        ];
+
+        function getWeeklyTasks(weekData) {
+            return [
+                {
+                    day: "Monday",
+                    tasks: [
+                        { type: 'vocab', label: 'Arsan Blueprint', text: "Do your daily Flashcards & Spelling quota as per the Blueprint." },
+                        { type: 'read', label: 'Arsan', text: `Reading Focus: ${weekData.read}.` },
+                        { type: 'read', label: 'J.W RULE', text: "Focus ONLY on mapping T/F/NG and Headings traps! Stop blindly testing." }
+                    ]
+                },
+                {
+                    day: "Tuesday",
+                    tasks: [
+                        { type: 'vocab', label: 'Arsan Blueprint', text: "Daily Vocabulary & Grammar structure review." },
+                        { type: 'listen', label: 'Arsan', text: `Listening Audio & Video Focus: ${weekData.listen}.` },
+                        { type: 'listen', label: 'J.W RULE', text: "Drill Part 3 (Multi-Choice) & extract synonyms for Part 4!" }
+                    ]
+                },
+                {
+                    day: "Wednesday",
+                    tasks: [
+                        { type: 'vocab', label: 'Arsan Blueprint', text: "Daily Vocabulary & Grammar structure review." },
+                        { type: 'speak', label: 'Arsan', text: "Practice specific topics & Cue cards from the blueprint." },
+                        { type: 'speak', label: 'J.W RULE', text: "Part 1: Legally Lie! Answer instantly without seeking 'truth'." }
+                    ]
+                },
+                {
+                    day: "Thursday",
+                    tasks: [
+                        { type: 'vocab', label: 'Arsan Blueprint', text: "Daily Vocabulary & Grammar structure review." },
+                        { type: 'write', label: 'Arsan', text: `Writing Task Focus: ${weekData.write}.` },
+                        { type: 'write', label: 'J.W RULE', text: "Check your essay strictly for missing 'the' and misused prepositions." }
+                    ]
+                },
+                {
+                    day: "Friday",
+                    tasks: [
+                        { type: 'vocab', label: 'Arsan Blueprint', text: "Daily Vocabulary & Grammar structure review." },
+                        { type: 'speak', label: 'Arsan', text: "Continue Speaking Part 2 / Cue Card practice." },
+                        { type: 'speak', label: 'J.W RULE', text: "Use PPF (Past-Present-Future) timeline to survive the 2-minute limit!" }
+                    ]
+                },
+                {
+                    day: "Saturday",
+                    tasks: [
+                        { type: 'listen', label: 'Arsan', text: "Review Listening Podcasts/Audios and analyze mistakes." },
+                        { type: 'speak', label: 'J.W RULE', text: "Ban 'Emm/Amm'. Force yourself to use Fillers: 'Well, to be honest...'" }
+                    ]
+                },
+                {
+                    day: "Sunday",
+                    tasks: [
+                        { type: 'write', label: 'J.W RULE', text: "SUBMIT ESSAYS FOR HIGH-QUALITY AI GRADING. Do not just compare videos." },
+                        { type: 'write', label: 'J.W RULE', text: "THE REWRITE LOOP: Rewrite based on feedback. Utilitarian logic > Ornate words." }
+                    ]
+                }
+            ];
+        }
+
+        const stateKey = 'arsanIeltsPlan_v3';
+        const state = JSON.parse(localStorage.getItem(stateKey)) || {};
+        let totalTasks = 0;
+        let completedTasks = 0;
+
+        function saveState() {
+            localStorage.setItem(stateKey, JSON.stringify(state));
+            updateProgressBar();
+        }
+
+        function updateProgressBar() {
+            const percentage = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+            const progressBar = document.getElementById('main-progress-bar');
+            const progressText = document.getElementById('progress-text');
+            
+            progressBar.style.width = `${percentage}%`;
+
+            if (percentage === 100) {
+                progressText.innerHTML = `<span class="celebrate inline-block">100% 🎉 7.0 SECURED!</span>`;
+                progressBar.className = 'progress-fill h-full bg-success';
+            } else {
+                progressText.innerText = `${percentage}%`;
+                progressBar.className = 'progress-fill h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500';
+            }
+        }
+
+        function toggleAccordion(id) {
+            const content = document.getElementById(`content-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.classList.add('open');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function toggleMonthComplete(monthNum, event) {
+            event.stopPropagation(); 
+            const prefix = `m${monthNum}-`;
+            const checkboxes = document.querySelectorAll(`input[id^="${prefix}"]`);
+            let allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            const targetState = !allChecked;
+
+            checkboxes.forEach(cb => {
+                if (cb.checked !== targetState) {
+                    cb.checked = targetState;
+                    state[cb.id] = targetState;
+                    targetState ? completedTasks++ : completedTasks--;
+                }
+            });
+            saveState();
+        }
+
+        function getLabelStyle(type) {
+            switch(type) {
+                case 'read': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+                case 'speak': return 'bg-orange-100 text-orange-700 border-orange-200';
+                case 'listen': return 'bg-blue-100 text-blue-700 border-blue-200';
+                case 'write': return 'bg-purple-100 text-purple-700 border-purple-200';
+                case 'vocab': return 'bg-slate-100 text-slate-600 border-slate-200';
+                default: return 'bg-gray-100 text-gray-700 border-gray-200';
+            }
+        }
+
+        function getIcon(type) {
+            switch(type) {
+                case 'read': return '<i class="fa-solid fa-book-open"></i>';
+                case 'speak': return '<i class="fa-solid fa-microphone"></i>';
+                case 'listen': return '<i class="fa-solid fa-headphones"></i>';
+                case 'write': return '<i class="fa-solid fa-pen-nib"></i>';
+                case 'vocab': return '<i class="fa-solid fa-layer-group"></i>';
+                default: return '';
+            }
+        }
+
+        function renderPlan() {
+            const container = document.getElementById('plan-container');
+            let html = '';
+            totalTasks = 0; completedTasks = 0;
+
+            ieltsData.forEach((data) => {
+                const monthId = `month-${data.month}`;
+                
+                html += `
+                <div class="bg-white border border-slate-200 rounded-3xl shadow-sm mb-6 transition-all overflow-hidden">
+                    <!-- Month Header -->
+                    <div class="px-6 py-5 cursor-pointer flex justify-between items-center hover:bg-slate-50 transition-colors border-b border-slate-100" onclick="toggleAccordion('${monthId}')">
+                        <div class="flex-1">
+                            <h3 class="text-2xl font-black text-slate-800 flex items-center tracking-tight">
+                                Month ${data.month} 
+                                <span class="ml-3 text-xs font-bold bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full border border-indigo-100 shadow-sm"><i class="fa-solid fa-fire mr-1"></i>Execution Phase</span>
+                            </h3>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <button onclick="toggleMonthComplete(${data.month}, event)" class="hidden sm:flex items-center text-sm font-bold bg-white border border-slate-300 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 px-4 py-2 rounded-xl transition-all shadow-sm z-10">
+                                <i class="fa-solid fa-check-double mr-2"></i>Check All
+                            </button>
+                            <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center transition-transform duration-300" id="icon-${monthId}">
+                                <i class="fa-solid fa-chevron-down text-slate-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Month Content -->
+                    <div id="content-${monthId}" class="accordion-content">
+                        <div class="p-5 md:p-8 space-y-8 bg-slate-50">
+                            
+                            <!-- Arsan's Original Blueprint Panel -->
+                            <div class="bg-indigo-900/5 rounded-2xl p-5 border border-indigo-200/50 shadow-inner">
+                                <h4 class="font-bold text-indigo-900 mb-4 flex items-center text-sm uppercase tracking-wider">
+                                    <i class="fa-solid fa-scroll text-indigo-500 mr-2"></i>📜 Arsan's Original Blueprint (100% Preserved)
+                                </h4>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 text-[13px] text-slate-700">
+                                    <div class="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                                        <strong class="text-blue-600 flex items-center"><i class="fa-solid fa-headphones mr-1.5 w-4"></i>Listening Specs:</strong>
+                                        <p class="mt-1 leading-relaxed">${data.blueprint.listen}</p>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                                        <strong class="text-emerald-600 flex items-center"><i class="fa-solid fa-book-open mr-1.5 w-4"></i>Reading Specs:</strong>
+                                        <p class="mt-1 leading-relaxed">${data.blueprint.read}</p>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                                        <strong class="text-purple-600 flex items-center"><i class="fa-solid fa-pen-nib mr-1.5 w-4"></i>Writing Specs:</strong>
+                                        <p class="mt-1 leading-relaxed">${data.blueprint.write}</p>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                                        <strong class="text-orange-600 flex items-center"><i class="fa-solid fa-microphone mr-1.5 w-4"></i>Speaking & Grammar:</strong>
+                                        <p class="mt-1 leading-relaxed">${data.blueprint.speak}</p>
+                                    </div>
+                                </div>
+                            </div>
+                `;
+
+                data.weeks.forEach((week) => {
+                    const weekId = `m${data.month}-w${week.w}`;
+                    const dailyTasks = getWeeklyTasks(week);
+                    
+                    html += `
+                        <div class="relative">
+                            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-indigo-400 to-purple-400 rounded-full"></div>
+                            <div class="pl-6">
+                                <div class="mb-5">
+                                    <h4 class="font-black text-slate-800 text-xl flex items-center tracking-tight">
+                                        <span class="bg-indigo-600 text-white text-sm px-3 py-1 rounded-lg mr-3 shadow-md">Week ${week.w}</span>
+                                        Core Execution Loop
+                                    </h4>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                    `;
+
+                    dailyTasks.forEach((day, dayIdx) => {
+                        html += `
+                                    <div class="strategy-card bg-white rounded-2xl p-5 flex flex-col h-full">
+                                        <h5 class="font-bold text-base text-slate-800 mb-4 pb-2 border-b border-slate-100">
+                                            ${day.day}
+                                        </h5>
+                                        <div class="space-y-4 flex-1">
+                        `;
+
+                        day.tasks.forEach((task, taskIdx) => {
+                            const taskId = `${weekId}-d${dayIdx}-t${taskIdx}`;
+                            totalTasks++;
+                            
+                            const isChecked = state[taskId] ? 'checked' : '';
+                            if (isChecked) completedTasks++;
+
+                            const badgeStyle = getLabelStyle(task.type);
+                            const icon = getIcon(task.type);
+                            const ruleBg = task.label === 'J.W RULE' ? 'bg-pink-50 rounded-lg p-2 border border-pink-100 -mx-2 -my-1 shadow-sm' : '';
+                            const textStyle = task.label === 'J.W RULE' ? 'font-semibold text-pink-900' : 'text-slate-600';
+                            
+                            // Specific Icon logic for Labels
+                            let labelIcon = '';
+                            if (task.label === 'J.W RULE') labelIcon = '<i class="fa-solid fa-crown text-pink-500 mr-1 text-xs"></i>';
+                            else if (task.label === 'Arsan' || task.label === 'Arsan Blueprint') labelIcon = '<i class="fa-solid fa-user-astronaut text-slate-500 mr-1 text-xs"></i>';
+
+                            html += `
+                                            <div class="flex items-start group relative ${ruleBg}">
+                                                <input type="checkbox" id="${taskId}" class="task-checkbox mt-1" ${isChecked}>
+                                                <label for="${taskId}" class="ml-3 text-sm leading-relaxed cursor-pointer select-none flex-1">
+                                                    <span class="${badgeStyle} type-badge border shadow-sm">${icon} ${labelIcon}${task.label}</span>
+                                                    <span class="group-hover:text-slate-900 transition-colors block mt-1 ${textStyle}">${task.text}</span>
+                                                </label>
+                                            </div>
+                            `;
+                        });
+
+                        html += `
+                                        </div>
+                                    </div>
+                        `;
+                    });
+
+                    html += `
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    state[this.id] = this.checked;
+                    this.checked ? completedTasks++ : completedTasks--;
+                    saveState();
+                });
+            });
+
+            updateProgressBar();
+            
+            // Open Month 1 default
+            setTimeout(() => {
+                const firstMonth = document.getElementById('content-month-1');
+                if(firstMonth && !firstMonth.classList.contains('open')) toggleAccordion('month-1');
+            }, 100);
+        }
+
+        window.onload = renderPlan;
+    </script>
+</body>
+</html>
