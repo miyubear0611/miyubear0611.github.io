@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12스타즈 진행 방식 안내서</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: #f8fafc; 
+            color: #334155; 
+            min-height: 100vh;
+        }
+        
+        .clean-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .clean-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #4f46e5, #0ea5e9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: #0f172a;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -6px;
+            height: 4px;
+            width: 100%;
+            background: linear-gradient(90deg, #6366f1, transparent);
+            border-radius: 2px;
+        }
+
+        .highlight-text {
+            color: #7c3aed;
+            font-weight: 700;
+        }
+
+        .watermark {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 2rem;
+            padding-bottom: 2rem;
+        }
+    </style>
+</head>
+<body class="antialiased p-4 md:p-8">
+
+    <header class="max-w-4xl mx-auto text-center py-12">
+        <h1 class="text-4xl md:text-5xl font-black mb-4 tracking-wider"><span class="text-gradient">12스타즈</span> 진행 방식 안내서</h1>
+        <p class="text-slate-500 text-lg">팬 응원, 일정 안내, 경연 규칙 및 공식 바로가기 링크</p>
+    </header>
+
+    <main class="max-w-4xl mx-auto space-y-8">
+
+        <!-- 제1부분: 머리말: 팬 응원 및 투표 전체 규칙 -->
+        <div class="clean-card p-6 md:p-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-5 text-6xl"><i class="fa-solid fa-star"></i></div>
+            <h2 class="text-3xl font-bold section-title">머리말: 팬 응원 및 투표 전체 규칙</h2>
+            
+            <p class="mb-6 text-lg text-slate-700">인기 투표 결과를 바탕으로 인기 별자리 아이돌 PICK + 별자리 아이돌 개인 계정을 설치</p>
+
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">1. 투표 진행 채널</h3>
+                    <p class="bg-blue-50 border border-blue-100 text-slate-700 p-4 rounded-lg">영상이 업데이트된 후, 공식 계정인 <span class="highlight-text">【12스타즈】에서 해당 영상의 댓글 창을 통해</span> 해당 회차 투표 이벤트를 시작합니다.</p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">2. 투표 참여 규칙</h3>
+                    <ol class="list-decimal list-inside space-y-2 bg-blue-50 border border-blue-100 text-slate-700 p-4 rounded-lg">
+                        <li>【12스타즈】의 해당 회차 영상 댓글 창에 들어가서, <span class="text-amber-600 font-bold">공식 계정이 작성한</span> 해당 별자리 전용 댓글을 찾습니다.</li>
+                        <li>응원하는 별자리의 댓글에 '좋아요'만 눌러주시면 됩니다. <span class="text-amber-600 font-bold">'좋아요' 수가 바로 해당 별자리의 이번 회차 인기 투표수가 됩니다.</span> 투표 규칙에 따라 공연 무대의 센터(C위)와 노출 시간이 결정됩니다.</li>
+                    </ol>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">3. 추가 안내 사항</h3>
+                    <ul class="list-disc list-inside space-y-2 bg-blue-50 border border-blue-100 text-slate-700 p-4 rounded-lg">
+                        <li><span class="text-amber-600 font-bold">공식 계정이 작성한</span> 별자리 댓글의 '좋아요'만 <span class="text-amber-600 font-bold">유효한 투표수로 인정되며</span>, 팬분들이 직접 작성한 댓글의 '좋아요'는 집계되지 않습니다.</li>
+                        <li><span class="text-amber-600 font-bold">투표 기간은</span> 각 영상 댓글 창의 고정(공지) 설명을 기준으로 하며, 기간이 종료되는 즉시 투표가 마감되어 이후의 '좋아요'는 누적되지 않습니다.</li>
+                        <li>본 이벤트의 최종 해석 권한은 【12스타즈】 계정에 있습니다.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 제2부분: 핵심 공지 및 통합 안내 -->
+        <div class="clean-card p-6 md:p-8 border-t-4 border-t-pink-400">
+            <h2 class="text-3xl font-bold section-title">핵심 공지 및 통합 안내</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div class="space-y-4">
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">1. 먼저 투표의 핵심 규칙부터 말씀드릴게요. 더 이상 헷갈리지 마세요!</h3>
+                    <ul class="space-y-3 text-sm leading-relaxed text-slate-700">
+                        <li class="flex items-start"><span class="mr-2 text-pink-600 font-bold">1.</span> 고정 규칙: 4대 원소(별자리) 참가자는 최종적으로 각 그룹에서 한 명씩 데뷔하게 됩니다. (어느 원소도 누락되지 않고 모든 원소가 스토리를 가질 수 있도록 하기 위함입니다).</li>
+                        <li class="flex items-start"><span class="mr-2 text-pink-600 font-bold">2.</span> 라운드별로 개별 투표가 진행됩니다. 1차 공연 투표는 1차 공연 전체 회차(상, 중, 하 포함)에만 국한되며, 2차 및 3차 공연에서는 완전히 새로운 투표 채널이 열립니다! 이는 일시적으로 득표수가 낮은 참가자도 스토리 라인을 가질 수 있게 하여, 내내 배경으로만 남지 않도록 하기 위한 설계입니다.</li>
+                        <li class="flex items-start"><span class="mr-2 text-pink-600 font-bold">3.</span> 단일 투표는 해당 무대의 센터만 결정할 뿐, 이후의 모든 영상 전개를 결정하지는 않습니다! 1차 공연부터 당회 득표수가 다음 회차의 분량 분배(예: 이전에 게시된 1차 공연 센터 관련 투표)에 반영되지만, 이미 게시된 초기 콘텐츠들은 촬영 전에 기획 및 제작이 완료된 것이므로 이번 투표의 영향을 받지 않습니다.</li>
+                        <li class="flex items-start"><span class="mr-2 text-pink-600 font-bold">4.</span> 투표 채널은 계속해서 조정 및 최적화하고 있습니다. 가장 매끄러운 방안이 확정되면 가장 가장 먼저 알려드리겠습니다. 사용하기 편하고 공정한 투표 아이디어가 있다면 많이 토론해 주세요. 저희가 반영하여 최적화하겠습니다.</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">2. 중요 알림: 절대 무료입니다 (비용 청구 없음)</h3>
+                    <p class="text-sm bg-red-50 border border-red-200 p-4 rounded-lg text-red-700 font-medium">이 점은 분명히 말씀드립니다. 이것은 오프라인 실제 오디션이 아니라, 저희가 AI를 활용해 제작한 별자리 오디션 주제의 시리즈물입니다! 전 과정에서 여러분께 단 한 푼도 요구하지 않으며, 결제, 유료 투표, 유료 분량 잠금 해제 등의 시스템은 전혀 없습니다. 사기꾼들에게 속아 지갑을 잃는 일이 없도록 부디 주의해 주세요! 투표를 추가한 것은 순전히 여러분과 더 많이 소통하고, 여러분의 취향을 반영해 스토리를 최적화하여 더 마음에 드는 콘텐츠를 만들기 위함입니다.</p>
+
+                    <h3 class="text-xl font-bold text-slate-900 mb-2 mt-4">3. 분량 및 스토리 업데이트 순서에 대하여</h3>
+                    <p class="text-sm text-slate-700">초기에 업로드된 영상들은 미리 작성된 빌드업 스토리입니다. 먼저 공개한 뒤 여러분이 시청하고 함께 토론해야만, 저희가 여러분의 의견을 반영하여 1차 공연과 이후 무대를 업데이트할 수 있습니다. 특정 참가자의 분량을 의도적으로 줄인 것이 아닙니다.</p>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-slate-200 space-y-4">
+                <h3 class="text-xl font-bold text-slate-900 mb-2">4. 무대, 메이크업/스타일링, 보컬 통합 안내</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-700">
+                    <div class="bg-slate-50 border border-slate-100 p-4 rounded-lg flex"><i class="fa-solid fa-palette text-indigo-500 mt-1 mr-3 text-lg"></i><p>1. 모든 참가자는 매 무대마다 당회 무대 스타일에 맞는 새로운 메이크업과 스타일링을 선보입니다. 초기 캐릭터 스타일링은 별자리의 특성을 결합하여 디자인된 것으로, 흔히 말하는 고정관념처럼 보일 수 있으나 이는 여러분이 첫눈에 해당 별자리를 쉽게 구분할 수 있도록 하기 위함입니다. 단순한 첫인상일 뿐이며, 이후 스타일링은 개선될 예정이니 걱정하지 않으셔도 됩니다.</p></div>
+                    <div class="bg-slate-50 border border-slate-100 p-4 rounded-lg flex"><i class="fa-solid fa-microphone-lines text-indigo-500 mt-1 mr-3 text-lg"></i><p>2. 곧 업데이트될 1차 공연 무대의 모든 곡은 100% 창작곡입니다! 보컬 라인은 실제 사람의 목소리를 미세 조정하여 제작되었으며, 특정인의 가창력을 인위적으로 높이거나 낮추는 일은 없습니다. 음색의 차이만 있을 뿐, 실력의 우열은 없습니다.</p></div>
+                    <div class="bg-slate-50 border border-slate-100 p-4 rounded-lg flex"><i class="fa-solid fa-comment-dots text-indigo-500 mt-1 mr-3 text-lg"></i><p>3. "듣기에는 노래를 잘하는데 심사위원이 왜 문제를 지적하지?"라고 의아해하시는 시청자분들이 계십니다. 이에 대해 설명해 드리자면, AI 제작의 한계로 인해 가창력의 격차를 아주 크게 벌릴 수 없습니다. 따라서 전체적인 대본 스토리에 맞추기 위해 상응하는 심사평을 설정한 것일 뿐, 특정 참가자를 의도적으로 깎아내리려는 것이 아닙니다.</p></div>
+                    <div class="bg-slate-50 border border-slate-100 p-4 rounded-lg flex"><i class="fa-solid fa-heart text-indigo-500 mt-1 mr-3 text-lg"></i><p>4. 저희는 모든 참가자를 동등하게 대우하며 편애는 존재하지 않습니다. 각 참가자의 분량과 스토리 라인은 전체 내용에 맞춰 세심하게 디자인되고 다듬어진 것으로, 차별하지 않습니다.</p></div>
+                </div>
+            </div>
+
+            <div class="mt-6 space-y-4">
+                <h3 class="text-lg font-bold text-amber-600">5. 2차 창작에 대하여</h3>
+                <p class="text-sm text-slate-700">여러분의 2차 창작을 환영합니다! 저희를 태그(@)해주시면 저희도 꼭 보러 가겠습니다! 단, 참가자를 비방하거나 저작권이 있는 이미지 및 창작곡을 도용하는 행위는 허용하지 않습니다.</p>
+                <h3 class="text-lg font-bold text-amber-600">마지막으로 드리는 말씀</h3>
+                <p class="text-sm text-slate-500 italic bg-slate-50 p-4 rounded-lg border border-slate-100">이 시리즈를 기획한 초심은 여러분이 예전에 오디션 프로그램을 보며 느꼈던 즐거움을 되찾아드리고자 하는 것이었습니다. 스토리, 무대, 참가자와 관련된 건의 사항이 있으시다면 언제든 편하게 댓글을 남겨주세요. 향후 데뷔 스토리와 다른 별자리들의 행보에 대해서도 적극적인 토론을 환영합니다. 모든 의견을 꼼꼼히 읽고 적절한 내용은 조정 및 반영하겠습니다. 다만, 과격한 발언은 자제해 주시기를 부탁드리며, 그저 가볍고 즐겁게 시청해 주셨으면 좋겠습니다~</p>
+            </div>
+        </div>
+
+        <!-- 제3부분: 4대 원소(별자리) 소개 및 참가자 -->
+        <div class="clean-card p-6 md:p-8 bg-white border-t-4 border-t-emerald-400">
+            <h2 class="text-3xl font-bold section-title">연습생 팀: 4대 원소(별자리) 소개 및 참가자</h2>
+            <p class="mb-6 text-sm text-slate-600">&lt;12스타즈&gt;의 참가자들은 원소에 따라 4대 진영으로 나뉘며, 각 원소는 고유한 '무대 캐릭터'와 성격적 색깔을 가지고 있습니다.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- 불 -->
+                <div class="bg-red-50 border border-red-100 p-5 rounded-xl flex gap-4 transition hover:-translate-y-1 hover:shadow-md">
+                    <div class="w-12 h-12 rounded-full bg-red-100 text-red-500 flex items-center justify-center shrink-0 text-xl"><i class="fa-solid fa-fire"></i></div>
+                    <div>
+                        <h4 class="font-bold text-red-800 text-lg">불의 원소 계열 (양자리, 사자자리, 사수자리)</h4>
+                        <p class="text-xs font-bold text-red-600 mb-2">무대 위의 분위기 메이커 | 압도적인 폭발력</p>
+                        <p class="text-sm text-slate-700">'열혈, 자신감, 지기 싫어함'의 서사를 타고났습니다. 무대 위에서 대개 시선을 사로잡는 제왕의 역할을 하며, 메인 래퍼, 고음 담당, 또는 무대를 뜨겁게 달구는 센터를 맡는 경우가 많습니다. 감정 표현이 직설적이고 할 말은 하는 성격으로, 프로그램 내에서 주요한 성격적 갈등과 하이라이트를 만들어냅니다.</p>
+                    </div>
+                </div>
+                
+                <!-- 흙 -->
+                <div class="bg-emerald-50 border border-emerald-100 p-5 rounded-xl flex gap-4 transition hover:-translate-y-1 hover:shadow-md">
+                    <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 text-xl"><i class="fa-solid fa-leaf"></i></div>
+                    <div>
+                        <h4 class="font-bold text-emerald-800 text-lg">흙의 원소 계열 (황소자리, 처녀자리, 염소자리)</h4>
+                        <p class="text-xs font-bold text-emerald-600 mb-2">팀 내 실력의 주춧돌 | 연습실의 지독한 연습벌레</p>
+                        <p class="text-sm text-slate-700">'신중함, 디테일에 대한 집착, 올라운더 ACE'의 서사를 타고났습니다. 극도로 자기 관리에 철저하며, 연습할 때는 종종 '악마 조교'가 되어 무대에 대해 한 치의 오차도 허용하지 않습니다. 주로 메인 댄서나 팀의 리더를 맡으며, 공연의 퀄리티를 보장하는 든든한 버팀목입니다.</p>
+                    </div>
+                </div>
+
+                <!-- 바람 -->
+                <div class="bg-sky-50 border border-sky-100 p-5 rounded-xl flex gap-4 transition hover:-translate-y-1 hover:shadow-md">
+                    <div class="w-12 h-12 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center shrink-0 text-xl"><i class="fa-solid fa-wind"></i></div>
+                    <div>
+                        <h4 class="font-bold text-sky-800 text-lg">바람의 원소 계열 (쌍둥이자리, 천칭자리, 물병자리)</h4>
+                        <p class="text-xs font-bold text-sky-600 mb-2">매력 발산기 | 컨셉 소화력 만점</p>
+                        <p class="text-sm text-slate-700">'생동감, 팔색조, 엄청난 친화력(인싸)'의 서사를 타고났습니다. 타고난 아이돌 체질로 카메라를 찾는 능력이 탁월하며, 기발하고 독특한 무대 의상과 컨셉도 완벽하게 소화해냅니다. 주로 비주얼 담당이나 변화무쌍한 메인 댄서를 맡아 항상 놀라움을 선사합니다.</p>
+                    </div>
+                </div>
+
+                <!-- 물 -->
+                <div class="bg-blue-50 border border-blue-100 p-5 rounded-xl flex gap-4 transition hover:-translate-y-1 hover:shadow-md">
+                    <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 text-xl"><i class="fa-solid fa-droplet"></i></div>
+                    <div>
+                        <h4 class="font-bold text-blue-800 text-lg">물의 원소 계열 (게자리, 전갈자리, 물고기자리)</h4>
+                        <p class="text-xs font-bold text-blue-600 mb-2">감정 스틸러 | 뛰어난 공감 능력</p>
+                        <p class="text-sm text-slate-700">'섬세함, 예민함, 독보적인 음색'의 서사를 타고났습니다. 이들은 무대 위의 감정 전달자로, 가만히 서서 노래만 불러도 사람들을 눈물짓게 만듭니다. 주로 메인 보컬이나 감정 표현 담당을 맡으며, 팬들의 마음을 아프게 하여 시청자들이 가장 '지켜주고 싶은' 존재입니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 총 7부작 공식 영상 바로가기 안내 -->
+        <div class="clean-card p-6 md:p-8 bg-slate-900 border-t-4 border-t-cyan-400 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute -right-5 -bottom-5 text-slate-800 text-9xl opacity-30 pointer-events-none"><i class="fa-brands fa-tiktok"></i></div>
+            
+            <div class="relative z-10">
+                <h2 class="text-3xl font-bold mb-2 text-white"><span class="text-cyan-400 mr-2">✦</span> 총 7부작 공식 영상 바로가기 안내</h2>
+                <p class="mb-6 text-sm text-slate-400">아래 버튼을 클릭하시면 해당하는 틱톡(Douyin) 영상 페이지로 바로 이동합니다.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- 영상 1 -->
+                    <a href="https://v.douyin.com/qON1DJSx-Mc/" target="_blank" class="block bg-slate-800 hover:bg-slate-700 hover:-translate-y-1 transition-all duration-200 p-4 rounded-xl border border-slate-700 shadow-md group">
+                        <div class="flex items-start gap-3">
+                            <div class="bg-cyan-500/20 text-cyan-400 p-2.5 rounded-lg group-hover:bg-cyan-500 group-hover:text-white transition-colors"><i class="fa-solid fa-users text-xl"></i></div>
+                            <div>
+                                <h3 class="font-bold text-white text-sm">12별자리 참가자 공개!</h3>
+                                <p class="text-xs text-slate-400 mt-1">참가자의 이름은 여러분이 결정합니다</p>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- 영상 2 -->
+                    <a href="https://v.douyin.com/0M4Gdg63ZFI/" target="_blank" class="block bg-slate-800 hover:bg-slate-700 hover:-translate-y-1 transition-all duration-200 p-4 rounded-xl border border-slate-700 shadow-md group">
+                        <div class="flex items-start gap-3">
+                            <div class="bg-blue-500/20 text-blue-400 p-2.5 rounded-lg group-hover:bg-blue-500 group-hover:text-white transition-colors"><i class="fa-solid fa-music text-xl"></i></div>
+                            <div>
+                                <h3 class="font-bold text-white text-sm">48시간 타이틀곡 훈련(중)</h3>
+                                <p class="text-xs text-slate-400 mt-1">연습생들의 첫 소집과 땀방울</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- 영상 3 -->
+                    <a href="https://v.douyin.com/MTCL7X2vj7Q/" target="_blank" class="block bg-slate-800 hover:bg-slate-700 hover:-translate-y-1 transition-all duration-200 p-4 rounded-xl border border-slate-700 shadow-md group">
+                        <div class="flex items-start gap-3">
+                            <div class="bg-blue-500/20 text-blue-400 p-2.5 rounded-lg group-hover:bg-blue-500 group-hover:text-white transition-colors"><i class="fa-solid fa-headphones text-xl"></i></div>
+                            <div>
+                                <h3 class="font-bold text-white text-sm">48시간 타이틀곡 훈련(하)</h3>
+                                <p class="text-xs text-slate-400 mt-1">평가 및 최종 무대</p>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- 영상 4 -->
+                    <a href="https://v.douyin.com/YTb3o5knxNI/" target="_blank" class="block bg-slate-800 hover:bg-slate-700 hover:-translate-y-1 transition-all duration-200 p-4 rounded-xl border border-slate-700 shadow-md group">
+                        <div class="flex items-start gap-3">
+                            <div class="bg-pink-500/20 text-pink-400 p-2.5 rounded-lg group-hover:bg-pink-500 group-hover:text-white transition-colors"><i class="fa-solid fa-play text-xl"></i></div>
+                            <div>
+                                <h3 class="font-bold text-white text-sm">1차 공연 《말랑한 날카로움》 A조</h3>
+                                <p class="text-xs text-slate-400 mt-1">처녀자리, 쌍둥이자리, 물고기자리</p>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- 영상 5 -->
+                    <a href="https://v.douyin.com/rtUaTuRo3F8/" target="_blank" class="block bg-slate-800 hover:bg-slate-700 hover:-translate-y-1 transition-all duration-200 p-4 rounded-xl border border-slate-700 shadow-md group">
+                        <div class="flex items-start gap-3">
+                            <div class="bg-pink-500/20 text-pink-400 p-2.5 rounded-lg group-hover:bg-pink-500 group-hover:text-white transition-colors"><i class="fa-solid fa-play text-xl"></i></div>
+                            <div>
+                                <h3 class="font-bold text-white text-sm">1차 공연 《말랑한 날카로움》 B조</h3>
+                                <p class="text-xs text-slate-400 mt-1">물병자리, 양자리, 게자리</p>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- 영상 6 -->
+                    <a href="https://v.douyin.com/gVvkPDLCf88/" target="_blank" class="block bg-slate-800 hover:bg-slate-700 hover:-translate-y-1 transition-all duration-200 p-4 rounded-xl border border-slate-700 shadow-md group">
+                        <div class="flex items-start gap-3">
+                            <div class="bg-purple-500/20 text-purple-400 p-2.5 rounded-lg group-hover:bg-purple-500 group-hover:text-white transition-colors"><i class="fa-solid fa-play text-xl"></i></div>
+                            <div>
+                                <h3 class="font-bold text-white text-sm">1차 공연 《행운의 법칙》 A조</h3>
+                                <p class="text-xs text-slate-400 mt-1">전갈자리, 사자자리, 황소자리</p>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- 영상 7 -->
+                    <a href="https://v.douyin.com/8_XMHnNJBVo/" target="_blank" class="block bg-slate-800 hover:bg-slate-700 hover:-translate-y-1 transition-all duration-200 p-4 rounded-xl border border-slate-700 shadow-md group">
+                        <div class="flex items-start gap-3">
+                            <div class="bg-purple-500/20 text-purple-400 p-2.5 rounded-lg group-hover:bg-purple-500 group-hover:text-white transition-colors"><i class="fa-solid fa-play text-xl"></i></div>
+                            <div>
+                                <h3 class="font-bold text-white text-sm">1차 공연 《행운의 법칙》 B조</h3>
+                                <p class="text-xs text-slate-400 mt-1">천칭자리, 염소자리, 사수자리</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 제1라운드 (1차 공연) -->
+        <div class="clean-card p-6 md:p-8">
+            <h2 class="text-3xl font-bold section-title">제1라운드 (1차 공연): 무대 대결 및 범례 규칙</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-bold mb-3 border-b border-slate-200 pb-2 text-slate-900">1. 일정 안내</h3>
+                    <div class="flex flex-col md:flex-row gap-4 items-center">
+                        <div class="flex-1 bg-indigo-50 p-5 rounded-xl w-full border border-indigo-200">
+                            <div class="font-bold text-lg mb-3 text-indigo-800">7월 15일: A조 vs B조 무대 대결 시작</div>
+                            <div class="flex items-center gap-4 bg-white p-3 rounded-lg shadow-sm border border-indigo-100">
+                                <div class="w-12 h-12 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-xl">A</div>
+                                <div>
+                                    <p class="font-bold text-slate-800">A무대</p>
+                                    <p class="text-sm text-slate-500">《말랑한 날카로움》 A무대 풀버전 퍼포먼스 공개</p>
+                                    <p class="text-xs text-amber-600 font-medium mt-1"><i class="fa-regular fa-clock"></i> 투표 기간: 48시간 (영상 '좋아요' 수가 득표수)</p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-center text-red-500 mt-3 font-medium">48시간 후, A무대 투표 채널 마감</p>
+                        </div>
+                        <div class="text-2xl text-slate-400"><i class="fa-solid fa-arrow-right"></i></div>
+                        <div class="flex-1 bg-pink-50 p-5 rounded-xl w-full border border-pink-200">
+                            <div class="font-bold text-lg mb-3 text-pink-800">7월 16일</div>
+                            <div class="flex items-center gap-4 bg-white p-3 rounded-lg shadow-sm border border-pink-100">
+                                <div class="w-12 h-12 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold text-xl">B</div>
+                                <div>
+                                    <p class="font-bold text-slate-800">B무대</p>
+                                    <p class="text-sm text-slate-500">《말랑한 날카로움》 B무대 풀버전 퍼포먼스 공개</p>
+                                    <p class="text-xs text-amber-600 font-medium mt-1"><i class="fa-regular fa-clock"></i> 투표 기간: 48시간 (영상 '좋아요' 수가 득표수)</p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-center text-red-500 mt-3 font-medium">48시간 후, B무대 투표 채널 마감</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-xl font-bold mb-3 border-b border-slate-200 pb-2 text-slate-900">2. 보상 규칙</h3>
+                        <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 p-4 rounded-lg flex items-center justify-between">
+                            <div class="text-center">
+                                <i class="fa-solid fa-crown text-amber-500 text-2xl"></i>
+                                <p class="text-sm font-bold mt-1 text-slate-800">우승 무대의 센터(C위) 멤버</p>
+                                <p class="text-amber-600 font-black">5,000표 베네핏 획득</p>
+                            </div>
+                            <div class="text-2xl font-black text-slate-300">+</div>
+                            <div class="text-center">
+                                <i class="fa-solid fa-users text-blue-500 text-2xl"></i>
+                                <p class="text-sm font-bold mt-1 text-slate-800">기타 멤버</p>
+                                <p class="text-blue-600 font-black">2,000표 베네핏 획득</p>
+                            </div>
+                        </div>
+                        <p class="text-center text-sm text-pink-600 mt-2 bg-pink-50 border border-pink-100 rounded py-1 font-medium">위 보상은 추후 개인전에서 가산점으로 적용됩니다!</p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-3 border-b border-slate-200 pb-2 text-slate-900">3. 향후 투표 예고</h3>
+                        <div class="bg-white border border-slate-200 p-4 rounded-lg flex items-center gap-4 h-[104px] shadow-sm">
+                            <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-box-open text-2xl text-purple-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-800">《행운의 법칙》 A/B 무대</p>
+                                <p class="text-sm text-slate-500">투표 채널은 다음 회차 본편 방송 후 열립니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 1차 공연 결과 -->
+                <div class="mt-8 pt-6 border-t border-slate-200">
+                    <h3 class="text-xl font-bold mb-6 text-center text-slate-800">✦ 1차 공연 무대 VS 결과 발표 ✦</h3>
+                    
+                    <div class="space-y-4">
+                        <!-- 대결 1 -->
+                        <div class="bg-white shadow-sm rounded-xl p-4 border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div class="text-center md:w-1/4">
+                                <p class="font-bold text-slate-800">《말랑한 날카로움》 A조</p>
+                                <p class="text-xs text-slate-500">(처녀자리, 쌍둥이자리, 물고기자리)</p>
+                                <p class="text-xl text-pink-600 font-mono mt-1 font-bold">170984표</p>
+                                <a href="https://v.douyin.com/YTb3o5knxNI/" target="_blank" class="inline-block mt-3 text-xs bg-pink-50 hover:bg-pink-500 text-pink-600 hover:text-white px-4 py-1.5 rounded-full transition-colors border border-pink-200 font-medium"><i class="fa-brands fa-tiktok mr-1"></i>무대 영상 보기</a>
+                            </div>
+                            <div class="font-black text-2xl text-slate-300 italic">VS</div>
+                            <div class="text-center md:w-1/4">
+                                <p class="font-bold text-slate-800">《말랑한 날카로움》 B조</p>
+                                <p class="text-xs text-slate-500">(물병자리, 양자리, 게자리)</p>
+                                <p class="text-xl text-pink-600 font-mono mt-1 font-bold">197586표</p>
+                                <a href="https://v.douyin.com/rtUaTuRo3F8/" target="_blank" class="inline-block mt-3 text-xs bg-pink-50 hover:bg-pink-500 text-pink-600 hover:text-white px-4 py-1.5 rounded-full transition-colors border border-pink-200 font-medium"><i class="fa-brands fa-tiktok mr-1"></i>무대 영상 보기</a>
+                            </div>
+                            <div class="text-xl text-slate-300 hidden md:block"><i class="fa-solid fa-arrow-right"></i></div>
+                            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 md:w-1/3 w-full">
+                                <p class="text-sm text-amber-700 font-bold mb-1"><i class="fa-solid fa-trophy mr-1 text-amber-500"></i>《말랑한 날카로움》 B조 우승</p>
+                                <p class="text-xs text-slate-700">물병자리 <span class="text-slate-400 mx-1">|</span> 개인전 베네핏 5000표</p>
+                                <p class="text-xs text-slate-700">양자리 <span class="text-slate-400 mx-1">|</span> 개인전 베네핏 2000표</p>
+                                <p class="text-xs text-slate-700">게자리 <span class="text-slate-400 mx-1">|</span> 개인전 베네핏 2000표</p>
+                            </div>
+                        </div>
+
+                        <!-- 대결 2 -->
+                        <div class="bg-white shadow-sm rounded-xl p-4 border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div class="text-center md:w-1/4">
+                                <p class="font-bold text-slate-800">《행운의 법칙》 A조</p>
+                                <p class="text-xs text-slate-500">(전갈자리, 사자자리, 황소자리)</p>
+                                <p class="text-xl text-purple-600 font-mono mt-1 font-bold">138057표</p>
+                                <a href="https://v.douyin.com/gVvkPDLCf88/" target="_blank" class="inline-block mt-3 text-xs bg-purple-50 hover:bg-purple-500 text-purple-600 hover:text-white px-4 py-1.5 rounded-full transition-colors border border-purple-200 font-medium"><i class="fa-brands fa-tiktok mr-1"></i>무대 영상 보기</a>
+                            </div>
+                            <div class="font-black text-2xl text-slate-300 italic">VS</div>
+                            <div class="text-center md:w-1/4">
+                                <p class="font-bold text-slate-800">《행운의 법칙》 B조</p>
+                                <p class="text-xs text-slate-500">(천칭자리, 염소자리, 사수자리)</p>
+                                <p class="text-xl text-purple-600 font-mono mt-1 font-bold">200521표</p>
+                                <a href="https://v.douyin.com/8_XMHnNJBVo/" target="_blank" class="inline-block mt-3 text-xs bg-purple-50 hover:bg-purple-500 text-purple-600 hover:text-white px-4 py-1.5 rounded-full transition-colors border border-purple-200 font-medium"><i class="fa-brands fa-tiktok mr-1"></i>무대 영상 보기</a>
+                            </div>
+                            <div class="text-xl text-slate-300 hidden md:block"><i class="fa-solid fa-arrow-right"></i></div>
+                            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 md:w-1/3 w-full">
+                                <p class="text-sm text-amber-700 font-bold mb-1"><i class="fa-solid fa-trophy mr-1 text-amber-500"></i>《행운의 법칙》 B조 우승</p>
+                                <p class="text-xs text-slate-700">천칭자리 <span class="text-slate-400 mx-1">|</span> 개인전 베네핏 5000표</p>
+                                <p class="text-xs text-slate-700">염소자리 <span class="text-slate-400 mx-1">|</span> 개인전 베네핏 2000표</p>
+                                <p class="text-xs text-slate-700">사수자리 <span class="text-slate-400 mx-1">|</span> 개인전 베네핏 2000표</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 bg-slate-50 p-5 rounded-lg text-sm text-slate-700 border border-slate-200">
+                        <p class="font-bold text-slate-900 mb-2">규칙 설명:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>각 무대는 A조와 B조의 대결로 진행되며, 득점이 높은 조가 승리합니다.</li>
+                            <li>승리한 조는 무대 우승을 차지하게 됩니다.</li>
+                            <li>우승조 내에서 개인전 성적이 우수한 멤버는 베네핏을 받습니다. 1위 멤버는 5,000표, 2위 및 3위 멤버는 각각 2,000표의 베네핏을 획득합니다.</li>
+                        </ul>
+                        <p class="mt-4 text-center text-pink-600 font-bold">（이번 1차 공연 무대 대결 결과가 발표되었습니다. 여러분의 성원과 노력에 감사드립니다!）</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 제2라운드 (2차 공연) -->
+        <div class="clean-card p-6 md:p-8">
+            <h2 class="text-3xl font-bold section-title">제2라운드 (2차 공연): 최고의 무대 및 개인전 규칙</h2>
+            
+            <div class="space-y-6">
+                <div class="bg-indigo-50 rounded-xl p-5 border border-indigo-100">
+                    <h3 class="font-bold text-lg mb-3 text-indigo-900">✦ 범례 규칙 기본 설명 ✦</h3>
+                    <ul class="space-y-2 text-sm text-slate-700">
+                        <li><strong>1. 무대 조 편성:</strong> 총 4개의 무대가 있으며, 각 무대당 3명의 멤버로 구성됩니다 (A무대, B무대, C무대, D무대).</li>
+                        <li><strong>2. 무대 대결:</strong> A무대 vs B무대, C무대 vs D무대.</li>
+                        <li><strong>3. 대결 보상 규칙:</strong> 각 대결에서 승리한 무대는 베네핏을 얻습니다. 센터(C위) 멤버는 <span class="text-amber-600 font-bold">+5000표</span>, 기타 멤버는 <span class="text-blue-600 font-bold">+2000표</span>를 획득합니다 (패배한 무대는 베네핏이 없습니다).</li>
+                        <li><strong>4. 최고의 무대 투표:</strong> A, B, C, D 4개의 무대 중 투표를 통해 '최고의 무대'를 선정합니다. 최고의 무대에서 가장 많은 득표수를 기록한 두 멤버는 자동으로 2차 공연 무대의 센터가 됩니다!</li>
+                        <li><strong>5. 베스트 퍼포머 선정:</strong> 나머지 3개 무대(최고의 무대 제외)에서 각 무대별 최다 득표자 1명이 해당 무대의 '베스트 퍼포머'가 됩니다. 세 명의 베스트 퍼포머는 2차 공연 무대의 마지막 센터 자리를 두고 경쟁하게 됩니다!</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-4 text-center text-slate-800">최고의 무대 및 제2라운드 개인전 규칙 발표</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-white border border-slate-200 shadow-sm p-4 rounded-lg text-center">
+                            <p class="text-xs text-slate-500 mb-1">투표 시작 시간</p>
+                            <p class="font-bold text-lg text-pink-600"><i class="fa-regular fa-calendar mr-2"></i>7월 25일</p>
+                        </div>
+                        <div class="bg-white border border-slate-200 shadow-sm p-4 rounded-lg text-center">
+                            <p class="text-xs text-slate-500 mb-1">투표 채널</p>
+                            <p class="font-bold text-sm text-blue-700 mt-1">7월 25일에 공식 계정이 게시하는 유일한 영상의 댓글 창</p>
+                        </div>
+                        <div class="bg-white border border-slate-200 shadow-sm p-4 rounded-lg text-center">
+                            <p class="text-xs text-slate-500 mb-1">투표 방식</p>
+                            <p class="font-bold text-sm text-emerald-600 mt-1">댓글 창 '좋아요' 클릭 (공식 계정이 작성한 댓글에 한함)</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 최고의 무대 선정 규칙 -->
+                        <div class="bg-pink-50 border border-pink-200 rounded-xl p-6 shadow-sm">
+                            <h4 class="font-bold text-lg text-pink-800 mb-3 border-b border-pink-200 pb-2">최고의 무대 선정 규칙</h4>
+                            <ol class="list-decimal list-inside space-y-3 text-sm text-slate-700">
+                                <li>최고의 무대는 《말랑한 날카로움》 A조, B조, 《행운의 법칙》 A조, B조 총 4개 무대 중 가장 득표수가 높은 무대로 선정됩니다.</li>
+                                <li>최고의 무대에서 득표수 1위와 2위를 차지한 두 명은 자동으로 2차 공연의 무대 센터가 됩니다. (득표 1위, 득표 2위 -> 센터)</li>
+                                <li>2차 공연의 마지막 센터 자리는 남은 모든 참가자 중 득표수가 가장 높은 한 명이 차지하게 됩니다. (최다 득표자 -> 센터)</li>
+                            </ol>
+                            <div class="mt-5 bg-white p-3 rounded-lg text-center text-sm text-slate-700 flex items-center justify-center gap-3 border border-pink-100 shadow-sm">
+                                <i class="fa-regular fa-clock text-amber-500 text-2xl"></i>
+                                <span class="text-left leading-tight"><strong>투표 기간: 72시간</strong><br><span class="text-xs text-slate-500">(7월 25일 공식 영상 게시 시점부터 계산)</span></span>
+                            </div>
+                        </div>
+
+                        <!-- 제2라운드 개인전 규칙 -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 shadow-sm">
+                            <h4 class="font-bold text-lg text-blue-800 mb-3 border-b border-blue-200 pb-2">제2라운드 개인전 규칙</h4>
+                            <ol class="list-decimal list-inside space-y-3 text-sm text-slate-700">
+                                <li>개인 투표는 동일한 공식 영상 아래의 댓글 창에서 개인에 대한 '좋아요'로 동시에 진행됩니다. 연습생 개인이 댓글 창에서 획득한 '좋아요' 수가 제2라운드의 최종 득표수가 됩니다.
+                                    <div class="bg-white p-3 mt-2 rounded-lg border border-slate-200 text-xs text-slate-600 shadow-sm font-mono">
+                                        예시: 공식 댓글(88888) | 연습생A(5200) | 연습생B(3800)
+                                    </div>
+                                </li>
+                                <li><strong>투표 방식 세부 규칙:</strong> 무대 이름이 원댓글(부모 댓글)이 되며, 연습생의 이름은 해당 무대의 답글(대댓글)로 달립니다. 프로듀서님들은 댓글 창에서 '좋아요'만 눌러 투표해 주시면 됩니다.
+                                    <div class="bg-white p-3 mt-2 rounded-lg border border-slate-200 text-xs flex justify-between items-center text-slate-600 shadow-sm font-medium">
+                                        <span>원댓글(무대)</span> <i class="fa-solid fa-arrow-right text-slate-400"></i> <span>대댓글(이름)</span> <i class="fa-solid fa-arrow-right text-slate-400"></i> <span class="text-pink-600"><i class="fa-solid fa-thumbs-up"></i> '좋아요' 클릭</span>
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <p class="text-xs text-center text-slate-500 mt-6 italic">주의 사항: 프로듀서 여러분께서는 규칙을 준수하여 이성적으로 투표해 주시고, 공정하고 투명한 평가에 참여해 주시길 바랍니다. 여러분의 열정과 사랑에 감사드리며, 함께 최고의 무대가 탄생하는 순간을 지켜봐 주세요!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 제3라운드 (3차 공연) -->
+        <div class="clean-card p-6 md:p-8">
+            <h2 class="text-3xl font-bold section-title">제3라운드 (3차 공연): 투표 규칙 및 곡 선정</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-bold mb-3 text-slate-900">1. 제3라운드 투표 규칙</h3>
+                    <p class="text-sm bg-slate-50 border border-slate-200 p-4 rounded-lg mb-4 text-slate-700">2차 공연은 <span class="font-bold text-pink-600">보컬조</span>, <span class="font-bold text-blue-600">랩조</span>, <span class="font-bold text-indigo-600">댄스조</span> 총 3개의 무대로 구성되며, 이 세 무대 중 투표를 통해 최고의 무대를 선정합니다.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 보상 및 페널티 -->
+                        <div class="space-y-4">
+                            <h4 class="font-bold text-slate-800 border-b border-slate-200 pb-2">보상 및 페널티 규칙</h4>
+                            <div class="flex gap-3 text-center text-sm">
+                                <div class="flex-1 bg-amber-50 p-3 rounded-lg border border-amber-200 shadow-sm">
+                                    <i class="fa-solid fa-crown text-amber-500 text-2xl mb-2 block"></i>
+                                    <p class="text-slate-800 font-medium">최고의 무대 센터</p>
+                                    <p class="font-black text-amber-600 text-lg">+7000표</p>
+                                </div>
+                                <div class="flex-1 bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm">
+                                    <i class="fa-solid fa-star text-slate-400 text-2xl mb-2 block"></i>
+                                    <p class="text-slate-800 font-medium">조 내 2위</p>
+                                    <p class="font-black text-slate-600 text-lg">+5000표</p>
+                                </div>
+                                <div class="flex-1 bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm">
+                                    <i class="fa-solid fa-star text-orange-400 text-2xl mb-2 block"></i>
+                                    <p class="text-slate-800 font-medium">조 내 3~4위</p>
+                                    <p class="font-black text-orange-500 text-lg">+2000표</p>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <div class="bg-amber-50 border border-amber-200 p-4 rounded-lg">
+                                    <p class="font-bold text-amber-700 text-sm mb-1"><i class="fa-solid fa-chess-queen mr-2"></i>최고의 무대 센터 특권</p>
+                                    <p class="text-xs text-slate-700">3차 공연 곡 선정 시 곡 선점권을 획득하며, 해당 무대의 단독 센터가 됩니다.</p>
+                                </div>
+                                <div class="bg-red-50 border border-red-200 p-4 rounded-lg">
+                                    <p class="font-bold text-red-600 text-sm mb-1"><i class="fa-solid fa-circle-xmark mr-2"></i>최하위 무대 페널티</p>
+                                    <p class="text-xs text-slate-700">세 무대 중 순위가 가장 낮은 무대에서 최하위를 기록한 연습생은 3차 공연 곡 선택권을 즉시 상실합니다.</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-center text-pink-600 bg-pink-50 border border-pink-100 py-2 rounded-lg font-medium">각 멤버가 무대에서 획득한 '좋아요' 수는 제3라운드의 최종 순위가 됩니다.</p>
+                        </div>
+
+                        <!-- 투표 채널 -->
+                        <div class="space-y-4">
+                            <h4 class="font-bold text-slate-800 border-b border-slate-200 pb-2">투표 채널</h4>
+                            <div class="bg-white p-5 rounded-lg flex items-center gap-4 border border-slate-200 shadow-sm">
+                                <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-thumbs-up text-xl text-blue-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-800">무대 투표 채널</p>
+                                    <p class="text-sm text-slate-500 mt-1">공식 계정에 업로드된 3개의 풀버전 퍼포먼스 영상에 '좋아요' 클릭</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-5 rounded-lg flex items-center gap-4 border border-slate-200 shadow-sm">
+                                <div class="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-address-card text-xl text-purple-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-800">개인 순위 투표 채널</p>
+                                    <p class="text-sm text-slate-500 mt-1">연습생 계정에 업로드된 전용 투표 영상에 '좋아요' 클릭</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-200 pt-6">
+                    <h3 class="text-xl font-bold mb-3 text-slate-900">2. 3차 공연 곡 선정 규칙에 대하여</h3>
+                    <p class="text-sm bg-slate-50 border border-slate-200 p-4 rounded-lg mb-4 text-slate-700">총 3곡의 창작곡이 주어지며, 무대당 4명으로 구성됩니다. 팬 여러분의 투표로 연습생들의 무대가 결정됩니다.</p>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold text-sm text-indigo-700 mb-2">곡 선정 프로세스</h4>
+                            <div class="flex flex-wrap gap-2 text-xs items-center justify-between bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                                <span class="bg-slate-100 text-slate-700 px-3 py-2 rounded-md font-medium">① 프로그램 제작진이 세 곡의 데모(DEMO) 음원 공개</span>
+                                <i class="fa-solid fa-arrow-right text-slate-400"></i>
+                                <span class="bg-slate-100 text-slate-700 px-3 py-2 rounded-md font-medium">② 데모 영상 댓글 창에 곡 투표 채널 오픈</span>
+                                <i class="fa-solid fa-arrow-right text-slate-400"></i>
+                                <span class="bg-slate-100 text-slate-700 px-3 py-2 rounded-md font-medium">③ 각 무대는 득표수 상위 4명의 참가자를 순서대로 배정</span>
+                                <i class="fa-solid fa-arrow-right text-slate-400"></i>
+                                <span class="bg-slate-100 text-slate-700 px-3 py-2 rounded-md font-medium">④ 선택받지 못한 연습생은 다음 곡으로 자동 배정</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="font-bold text-sm text-indigo-700 mb-2">무대 멤버 확정 규칙</h4>
+                            <ul class="list-disc list-inside text-sm space-y-2 bg-white p-5 rounded-lg border border-slate-200 shadow-sm text-slate-700">
+                                <li>무대당 4명으로 구성됩니다. (1번 곡 득표수 상위 4명, 2번 곡 득표수 상위 4명, 3번 곡 득표수 상위 4명 선정) -> 해당 무대에서 공연을 펼칩니다.</li>
+                                <li class="text-amber-700 bg-amber-50 p-2 rounded-md inline-block mt-2"><strong>센터 선정 규칙:</strong> 각 무대의 센터는 해당 조 멤버 중 제3라운드 득표수가 가장 높은 한 명이 차지합니다.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-xs text-center text-slate-400 mt-8">이상 규칙의 최종 해석 권한은 &lt;12스타즈&gt; 프로그램 제작진에게 있습니다.</p>
+        </div>
+
+        <!-- 12스타즈 코스프레 챌린지 -->
+        <div class="clean-card p-6 md:p-8 border-2 border-purple-200 relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 text-[150px] text-purple-50 opacity-50 pointer-events-none"><i class="fa-solid fa-masks-theater"></i></div>
+            
+            <h2 class="text-3xl font-bold text-center text-purple-700 mb-6 tracking-widest relative z-10">12스타즈 코스프레 챌린지</h2>
+            
+            <div class="text-center space-y-5 relative z-10">
+                <p class="text-sm text-slate-700 font-medium">시청자 및 별자리 애호가 여러분:</p>
+                <p class="text-sm leading-relaxed text-slate-600">&lt;12스타즈&gt;이 방송된 이후 여러분께 크나큰 사랑을 받아 무한한 영광입니다. 모든 분들이 연습생들의 매력을 몰입해서 느끼실 수 있도록, 웹 전체를 대상으로 "<span class="text-purple-600 font-bold text-base">12스타즈 코스프레 챌린지</span>"를 공식적으로 시작합니다!</p>
+                
+                <div class="bg-purple-50 border border-purple-200 p-5 rounded-xl inline-block text-left max-w-lg mx-auto shadow-sm">
+                    <p class="text-center font-bold text-purple-800 mb-2">✦ 프로그램 내 12별자리 공식 참가자 캐릭터를 바탕으로 코스프레 작품을 창작해 주세요. ✦</p>
+                    <p class="text-xs text-center text-slate-600">형식은 자유입니다. 커버 메이크업, 의상 재현, 화보 촬영, 창의적인 각색, 재미있는 패러디 모두 가능하며, 별자리의 특성에 맞게 자유롭게 표현해 주시길 적극 권장합니다!!</p>
+                </div>
+
+                <div class="mt-8 pt-4">
+                    <h3 class="inline-block bg-purple-100 px-6 py-2 rounded-full text-sm font-bold text-purple-800 mb-5 border border-purple-200">✦ 참여 방법 ✦</h3>
+                    <p class="text-sm mb-3 text-slate-700">가장 좋아하는 프로그램 내 별자리 참가자를 코스프레한 후, <span class="font-bold text-pink-600 bg-pink-50 px-2 py-0.5 rounded">#12성연습생COS챌린지#</span> 해시태그와 함께 <span class="font-bold text-pink-600 bg-pink-50 px-2 py-0.5 rounded">@12星练赛</span> 를 태그하여 영상을 업로드하시면 챌린지 참여가 완료됩니다!</p>
+                    <p class="text-sm mb-6 text-slate-700">'최애' 연습생 계정을 태그하고 해당 연습생의 팬 커뮤니티에 업로드하셔도 됩니다. 연습생이 직접 우선적으로 피드백을 주고 소통할 기회가 주어집니다!</p>
+                    <p class="text-lg font-bold text-purple-700">어서 여러분의 본명 별자리 '스킨'을 장착하고,<br>마음속에 품고 있는 별자리 참가자의 모습을 마음껏 뽐내보세요~</p>
+                    <p class="text-xs text-slate-400 mt-2">(실제 인물의 코스프레 및 AI 창작물 모두 가능합니다)</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="watermark mt-12">
+        <p>&lt;12스타즈&gt; 공식 이미지 자료를 바탕으로 정리됨</p>
+        <p class="mt-1">틱톡(Douyin) 계정: Jiangjiang_0508</p>
+    </footer>
+
+</body>
+</html>
