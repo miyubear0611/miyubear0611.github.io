@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《12 Stars》 AI Variety Show Deep-Dive Analytics Dashboard</title>
+    <!-- Chosen Palette: Slate & Cosmic Indigo Harmony (Background: #F8FAFC, Primary: #0F172A, Accent: #6366F1 / #8B5CF6, Secondary: #0EA5E9, Muted: #64748B) -->
+    <!-- Application Structure Plan: Designed an interactive thematic dashboard structure divided into 5 core modules: 1. Key Metrics & Engagement Flywheel, 2. Interactive Trainee Fandom Analytics & Filterable Table, 3. Monetization & Emotion Premium Breakdown, 4. Multi-dimensional Comparison Matrix (Real vs AI Variety), and 5. Risk Factors, Data Cliff Analysis & Human-AI Coexistence Framework. This structure allows English-speaking analysts and media strategists to intuitively explore quantitative metrics, fandom dynamics, and business insights. -->
+    <!-- Visualization & Content Choices: 1. Key Performance Indicators -> Summary Cards -> Interactive metric highlight -> Quick visual impact -> Tailwind HTML. 2. Trainee Likes/Comments -> Grouped Bar Chart -> Dynamic element filtering & metric switching -> Chart.js Canvas. 3. Trainee Database -> Interactive Table with Search/Filter/Sort -> Quick lookup and controversy exploration -> JS DOM manipulation. 4. Real vs AI Variety -> Tabbed Matrix Toggle -> Clear side-by-side comparison -> Vanilla JS. 5. Data Drop Case Study -> Line Trend Chart -> Demonstrates the 'Data Cliff' phenomenon -> Chart.js Canvas. NO SVG or Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 340px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 380px;
+            }
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Sticky Navigation Header -->
+    <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md text-white border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="bg-indigo-600 text-white font-black text-xs px-2.5 py-1 rounded-md tracking-wider">AIGC REPORT</span>
+                <h1 class="text-lg font-bold tracking-tight text-slate-100 flex items-center gap-2">
+                    <span>《12 Stars》</span>
+                    <span class="hidden sm:inline text-xs text-indigo-300 font-normal border-l border-slate-700 pl-2">AI Variety Business Analytics</span>
+                </h1>
+            </div>
+            <nav class="hidden md:flex space-x-6 text-sm font-medium">
+                <a href="#overview" class="hover:text-indigo-400 transition-colors">Overview & KPIs</a>
+                <a href="#trainees" class="hover:text-indigo-400 transition-colors">Fandom Analytics</a>
+                <a href="#business" class="hover:text-indigo-400 transition-colors">Monetization</a>
+                <a href="#comparison" class="hover:text-indigo-400 transition-colors">Real vs AI Variety</a>
+                <a href="#risks" class="hover:text-indigo-400 transition-colors">Risks & Outlook</a>
+            </nav>
+            <div class="flex items-center space-x-2">
+                <a href="#trainees" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all shadow-sm">
+                    Explore Data
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="bg-slate-900 text-white pt-12 pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-800 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="max-w-3xl">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-950 border border-indigo-800 text-indigo-300 text-xs font-semibold mb-4">
+                    <span>✦ AI Idol Survival Show Case Study</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight mb-4">
+                    AI Idol Survival 《12 Stars》<br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-300 to-sky-400">Immersion Flywheel & Business Ecosystem</span>
+                </h2>
+                <p class="text-slate-300 text-base sm:text-lg leading-relaxed mb-6">
+                    An interactive intelligence dashboard exploring the infrastructure, fandom metrics, monetization, and growth decay of the viral AI short-form show that generated 100M+ views within its launch month.
+                </p>
+                <div class="flex flex-wrap gap-3 text-xs text-slate-400">
+                    <span class="bg-slate-800/80 px-3 py-1.5 rounded-md border border-slate-700">✦ Platform: Douyin (TikTok) Short-form Feed</span>
+                    <span class="bg-slate-800/80 px-3 py-1.5 rounded-md border border-slate-700">✦ Concept: 12 Zodiac AI Trainees in 4 Elements</span>
+                    <span class="bg-slate-800/80 px-3 py-1.5 rounded-md border border-slate-700">✦ Single Ad Sponsorship: ~¥250,000 RMB (~$35,000 USD)</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+        <!-- SECTION 1: EXECUTIVE OVERVIEW & KEY METRICS -->
+        <section id="overview" class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+                <div class="flex items-center gap-2 text-indigo-600 font-bold text-xs uppercase tracking-wider">Section 01</div>
+                <h3 class="text-2xl font-bold text-slate-900 tracking-tight">Executive Summary & Key Performance Indicators</h3>
+                <p class="text-slate-600 text-sm mt-1">
+                    This module presents high-level engagement metrics along with the 5-step "Immersion Flywheel" that transforms passive viewers into active idol producers.
+                </p>
+            </div>
+
+            <!-- KPI Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-all">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Cross-Platform Views</div>
+                    <div class="text-3xl font-extrabold text-slate-900 mt-2">100M+</div>
+                    <div class="text-xs text-indigo-600 font-medium mt-1">Douyin hashtag hit 250M views</div>
+                    <div class="text-[11px] text-slate-500 mt-3 pt-2 border-t border-slate-100">Achieved within 30 days of launch</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-all">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Main Account Followers</div>
+                    <div class="text-3xl font-extrabold text-indigo-600 mt-2">536,000</div>
+                    <div class="text-xs text-slate-500 font-medium mt-1">Steady growth past initial 500k</div>
+                    <div class="text-[11px] text-slate-500 mt-3 pt-2 border-t border-slate-100">12 individual accounts active simultaneously</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-all">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Single Ad Sponsorship</div>
+                    <div class="text-3xl font-extrabold text-slate-900 mt-2">~$35,000</div>
+                    <div class="text-xs text-emerald-600 font-medium mt-1">¥250,000 RMB per short-form placement</div>
+                    <div class="text-[11px] text-slate-500 mt-3 pt-2 border-t border-slate-100">Sponsors include Haus Bakery, BYD Auto</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-all">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Comment Density Ratio</div>
+                    <div class="text-3xl font-extrabold text-purple-600 mt-2">42.5%</div>
+                    <div class="text-xs text-purple-700 font-medium mt-1">Comments act as voting ballots</div>
+                    <div class="text-[11px] text-slate-500 mt-3 pt-2 border-t border-slate-100">Exceptional interaction rate vs standard video</div>
+                </div>
+            </div>
+
+            <!-- Flywheel Mechanism Interactive Widget -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-lg">The 5-Step AI Variety "Immersion Flywheel" Model</h4>
+                        <p class="text-xs text-slate-500">Click each step to explore the core operational dynamics driving user retention.</p>
+                    </div>
+                    <span class="text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-1 rounded-md font-semibold self-start sm:self-auto">
+                        Click Step to View Details
+                    </span>
+                </div>
+
+                <!-- Flywheel Step Buttons -->
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="flywheel-buttons">
+                    <button onclick="selectFlywheelStep(0)" id="fw-btn-0" class="fw-step-btn p-3 text-center rounded-lg border text-sm font-bold transition-all bg-indigo-600 text-white border-indigo-600 shadow-sm">
+                        <div class="text-[10px] uppercase font-normal opacity-80">Step 01</div>
+                        1. Efficiency
+                    </button>
+                    <button onclick="selectFlywheelStep(1)" id="fw-btn-1" class="fw-step-btn p-3 text-center rounded-lg border text-sm font-bold transition-all bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300">
+                        <div class="text-[10px] uppercase font-normal text-slate-400">Step 02</div>
+                        2. Distribution
+                    </button>
+                    <button onclick="selectFlywheelStep(2)" id="fw-btn-2" class="fw-step-btn p-3 text-center rounded-lg border text-sm font-bold transition-all bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300">
+                        <div class="text-[10px] uppercase font-normal text-slate-400">Step 03</div>
+                        3. Participation
+                    </button>
+                    <button onclick="selectFlywheelStep(4)" id="fw-btn-3" class="fw-step-btn p-3 text-center rounded-lg border text-sm font-bold transition-all bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300">
+                        <div class="text-[10px] uppercase font-normal text-slate-400">Step 04</div>
+                        4. Companion
+                    </button>
+                    <button onclick="selectFlywheelStep(4)" id="fw-btn-4" class="fw-step-btn p-3 text-center rounded-lg border text-sm font-bold transition-all bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300">
+                        <div class="text-[10px] uppercase font-normal text-slate-400">Step 05</div>
+                        5. Feedback Loop
+                    </button>
+                </div>
+
+                <!-- Step Detail Box -->
+                <div id="flywheel-detail" class="bg-indigo-50/60 border border-indigo-100 p-4 rounded-lg text-slate-700 text-sm leading-relaxed">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: TRAINEE ANALYTICS & FANDOM ECOSYSTEM -->
+        <section id="trainees" class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+                <div class="flex items-center gap-2 text-indigo-600 font-bold text-xs uppercase tracking-wider">Section 02</div>
+                <h3 class="text-2xl font-bold text-slate-900 tracking-tight">Trainee Fandom Analytics & Data Explorer</h3>
+                <p class="text-slate-600 text-sm mt-1">
+                    Analyze likes, comments, followers, and organic fan organization (data teams, fansites) across all 12 Zodiac AI trainees. Filter by element or search specific characters.
+                </p>
+            </div>
+
+            <!-- Visualization & Data Table Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Chart Column (5 cols) -->
+                <div class="lg:col-span-5 bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-bold text-slate-900 text-base">Likes vs Comments Comparison</h4>
+                            <span class="text-[11px] text-slate-500">Unit: Thousands (k)</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">
+                            Top trainees (Libra, Aquarius, Virgo) lead engagement. Higher comment-to-like ratios signify heated fan debates and active rivalries.
+                        </p>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="traineeChart"></canvas>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500 flex justify-between items-center">
+                        <span>✦ Air Element trainees dominate top rankings</span>
+                        <span class="text-indigo-600 font-semibold">Chart.js Visualization</span>
+                    </div>
+                </div>
+
+                <!-- Interactive Data Table Column (7 cols) -->
+                <div class="lg:col-span-7 bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                    
+                    <!-- Table Controls -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-100">
+                        <div class="flex items-center space-x-1.5 overflow-x-auto text-xs font-medium py-1">
+                            <button onclick="filterElement('all')" id="elem-all" class="elem-filter-btn px-3 py-1.5 rounded-md bg-indigo-600 text-white font-semibold shadow-sm">All (12)</button>
+                            <button onclick="filterElement('fire')" id="elem-fire" class="elem-filter-btn px-3 py-1.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200">🔥 Fire (3)</button>
+                            <button onclick="filterElement('earth')" id="elem-earth" class="elem-filter-btn px-3 py-1.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200">🌱 Earth (3)</button>
+                            <button onclick="filterElement('air')" id="elem-air" class="elem-filter-btn px-3 py-1.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200">💨 Air (3)</button>
+                            <button onclick="filterElement('water')" id="elem-water" class="elem-filter-btn px-3 py-1.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200">💧 Water (3)</button>
+                        </div>
+                        
+                        <div class="relative">
+                            <input type="text" id="traineeSearch" onkeyup="searchTrainees()" placeholder="Search trainee..." class="w-full sm:w-40 text-xs px-3 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:border-indigo-500 bg-slate-50" />
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto max-h-[360px] overflow-y-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead class="sticky top-0 bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-2.5">Zodiac Sign</th>
+                                    <th class="p-2.5 cursor-pointer hover:text-indigo-600" onclick="sortTable('likes')">Likes ▾</th>
+                                    <th class="p-2.5 cursor-pointer hover:text-indigo-600" onclick="sortTable('comments')">Comments ▾</th>
+                                    <th class="p-2.5">Solo Followers</th>
+                                    <th class="p-2.5">Fan Base Accounts (Followers)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trainee-table-body" class="divide-y divide-slate-100 text-slate-700">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Fandom Dispute Highlight Banner -->
+                    <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-lg text-xs text-amber-900 leading-relaxed">
+                        <span class="font-bold text-amber-950">🔥 Core Fandom Disputes & Buzz Drivers:</span>
+                        Comment threads are fiercely contested regarding <span class="font-semibold text-amber-800">"Aquarius screen-time shortage"</span>, <span class="font-semibold text-amber-800">"Libra center favorability controversy"</span>, and <span class="font-semibold text-amber-800">"Sagittarius duplicate rule fairness"</span>. This organic fandom friction mimics real survival shows, serving as the primary driver of viral reach.
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: MONETIZATION & EMOTION PREMIUM -->
+        <section id="business" class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+                <div class="flex items-center gap-2 text-indigo-600 font-bold text-xs uppercase tracking-wider">Section 03</div>
+                <h3 class="text-2xl font-bold text-slate-900 tracking-tight">Business Model & "Emotion Premium" Pricing</h3>
+                <p class="text-slate-600 text-sm mt-1">
+                    An examination of the monetization strategy extending beyond simple logo placements to individual virtual agency accounts and a 3-tier sponsorship framework.
+                </p>
+            </div>
+
+            <!-- Business Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Card 1: 3-Tier Sponsorship -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="text-xs font-bold text-indigo-600 uppercase mb-1">Revenue Model 01</div>
+                        <h4 class="font-bold text-slate-900 text-base mb-3">3-Tier Sponsorship Architecture</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                            Systematized ad integration catering to varying levels of brand alignment and marketing depth.
+                        </p>
+                        <ul class="space-y-2 text-xs text-slate-700">
+                            <li class="flex items-start gap-2 bg-slate-50 p-2 rounded border border-slate-100">
+                                <span class="font-bold text-indigo-600">Tier 1:</span>
+                                <span>Basic logo overlays & subtitled product callouts</span>
+                            </li>
+                            <li class="flex items-start gap-2 bg-slate-50 p-2 rounded border border-slate-100">
+                                <span class="font-bold text-indigo-600">Tier 2:</span>
+                                <span>Custom short-form micro-drama integrations</span>
+                            </li>
+                            <li class="flex items-start gap-2 bg-slate-50 p-2 rounded border border-slate-100">
+                                <span class="font-bold text-indigo-600">Tier 3:</span>
+                                <span>Full-season title sponsorship & exclusive branding</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
+                        Active Sponsors: Haus Bakery, Xingguang L SUV, Mentholatum, etc.
+                    </div>
+                </div>
+
+                <!-- Card 2: Virtual Idol Agency Model -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="text-xs font-bold text-indigo-600 uppercase mb-1">Revenue Model 02</div>
+                        <h4 class="font-bold text-slate-900 text-base mb-3">Internal "Virtual Agency" Framework</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                            All 12 AI trainees operate independent personal accounts capable of landing solo brand endorsements.
+                        </p>
+                        <div class="bg-indigo-50/70 p-3.5 rounded-lg border border-indigo-100 text-xs text-indigo-950 space-y-2">
+                            <div class="font-bold flex items-center gap-1.5 text-indigo-900">
+                                <span>✦ BYD Auto Collaboration Case</span>
+                            </div>
+                            <p class="leading-relaxed">
+                                Under the <em>AI Star Project</em>, BYD sub-brands like <span class="font-semibold">Fangchengbao</span> and <span class="font-semibold">Denza</span> executed direct commercial campaigns with individual AI trainees.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
+                        Popular AI characters secure independent solo ad deals
+                    </div>
+                </div>
+
+                <!-- Card 3: Emotion Premium Logic -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="text-xs font-bold text-purple-600 uppercase mb-1">Core Strategy</div>
+                        <h4 class="font-bold text-slate-900 text-base mb-3">The "Emotion Premium" Valuation</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                            Brands pay ~$35,000 (¥250k RMB) per ad placement not just for views, but for the hyper-engaged, passionate interaction of the fan base.
+                        </p>
+                        <div class="bg-purple-50 p-3.5 rounded-lg border border-purple-100 text-xs text-purple-950 space-y-1.5">
+                            <div class="flex justify-between font-bold">
+                                <span>Comment-to-Like Ratio:</span>
+                                <span class="text-purple-700">42.5%</span>
+                            </div>
+                            <div class="w-full bg-purple-200 rounded-full h-2">
+                                <div class="bg-purple-600 h-2 rounded-full" style="width: 42.5%"></div>
+                            </div>
+                            <p class="text-[11px] text-purple-800 pt-1">
+                                Viewers become active "producers," generating organic comments and shares even on sponsored branded posts.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
+                        Creator Wang Yihui: "A pioneering commercial experiment"
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 4: REAL VS AI VARIETY COMPARISON -->
+        <section id="comparison" class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+                <div class="flex items-center gap-2 text-indigo-600 font-bold text-xs uppercase tracking-wider">Section 04</div>
+                <h3 class="text-2xl font-bold text-slate-900 tracking-tight">Real Variety vs. AI Variety: Structural Comparison</h3>
+                <p class="text-slate-600 text-sm mt-1">
+                    Contrasting traditional variety shows (concentrated, high-budget explosive peaks) against AI variety shows (long-tail companion IP models) across 4 dimensions.
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+                <!-- Tab Selector Buttons -->
+                <div class="flex flex-wrap gap-2 border-b border-slate-100 pb-3" id="comp-tabs">
+                    <button onclick="switchCompTab(0)" id="comp-tab-0" class="comp-tab-btn px-4 py-2 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-sm">
+                        1. Production Logic
+                    </button>
+                    <button onclick="switchCompTab(1)" id="comp-tab-1" class="comp-tab-btn px-4 py-2 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">
+                        2. Audience Position
+                    </button>
+                    <button onclick="switchCompTab(2)" id="comp-tab-2" class="comp-tab-btn px-4 py-2 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">
+                        3. Commercial Lifecycle
+                    </button>
+                    <button onclick="switchCompTab(3)" id="comp-tab-3" class="comp-tab-btn px-4 py-2 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">
+                        4. Content Vulnerabilities
+                    </button>
+                </div>
+
+                <!-- Comparison Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="comp-content-area">
+                    <!-- Dynamic Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: LIMITS, DATA CLIFF & FUTURE COEXISTENCE -->
+        <section id="risks" class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+                <div class="flex items-center gap-2 text-indigo-600 font-bold text-xs uppercase tracking-wider">Section 05</div>
+                <h3 class="text-2xl font-bold text-slate-900 tracking-tight">Limitations, "Data Cliff" & Future Coexistence</h3>
+                <p class="text-slate-600 text-sm mt-1">
+                    Examining the sharp drop in engagement after novelty wore off, the core limitations of AI characters, and the emerging human-AI collaborative framework.
+                </p>
+            </div>
+
+            <!-- Case Study: Data Cliff Chart & Analysis -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Data Cliff Chart (6 cols) -->
+                <div class="lg:col-span-6 bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-bold text-slate-900 text-base">The "Data Cliff": Mid-August Engagement Drop</h4>
+                            <span class="text-xs bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded">Engagement Decay</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">
+                            Official video likes plummeted from a peak of ~700k down to ~50k during the "Summer Sports Day" episode, revealing the temporary nature of novelty traffic.
+                        </p>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="cliffChart"></canvas>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500 flex justify-between">
+                        <span>✦ June-July: Viral Peak Period (700k+)</span>
+                        <span>✦ Mid-August: Novelty Exhaustion (50k)</span>
+                    </div>
+                </div>
+
+                <!-- 3 Core Limitation Cards (6 cols) -->
+                <div class="lg:col-span-6 space-y-3">
+                    
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <h4 class="font-bold text-slate-900 text-sm mb-1 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                            1. Shallow Labeling & Low Retention
+                        </h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            "Zodiac Signs" work well for fast top-of-funnel conversion, but like MBTI or blood types, they are consumed casually. They lack the depth needed to build long-term core fandom loyalty.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <h4 class="font-bold text-slate-900 text-sm mb-1 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                            2. Absence of Human "Hesitation" & Empathy
+                        </h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            AI creates flawless visuals but lacks raw human imperfection, genuine reactions, and vulnerability. The moment fans realize dramatic arcs are pre-programmed scripts, emotional immersion drops.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <h4 class="font-bold text-slate-900 text-sm mb-1 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                            3. Post-Debut Career Disconnection
+                        </h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Real survival shows transition winners into physical music shows, concerts, and variety appearances. AI survival shows currently lack a tangible real-world career path post-debut.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Expert Quotes & Coexistence Synthesis Banner -->
+            <div class="bg-slate-900 text-white p-6 rounded-2xl space-y-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-slate-800 pb-6">
+                    <!-- Quote 1 -->
+                    <div class="space-y-2">
+                        <div class="text-xs text-indigo-400 font-bold uppercase">Entertainment Industry Perspective (Yuehua Ent CEO Du Hua)</div>
+                        <blockquote class="text-sm italic text-slate-200 leading-relaxed">
+                            "AI cannot replace real human idols; they will exist in symbiosis. In the future, core competitiveness will rest on irreplaceable human warmth, IP creation, and artistic creativity."
+                        </blockquote>
+                    </div>
+                    <!-- Quote 2 -->
+                    <div class="space-y-2">
+                        <div class="text-xs text-indigo-400 font-bold uppercase">Literary & Creative Perspective (Author Kim Ae-ran)</div>
+                        <blockquote class="text-sm italic text-slate-200 leading-relaxed">
+                            "There is one thing humans have that AI completely lacks: 'hesitation'. The magic of variety content lies in human imperfection, unexpected choices, and genuine hesitation."
+                        </blockquote>
+                    </div>
+                </div>
+
+                <!-- Final Synthesis -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <h4 class="font-bold text-base text-white">Future Outlook: A Human-AI Collaborative Content Ecosystem</h4>
+                        <p class="text-xs text-slate-300 leading-relaxed max-w-2xl">
+                            Viewers are evolving from passive observers into active co-creators guiding AI character arcs. AI serves as a hyper-efficient tool, but the creative spark, emotional connection, and strategic vision will forever remain human.
+                        </p>
+                    </div>
+                    <a href="#overview" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 rounded-lg whitespace-nowrap transition-all shadow-md">
+                        Back to Top ↑
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+            <div>
+                <p class="font-bold text-slate-200">《12 Stars》 AI Variety Show Analytical Dashboard</p>
+                <p class="text-slate-500 mt-1">Source Report Based Interactive Web Application</p>
+            </div>
+            <div class="text-slate-500">
+                Single Page Interactive Application • Built with Chart.js & Tailwind CSS
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic Code -->
+    <script>
+        // ----------------------------------------------------
+        // DATA STORE: Trainee Database (12 Zodiacs)
+        // ----------------------------------------------------
+        const traineeData = [
+            { name: "Libra", element: "air", elementKorean: "Air", likes: 72000, comments: 12000, followers: 118000, fanAccount: "Libra Data Team (5k+)", dispute: "Center bias controversy, overwhelmingly #1 in popularity" },
+            { name: "Aquarius", element: "air", elementKorean: "Air", likes: 58000, comments: 15000, followers: 0, fanAccount: "-", dispute: "Screen-time distribution controversy (heavy fan outcry)" },
+            { name: "Virgo", element: "earth", elementKorean: "Earth", likes: 48000, comments: 17000, followers: 0, fanAccount: "-", dispute: "Top tier comment engagement rate" },
+            { name: "Pisces", element: "water", elementKorean: "Water", likes: 42000, comments: 0, followers: 38000, fanAccount: "-", dispute: "Stable personal account follower growth" },
+            { name: "Scorpio", element: "water", elementKorean: "Water", likes: 40000, comments: 12000, followers: 0, fanAccount: "Scorpio Global Fansite (3.3k)", dispute: "Organized global fansite presence" },
+            { name: "Cancer", element: "water", elementKorean: "Water", likes: 38000, comments: 0, followers: 40000, fanAccount: "Singer Cancer (345k)", dispute: "Large-scale personal account fanbase" },
+            { name: "Gemini", element: "air", elementKorean: "Air", likes: 37000, comments: 10000, followers: 0, fanAccount: "MC Gemini (65k) / Fanclub (1.5k)", dispute: "Secured consistent screen time as show host" },
+            { name: "Leo", element: "fire", elementKorean: "Fire", likes: 33000, comments: 0, followers: 54000, fanAccount: "Leo Fanclub (21k)", dispute: "Dedicated solo fan club established" },
+            { name: "Sagittarius", element: "fire", elementKorean: "Fire", likes: 31000, comments: 0, followers: 39000, fanAccount: "-", dispute: "Duplicate character rule fairness debate" },
+            { name: "Capricorn", element: "earth", elementKorean: "Earth", likes: 31000, comments: 9323, followers: 24000, fanAccount: "12 Stars Capricorn Studio (11k)", dispute: "Independent fan studio operational" },
+            { name: "Aries", element: "fire", elementKorean: "Fire", likes: 27000, comments: 8648, followers: 30000, fanAccount: "-", dispute: "Sustained high comment participation" },
+            { name: "Taurus", element: "earth", elementKorean: "Earth", likes: 23000, comments: 0, followers: 26000, fanAccount: "Earth Element Promo Team (4.1k)", dispute: "Element-wide alliance promotional group" }
+        ];
+
+        // ----------------------------------------------------
+        // DATA STORE: Flywheel Steps
+        // ----------------------------------------------------
+        const flywheelSteps = [
+            {
+                title: "1. Efficiency (Production): Low-Cost, Fast Testing",
+                content: "Unlike long-form broadcasts, AIGC tools enable rapid creation and modification of stage setups and character appearances. Content is launched quickly to test real-time audience response at a fraction of traditional costs."
+            },
+            {
+                title: "2. Distribution: Frictionless Short-Form Feeds",
+                content: "Auditions, evaluations, rank reveals, and sponsored clips are fragmented into Douyin/TikTok short videos. Users encounter trainees seamlessly while scrolling through their daily feeds without a steep time commitment."
+            },
+            {
+                title: "3. Participation: Comments Act as 'Voting Ballots'",
+                content: "The comment section directly functions as a voting booth. Likes and comments determine trainee ranks and camera airtime, successfully transforming passive watchers into active 'Idol Producers'."
+            },
+            {
+                title: "4. Companion Relationship: 12 Active Personal Accounts",
+                content: "Even between main episodes, all 12 trainees actively maintain personal social accounts, posting micro-dramas and lifestyle clips to foster long-term virtual relationships with fans."
+            },
+            {
+                title: "5. Feedback Loop: Real-Time Worldbuilding Integration",
+                content: "Audience debates ('Aquarius screen-time shortage', 'Libra center favoritism') and user comments are immediately scripted into upcoming episodes, reinforcing an immersive feedback loop."
+            }
+        ];
+
+        // ----------------------------------------------------
+        // DATA STORE: Comparison Matrix
+        // ----------------------------------------------------
+        const comparisonData = [
+            {
+                title: "1. Production Logic",
+                realTitle: "Traditional Variety (Explosive Peak Model)",
+                realDesc: "Requires heavy capital investment, on-set physical direction, and genuine interpersonal chemistry. Unexpected live situations and real human reactions form the main attraction.",
+                aiTitle: "AI Variety (Long-Tail Companion Model)",
+                aiDesc: "Low-cost agile production sliced into short-form clips. AIGC tools allow instant editing, continuous feed releases, and long-term algorithmic exposure."
+            },
+            {
+                title: "2. Audience Position",
+                realTitle: "Traditional Variety (Passive Bystander)",
+                realDesc: "Viewers observe cast interactions from a third-person perspective, experiencing vicarious emotional warmth through human authenticity.",
+                aiTitle: "AI Variety (Active Co-Creator / Producer)",
+                aiDesc: "Viewers directly influence rankings, airtime, and narrative arcs via comments, votes, and social campaigns."
+            },
+            {
+                title: "3. Commercial Lifecycle",
+                realTitle: "Traditional Variety (Broadcast Window Peak)",
+                realDesc: "Commercial value and viewership spike during the broadcast window and decline rapidly once the season finishes.",
+                aiTitle: "AI Variety (Extended IP Asset Value)",
+                aiDesc: "Even after the show season ends, virtual characters maintain active social media accounts, securing long-term brand sponsorships."
+            },
+            {
+                title: "4. Content Vulnerabilities",
+                realTitle: "Traditional Variety (High Innovation Cost)",
+                realDesc: "Rising production budgets and unpredictable viewership risks can lead to repetitive formats and creative exhaustion.",
+                aiTitle: "AI Variety (Lack of Human Hesitation)",
+                aiDesc: "Flawless rendering lacks raw human spontaneity and 'unintentional hesitation'. When fans realize storylines are scripted, immersion wanes."
+            }
+        ];
+
+        // ----------------------------------------------------
+        // STATE MANAGEMENT
+        // ----------------------------------------------------
+        let currentElementFilter = 'all';
+        let traineeChartInstance = null;
+        let cliffChartInstance = null;
+
+        // ----------------------------------------------------
+        // INITIALIZATION
+        // ----------------------------------------------------
+        document.addEventListener('DOMContentLoaded', () => {
+            selectFlywheelStep(0);
+            renderTraineeTable();
+            initTraineeChart();
+            switchCompTab(0);
+            initCliffChart();
+        });
+
+        // ----------------------------------------------------
+        // FLYWHEEL LOGIC
+        // ----------------------------------------------------
+        function selectFlywheelStep(index) {
+            const btns = document.querySelectorAll('.fw-step-btn');
+            btns.forEach((btn, idx) => {
+                if (idx === index) {
+                    btn.className = "fw-step-btn p-3 text-center rounded-lg border text-sm font-bold transition-all bg-indigo-600 text-white border-indigo-600 shadow-sm";
+                } else {
+                    btn.className = "fw-step-btn p-3 text-center rounded-lg border text-sm font-bold transition-all bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300";
+                }
+            });
+
+            const detailBox = document.getElementById('flywheel-detail');
+            const data = flywheelSteps[index];
+            detailBox.innerHTML = `
+                <div class="font-bold text-indigo-900 text-base mb-1">${data.title}</div>
+                <div class="text-slate-700 leading-relaxed text-xs sm:text-sm">${data.content}</div>
+            `;
+        }
+
+        // ----------------------------------------------------
+        // TRAINEE TABLE & FILTER LOGIC
+        // ----------------------------------------------------
+        function filterElement(elem) {
+            currentElementFilter = elem;
+            const btns = document.querySelectorAll('.elem-filter-btn');
+            btns.forEach(btn => {
+                btn.className = "elem-filter-btn px-3 py-1.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200";
+            });
+            document.getElementById(`elem-${elem}`).className = "elem-filter-btn px-3 py-1.5 rounded-md bg-indigo-600 text-white font-semibold shadow-sm";
+            
+            renderTraineeTable();
+            updateTraineeChart();
+        }
+
+        function searchTrainees() {
+            renderTraineeTable();
+        }
+
+        function sortTable(key) {
+            traineeData.sort((a, b) => b[key] - a[key]);
+            renderTraineeTable();
+            updateTraineeChart();
+        }
+
+        function renderTraineeTable() {
+            const tbody = document.getElementById('trainee-table-body');
+            const query = document.getElementById('traineeSearch').value.trim().toLowerCase();
+
+            const filtered = traineeData.filter(item => {
+                const matchElement = currentElementFilter === 'all' || item.element === currentElementFilter;
+                const matchQuery = item.name.toLowerCase().includes(query) || item.dispute.toLowerCase().includes(query);
+                return matchElement && matchQuery;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No trainees found matching criteria.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => {
+                const elementBadgeClass = {
+                    fire: 'bg-red-50 text-red-600 border-red-200',
+                    earth: 'bg-amber-50 text-amber-700 border-amber-200',
+                    air: 'bg-indigo-50 text-indigo-600 border-indigo-200',
+                    water: 'bg-sky-50 text-sky-600 border-sky-200'
+                }[item.element];
+
+                const likesText = (item.likes / 1000).toFixed(1) + 'k';
+                const commentsText = item.comments > 0 ? (item.comments / 1000).toFixed(1) + 'k' : '-';
+                const followersText = item.followers > 0 ? (item.followers / 1000).toFixed(1) + 'k' : '-';
+
+                return `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-2.5 font-bold text-slate-900 flex items-center gap-1.5">
+                            <span>${item.name}</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded border ${elementBadgeClass}">${item.elementKorean}</span>
+                        </td>
+                        <td class="p-2.5 font-medium text-slate-800">${likesText}</td>
+                        <td class="p-2.5 font-medium text-indigo-600">${commentsText}</td>
+                        <td class="p-2.5 text-slate-600">${followersText}</td>
+                        <td class="p-2.5 text-slate-500 text-[11px]">${item.fanAccount}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ----------------------------------------------------
+        // CHART 1: Trainee Likes & Comments (Chart.js)
+        // ----------------------------------------------------
+        function initTraineeChart() {
+            const ctx = document.getElementById('traineeChart').getContext('2d');
+            
+            const filteredData = traineeData.slice(0, 8); // Top 8 trainees for clarity
+
+            traineeChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: filteredData.map(d => d.name),
+                    datasets: [
+                        {
+                            label: 'Likes (in Thousands)',
+                            data: filteredData.map(d => d.likes / 1000),
+                            backgroundColor: '#6366f1',
+                            borderRadius: 4,
+                        },
+                        {
+                            label: 'Comments (in Thousands)',
+                            data: filteredData.map(d => d.comments / 1000),
+                            backgroundColor: '#c084fc',
+                            borderRadius: 4,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: { family: 'Pretendard', size: 11 },
+                                boxWidth: 12
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    label += context.raw + 'k';
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Pretendard', size: 10 } }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { family: 'Pretendard', size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTraineeChart() {
+            if (!traineeChartInstance) return;
+
+            const filtered = traineeData.filter(item => {
+                return currentElementFilter === 'all' || item.element === currentElementFilter;
+            }).slice(0, 8);
+
+            traineeChartInstance.data.labels = filtered.map(d => d.name);
+            traineeChartInstance.data.datasets[0].data = filtered.map(d => d.likes / 1000);
+            traineeChartInstance.data.datasets[1].data = filtered.map(d => d.comments / 1000);
+            traineeChartInstance.update();
+        }
+
+        // ----------------------------------------------------
+        // COMPARISON MATRIX TAB LOGIC
+        // ----------------------------------------------------
+        function switchCompTab(index) {
+            const btns = document.querySelectorAll('.comp-tab-btn');
+            btns.forEach((btn, idx) => {
+                if (idx === index) {
+                    btn.className = "comp-tab-btn px-4 py-2 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-sm";
+                } else {
+                    btn.className = "comp-tab-btn px-4 py-2 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200";
+                }
+            });
+
+            const data = comparisonData[index];
+            const area = document.getElementById('comp-content-area');
+
+            area.innerHTML = `
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Traditional Variety</span>
+                        <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-semibold">Explosive Peak Model</span>
+                    </div>
+                    <h5 class="font-bold text-slate-900 text-base">${data.realTitle}</h5>
+                    <p class="text-xs text-slate-600 leading-relaxed pt-1 border-t border-slate-200/60">${data.realDesc}</p>
+                </div>
+
+                <div class="bg-indigo-50/70 p-5 rounded-xl border border-indigo-100 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-indigo-600 uppercase">AI Variety Format</span>
+                        <span class="text-[10px] bg-indigo-600 text-white px-2 py-0.5 rounded font-semibold">Long-Tail Companion Model</span>
+                    </div>
+                    <h5 class="font-bold text-indigo-950 text-base">${data.aiTitle}</h5>
+                    <p class="text-xs text-slate-700 leading-relaxed pt-1 border-t border-indigo-100">${data.aiDesc}</p>
+                </div>
+            `;
+        }
+
+        // ----------------------------------------------------
+        // CHART 2: Data Cliff Chart (Chart.js)
+        // ----------------------------------------------------
+        function initCliffChart() {
+            const ctx = document.getElementById('cliffChart').getContext('2d');
+
+            cliffChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Early June (Launch)', 'Late June (Peak)', 'Mid-July', 'Late July', 'Mid-August (Sports Day)'],
+                    datasets: [{
+                        label: 'Official Episode Likes (Thousands)',
+                        data: [150, 700, 550, 300, 50],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#ef4444',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { font: { family: 'Pretendard', size: 11 } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' Likes: ' + context.raw + 'k';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Pretendard', size: 10 } }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { family: 'Pretendard', size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

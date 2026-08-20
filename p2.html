@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد تحلیلی جامع برنامه سرگرمی هوش مصنوعی «۱۲ ستاره»</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 340px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 380px;
+            }
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Sticky Navigation Header -->
+    <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md text-white border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <span class="bg-indigo-600 text-white font-black text-xs px-2.5 py-1 rounded-md tracking-wider">گزارش AIGC</span>
+                <h1 class="text-lg font-bold tracking-tight text-slate-100 flex items-center gap-2">
+                    <span>《۱۲ ستاره》</span>
+                    <span class="hidden sm:inline text-xs text-indigo-300 font-normal border-r border-slate-700 pr-2">تحلیل تجاری برنامه هوش مصنوعی</span>
+                </h1>
+            </div>
+            <nav class="hidden md:flex space-x-6 space-x-reverse text-sm font-medium">
+                <a href="#overview" class="hover:text-indigo-400 transition-colors">نمای کلی و شاخص‌ها</a>
+                <a href="#trainees" class="hover:text-indigo-400 transition-colors">تحلیل طرفداران</a>
+                <a href="#business" class="hover:text-indigo-400 transition-colors">درآمدزایی</a>
+                <a href="#comparison" class="hover:text-indigo-400 transition-colors">واقعی در برابر هوش مصنوعی</a>
+                <a href="#risks" class="hover:text-indigo-400 transition-colors">ریسک‌ها و چشم‌انداز</a>
+            </nav>
+            <div class="flex items-center space-x-2 space-x-reverse">
+                <a href="#trainees" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all shadow-sm">
+                    کاوش داده‌ها
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="bg-slate-900 text-white pt-12 pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-800 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="max-w-3xl">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-950 border border-indigo-800 text-indigo-300 text-xs font-semibold mb-4">
+                    <span>✦ مطالعه موردی برنامه بقای آیدل‌های هوش مصنوعی</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight mb-4">
+                    برنامه استعدادیابی هوش مصنوعی 《۱۲ ستاره》<br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-300 to-sky-400">چرخه تعامل و اکوسیستم تجاری</span>
+                </h2>
+                <p class="text-slate-300 text-base sm:text-lg leading-relaxed mb-6">
+                    یک داشبورد اطلاعاتی تعاملی برای بررسی زیرساخت‌ها، معیارهای فندوم (طرفداران)، درآمدزایی و کاهش رشد برنامه ویدیویی کوتاه هوش مصنوعی که در ماه اول بیش از ۱۰۰ میلیون بازدید داشت.
+                </p>
+                <div class="flex flex-wrap gap-3 text-xs text-slate-400">
+                    <span class="bg-slate-800/80 px-3 py-1.5 rounded-md border border-slate-700">✦ پلتفرم: فید ویدیوهای کوتاه Douyin (تیک‌تاک)</span>
+                    <span class="bg-slate-800/80 px-3 py-1.5 rounded-md border border-slate-700">✦ کانسپت: ۱۲ کارآموز هوش مصنوعی بر اساس علائم زودیاک در ۴ عنصر</span>
+                    <span class="bg-slate-800/80 px-3 py-1.5 rounded-md border border-slate-700">✦ هزینه اسپانسرشیپ تک‌تبلیغ: ~۲۵۰,۰۰۰ یوان (حدود ۳۵,۰۰۰ دلار)</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+        <!-- SECTION 1: EXECUTIVE OVERVIEW & KEY METRICS -->
+        <section id="overview" class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+                <div class="flex items-center gap-2 text-indigo-600 font-bold text-xs uppercase tracking-wider">بخش ۰۱</div>
+                <h3 class="text-2xl font-bold text-slate-900 tracking-tight">خلاصه اجرایی و شاخص‌های کلیدی عملکرد (KPI)</h3>
+                <p class="text-slate-600 text-sm mt-1">
+                    این ماژول معیارهای سطح بالای تعامل را در کنار مدل ۵ مرحله‌ای «چرخه تعامل» که بینندگان منفعل را به تهیه‌کنندگان فعال آیدل تبدیل می‌کند، ارائه می‌دهد.
+                </p>
+            </div>
+
+            <!-- KPI Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-all">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">کل بازدیدهای پلتفرم‌ها</div>
+                    <div class="text-3xl font-extrabold text-slate-900 mt-2">۱۰۰ میلیون+</div>
+                    <div class="text-xs text-indigo-600 font-medium mt-1">هشتگ Douyin به ۲۵۰M بازدید رسید</div>
+                    <div class="text-[11px] text-slate-500 mt-3 pt-2 border-t border-slate-100">تحقق یافته در ۳۰ روز پس از راه‌اندازی</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-all">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">دنبال‌کنندگان حساب اصلی</div>
+                    <div class="text-3xl font-extrabold text-indigo-600 mt-2">۵۳۶,۰۰۰</div>
+                    <div class="text-xs text-slate-500 font-medium mt-1">رشد پیوسته پس از ۵۰۰ هزار نفر اول</div>
+                    <div class="text-[11px] text-slate-500 mt-3 pt-2 border-t border-slate-100">۱۲ حساب کاربری به طور همزمان فعال هستند</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-all">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">اسپانسرشیپ تک تبلیغ</div>
+                    <div class="text-3xl font-extrabold text-slate-900 mt-2">~$۳۵,۰۰۰</div>
+                    <div class="text-xs text-emerald-600 font-medium mt-1">۲۵۰,۰۰۰ یوان برای هر جایگذاری</div>
+                    <div class="text-[11px] text-slate-500 mt-3 pt-2 border-t border-slate-100">اسپانسرها شامل نانوایی Haus و خودروی BYD</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-all">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">نسبت تراکم نظرات</div>
+                    <div class="text-3xl font-extrabold text-purple-600 mt-2">۴۲.۵٪</div>
+                    <div class="text-xs text-purple-700 font-medium mt-1">نظرات به عنوان برگه رأی عمل می‌کنند</div>
+                    <div class="text-[11px] text-slate-500 mt-3 pt-2 border-t border-slate-100">نرخ تعامل استثنایی در مقایسه با ویدیوهای عادی</div>
+                </div>
+            </div>
+
+            <!-- Flywheel Mechanism Interactive Widget -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-lg">مدل ۵ مرحله‌ای «چرخه تعامل» برنامه هوش مصنوعی</h4>
+                        <p class="text-xs text-slate-500">برای بررسی دینامیک‌های عملیاتی اصلی که باعث حفظ کاربر می‌شوند، روی هر مرحله کلیک کنید.</p>
+                    </div>
+                    <span class="text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-1 rounded-md font-semibold self-start sm:self-auto">
+                        برای مشاهده جزئیات کلیک کنید
+                    </span>
+                </div>
+
+                <!-- Flywheel Step Buttons -->
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="flywheel-buttons">
+                    <button onclick="selectFlywheelStep(0)" id="fw-btn-0" class="fw-step-btn p-3 text-center rounded-lg border text-sm font-bold transition-all bg-indigo-600 text-white border-indigo-600 shadow-sm">
+                        <div class="text-[10px] uppercase font-normal opacity-80">مرحله ۰۱</div>
+                        ۱. کارایی
+                    </button>
+                    <button onclick="selectFlywheelStep(1)" id="fw-btn-1" class="fw-step-btn p-3 text-center rounded-lg border text-sm font-bold transition-all bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300">
+                        <div class="text-[10px] uppercase font-normal text-slate-400">مرحله ۰۲</div>
+                        ۲. توزیع
+                    </button>
+                    <button onclick="selectFlywheelStep(2)" id="fw-btn-2" class="fw-step-btn p-3 text-center rounded-lg border text-sm font-bold transition-all bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300">
+                        <div class="text-[10px] uppercase font-normal text-slate-400">مرحله ۰۳</div>
+                        ۳. مشارکت
+                    </button>
+                    <button onclick="selectFlywheelStep(3)" id="fw-btn-3" class="fw-step-btn p-3 text-center rounded-lg border text-sm font-bold transition-all bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300">
+                        <div class="text-[10px] uppercase font-normal text-slate-400">مرحله ۰۴</div>
+                        ۴. همراهی
+                    </button>
+                    <button onclick="selectFlywheelStep(4)" id="fw-btn-4" class="fw-step-btn p-3 text-center rounded-lg border text-sm font-bold transition-all bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300">
+                        <div class="text-[10px] uppercase font-normal text-slate-400">مرحله ۰۵</div>
+                        ۵. چرخه بازخورد
+                    </button>
+                </div>
+
+                <!-- Step Detail Box -->
+                <div id="flywheel-detail" class="bg-indigo-50/60 border border-indigo-100 p-4 rounded-lg text-slate-700 text-sm leading-relaxed">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: TRAINEE ANALYTICS & FANDOM ECOSYSTEM -->
+        <section id="trainees" class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+                <div class="flex items-center gap-2 text-indigo-600 font-bold text-xs uppercase tracking-wider">بخش ۰۲</div>
+                <h3 class="text-2xl font-bold text-slate-900 tracking-tight">تحلیل طرفداران و جستجوگر داده‌های کارآموزان</h3>
+                <p class="text-slate-600 text-sm mt-1">
+                    لایک‌ها، نظرات، دنبال‌کنندگان و سازمان‌دهی ارگانیک طرفداران را در بین همه ۱۲ کارآموز هوش مصنوعی بررسی کنید. امکان فیلتر بر اساس عنصر یا جستجوی کاراکترهای خاص.
+                </p>
+            </div>
+
+            <!-- Visualization & Data Table Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Chart Column (5 cols) -->
+                <div class="lg:col-span-5 bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-bold text-slate-900 text-base">مقایسه لایک‌ها در برابر نظرات</h4>
+                            <span class="text-[11px] text-slate-500">واحد: هزار (k)</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">
+                            کارآموزان برتر (ترازو، دلو، سنبله) پیشتاز تعامل هستند. نسبت بالاتر نظرات به لایک‌ها نشان‌دهنده بحث‌های داغ طرفداران و رقابت‌های فعال است.
+                        </p>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="traineeChart"></canvas>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500 flex justify-between items-center">
+                        <span>✦ کارآموزان عنصر هوا در رتبه‌های برتر غالب هستند</span>
+                        <span class="text-indigo-600 font-semibold text-left dir-ltr">Chart.js Visualization</span>
+                    </div>
+                </div>
+
+                <!-- Interactive Data Table Column (7 cols) -->
+                <div class="lg:col-span-7 bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                    
+                    <!-- Table Controls -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-100">
+                        <div class="flex items-center space-x-1.5 space-x-reverse overflow-x-auto text-xs font-medium py-1">
+                            <button onclick="filterElement('all')" id="elem-all" class="elem-filter-btn px-3 py-1.5 rounded-md bg-indigo-600 text-white font-semibold shadow-sm whitespace-nowrap">همه (۱۲)</button>
+                            <button onclick="filterElement('fire')" id="elem-fire" class="elem-filter-btn px-3 py-1.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap">🔥 آتش (۳)</button>
+                            <button onclick="filterElement('earth')" id="elem-earth" class="elem-filter-btn px-3 py-1.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap">🌱 خاک (۳)</button>
+                            <button onclick="filterElement('air')" id="elem-air" class="elem-filter-btn px-3 py-1.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap">💨 هوا (۳)</button>
+                            <button onclick="filterElement('water')" id="elem-water" class="elem-filter-btn px-3 py-1.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap">💧 آب (۳)</button>
+                        </div>
+                        
+                        <div class="relative">
+                            <input type="text" id="traineeSearch" onkeyup="searchTrainees()" placeholder="جستجوی کارآموز..." class="w-full sm:w-40 text-xs px-3 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:border-indigo-500 bg-slate-50" />
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto max-h-[360px] overflow-y-auto">
+                        <table class="w-full text-right border-collapse text-xs">
+                            <thead class="sticky top-0 bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-2.5">نشان زودیاک</th>
+                                    <th class="p-2.5 cursor-pointer hover:text-indigo-600" onclick="sortTable('likes')">لایک‌ها ▾</th>
+                                    <th class="p-2.5 cursor-pointer hover:text-indigo-600" onclick="sortTable('comments')">نظرات ▾</th>
+                                    <th class="p-2.5">دنبال‌کنندگان</th>
+                                    <th class="p-2.5">حساب‌های طرفداری (دنبال‌کنندگان)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trainee-table-body" class="divide-y divide-slate-100 text-slate-700">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Fandom Dispute Highlight Banner -->
+                    <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-lg text-xs text-amber-900 leading-relaxed">
+                        <span class="font-bold text-amber-950">🔥 اختلافات اصلی طرفداران و محرک‌های ایجاد حاشیه:</span>
+                        در بخش نظرات، بحث‌های شدیدی در مورد <span class="font-semibold text-amber-800">"کمبود زمان حضور دلو"</span>، <span class="font-semibold text-amber-800">"جنجال جانبداری از ترازو به عنوان مرکز"</span>، و <span class="font-semibold text-amber-800">"بحث انصاف در مورد قانون تکراری کماندار"</span> وجود دارد. این اصطکاک ارگانیک فندوم شبیه به برنامه‌های بقای واقعی است و به عنوان محرک اصلی برای وایرال شدن عمل می‌کند.
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: MONETIZATION & EMOTION PREMIUM -->
+        <section id="business" class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+                <div class="flex items-center gap-2 text-indigo-600 font-bold text-xs uppercase tracking-wider">بخش ۰۳</div>
+                <h3 class="text-2xl font-bold text-slate-900 tracking-tight">مدل کسب و کار و قیمت‌گذاری «پریمیوم احساسی»</h3>
+                <p class="text-slate-600 text-sm mt-1">
+                    بررسی استراتژی درآمدزایی فراتر از قرار دادن ساده لوگو، شامل حساب‌های آژانس مجازی فردی و چارچوب اسپانسرشیپ ۳ لایه.
+                </p>
+            </div>
+
+            <!-- Business Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Card 1: 3-Tier Sponsorship -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="text-xs font-bold text-indigo-600 uppercase mb-1">مدل درآمدی ۰۱</div>
+                        <h4 class="font-bold text-slate-900 text-base mb-3">معماری اسپانسرشیپ ۳ لایه</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                            یکپارچه‌سازی سیستماتیک تبلیغات برای پاسخگویی به سطوح مختلف همسویی برند و عمق بازاریابی.
+                        </p>
+                        <ul class="space-y-2 text-xs text-slate-700">
+                            <li class="flex items-start gap-2 bg-slate-50 p-2 rounded border border-slate-100">
+                                <span class="font-bold text-indigo-600">لایه ۱:</span>
+                                <span>پوشش‌های لوگو و فراخوانی محصولات زیرنویس شده</span>
+                            </li>
+                            <li class="flex items-start gap-2 bg-slate-50 p-2 rounded border border-slate-100">
+                                <span class="font-bold text-indigo-600">لایه ۲:</span>
+                                <span>ادغام مینی‌درام‌های سفارشی کوتاه</span>
+                            </li>
+                            <li class="flex items-start gap-2 bg-slate-50 p-2 rounded border border-slate-100">
+                                <span class="font-bold text-indigo-600">لایه ۳:</span>
+                                <span>اسپانسرشیپ عنوان برای کل فصل و برندسازی انحصاری</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
+                        اسپانسرهای فعال: Haus Bakery، BYD Auto (Fangchengbao)، و غیره.
+                    </div>
+                </div>
+
+                <!-- Card 2: Virtual Idol Agency Model -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="text-xs font-bold text-indigo-600 uppercase mb-1">مدل درآمدی ۰۲</div>
+                        <h4 class="font-bold text-slate-900 text-base mb-3">چارچوب داخلی «آژانس مجازی»</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                            تمام ۱۲ کارآموز هوش مصنوعی حساب‌های شخصی مستقلی را اداره می‌کنند که قادر به دریافت تأییدیه‌های برند به صورت فردی هستند.
+                        </p>
+                        <div class="bg-indigo-50/70 p-3.5 rounded-lg border border-indigo-100 text-xs text-indigo-950 space-y-2">
+                            <div class="font-bold flex items-center gap-1.5 text-indigo-900">
+                                <span>✦ مورد همکاری با خودروی BYD</span>
+                            </div>
+                            <p class="leading-relaxed">
+                                در قالب <em>پروژه ستاره هوش مصنوعی</em>، برندهای زیرمجموعه BYD مانند <span class="font-semibold">Fangchengbao</span> و <span class="font-semibold">Denza</span> کمپین‌های تجاری مستقیمی را با کارآموزان هوش مصنوعی به صورت فردی اجرا کردند.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
+                        شخصیت‌های محبوب هوش مصنوعی معاملات تبلیغاتی انفرادی دریافت می‌کنند.
+                    </div>
+                </div>
+
+                <!-- Card 3: Emotion Premium Logic -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="text-xs font-bold text-purple-600 uppercase mb-1">استراتژی اصلی</div>
+                        <h4 class="font-bold text-slate-900 text-base mb-3">ارزش‌گذاری «پریمیوم احساسی»</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                            برندها حدود ۳۵,۰۰۰ دلار برای هر تبلیغ پرداخت می‌کنند نه فقط برای بازدیدها، بلکه برای تعامل فوق‌العاده فعال و پرشور پایگاه طرفداران.
+                        </p>
+                        <div class="bg-purple-50 p-3.5 rounded-lg border border-purple-100 text-xs text-purple-950 space-y-1.5">
+                            <div class="flex justify-between font-bold">
+                                <span>نسبت نظرات به لایک‌ها:</span>
+                                <span class="text-purple-700">۴۲.۵٪</span>
+                            </div>
+                            <div class="w-full bg-purple-200 rounded-full h-2">
+                                <div class="bg-purple-600 h-2 rounded-full flex justify-end" style="width: 42.5%"></div>
+                            </div>
+                            <p class="text-[11px] text-purple-800 pt-1">
+                                بینندگان به "تهیه‌کنندگان" فعال تبدیل می‌شوند و نظرات و اشتراک‌گذاری‌های ارگانیک را حتی در پست‌های اسپانسر شده ایجاد می‌کنند.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
+                        سازنده، وانگ ییهوی: "یک آزمایش تجاری پیشگامانه"
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 4: REAL VS AI VARIETY COMPARISON -->
+        <section id="comparison" class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+                <div class="flex items-center gap-2 text-indigo-600 font-bold text-xs uppercase tracking-wider">بخش ۰۴</div>
+                <h3 class="text-2xl font-bold text-slate-900 tracking-tight">واقعی در برابر هوش مصنوعی: مقایسه ساختاری</h3>
+                <p class="text-slate-600 text-sm mt-1">
+                    تقابل برنامه‌های سرگرمی سنتی (اوج‌های متمرکز و پرهزینه) در برابر برنامه‌های هوش مصنوعی (مدل‌های طولانی‌مدت همراه IP) در ۴ بُعد.
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+                <!-- Tab Selector Buttons -->
+                <div class="flex flex-wrap gap-2 border-b border-slate-100 pb-3" id="comp-tabs">
+                    <button onclick="switchCompTab(0)" id="comp-tab-0" class="comp-tab-btn px-4 py-2 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-sm">
+                        ۱. منطق تولید
+                    </button>
+                    <button onclick="switchCompTab(1)" id="comp-tab-1" class="comp-tab-btn px-4 py-2 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">
+                        ۲. موقعیت مخاطب
+                    </button>
+                    <button onclick="switchCompTab(2)" id="comp-tab-2" class="comp-tab-btn px-4 py-2 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">
+                        ۳. چرخه تجاری
+                    </button>
+                    <button onclick="switchCompTab(3)" id="comp-tab-3" class="comp-tab-btn px-4 py-2 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">
+                        ۴. نقاط ضعف محتوا
+                    </button>
+                </div>
+
+                <!-- Comparison Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="comp-content-area">
+                    <!-- Dynamic Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: LIMITS, DATA CLIFF & FUTURE COEXISTENCE -->
+        <section id="risks" class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+                <div class="flex items-center gap-2 text-indigo-600 font-bold text-xs uppercase tracking-wider">بخش ۰۵</div>
+                <h3 class="text-2xl font-bold text-slate-900 tracking-tight">محدودیت‌ها، سقوط داده‌ها و آینده همزیستی</h3>
+                <p class="text-slate-600 text-sm mt-1">
+                    بررسی کاهش شدید تعامل پس از از بین رفتن جذابیت اولیه، محدودیت‌های ذاتی کاراکترهای هوش مصنوعی، و چارچوب همکاری انسان و هوش مصنوعی.
+                </p>
+            </div>
+
+            <!-- Case Study: Data Cliff Chart & Analysis -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Data Cliff Chart (6 cols) -->
+                <div class="lg:col-span-6 bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-bold text-slate-900 text-base">"سقوط داده‌ها": کاهش تعامل در اواسط آگوست</h4>
+                            <span class="text-xs bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded">کاهش تعامل</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">
+                            لایک ویدیوهای رسمی از اوج ۷۰۰ هزار به حدود ۵۰ هزار در طول قسمت «روز ورزش تابستانی» سقوط کرد، که ماهیت موقتی ترافیک ناشی از تازگی را آشکار می‌کند.
+                        </p>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="cliffChart"></canvas>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500 flex justify-between">
+                        <span>✦ ژوئن-جولای: دوره اوج وایرال شدن (۷۰۰ هزار+)</span>
+                        <span>✦ اواسط آگوست: کاهش هیجان اولیه (۵۰ هزار)</span>
+                    </div>
+                </div>
+
+                <!-- 3 Core Limitation Cards (6 cols) -->
+                <div class="lg:col-span-6 space-y-3">
+                    
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <h4 class="font-bold text-slate-900 text-sm mb-1 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                            ۱. برچسب‌گذاری سطحی و حفظ پایین مخاطب
+                        </h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            علائم زودیاک (مانند MBTI یا گروه خونی) به سرعت مخاطب جذب می‌کنند، اما به صورت سطحی مصرف می‌شوند. آن‌ها فاقد عمق لازم برای ایجاد وفاداری بلندمدت در طرفداران اصلی هستند.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <h4 class="font-bold text-slate-900 text-sm mb-1 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                            ۲. فقدان "تردید" و همدلی انسانی
+                        </h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            هوش مصنوعی تصاویر بی‌نقصی ایجاد می‌کند اما فاقد نقص خام، واکنش‌های واقعی و آسیب‌پذیری انسانی است. لحظه‌ای که طرفداران متوجه می‌شوند داستان‌ها از پیش برنامه‌ریزی شده‌اند، غوطه‌وری احساسی کاهش می‌یابد.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <h4 class="font-bold text-slate-900 text-sm mb-1 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                            ۳. قطع ارتباط حرفه‌ای پس از دبیو (آغاز به کار)
+                        </h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            برنامه‌های بقای واقعی، برندگان را وارد اجراهای موسیقی، کنسرت‌ها و برنامه‌های واقعی می‌کنند. در حال حاضر برنامه‌های بقای هوش مصنوعی فاقد مسیر شغلی ملموس پس از پایان برنامه هستند.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Expert Quotes & Coexistence Synthesis Banner -->
+            <div class="bg-slate-900 text-white p-6 rounded-2xl space-y-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-slate-800 pb-6">
+                    <!-- Quote 1 -->
+                    <div class="space-y-2">
+                        <div class="text-xs text-indigo-400 font-bold uppercase">دیدگاه صنعت سرگرمی (مدیرعامل Yuehua Ent دو هوا)</div>
+                        <blockquote class="text-sm italic text-slate-200 leading-relaxed">
+                            "هوش مصنوعی نمی‌تواند جایگزین آیدل‌های انسانی شود؛ آنها همزیستی خواهند داشت. در آینده، مزیت رقابتی بر گرما، خلاقیت هنری و ایجاد IP تکرارناپذیر انسان متکی خواهد بود."
+                        </blockquote>
+                    </div>
+                    <!-- Quote 2 -->
+                    <div class="space-y-2">
+                        <div class="text-xs text-indigo-400 font-bold uppercase">دیدگاه ادبی و خلاقانه (نویسنده کیم ئه-ران)</div>
+                        <blockquote class="text-sm italic text-slate-200 leading-relaxed">
+                            "چیزی وجود دارد که انسان‌ها دارند اما هوش مصنوعی کاملاً فاقد آن است: 'تردید'. جادوی محتوای سرگرمی در نقص انسانی، انتخاب‌های غیرمنتظره و تردید واقعی نهفته است."
+                        </blockquote>
+                    </div>
+                </div>
+
+                <!-- Final Synthesis -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <h4 class="font-bold text-base text-white">چشم‌انداز آینده: اکوسیستم محتوای مشترک انسان و هوش مصنوعی</h4>
+                        <p class="text-xs text-slate-300 leading-relaxed max-w-2xl">
+                            بینندگان در حال تکامل از ناظران منفعل به مشارکت‌کنندگانی هستند که داستان‌های هوش مصنوعی را هدایت می‌کنند. هوش مصنوعی یک ابزار کارآمد است، اما جرقه خلاقانه و ارتباط عاطفی همیشه انسانی باقی خواهد ماند.
+                        </p>
+                    </div>
+                    <a href="#overview" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 rounded-lg whitespace-nowrap transition-all shadow-md">
+                        بازگشت به بالا ↑
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-right">
+            <div>
+                <p class="font-bold text-slate-200">داشبورد تحلیلی برنامه هوش مصنوعی 《۱۲ ستاره》</p>
+                <p class="text-slate-500 mt-1">برنامه تحت وب تعاملی بر اساس گزارش منبع</p>
+            </div>
+            <div class="text-slate-500">
+                برنامه تک‌صفحه‌ای (SPA) • ساخته شده با Chart.js و Tailwind CSS
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic Code -->
+    <script>
+        // ----------------------------------------------------
+        // DATA STORE: Trainee Database (12 Zodiacs)
+        // ----------------------------------------------------
+        const traineeData = [
+            { name: "ترازو", element: "air", elementPersian: "هوا", likes: 72000, comments: 12000, followers: 118000, fanAccount: "تیم داده ترازو (۵k+)", dispute: "جنجال جانبداری از مرکز، رتبه قاطع اول" },
+            { name: "دلو", element: "air", elementPersian: "هوا", likes: 58000, comments: 15000, followers: 0, fanAccount: "-", dispute: "جنجال کمبود زمان حضور در صفحه (اعتراض شدید طرفداران)" },
+            { name: "سنبله", element: "earth", elementPersian: "خاک", likes: 48000, comments: 17000, followers: 0, fanAccount: "-", dispute: "بالاترین نرخ تعامل نظرات" },
+            { name: "ماهی", element: "water", elementPersian: "آب", likes: 42000, comments: 0, followers: 38000, fanAccount: "-", dispute: "رشد پایدار حساب کاربری شخصی" },
+            { name: "عقرب", element: "water", elementPersian: "آب", likes: 40000, comments: 12000, followers: 0, fanAccount: "سایت جهانی عقرب (۳.۳k)", dispute: "حضور سازمان‌یافته طرفداران جهانی" },
+            { name: "خرچنگ", element: "water", elementPersian: "آب", likes: 38000, comments: 0, followers: 40000, fanAccount: "خواننده خرچنگ (۳۴۵k)", dispute: "پایگاه طرفداران گسترده در حساب شخصی" },
+            { name: "جوزا", element: "air", elementPersian: "هوا", likes: 37000, comments: 10000, followers: 0, fanAccount: "مجری جوزا (۶۵k) / کلاب طرفداران (۱.۵k)", dispute: "تضمین حضور در صفحه به عنوان مجری برنامه" },
+            { name: "شیر", element: "fire", elementPersian: "آتش", likes: 33000, comments: 0, followers: 54000, fanAccount: "کلاب طرفداران شیر (۲۱k)", dispute: "تأسیس کلاب طرفداران انفرادی اختصاصی" },
+            { name: "کماندار", element: "fire", elementPersian: "آتش", likes: 31000, comments: 0, followers: 39000, fanAccount: "-", dispute: "بحث انصاف در مورد قانون شخصیت تکراری" },
+            { name: "جدی", element: "earth", elementPersian: "خاک", likes: 31000, comments: 9323, followers: 24000, fanAccount: "استودیوی ۱۲ ستاره جدی (۱۱k)", dispute: "استودیوی طرفداری مستقل فعال" },
+            { name: "حمل", element: "fire", elementPersian: "آتش", likes: 27000, comments: 8648, followers: 30000, fanAccount: "-", dispute: "مشارکت بالا و پایدار در نظرات" },
+            { name: "گاو", element: "earth", elementPersian: "خاک", likes: 23000, comments: 0, followers: 26000, fanAccount: "تیم تبلیغاتی عنصر خاک (۴.۱k)", dispute: "گروه تبلیغاتی ائتلاف در سراسر عنصر" }
+        ];
+
+        // ----------------------------------------------------
+        // DATA STORE: Flywheel Steps
+        // ----------------------------------------------------
+        const flywheelSteps = [
+            {
+                title: "۱. کارایی (تولید): هزینه کم، آزمایش سریع",
+                content: "برخلاف پخش‌های طولانی، ابزارهای AIGC امکان ایجاد و اصلاح سریع صحنه‌ها و ظاهر کاراکترها را فراهم می‌کنند. محتوا با کسری از هزینه‌های سنتی به سرعت برای آزمایش پاسخ لحظه‌ای مخاطب راه‌اندازی می‌شود."
+            },
+            {
+                title: "۲. توزیع: فیدهای ویدیویی کوتاه بدون اصطکاک",
+                content: "آزمون‌ها، ارزیابی‌ها و جایگذاری‌های اسپانسر به ویدیوهای کوتاه در Douyin (تیک‌تاک) تقسیم می‌شوند. کاربران به طور یکپارچه در هنگام اسکرول کردن بدون نیاز به تعهد زمانی بالا، با کارآموزان مواجه می‌شوند."
+            },
+            {
+                title: "۳. مشارکت: نظرات به عنوان «برگه رأی»",
+                content: "بخش نظرات مستقیماً به عنوان یک صندوق رأی عمل می‌کند. لایک‌ها و نظرات، رتبه‌بندی کارآموزان و زمان پخش دوربین را تعیین می‌کنند و تماشاگران منفعل را به «تهیه‌کنندگان آیدل» فعال تبدیل می‌کنند."
+            },
+            {
+                title: "۴. رابطه همراهی: ۱۲ حساب کاربری شخصی فعال",
+                content: "حتی بین قسمت‌های اصلی، همه ۱۲ کارآموز به طور فعال حساب‌های اجتماعی شخصی خود را مدیریت می‌کنند و مینی درام‌ها را برای تقویت روابط مجازی بلندمدت با طرفداران ارسال می‌کنند."
+            },
+            {
+                title: "۵. چرخه بازخورد: یکپارچه‌سازی لحظه‌ای جهان‌سازی",
+                content: "بحث‌های مخاطبان (مانند 'کمبود حضور دلو'، 'جانبداری از ترازو') بلافاصله در قسمت‌های آینده نوشته می‌شوند و چرخه بازخورد همه‌جانبه را تقویت می‌کنند."
+            }
+        ];
+
+        // ----------------------------------------------------
+        // DATA STORE: Comparison Matrix
+        // ----------------------------------------------------
+        const comparisonData = [
+            {
+                title: "۱. منطق تولید",
+                realTitle: "برنامه واقعی سنتی (مدل اوج انفجاری)",
+                realDesc: "نیاز به سرمایه‌گذاری سنگین، کارگردانی فیزیکی در صحنه و شیمی واقعی بین افراد دارد. موقعیت‌های زنده غیرمنتظره و واکنش‌های واقعی انسانی جذابیت اصلی را تشکیل می‌دهند.",
+                aiTitle: "برنامه هوش مصنوعی (مدل همراهی طولانی‌مدت)",
+                aiDesc: "تولید چابک و کم‌هزینه که به کلیپ‌های کوتاه تقسیم می‌شود. ابزارهای AIGC امکان ویرایش فوری، انتشار مداوم و دیده شدن الگوریتمی طولانی‌مدت را فراهم می‌کنند."
+            },
+            {
+                title: "۲. موقعیت مخاطب",
+                realTitle: "برنامه واقعی سنتی (ناظر منفعل)",
+                realDesc: "بینندگان تعاملات بازیگران را از منظر سوم شخص مشاهده می‌کنند و از طریق اصالت انسانی، گرمای عاطفی نیابتی را تجربه می‌کنند.",
+                aiTitle: "برنامه هوش مصنوعی (خالق مشترک / تهیه‌کننده)",
+                aiDesc: "بینندگان مستقیماً بر رتبه‌بندی‌ها، زمان پخش و قوس‌های داستانی از طریق نظرات، آرا و کمپین‌های اجتماعی تأثیر می‌گذارند."
+            },
+            {
+                title: "۳. چرخه تجاری",
+                realTitle: "برنامه واقعی سنتی (اوج در پنجره پخش)",
+                realDesc: "ارزش تجاری و بینندگان در طول پنجره پخش به اوج می‌رسند و با پایان فصل به سرعت کاهش می‌یابند.",
+                aiTitle: "برنامه هوش مصنوعی (ارزش دارایی IP گسترده)",
+                aiDesc: "حتی پس از پایان فصل، شخصیت‌های مجازی حساب‌های فعال خود در رسانه‌های اجتماعی را حفظ می‌کنند و حامیان مالی برندها را در بلندمدت تضمین می‌کنند."
+            },
+            {
+                title: "۴. نقاط ضعف محتوا",
+                realTitle: "برنامه واقعی سنتی (هزینه بالای نوآوری)",
+                realDesc: "افزایش بودجه تولید و خطرات غیرقابل پیش‌بینی بینندگان می‌تواند منجر به قالب‌های تکراری و خستگی خلاقانه شود.",
+                aiTitle: "برنامه هوش مصنوعی (عدم تردید انسانی)",
+                aiDesc: "رندر بی‌نقص فاقد خودانگیختگی خام انسانی و «تردید غیرعمدی» است. وقتی طرفداران متوجه می‌شوند داستان‌ها فیلمنامه‌نویسی شده‌اند، غوطه‌وری کاهش می‌یابد."
+            }
+        ];
+
+        // ----------------------------------------------------
+        // STATE MANAGEMENT
+        // ----------------------------------------------------
+        let currentElementFilter = 'all';
+        let traineeChartInstance = null;
+        let cliffChartInstance = null;
+
+        // ----------------------------------------------------
+        // INITIALIZATION
+        // ----------------------------------------------------
+        document.addEventListener('DOMContentLoaded', () => {
+            selectFlywheelStep(0);
+            renderTraineeTable();
+            initTraineeChart();
+            switchCompTab(0);
+            initCliffChart();
+        });
+
+        // ----------------------------------------------------
+        // FLYWHEEL LOGIC
+        // ----------------------------------------------------
+        function selectFlywheelStep(index) {
+            const btns = document.querySelectorAll('.fw-step-btn');
+            btns.forEach((btn, idx) => {
+                if (idx === index) {
+                    btn.className = "fw-step-btn p-3 text-center rounded-lg border text-sm font-bold transition-all bg-indigo-600 text-white border-indigo-600 shadow-sm";
+                } else {
+                    btn.className = "fw-step-btn p-3 text-center rounded-lg border text-sm font-bold transition-all bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300";
+                }
+            });
+
+            const detailBox = document.getElementById('flywheel-detail');
+            const data = flywheelSteps[index];
+            detailBox.innerHTML = `
+                <div class="font-bold text-indigo-900 text-base mb-1">${data.title}</div>
+                <div class="text-slate-700 leading-relaxed text-xs sm:text-sm">${data.content}</div>
+            `;
+        }
+
+        // ----------------------------------------------------
+        // TRAINEE TABLE & FILTER LOGIC
+        // ----------------------------------------------------
+        function filterElement(elem) {
+            currentElementFilter = elem;
+            const btns = document.querySelectorAll('.elem-filter-btn');
+            btns.forEach(btn => {
+                btn.className = "elem-filter-btn px-3 py-1.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap";
+            });
+            document.getElementById(`elem-${elem}`).className = "elem-filter-btn px-3 py-1.5 rounded-md bg-indigo-600 text-white font-semibold shadow-sm whitespace-nowrap";
+            
+            renderTraineeTable();
+            updateTraineeChart();
+        }
+
+        function searchTrainees() {
+            renderTraineeTable();
+        }
+
+        function sortTable(key) {
+            traineeData.sort((a, b) => b[key] - a[key]);
+            renderTraineeTable();
+            updateTraineeChart();
+        }
+
+        function renderTraineeTable() {
+            const tbody = document.getElementById('trainee-table-body');
+            const query = document.getElementById('traineeSearch').value.trim().toLowerCase();
+
+            const filtered = traineeData.filter(item => {
+                const matchElement = currentElementFilter === 'all' || item.element === currentElementFilter;
+                const matchQuery = item.name.toLowerCase().includes(query) || item.dispute.toLowerCase().includes(query) || item.elementPersian.toLowerCase().includes(query);
+                return matchElement && matchQuery;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">هیچ کارآموزی مطابق با معیارها یافت نشد.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => {
+                const elementBadgeClass = {
+                    fire: 'bg-red-50 text-red-600 border-red-200',
+                    earth: 'bg-amber-50 text-amber-700 border-amber-200',
+                    air: 'bg-indigo-50 text-indigo-600 border-indigo-200',
+                    water: 'bg-sky-50 text-sky-600 border-sky-200'
+                }[item.element];
+
+                const likesText = (item.likes / 1000).toFixed(1) + 'k';
+                const commentsText = item.comments > 0 ? (item.comments / 1000).toFixed(1) + 'k' : '-';
+                const followersText = item.followers > 0 ? (item.followers / 1000).toFixed(1) + 'k' : '-';
+
+                return `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-2.5 font-bold text-slate-900 flex items-center gap-1.5">
+                            <span>${item.name}</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded border ${elementBadgeClass}">${item.elementPersian}</span>
+                        </td>
+                        <td class="p-2.5 font-medium text-slate-800">${likesText}</td>
+                        <td class="p-2.5 font-medium text-indigo-600">${commentsText}</td>
+                        <td class="p-2.5 text-slate-600">${followersText}</td>
+                        <td class="p-2.5 text-slate-500 text-[11px]">${item.fanAccount}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ----------------------------------------------------
+        // CHART 1: Trainee Likes & Comments (Chart.js)
+        // ----------------------------------------------------
+        Chart.defaults.font.family = 'Vazirmatn';
+
+        function initTraineeChart() {
+            const ctx = document.getElementById('traineeChart').getContext('2d');
+            
+            const filteredData = traineeData.slice(0, 8); // Top 8 trainees for clarity
+
+            traineeChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: filteredData.map(d => d.name),
+                    datasets: [
+                        {
+                            label: 'لایک‌ها (به هزار)',
+                            data: filteredData.map(d => d.likes / 1000),
+                            backgroundColor: '#6366f1',
+                            borderRadius: 4,
+                        },
+                        {
+                            label: 'نظرات (به هزار)',
+                            data: filteredData.map(d => d.comments / 1000),
+                            backgroundColor: '#c084fc',
+                            borderRadius: 4,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            rtl: true,
+                            labels: {
+                                font: { family: 'Vazirmatn', size: 11 },
+                                boxWidth: 12
+                            }
+                        },
+                        tooltip: {
+                            rtl: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    label += context.raw + 'k';
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Vazirmatn', size: 10 } }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            position: 'right', // Put Y axis on right for RTL feeling
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { family: 'Vazirmatn', size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTraineeChart() {
+            if (!traineeChartInstance) return;
+
+            const filtered = traineeData.filter(item => {
+                return currentElementFilter === 'all' || item.element === currentElementFilter;
+            }).slice(0, 8);
+
+            traineeChartInstance.data.labels = filtered.map(d => d.name);
+            traineeChartInstance.data.datasets[0].data = filtered.map(d => d.likes / 1000);
+            traineeChartInstance.data.datasets[1].data = filtered.map(d => d.comments / 1000);
+            traineeChartInstance.update();
+        }
+
+        // ----------------------------------------------------
+        // COMPARISON MATRIX TAB LOGIC
+        // ----------------------------------------------------
+        function switchCompTab(index) {
+            const btns = document.querySelectorAll('.comp-tab-btn');
+            btns.forEach((btn, idx) => {
+                if (idx === index) {
+                    btn.className = "comp-tab-btn px-4 py-2 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-sm";
+                } else {
+                    btn.className = "comp-tab-btn px-4 py-2 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200";
+                }
+            });
+
+            const data = comparisonData[index];
+            const area = document.getElementById('comp-content-area');
+
+            area.innerHTML = `
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-500 uppercase">فرمت سنتی</span>
+                        <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-semibold">مدل اوج انفجاری</span>
+                    </div>
+                    <h5 class="font-bold text-slate-900 text-base">${data.realTitle}</h5>
+                    <p class="text-xs text-slate-600 leading-relaxed pt-1 border-t border-slate-200/60">${data.realDesc}</p>
+                </div>
+
+                <div class="bg-indigo-50/70 p-5 rounded-xl border border-indigo-100 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-indigo-600 uppercase">فرمت هوش مصنوعی</span>
+                        <span class="text-[10px] bg-indigo-600 text-white px-2 py-0.5 rounded font-semibold">مدل همراهی طولانی‌مدت</span>
+                    </div>
+                    <h5 class="font-bold text-indigo-950 text-base">${data.aiTitle}</h5>
+                    <p class="text-xs text-slate-700 leading-relaxed pt-1 border-t border-indigo-100">${data.aiDesc}</p>
+                </div>
+            `;
+        }
+
+        // ----------------------------------------------------
+        // CHART 2: Data Cliff Chart (Chart.js)
+        // ----------------------------------------------------
+        function initCliffChart() {
+            const ctx = document.getElementById('cliffChart').getContext('2d');
+
+            cliffChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['اوایل ژوئن (آغاز)', 'اواخر ژوئن (اوج)', 'اواسط جولای', 'اواخر جولای', 'اواسط آگوست (روز ورزش)'],
+                    datasets: [{
+                        label: 'لایک‌های قسمت رسمی (هزار)',
+                        data: [150, 700, 550, 300, 50],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#ef4444',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            rtl: true,
+                            labels: { font: { family: 'Vazirmatn', size: 11 } }
+                        },
+                        tooltip: {
+                            rtl: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return ' لایک‌ها: ' + context.raw + 'k';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Vazirmatn', size: 10 } }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            position: 'right', // Put Y axis on right for RTL feeling
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { family: 'Vazirmatn', size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
