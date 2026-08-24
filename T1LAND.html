@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>테이크원 프렌즈 랜드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['"Malgun Gothic"', '맑은 고딕', 'sans-serif'],
+                    },
+                    colors: {
+                        'bamkids-primary': '#FF9F43', 
+                        'bamkids-secondary': '#FFD060', 
+                        'bamkids-bg': '#FFF4E0', 
+                        'bamkids-dark': '#5D4037', 
+                        'notebook-bg': '#FDFBF7',
+                    },
+                    animation: {
+                        'spin-slow': 'spin 8s linear infinite',
+                        'bounce-slow': 'bounce 3s infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        glow: {
+                            'from': { boxShadow: '0 0 10px #a855f7, 0 0 20px #a855f7' },
+                            'to': { boxShadow: '0 0 20px #d8b4fe, 0 0 30px #d8b4fe' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #fdf2f8; 
+            background-image: radial-gradient(#fbcfe8 2px, transparent 2px);
+            background-size: 30px 30px;
+            color: #333;
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif !important; 
+        }
+
+        /* 다이어리/수첩 스타일 탭 레이아웃 */
+        .notebook-container {
+            background-color: #FDFBF7;
+            border: 2px solid #e5e5e5;
+            border-radius: 16px;
+            box-shadow: 20px 20px 60px #cac2b5, -20px -20px 60px #ffffff, inset 3px 0 10px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        
+        /* 수첩 스프링 디테일 */
+        .notebook-springs {
+            position: absolute;
+            left: -15px;
+            top: 40px;
+            bottom: 40px;
+            width: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            z-index: 10;
+        }
+        .spring {
+            width: 30px;
+            height: 10px;
+            background: linear-gradient(to bottom, #d1d5db, #9ca3af, #d1d5db);
+            border-radius: 5px;
+            border: 1px solid #6b7280;
+            box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
+        }
+
+        .tab-btn {
+            writing-mode: horizontal-tb;
+            border: 2px solid #fbcfe8;
+            border-radius: 20px 20px 0 0;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background-color: white;
+            box-shadow: 0px -3px 0px rgba(244, 114, 182, 0.2);
+            margin-right: 4px;
+        }
+        @media (min-width: 768px) {
+            .tab-btn {
+                border-radius: 20px 0 0 20px;
+                margin-right: 0;
+                margin-bottom: 10px;
+                box-shadow: -3px 3px 0px rgba(244, 114, 182, 0.2);
+            }
+        }
+        .tab-btn.active {
+            background-color: #fdf2f8;
+            font-weight: 900;
+            color: #db2777;
+            z-index: 10;
+            border-color: #f472b6;
+        }
+        @media (min-width: 768px) {
+            .tab-btn.active {
+                transform: scale(1.05) translateX(-5px);
+                box-shadow: -5px 5px 0px rgba(244, 114, 182, 0.4);
+                width: 105%;
+            }
+        }
+
+        /* 말풍선 애니메이션 */
+        .speech-bubble {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popIn {
+            0% { transform: translate(-50%, 10px) scale(0.8); opacity: 0; }
+            100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+        }
+
+        /* 3D 회전 뷰어 (우리네컷) */
+        .viewport-3d { perspective: 1000px; }
+        .inner-3d { transition: transform 0.3s ease-out; transform-style: preserve-3d; }
+
+        .hidden { display: none !important; }
+        
+        /* 커스텀 스크롤바 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        
+        /* 타로 카드 3D 스타일 */
+        .tarot-card-wrapper { perspective: 1000px; cursor: pointer; }
+        .tarot-card {
+            width: 100%; height: 100%;
+            position: relative;
+            transition: transform 0.6s, opacity 0.3s;
+            transform-style: preserve-3d;
+        }
+        .tarot-card:hover { transform: translateY(-5px); }
+        .tarot-card.picked { opacity: 0; transform: scale(0.8) translateY(-20px); pointer-events: none; }
+        .tarot-face {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden; border-radius: 8px;
+        }
+        .tarot-front { background-color: white; transform: rotateY(180deg); display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px solid #d8b4fe;}
+        .tarot-back { background-color: #6b21a8; border: 2px solid #d8b4fe; background-size: cover; background-position: center; }
+
+        /* 다꾸 스타일 통통 튀는 큐트 버튼 (btn-cute) */
+        .btn-cute {
+            border-radius: 9999px;
+            font-weight: 900;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(0,0,0,0.1);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.15), 0 5px 10px rgba(0,0,0,0.1);
+            text-shadow: 0 1px 1px rgba(255,255,255,0.5);
+        }
+        .btn-cute:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 rgba(0,0,0,0.15), 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn-cute:disabled { opacity: 0.5; pointer-events: none; transform: none; box-shadow: none; border: 1px solid #ccc; }
+
+        /* 버튼 컬러 베리에이션 */
+        .btn-primary { background: linear-gradient(to bottom, #FFD060, #FF9F43); color: #5D4037; border-color: #e68a00; }
+        .btn-secondary { background: linear-gradient(to bottom, #fbcfe8, #f472b6); color: #831843; border-color: #db2777; }
+        .btn-tertiary { background: linear-gradient(to bottom, #bfdbfe, #60a5fa); color: #1e3a8a; border-color: #2563eb; }
+        .btn-dark { background: linear-gradient(to bottom, #4b5563, #1f2937); color: #ffffff; border-color: #111827; text-shadow: none; box-shadow: 0 4px 0 #111827, 0 5px 10px rgba(0,0,0,0.2); }
+        .btn-dark:active { box-shadow: 0 0 0 #111827, 0 2px 5px rgba(0,0,0,0.2); }
+
+        /* 다이어리 꾸미기(다꾸) 배경 패턴 및 마스킹 테이프 */
+        .bg-deco {
+            background-color: #FDFBF7;
+            background-image: 
+                linear-gradient(#f1f1f1 1px, transparent 1px),
+                linear-gradient(90deg, #f1f1f1 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .washi-tape {
+            position: absolute; width: 120px; height: 30px;
+            background-color: rgba(255, 208, 96, 0.5);
+            transform: rotate(-5deg); z-index: 20; backdrop-filter: blur(2px);
+            border-left: 2px dashed rgba(0,0,0,0.1); border-right: 2px dashed rgba(0,0,0,0.1);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-6 px-4 relative overflow-x-hidden">
+
+    <button id="global-share-btn" class="fixed bottom-6 right-6 w-14 h-14 bg-gray-800 text-white rounded-full shadow-[0_4px_15px_rgba(0,0,0,0.3)] flex items-center justify-center text-xl hover:bg-gray-700 hover:scale-110 transition-all z-50 hidden" onclick="copyShareLink()">
+        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+    </button>
+
+    <header class="w-full max-w-6xl flex justify-between items-end mb-6 px-4">
+        <div>
+            <button onclick="switchTab('home')" class="text-sm font-bold text-gray-500 hover:text-pink-500 mb-1 transition-colors"><i class="fa-solid fa-house-chimney"></i> 홈으로</button>
+            <h1 class="text-3xl md:text-5xl font-black text-pink-500 drop-shadow-sm tracking-tight">TAKEONE FRIENDS LAND</h1>
+            <h2 class="text-xl md:text-2xl font-bold text-bamkids-dark mt-1">나만의 최애 꾸미기</h2>
+        </div>
+        <div>
+            <button class="btn-cute btn-dark px-6 py-2" onclick="showMsg('로그인 시스템 준비 중입니다.')">
+                <i class="fa-solid fa-arrow-right-to-bracket mr-1"></i> 로그인
+            </button>
+        </div>
+    </header>
+
+    <main class="w-full max-w-6xl flex flex-col md:flex-row relative">
+        <!-- 왼쪽 수첩 영역 -->
+        <div class="notebook-container flex-grow min-h-[750px] p-6 md:p-10 z-10 w-full md:w-[85%] bg-deco">
+            <!-- 수첩 스프링 -->
+            <div class="notebook-springs hidden md:flex">
+                <div class="spring"></div><div class="spring"></div><div class="spring"></div>
+                <div class="spring"></div><div class="spring"></div><div class="spring"></div>
+                <div class="spring"></div><div class="spring"></div><div class="spring"></div>
+            </div>
+
+            <section id="tab-home" class="w-full h-full flex flex-col gap-6 animate-[fadeIn_0.3s_ease-in-out]">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
+                    
+                    <!-- 홈: 좌측 랭킹 3D 포스터 -->
+                    <div class="lg:col-span-8 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-6 border border-blue-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-[450px]">
+                        <div class="absolute top-4 left-4 z-20">
+                            <h3 class="text-2xl font-black text-blue-900 drop-shadow-md"><i class="fa-solid fa-crown text-yellow-400"></i> 주간 인기 랭킹 1위</h3>
+                            <p class="text-blue-700 font-bold mt-1">사막여우 밤밤 - 한여름 바캉스 룩</p>
+                        </div>
+                        
+                        <!-- 3D 애니메이션 포스터 (기존 3D 뷰어 활용) -->
+                        <div class="flex-grow flex items-center justify-center mt-8 viewport-3d">
+                            <div class="inner-3d w-64 h-80 bg-white rounded-xl shadow-2xl p-4 flex flex-col items-center border-4 border-white relative cursor-pointer" style="transform: rotateY(-15deg);" onmouseover="this.style.transform='rotateY(0deg) scale(1.05)';" onmouseout="this.style.transform='rotateY(-15deg) scale(1)';">
+                                <img src="https://placehold.co/400x500/FFD060/5D4037?text=Bambam+3D" class="w-full h-full object-cover rounded-lg shadow-inner animate-float" alt="인기 캐릭터">
+                                <div class="absolute -bottom-4 bg-red-500 text-white font-black px-6 py-2 rounded-full shadow-lg border-2 border-white transform -rotate-2">투표수 1위!</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 홈: 우측 상단 운세 영역 -->
+                    <div class="lg:col-span-4 bg-yellow-50 rounded-2xl p-6 border border-yellow-200 shadow-sm flex flex-col relative group">
+                        <div class="washi-tape" style="background-color: rgba(244, 114, 182, 0.4); transform: rotate(3deg); left: 80%; width: 80px; top: -10px;"></div>
+                        <div class="absolute -right-2 -top-2 text-5xl text-yellow-200 opacity-50 transition-transform group-hover:rotate-12"><i class="fa-solid fa-star"></i></div>
+                        
+                        <div class="flex justify-between items-center mb-4 z-10">
+                            <h3 class="text-lg font-black text-yellow-800" id="home-fortune-title">오늘의 별자리 운세</h3>
+                            <button onclick="goToFortuneFromHome()" class="btn-cute btn-primary text-xs px-3 py-1">GO! <i class="fa-solid fa-play text-[10px]"></i></button>
+                        </div>
+                        
+                        <div class="bg-white/80 p-4 rounded-xl z-10 flex-grow flex flex-col justify-between">
+                            <div>
+                                <p class="text-3xl font-black text-center text-blue-600 mb-2" id="home-fortune-score">95점</p>
+                                <p class="text-sm font-bold text-gray-700 text-center leading-relaxed bg-blue-50 p-2 rounded-lg" id="home-fortune-desc">"새로운 만남이 행운을 가져다줄 거예요. 활짝 웃어보세요!"</p>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 mt-4 text-center">
+                                <div class="bg-gray-50 rounded p-2 border border-gray-100 shadow-sm"><p class="text-[10px] text-gray-500 font-bold mb-1">아이템</p><p class="text-xs font-black text-pink-500" id="home-fortune-item">리본 핀</p></div>
+                                <div class="bg-gray-50 rounded p-2 border border-gray-100 shadow-sm"><p class="text-[10px] text-gray-500 font-bold mb-1">방향</p><p class="text-xs font-black text-blue-500" id="home-fortune-dir">남동쪽</p></div>
+                                <div class="bg-gray-50 rounded p-2 border border-gray-100 shadow-sm"><p class="text-[10px] text-gray-500 font-bold mb-1">컬러</p><p class="text-xs font-black text-yellow-500" id="home-fortune-color">스카이블루</p></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end mt-2 z-10">
+                            <button onclick="toggleHomeFortune()" class="text-xs text-gray-400 hover:text-gray-600 font-bold underline transition-colors"><i class="fa-solid fa-rotate"></i> <span id="home-fortune-toggle-text">사주 결과로 보기</span></button>
+                        </div>
+                    </div>
+
+                    <!-- 홈: 하단 좌측 내 캐릭터 (터치 인터랙션) -->
+                    <div class="lg:col-span-4 bg-[url('https://placehold.co/600x400/e0f2fe/bae6fd?text=Room+Bg')] bg-cover bg-center rounded-2xl border border-gray-200 shadow-sm relative h-[250px] flex items-center justify-center cursor-pointer overflow-hidden group" onclick="handleCharacterClick()">
+                        <div class="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors"></div>
+                        <p class="absolute top-2 left-3 text-xs font-bold text-gray-600 bg-white/70 px-2 py-1 rounded-full"><i class="fa-solid fa-hand-pointer"></i> 나를 터치해봐!</p>
+                        
+                        <div class="relative animate-bounce-slow">
+                            <!-- 캐릭터 모형 -->
+                            <div class="w-20 h-24 bg-white rounded-[40px] border-4 border-bamkids-dark relative overflow-hidden flex flex-col items-center pt-4 shadow-lg">
+                                <div class="flex gap-2 mb-1"><div class="w-3 h-3 bg-bamkids-dark rounded-full"></div><div class="w-3 h-3 bg-bamkids-dark rounded-full"></div></div>
+                                <div class="flex gap-6 w-full px-2 justify-between"><div class="w-2 h-2 bg-pink-300 rounded-full"></div><div class="w-2 h-2 bg-pink-300 rounded-full"></div></div>
+                                <div class="w-full h-10 bg-bamkids-primary absolute bottom-0 border-t-2 border-bamkids-dark" id="home-outfit-color"></div>
+                            </div>
+                            
+                            <!-- 말풍선 (채팅 기능 제거, 가이드 문구 팝업) -->
+                            <div id="home-speech" class="speech-bubble absolute -top-12 left-1/2 transform -translate-x-1/2 bg-white border-2 border-bamkids-dark text-bamkids-dark px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap shadow-md opacity-0 z-20 pointer-events-none">
+                                반가워! 꾸미기 탭을 눌러볼까?
+                                <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-bamkids-dark"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 홈: 하단 우측 실시간 인기 커스텀 TOP 3 -->
+                    <div class="lg:col-span-8 bg-white rounded-2xl p-6 border border-gray-200 shadow-sm h-[250px] flex flex-col">
+                        <h3 class="text-lg font-black text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-fire text-red-500"></i> 실시간 인기 커스텀 TOP 3</h3>
+                        <div class="grid grid-cols-3 gap-4 flex-grow">
+                            <div class="flex flex-col items-center justify-center bg-gray-50 rounded-xl border border-gray-100 p-2 relative">
+                                <div class="absolute -top-3 -left-2 w-7 h-7 bg-yellow-400 text-white rounded-full flex items-center justify-center font-black text-sm border-2 border-white shadow-sm">1</div>
+                                <div class="w-16 h-16 bg-pink-100 rounded-lg mb-2 overflow-hidden border border-gray-200"><img src="https://placehold.co/100x100/fbcfe8/be185d?text=Look1" class="w-full h-full object-cover"></div>
+                                <p class="text-[11px] font-bold text-center">봄날의 요정 룩</p>
+                            </div>
+                            <div class="flex flex-col items-center justify-center bg-gray-50 rounded-xl border border-gray-100 p-2 relative">
+                                <div class="absolute -top-3 -left-2 w-7 h-7 bg-gray-300 text-white rounded-full flex items-center justify-center font-black text-sm border-2 border-white shadow-sm">2</div>
+                                <div class="w-16 h-16 bg-blue-100 rounded-lg mb-2 overflow-hidden border border-gray-200"><img src="https://placehold.co/100x100/bfdbfe/1d4ed8?text=Look2" class="w-full h-full object-cover"></div>
+                                <p class="text-[11px] font-bold text-center">마린 세일러복</p>
+                            </div>
+                            <div class="flex flex-col items-center justify-center bg-gray-50 rounded-xl border border-gray-100 p-2 relative">
+                                <div class="absolute -top-3 -left-2 w-7 h-7 bg-orange-300 text-white rounded-full flex items-center justify-center font-black text-sm border-2 border-white shadow-sm">3</div>
+                                <div class="w-16 h-16 bg-green-100 rounded-lg mb-2 overflow-hidden border border-gray-200"><img src="https://placehold.co/100x100/bbf7d0/15803d?text=Look3" class="w-full h-full object-cover"></div>
+                                <p class="text-[11px] font-bold text-center">새싹 유치원복</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-custom" class="w-full h-full hidden flex-col animate-[fadeIn_0.3s_ease-in-out]">
+                <div class="washi-tape" style="top: 20px; left: 15%; margin-left:0;"></div>
+                <div class="flex justify-between items-end border-b-2 border-gray-200 pb-4 mb-6 relative mt-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-gray-800"><i class="fa-solid fa-palette text-pink-500 mr-2"></i>스타일 스튜디오</h2>
+                        <p class="text-sm text-gray-500 font-bold mt-1">원하는 색상과 스타일로 꾸미고 갤러리에 저장해보세요.</p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col md:flex-row gap-8 flex-grow">
+                    <!-- Left: Preview & Character Select -->
+                    <div class="md:w-1/2 bg-white rounded-2xl border-2 border-pink-100 flex flex-col items-center justify-center relative p-8 shadow-inner">
+                        <!-- 추가된 캐릭터 선택 드롭다운 -->
+                        <div class="absolute top-4 left-4 z-20">
+                            <label class="text-xs font-bold text-pink-600 block mb-1">캐릭터 모델 변경</label>
+                            <select id="custom-char-select" class="p-2 rounded-xl font-bold border-2 border-pink-200 text-sm outline-none text-pink-800 bg-pink-50 shadow-sm" onchange="showMsg('캐릭터 모델이 ' + this.value + '(으)로 변경되었습니다!')">
+                                <option>기본 캐릭터</option>
+                                <option>사막여우 밤밤</option>
+                                <option>토끼 베리</option>
+                                <option>곰돌이 푸푸</option>
+                            </select>
+                        </div>
+
+                        <!-- 캐릭터 프리뷰 영역 -->
+                        <div class="relative transition-transform hover:scale-105 duration-300 mt-12">
+                             <div class="w-48 h-64 bg-white rounded-[80px] border-4 border-bamkids-dark relative overflow-hidden flex flex-col items-center pt-10 shadow-[0_10px_20px_rgba(0,0,0,0.1)]">
+                                <div class="flex gap-4 mb-3"><div class="w-6 h-6 bg-bamkids-dark rounded-full"></div><div class="w-6 h-6 bg-bamkids-dark rounded-full"></div></div>
+                                <div class="w-8 h-2 border-b-4 border-bamkids-dark rounded-full mb-1"></div>
+                                <div class="flex gap-12 w-full px-6 justify-between absolute top-20"><div class="w-5 h-5 bg-pink-300 rounded-full opacity-70"></div><div class="w-5 h-5 bg-pink-300 rounded-full opacity-70"></div></div>
+                                <div id="preview-outfit" class="w-full h-24 bg-bamkids-primary absolute bottom-0 transition-colors duration-300 border-t-4 border-bamkids-dark"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right: Color Controls -->
+                    <div class="md:w-1/2 flex flex-col justify-center gap-6">
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 class="font-black mb-4 text-gray-700 flex items-center gap-2"><i class="fa-solid fa-paintbrush text-blue-400"></i> 의상 컬러 베이스 선택</h3>
+                            <div class="grid grid-cols-4 gap-4">
+                                <button class="w-14 h-14 bg-red-400 rounded-full border-4 border-white shadow-[0_4px_10px_rgba(248,113,113,0.4)] hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-red-200" onclick="changeCustomColor('#F87171')"></button>
+                                <button class="w-14 h-14 bg-blue-400 rounded-full border-4 border-white shadow-[0_4px_10px_rgba(96,165,250,0.4)] hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-blue-200" onclick="changeCustomColor('#60A5FA')"></button>
+                                <button class="w-14 h-14 bg-green-400 rounded-full border-4 border-white shadow-[0_4px_10px_rgba(52,211,153,0.4)] hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-green-200" onclick="changeCustomColor('#34D399')"></button>
+                                <button class="w-14 h-14 bg-yellow-400 rounded-full border-4 border-white shadow-[0_4px_10px_rgba(251,191,36,0.4)] hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-yellow-200" onclick="changeCustomColor('#FBBF24')"></button>
+                                <button class="w-14 h-14 bg-purple-400 rounded-full border-4 border-white shadow-[0_4px_10px_rgba(167,139,250,0.4)] hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-purple-200" onclick="changeCustomColor('#A78BFA')"></button>
+                                <button class="w-14 h-14 bg-pink-400 rounded-full border-4 border-white shadow-[0_4px_10px_rgba(244,114,182,0.4)] hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-pink-200" onclick="changeCustomColor('#F472B6')"></button>
+                                <button class="w-14 h-14 bg-gray-800 rounded-full border-4 border-white shadow-[0_4px_10px_rgba(31,41,55,0.4)] hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-gray-300" onclick="changeCustomColor('#1F2937')"></button>
+                                <button class="w-14 h-14 bg-orange-400 rounded-full border-4 border-white shadow-[0_4px_10px_rgba(251,146,60,0.4)] hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-orange-200" onclick="changeCustomColor('#FB923C')"></button>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button class="btn-cute btn-dark w-full py-4 text-lg" onclick="showMsg('디자인이 갤러리에 저장되었습니다!\n우리네컷 피팅룸에서 입어볼 수 있습니다.')">
+                                <i class="fa-solid fa-floppy-disk mr-2"></i> 갤러리에 저장하고 입기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-play" class="w-full h-full hidden flex-col relative animate-[fadeIn_0.3s_ease-in-out]">
+                
+                <!-- 놀자 메인 뷰 -->
+                <div id="play-main-view" class="flex flex-col h-full justify-center gap-8">
+                    <h2 class="text-3xl font-black text-center text-gray-800 mb-4">어디로 놀러갈까요?</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 md:px-12">
+                        
+                        <!-- AI 신비의 방 -->
+                        <div class="bg-indigo-50 rounded-3xl p-8 border-2 border-indigo-200 shadow-md hover:shadow-xl transition-all cursor-pointer group flex flex-col items-center justify-center" onclick="navigatePlay('mystic-home')">
+                            <div class="w-32 h-32 bg-indigo-200 rounded-full flex items-center justify-center text-6xl text-indigo-600 mb-6 group-hover:scale-110 transition-transform"><i class="fa-solid fa-crystal-ball"></i>🔮</div>
+                            <h3 class="text-2xl font-black text-indigo-900">신비의 방</h3>
+                        </div>
+
+                        <!-- 2D 데이트 방 -->
+                        <div class="bg-pink-50 rounded-3xl p-8 border-2 border-pink-200 shadow-md hover:shadow-xl transition-all cursor-pointer group flex flex-col items-center justify-center" onclick="navigatePlay('date-home')">
+                            <div class="w-32 h-32 bg-pink-200 rounded-full flex items-center justify-center text-6xl text-pink-600 mb-6 group-hover:scale-110 transition-transform"><i class="fa-solid fa-heart"></i></div>
+                            <h3 class="text-2xl font-black text-pink-900">데이트 룸</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 신비의 방 메인 메뉴 -->
+                <div id="play-mystic-home" class="hidden flex-col h-full">
+                    <button onclick="navigatePlay('main')" class="self-start btn-cute bg-gray-100 text-gray-600 px-4 py-2 border-gray-300 text-sm mb-6"><i class="fa-solid fa-arrow-left"></i> 뒤로가기</button>
+                    <h2 class="text-2xl font-black text-indigo-900 mb-8 text-center"><i class="fa-solid fa-sparkles"></i> 신비의 방 메뉴</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow">
+                        <button onclick="navigatePlay('horoscope')" class="btn-cute bg-blue-50 border-blue-300 py-10 flex flex-col items-center hover:bg-blue-100 transition-colors">
+                            <i class="fa-solid fa-star text-4xl text-blue-500 mb-4"></i><span class="font-black text-xl text-blue-900">별자리</span>
+                        </button>
+                        <button onclick="navigatePlay('saju')" class="btn-cute bg-red-50 border-red-300 py-10 flex flex-col items-center hover:bg-red-100 transition-colors">
+                            <i class="fa-solid fa-scroll text-4xl text-red-500 mb-4"></i><span class="font-black text-xl text-red-900">사주</span>
+                        </button>
+                        <button onclick="navigatePlay('tarot')" class="btn-cute bg-purple-50 border-purple-300 py-10 flex flex-col items-center hover:bg-purple-100 transition-colors">
+                            <i class="fa-brands fa-galactic-senate text-4xl text-purple-500 mb-4"></i><span class="font-black text-xl text-purple-900">타로</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 데이트 룸 뷰 -->
+                <div id="play-date-home" class="hidden flex-col h-full bg-[url('https://placehold.co/800x600/ffe4e6/fda4af?text=Cafe+Date')] bg-cover bg-center rounded-2xl p-6 relative">
+                    <button onclick="navigatePlay('main')" class="absolute top-4 left-4 btn-cute bg-white/80 border-gray-300 px-3 py-1 text-gray-700 text-sm z-10"><i class="fa-solid fa-arrow-left"></i> 나가기</button>
+                    
+                    <div class="absolute top-4 right-4 flex gap-2 z-10">
+                        <select id="date-theme-select" class="p-2 rounded-xl font-bold border-2 border-pink-300 text-sm outline-none bg-white shadow-sm text-pink-700" onchange="resetDate()">
+                            <option value="cafe">놀이공원 테마</option>
+                            <option value="park">방과후 교실 테마</option>
+                            <option value="movie">영화관 테마</option>
+                        </select>
+                        <select id="date-char-select" class="p-2 rounded-xl font-bold border-2 border-pink-300 text-sm outline-none bg-white shadow-sm text-pink-700" onchange="resetDate()">
+                            <option value="밤밤">사막여우 밤밤</option>
+                            <option value="베리">토끼 베리</option>
+                            <option value="푸푸">곰돌이 푸푸</option>
+                        </select>
+                    </div>
+
+                    <div class="flex-grow flex items-end justify-center pb-10">
+                         <div id="date-character-model" class="w-40 h-52 bg-white rounded-[70px] border-4 border-bamkids-dark relative overflow-hidden flex flex-col items-center pt-8 shadow-2xl animate-float">
+                            <div class="flex gap-4 mb-2"><div class="w-5 h-5 bg-bamkids-dark rounded-full"></div><div class="w-5 h-5 bg-bamkids-dark rounded-full"></div></div>
+                            <div class="flex gap-10 w-full px-4 justify-between absolute top-16"><div class="w-4 h-4 bg-pink-400 rounded-full"></div><div class="w-4 h-4 bg-pink-400 rounded-full"></div></div>
+                            <div class="w-full h-20 bg-pink-200 absolute bottom-0 border-t-4 border-bamkids-dark"></div>
+                        </div>
+                    </div>
+
+                    <!-- 대화창 UI -->
+                    <div class="bg-white/95 border-4 border-pink-300 rounded-xl p-4 shadow-lg min-h-[140px] flex flex-col justify-between relative">
+                        <div class="absolute -top-12 right-0">
+                            <button class="btn-cute bg-red-50 border-red-200 text-red-500 py-2 px-4 text-xs font-black hover:bg-red-100" onclick="resetDate()"><i class="fa-solid fa-heart text-red-500 animate-pulse"></i> 한번 더 데이트</button>
+                        </div>
+                        <p id="date-dialogue" class="font-bold text-gray-800 text-lg">"오늘 날씨 정말 좋다! 우리 뭐 마실까?"</p>
+                        <div id="date-choices" class="flex gap-2 mt-4">
+                            <button class="flex-1 btn-cute bg-pink-100 hover:bg-pink-200 text-pink-900 py-2 text-sm border-pink-300" onclick="selectDateChoice(1)">따뜻한 라떼 한잔!</button>
+                            <button class="flex-1 btn-cute bg-blue-100 hover:bg-blue-200 text-blue-900 py-2 text-sm border-blue-300" onclick="selectDateChoice(2)">시원한 아이스티!</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 운세 결과 디테일 뷰 (별자리, 사주, 타로 공통) -->
+                <div id="play-fortune-detail" class="hidden flex-col h-full bg-white rounded-2xl p-2">
+                    
+                    <div class="flex justify-between items-center border-b pb-4 mb-4 relative mt-2 px-2">
+                        <button onclick="navigatePlay('mystic-home')" class="btn-cute bg-gray-100 text-gray-600 px-4 py-2 border-gray-300 text-sm"><i class="fa-solid fa-arrow-left"></i> 뒤로</button>
+                        <h2 id="fortune-main-title" class="text-2xl font-black text-indigo-900 absolute left-1/2 transform -translate-x-1/2">별자리</h2>
+                        <select id="fortune-char-select" class="p-2 rounded-xl font-bold border-2 border-indigo-200 text-sm outline-none text-indigo-800 bg-indigo-50 shadow-sm" onchange="updateTarotBacks()">
+                            <option>내 캐릭터</option><option>사막여우 밤밤</option><option>토끼 베리</option>
+                        </select>
+                    </div>
+
+                    <!-- 동적 응원 메세지 -->
+                    <div class="bg-indigo-50 rounded-2xl p-4 mb-6 border-2 border-indigo-100 text-center shadow-sm relative overflow-hidden mx-2">
+                        <div class="absolute -right-4 -top-4 text-4xl text-indigo-200 opacity-50"><i class="fa-solid fa-quote-right"></i></div>
+                        <p id="fortune-one-liner" class="text-indigo-800 font-black text-lg relative z-10"></p>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-8 flex-grow px-2">
+                        <!-- Left: 3D 캐릭터 영역 -->
+                        <div class="md:w-1/3 flex flex-col items-center justify-center bg-gray-50 rounded-xl relative p-4 border border-gray-200 overflow-hidden shadow-inner">
+                            <div class="absolute top-2 left-2 z-10" id="fortune-config-area"></div>
+                            
+                            <div class="relative z-0 mt-8 cursor-pointer group" onclick="speakFortuneAdvice()">
+                                <p class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-[10px] font-bold text-gray-400 bg-white/70 px-2 py-1 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10"><i class="fa-solid fa-hand-pointer"></i> 날 터치해봐!</p>
+                                
+                                <div id="fortune-speech" class="speech-bubble absolute -top-16 left-1/2 transform -translate-x-1/2 bg-white border-2 border-indigo-400 text-indigo-900 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap shadow-md opacity-0 z-20 pointer-events-none transition-opacity duration-300">
+                                    결과를 알려줄게!
+                                    <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-indigo-400"></div>
+                                </div>
+
+                                <div class="w-32 h-40 bg-white rounded-[60px] border-4 border-bamkids-dark relative overflow-hidden flex flex-col items-center pt-6 shadow-lg animate-float">
+                                    <div class="flex gap-3 mb-2"><div class="w-4 h-4 bg-bamkids-dark rounded-full"></div><div class="w-4 h-4 bg-bamkids-dark rounded-full"></div></div>
+                                    <div id="fortune-char-outfit" class="w-full h-16 bg-blue-500 absolute bottom-0 border-t-4 border-bamkids-dark flex items-center justify-center">
+                                        <span id="fortune-char-text" class="text-white font-black text-xs drop-shadow-md">우주테마</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: 결과 탭 및 타로 카드 영역 -->
+                        <div class="md:w-2/3 flex flex-col h-full">
+                            <div class="flex gap-2 mb-4" id="fortune-category-tabs">
+                                <button class="f-cat-btn flex-1 btn-cute bg-gray-100 text-gray-600 py-2 text-sm border-gray-300" data-cat="전체" onclick="setFortuneCategory('전체')">전체</button>
+                                <button class="f-cat-btn flex-1 btn-cute bg-gray-100 text-gray-600 py-2 text-sm border-gray-300" data-cat="연애" onclick="setFortuneCategory('연애')">연애</button>
+                                <button class="f-cat-btn flex-1 btn-cute bg-gray-100 text-gray-600 py-2 text-sm border-gray-300" data-cat="사업" onclick="setFortuneCategory('사업')">사업</button>
+                                <button class="f-cat-btn flex-1 btn-cute bg-gray-100 text-gray-600 py-2 text-sm border-gray-300" data-cat="재물" onclick="setFortuneCategory('재물')">재물</button>
+                            </div>
+
+                            <div id="tarot-pick-prompt" class="hidden flex-col items-center justify-center flex-grow">
+                                <p class="text-sm font-black text-purple-700 bg-purple-50 p-4 rounded-xl border border-purple-200 shadow-sm mb-4 w-full text-center">알고 싶은 분야를 탭에서 선택해주세요!</p>
+                            </div>
+
+                            <div id="tarot-deck-area" class="hidden flex-col items-center justify-center flex-grow w-full">
+                                <p id="tarot-instruction" class="font-bold text-purple-800 mb-4 text-center">카드를 3장 뽑아주세요 (0/3)</p>
+                                
+                                <!-- 타로 풀 (7장) -->
+                                <div id="tarot-card-pool" class="flex flex-wrap justify-center gap-2 mb-6 w-full"></div>
+                                
+                                <!-- 선택된 카드 슬롯 -->
+                                <div id="tarot-selected-slots" class="flex gap-4 mb-4"></div>
+                                
+                                <button id="tarot-reveal-btn" class="hidden btn-cute btn-primary py-3 px-8 text-lg animate-bounce mt-4" onclick="generateFortuneResult()">운명의 결과 보기</button>
+                            </div>
+
+                            <div id="fortune-result-content" class="flex-grow bg-white border-2 border-gray-200 rounded-2xl p-6 overflow-y-auto font-bold text-gray-700 leading-relaxed text-sm md:text-base shadow-inner">
+                                <!-- AI 생성 결과 노출부 -->
+                            </div>
+                            
+                            <div id="tarot-retry-btn" class="hidden mt-4">
+                                <button onclick="resetTarot()" class="w-full btn-cute btn-dark py-3"><i class="fa-solid fa-rotate-right mr-2"></i> 다시 뽑기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-photo" class="w-full h-full hidden flex-col animate-[fadeIn_0.3s_ease-in-out]">
+                <div class="washi-tape" style="top: 15px; left: 80%; background-color: rgba(96, 165, 250, 0.4); transform: rotate(5deg);"></div>
+                <div class="flex justify-between items-end border-b-2 border-gray-200 pb-4 mb-6 relative mt-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-pink-600"><i class="fa-solid fa-camera-retro mr-2"></i>우리네컷 스튜디오</h2>
+                        <p class="text-sm text-gray-500 font-bold mt-1">인원수, 카메라 구도를 자유롭게 세팅하고 4컷을 완성하세요!</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col lg:flex-row gap-6 flex-grow">
+                    <!-- Left: Control Panel -->
+                    <div class="lg:w-1/3 bg-white border-2 border-gray-200 rounded-2xl p-5 flex flex-col shadow-sm h-full overflow-y-auto">
+                        <h3 class="font-black mb-4 text-gray-800 border-b pb-2 flex items-center gap-2"><i class="fa-solid fa-sliders text-gray-400"></i> 스튜디오 설정</h3>
+                        
+                        <!-- 1인 / 2인 인원수 선택 UI 추가 -->
+                        <div class="mb-4 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                            <label class="text-xs text-gray-600 font-bold block mb-2 text-center">촬영 인원 선택</label>
+                            <div class="flex gap-2">
+                                <button id="mode-1p-btn" class="flex-1 btn-cute btn-primary py-2 text-sm" onclick="setPhotoMode(1)"><i class="fa-solid fa-user"></i> 1인 모드</button>
+                                <button id="mode-2p-btn" class="flex-1 btn-cute bg-white border-gray-300 text-gray-600 py-2 text-sm" onclick="setPhotoMode(2)"><i class="fa-solid fa-user-group"></i> 2인 모드</button>
+                            </div>
+                        </div>
+
+                        <!-- 포즈 선택 추가 -->
+                        <div class="mb-4 bg-pink-50 p-3 rounded-xl border border-pink-200">
+                            <label class="text-xs text-pink-600 font-bold block mb-2 text-center">포즈 선택</label>
+                            <div class="flex gap-2">
+                                <button class="flex-1 btn-cute bg-white border-pink-300 text-pink-700 py-2 text-sm" onclick="changePose('브이')"><i class="fa-solid fa-hand-peace"></i> 브이</button>
+                                <button class="flex-1 btn-cute bg-white border-pink-300 text-pink-700 py-2 text-sm" onclick="changePose('하트')"><i class="fa-solid fa-heart"></i> 하트</button>
+                                <button class="flex-1 btn-cute bg-white border-pink-300 text-pink-700 py-2 text-sm" onclick="changePose('꽃받침')"><i class="fa-solid fa-fan"></i> 꽃받침</button>
+                            </div>
+                        </div>
+
+                        <!-- 의상 및 배경 선택 -->
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <button class="btn-cute bg-white border-gray-300 text-gray-700 py-2 text-sm" onclick="showMsg('캐릭터 변경 메뉴 오픈')">캐릭터 변경</button>
+                            <button class="btn-cute bg-white border-gray-300 text-gray-700 py-2 text-sm" onclick="showMsg('테마 고정 의상 선택 오픈 (교복, 가드너 등)')">테마 의상 변경</button>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="w-full btn-cute bg-green-50 border-green-300 text-green-700 py-2 text-sm text-center block cursor-pointer">
+                                <i class="fa-solid fa-image mr-1"></i> 배경 이미지 업로드
+                                <input type="file" class="hidden" accept="image/*" onchange="uploadBackground(event)">
+                            </label>
+                        </div>
+
+                        <button class="w-full btn-cute btn-dark py-2 mb-6 text-sm" onclick="showMsg('피팅룸 진입: 갤러리에 저장된 나의 커스텀 스타일을 불러옵니다.')">
+                            <i class="fa-solid fa-shirt"></i> 피팅룸 불러오기
+                        </button>
+
+                        <!-- Camera 3D Control (Zoom In/Out + Rotate) -->
+                        <div class="mb-6 bg-pink-50 p-4 rounded-xl border-2 border-pink-200 shadow-inner">
+                            <label class="text-sm text-pink-800 block mb-3 font-black text-center">카메라 3D 앵글 조절</label>
+                            <div class="grid grid-cols-2 gap-2 mb-2">
+                                <button class="btn-cute bg-white border-pink-300 text-pink-600 text-xs py-2" onclick="rotateSubject(-20)"><i class="fa-solid fa-rotate-left"></i> 좌회전</button>
+                                <button class="btn-cute bg-white border-pink-300 text-pink-600 text-xs py-2" onclick="rotateSubject(20)"><i class="fa-solid fa-rotate-right"></i> 우회전</button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button class="btn-cute bg-white border-blue-300 text-blue-600 text-xs py-2" onclick="zoomSubject(0.15)"><i class="fa-solid fa-plus"></i> 줌 인(앞)</button>
+                                <button class="btn-cute bg-white border-blue-300 text-blue-600 text-xs py-2" onclick="zoomSubject(-0.15)"><i class="fa-solid fa-minus"></i> 줌 아웃(뒤)</button>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto pt-4">
+                            <button id="single-shoot-btn" class="w-full btn-cute btn-secondary py-4 text-lg shadow-lg" onclick="takeSinglePhoto()">
+                                <i class="fa-solid fa-camera mr-2"></i> 촬영 찰칵!
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Center: 3D Live Viewport & Confirm -->
+                    <div class="lg:w-1/3 flex flex-col items-center justify-start gap-4">
+                        <div class="w-full aspect-[3/4] bg-gray-900 rounded-3xl border-8 border-pink-300 overflow-hidden relative viewport-3d flex items-center justify-center shadow-lg" id="photo-viewport">
+                            <div id="photo-bg-img" class="absolute inset-0 bg-[url('https://placehold.co/600x800/fdf2f8/fbcfe8?text=Pink+Vibe')] bg-cover bg-center"></div>
+                            
+                            <!-- 3D 대상 (1p or 2p 동적 렌더링) -->
+                            <div id="photo-subject" class="inner-3d relative z-10 flex gap-4 transition-transform duration-300 items-end pb-10" style="transform: translateZ(0px) rotateY(0deg) scale(1);">
+                                <!-- 기본 1인 모형 -->
+                                <div class="w-28 h-36 bg-white rounded-[50px] border-4 border-bamkids-dark flex flex-col items-center pt-5 shadow-2xl">
+                                    <div class="flex gap-2 mb-2"><div class="w-3 h-3 bg-bamkids-dark rounded-full"></div><div class="w-3 h-3 bg-bamkids-dark rounded-full"></div></div>
+                                    <div class="w-full h-14 bg-pink-400 absolute bottom-0 border-t-4 border-bamkids-dark"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Flash -->
+                            <div id="photo-flash" class="absolute inset-0 bg-white opacity-0 pointer-events-none transition-opacity duration-75 z-50"></div>
+                        </div>
+
+                        <!-- Confirm UI -->
+                        <div id="photo-confirm-ui" class="hidden w-full flex gap-2">
+                            <button class="flex-1 btn-cute bg-gray-200 border-gray-300 text-gray-700 py-3" onclick="discardPhoto()">다시 앗!</button>
+                            <button class="flex-2 w-2/3 btn-cute bg-green-500 border-green-600 text-white py-3" onclick="keepPhoto()">굿! (보관)</button>
+                        </div>
+                        <p id="photo-status" class="text-sm font-black text-gray-500 text-center bg-gray-100 px-4 py-2 rounded-full mt-2">촬영 대기중...</p>
+                    </div>
+
+                    <!-- Right: 4-Cut Strip -->
+                    <div class="lg:w-1/3 bg-white border-2 border-gray-200 rounded-2xl p-5 flex flex-col items-center shadow-sm relative">
+                        <div class="absolute top-2 left-1/2 transform -translate-x-1/2 w-8 h-3 bg-gray-300 rounded-full shadow-inner opacity-50"></div>
+                        <h3 class="font-black mb-4 text-gray-800 mt-2">내 네컷 슬롯</h3>
+                        
+                        <div id="photo-strip-container" class="w-[180px] bg-[#f8f9fa] border-2 border-gray-300 shadow-md p-3 pb-8 flex flex-col gap-2 min-h-[400px] relative">
+                            <!-- 빈 공간 안내 -->
+                            <div class="text-center text-xs text-gray-400 font-bold mt-10">사진을 촬영하여<br>여기에 채워보세요</div>
+                            <div class="absolute bottom-2 left-0 w-full text-center font-black text-[10px] text-gray-400 uppercase tracking-widest">Takeone Friends</div>
+                        </div>
+
+                        <button id="final-4cut-btn" class="w-full mt-6 btn-cute btn-dark py-4 text-lg" disabled onclick="complete4Cut()">
+                            4컷 완성하기!
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-gallery" class="w-full h-full hidden flex-col animate-[fadeIn_0.3s_ease-in-out]">
+                <div class="flex justify-between items-end border-b-2 border-gray-200 pb-4 mb-6 mt-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-blue-600"><i class="fa-solid fa-images mr-2"></i>모두의 갤러리</h2>
+                        <p class="text-sm text-gray-500 font-bold mt-1">인기 커스텀을 확인하고, 다른 유저의 의상을 입어보세요.</p>
+                    </div>
+                    <div class="relative">
+                        <input type="text" placeholder="유저/의상 이름 검색" class="border-2 border-gray-300 rounded-full pl-4 pr-10 py-2 text-sm font-bold outline-none focus:border-blue-400 bg-white">
+                        <i class="fa-solid fa-magnifying-glass absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <h3 class="font-black text-lg mb-4 text-gray-800 flex items-center gap-2"><i class="fa-solid fa-crown text-yellow-500"></i> 주간 명예의 전당</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                     <!-- Gallery Item -->
+                     <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 relative shadow-sm group hover:border-blue-300 transition-colors">
+                        <div class="w-full aspect-square bg-blue-50 rounded-xl mb-3 flex items-center justify-center overflow-hidden"><div class="w-16 h-16 bg-pink-400 rounded-full shadow-inner"></div></div>
+                        <p class="font-black text-sm text-center">봄꽃 에디션</p>
+                        <p class="text-[10px] text-center text-gray-500 font-bold mt-1">By. 유저A</p>
+                        <div class="bg-gray-50 rounded-lg mt-2 p-1 text-center border border-gray-100">
+                            <p class="text-[10px] font-bold text-gray-600">랭킹점수: <span class="text-red-500">2,540</span></p>
+                            <p class="text-[9px] text-gray-400">(투표 1540 + 사용 1000)</p>
+                        </div>
+                        <div class="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button class="btn-cute bg-white text-gray-800 text-xs py-2 w-3/4" onclick="showMsg('의상을 피팅룸으로 가져왔습니다.')">입어보기</button>
+                            <button class="btn-cute bg-pink-500 text-white text-xs py-2 w-3/4 border-pink-600" onclick="showMsg('투표 완료! (투표점수 반영)')">투표하기</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="font-black text-lg mb-4 text-gray-800 border-t-2 border-dashed border-gray-200 pt-6 mt-2">내 커스텀 관리</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 relative shadow-sm flex flex-col items-center justify-center h-48 group">
+                        <p class="font-black text-sm mb-2">마이 베이직 룩</p>
+                        <div class="flex gap-2 mt-auto w-full">
+                            <button class="flex-1 btn-cute bg-blue-500 text-white text-xs py-2 border-blue-600" onclick="showMsg('명예의 전당 후보로 등록되었습니다!')">전당 도전</button>
+                            <button class="flex-1 btn-cute bg-gray-400 text-white text-xs py-2 border-gray-500" onclick="showMsg('갤러리에서 숨김 처리되었습니다.')">숨기기</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-user" class="w-full h-full hidden flex-col animate-[fadeIn_0.3s_ease-in-out]">
+                <div class="flex justify-between items-end border-b-2 border-gray-200 pb-4 mb-6 mt-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-gray-800"><i class="fa-solid fa-user-astronaut mr-2"></i>마이 페이지 (미니룸)</h2>
+                        <p class="text-sm text-gray-500 font-bold mt-1">내 정보를 관리하고 나만의 공간을 꾸며보세요.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-8 h-full">
+                    <!-- Left: Profile Data -->
+                    <div class="md:w-1/3 bg-white rounded-2xl border-2 border-gray-200 p-6 flex flex-col items-center shadow-sm">
+                        <div class="w-24 h-24 bg-bamkids-secondary rounded-full flex items-center justify-center text-4xl text-white mb-4 shadow-inner border-4 border-white"><i class="fa-solid fa-cat"></i></div>
+                        <h3 class="text-xl font-black text-gray-800 mb-1">유저A</h3>
+                        <p class="text-sm font-bold text-gray-500 mb-6">가입일: 2026.08.24</p>
+                        
+                        <div class="w-full flex flex-col gap-3">
+                            <button class="w-full btn-cute bg-gray-100 text-gray-700 py-3 border-gray-300" onclick="showMsg('생일/별자리 정보 수정 창 띄우기 (운세에 반영됨)')">개인정보 설정</button>
+                            <button class="w-full btn-cute bg-pink-100 text-pink-700 py-3 border-pink-300" onclick="showMsg('가구 배치 및 스킨 변경 UI 진입')">미니룸 꾸미기</button>
+                        </div>
+
+                        <div class="mt-8 w-full bg-gray-50 rounded-xl border border-gray-200 p-4">
+                            <p class="text-xs font-bold text-gray-500 mb-2">활동 요약</p>
+                            <div class="flex justify-between text-sm font-black text-gray-700"><span>내 커스텀</span> <span class="text-blue-500">12</span></div>
+                            <div class="flex justify-between text-sm font-black text-gray-700 mt-1"><span>네컷 사진</span> <span class="text-purple-500">5</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Miniroom View -->
+                    <div class="md:w-2/3 bg-white rounded-2xl border-2 border-gray-200 p-6 flex flex-col shadow-sm relative overflow-hidden">
+                        <div class="washi-tape" style="top: 10px; right: 20px; background-color: rgba(167, 139, 250, 0.4); transform: rotate(10deg);"></div>
+                        <h3 class="text-lg font-black text-gray-800 mb-4 border-b-2 border-dashed pb-2">나의 미니룸</h3>
+                        
+                        <!-- 미니룸 뷰 (싸이월드 감성 픽셀 배경 목업) -->
+                        <div class="flex-grow bg-[url('https://placehold.co/800x600/e0f2fe/bae6fd?text=Miniroom+Isometric')] bg-cover bg-center rounded-xl border-2 border-gray-300 relative shadow-inner flex items-center justify-center">
+                            <!-- 미니룸 배치 캐릭터 -->
+                            <div class="w-20 h-24 bg-white rounded-[40px] border-4 border-bamkids-dark relative overflow-hidden flex flex-col items-center pt-4 shadow-xl transform translate-y-10">
+                                <div class="flex gap-2 mb-1"><div class="w-3 h-3 bg-bamkids-dark rounded-full"></div><div class="w-3 h-3 bg-bamkids-dark rounded-full"></div></div>
+                                <div class="w-full h-10 bg-orange-400 absolute bottom-0 border-t-2 border-bamkids-dark"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="w-full md:w-[15%] flex md:flex-col gap-1 mt-4 md:mt-10 px-4 md:px-0 z-0">
+            <button onclick="switchTab('home')" class="tab-btn active font-bold py-3 px-4 text-sm flex items-center justify-center gap-2" data-target="home"><i class="fa-solid fa-house-chimney"></i> <span class="hidden md:inline">홈</span></button>
+            <button onclick="switchTab('custom')" class="tab-btn font-bold py-3 px-4 text-sm flex items-center justify-center gap-2 text-gray-500" data-target="custom"><i class="fa-solid fa-wand-magic-sparkles"></i> <span class="hidden md:inline">꾸미기</span></button>
+            <button onclick="switchTab('play')" class="tab-btn font-bold py-3 px-4 text-sm flex items-center justify-center gap-2 text-gray-500" data-target="play"><i class="fa-solid fa-face-grin-stars"></i> <span class="hidden md:inline">놀자</span></button>
+            <button onclick="switchTab('photo')" class="tab-btn font-bold py-3 px-4 text-sm flex items-center justify-center gap-2 text-gray-500" data-target="photo"><i class="fa-solid fa-camera-retro"></i> <span class="hidden md:inline">우리네컷</span></button>
+            <button onclick="switchTab('gallery')" class="tab-btn font-bold py-3 px-4 text-sm flex items-center justify-center gap-2 text-gray-500" data-target="gallery"><i class="fa-solid fa-image-portrait"></i> <span class="hidden md:inline">갤러리</span></button>
+            <button onclick="switchTab('user')" class="tab-btn font-bold py-3 px-4 text-sm flex items-center justify-center gap-2 text-gray-500" data-target="user"><i class="fa-solid fa-paw"></i> <span class="hidden md:inline">유저</span></button>
+        </div>
+    </main>
+
+    <div id="msg-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-[100] p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl border-4 border-gray-200">
+            <div class="text-4xl text-bamkids-primary mb-4"><i class="fa-solid fa-circle-info"></i></div>
+            <p id="msg-text" class="font-bold mb-6 text-gray-800 whitespace-pre-line"></p>
+            <button class="btn-cute btn-dark px-8 py-3 w-full" onclick="closeMsg()">확인했어!</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. 유틸리티 및 전역 상태 ---
+        let currentTab = 'home';
+        function showMsg(text) {
+            document.getElementById('msg-text').innerText = text;
+            document.getElementById('msg-modal').classList.remove('hidden');
+        }
+        function closeMsg() { document.getElementById('msg-modal').classList.add('hidden'); }
+        function copyShareLink() { showMsg('링크가 클립보드에 복사되었습니다!\n친구들에게 공유해보세요.'); }
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            document.querySelectorAll('section').forEach(sec => {
+                sec.classList.add('hidden'); sec.classList.remove('flex');
+            });
+            const targetSec = document.getElementById(`tab-${tabId}`);
+            targetSec.classList.remove('hidden'); targetSec.classList.add('flex');
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.dataset.target === tabId) {
+                    btn.classList.add('active');
+                    btn.classList.remove('text-gray-500');
+                } else {
+                    btn.classList.remove('active');
+                    btn.classList.add('text-gray-500');
+                }
+            });
+
+            // 공유 버튼 노출 (홈, 유저 제외)
+            const shareBtn = document.getElementById('global-share-btn');
+            if(tabId === 'home' || tabId === 'user') shareBtn.classList.add('hidden');
+            else shareBtn.classList.remove('hidden');
+        }
+
+        // --- 2. 홈 탭 기능 ---
+        const guidePhrases = [
+            "안녕! 꾸미기 탭에서 옷 갈아입을까?",
+            "놀자 탭에서 내 사주를 봐줘!",
+            "우리네컷에서 2인 촬영 모드 해보자!",
+            "오늘은 기분이 정말 좋아!"
+        ];
+        function handleCharacterClick() {
+            const bubble = document.getElementById('home-speech');
+            const randomPhrase = guidePhrases[Math.floor(Math.random() * guidePhrases.length)];
+            bubble.classList.remove('speech-bubble', 'opacity-0');
+            void bubble.offsetWidth;
+            bubble.innerHTML = `${randomPhrase}
+                <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-bamkids-dark"></div>`;
+            bubble.classList.add('speech-bubble');
+            setTimeout(() => { bubble.classList.add('opacity-0'); }, 3000);
+        }
+
+        let isHoroscope = true;
+        function toggleHomeFortune() {
+            isHoroscope = !isHoroscope;
+            const title = document.getElementById('home-fortune-title');
+            const score = document.getElementById('home-fortune-score');
+            const desc = document.getElementById('home-fortune-desc');
+            const item = document.getElementById('home-fortune-item');
+            const dir = document.getElementById('home-fortune-dir');
+            const color = document.getElementById('home-fortune-color');
+            const toggleText = document.getElementById('home-fortune-toggle-text');
+
+            if (isHoroscope) {
+                title.innerText = "오늘의 별자리 운세"; score.innerText = "95점";
+                desc.innerText = '"새로운 만남이 행운을 가져다줄 거예요. 활짝 웃어보세요!"';
+                item.innerText = "리본 핀"; dir.innerText = "남동쪽"; color.innerText = "스카이블루";
+                toggleText.innerText = "사주 결과로 보기";
+            } else {
+                title.innerText = "오늘의 나의 사주풀이"; score.innerText = "상길(上吉)";
+                desc.innerText = '"막혔던 기운이 트이는 날입니다. 계획했던 일을 실행에 옮겨보세요."';
+                item.innerText = "나무 빗"; dir.innerText = "정동쪽"; color.innerText = "푸른색 계열";
+                toggleText.innerText = "별자리 결과로 보기";
+            }
+        }
+
+        function goToFortuneFromHome() {
+            switchTab('play');
+            navigatePlay(isHoroscope ? 'horoscope' : 'saju');
+        }
+
+        // --- 3. 스타일 스튜디오 ---
+        function changeCustomColor(color) {
+            document.getElementById('preview-outfit').style.backgroundColor = color;
+            document.getElementById('home-outfit-color').style.backgroundColor = color;
+        }
+
+        // --- 4. 놀자 탭 (운세, 데이트, 타로) ---
+        function navigatePlay(view) {
+            document.getElementById('play-main-view').classList.add('hidden');
+            document.getElementById('play-main-view').classList.remove('flex');
+            document.getElementById('play-mystic-home').classList.add('hidden');
+            document.getElementById('play-mystic-home').classList.remove('flex');
+            document.getElementById('play-date-home').classList.add('hidden');
+            document.getElementById('play-date-home').classList.remove('flex');
+            document.getElementById('play-fortune-detail').classList.add('hidden');
+            document.getElementById('play-fortune-detail').classList.remove('flex');
+
+            if(view === 'main') {
+                document.getElementById('play-main-view').classList.remove('hidden');
+                document.getElementById('play-main-view').classList.add('flex');
+            } else if (view === 'mystic-home') {
+                document.getElementById('play-mystic-home').classList.remove('hidden');
+                document.getElementById('play-mystic-home').classList.add('flex');
+            } else if (view === 'date-home') {
+                document.getElementById('play-date-home').classList.remove('hidden');
+                document.getElementById('play-date-home').classList.add('flex');
+            } else {
+                currentFortuneType = view;
+                document.getElementById('play-fortune-detail').classList.remove('hidden');
+                document.getElementById('play-fortune-detail').classList.add('flex');
+                setupFortuneView(view);
+            }
+        }
+
+        let currentFortuneType = '';
+        let currentTarotCat = '';
+        let selectedTarotCards = [];
+        let currentFortuneSpeeches = ['점괘를 먼저 뽑아볼까?', '오늘 기분은 어때?', '내가 행운을 빌어줄게!'];
+
+        function speakFortuneAdvice() {
+            const bubble = document.getElementById('fortune-speech');
+            const randomSpeech = currentFortuneSpeeches[Math.floor(Math.random() * currentFortuneSpeeches.length)];
+            bubble.innerHTML = `${randomSpeech}
+                <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-indigo-400"></div>`;
+            bubble.classList.remove('opacity-0');
+            setTimeout(() => { bubble.classList.add('opacity-0'); }, 3000);
+        }
+
+        const tarotMockData = [
+            { name: "The Star", icon: "fa-star", color: "text-yellow-400" },
+            { name: "The Moon", icon: "fa-moon", color: "text-blue-400" },
+            { name: "The Sun", icon: "fa-sun", color: "text-orange-400" },
+            { name: "Wheel of Fortune", icon: "fa-dharmachakra", color: "text-purple-400" },
+            { name: "The Fool", icon: "fa-person-hiking", color: "text-green-400" }
+        ];
+
+        function setupFortuneView(type) {
+            const title = document.getElementById('fortune-main-title');
+            const outfitText = document.getElementById('fortune-char-text');
+            const outfitBg = document.getElementById('fortune-char-outfit');
+            const configArea = document.getElementById('fortune-config-area');
+            const oneLiner = document.getElementById('fortune-one-liner');
+            const tarotPick = document.getElementById('tarot-pick-prompt');
+            const tarotDeckArea = document.getElementById('tarot-deck-area');
+            const resultArea = document.getElementById('fortune-result-content');
+            const retryBtn = document.getElementById('tarot-retry-btn');
+            
+            retryBtn.classList.add('hidden'); tarotPick.classList.add('hidden');
+            resultArea.classList.remove('hidden');
+            if(tarotDeckArea) { tarotDeckArea.classList.add('hidden'); tarotDeckArea.classList.remove('flex'); }
+            document.getElementById('fortune-category-tabs').classList.remove('hidden');
+            resultArea.innerHTML = '';
+
+            if(type === 'horoscope') {
+                title.innerText = "별자리"; outfitText.innerText = "우주 테마"; outfitBg.style.backgroundColor = '#1E3A8A';
+                oneLiner.innerText = '"우주의 에너지가 당신을 돕고 있어요! 럭키한 하루!"';
+                configArea.innerHTML = `<select class="p-2 rounded-xl font-bold border-2 border-blue-200 text-xs text-blue-800 bg-blue-50 outline-none"><option>쌍둥이자리</option><option>양자리</option></select>`;
+                setFortuneCategory('전체'); 
+            } else if (type === 'saju') {
+                title.innerText = "사주"; outfitText.innerText = "한국풍 테마"; outfitBg.style.backgroundColor = '#B91C1C';
+                oneLiner.innerText = '"맑은 기운이 스며드는 날! 하던 일을 계속 추진해보소."';
+                configArea.innerHTML = `
+                    <div class="mb-2 text-[10px] text-gray-500 font-bold bg-white/80 rounded p-2 border border-gray-200">
+                        <i class="fa-solid fa-circle-info"></i> 마이 페이지에 입력된 생일을 기준으로 풀이합니다.<br>(생일 정보가 없는 경우 기본값 2000.01.01 기준으로 풀이됩니다.)
+                    </div>
+                    <div class="flex gap-2 relative z-50">
+                        <button onclick="document.getElementById('saju-inputs').classList.toggle('hidden')" class="btn-cute bg-white text-red-700 border-red-200 px-3 py-2 text-xs shadow-md"><i class="fa-solid fa-pen"></i> 사주 수동 입력 <i class="fa-solid fa-caret-down ml-1"></i></button>
+                        <button onclick="setFortuneCategory('전체')" class="btn-cute btn-primary px-4 py-2 text-xs shadow-md">사주 풀이 시작!</button>
+                        
+                        <div id="saju-inputs" class="hidden absolute top-full left-0 mt-2 bg-white border-2 border-red-200 rounded-xl shadow-xl p-3 flex flex-col gap-2 w-56">
+                            <label class="text-[10px] font-bold text-gray-500 mb-1">직접 사주(四柱) 명식 선택</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <select class="w-full bg-red-50 border border-red-200 rounded-lg text-xs p-2 outline-none text-red-900 font-bold"><option>년주 (병오)</option><option>년주 (을사)</option><option>년주 (갑진)</option></select>
+                                <select class="w-full bg-red-50 border border-red-200 rounded-lg text-xs p-2 outline-none text-red-900 font-bold"><option>월주 (정미)</option><option>월주 (무신)</option><option>월주 (기유)</option></select>
+                                <select class="w-full bg-red-50 border border-red-200 rounded-lg text-xs p-2 outline-none text-red-900 font-bold"><option>일주 (경술)</option><option>일주 (신해)</option><option>일주 (임자)</option></select>
+                                <select class="w-full bg-red-50 border border-red-200 rounded-lg text-xs p-2 outline-none text-red-900 font-bold"><option>시주 (계축)</option><option>시주 (갑인)</option><option>시주 (을묘)</option></select>
+                            </div>
+                            <button onclick="document.getElementById('saju-inputs').classList.add('hidden'); setFortuneCategory('전체');" class="mt-2 w-full btn-cute bg-red-50 text-red-700 text-xs py-2 border-red-300">이 사주로 풀이하기</button>
+                        </div>
+                    </div>`;
+                setFortuneCategory('전체');
+            } else if (type === 'tarot') {
+                title.innerText = "타로"; outfitText.innerText = "마법사 테마"; outfitBg.style.backgroundColor = '#6B21A8';
+                oneLiner.innerText = '"당신의 내면이 이끄는 카드를 선택해보세요..."';
+                configArea.innerHTML = '';
+                resultArea.classList.add('hidden'); 
+                tarotPick.classList.remove('hidden'); tarotPick.classList.add('flex');
+                
+                document.querySelectorAll('.f-cat-btn').forEach(b => {
+                    b.classList.remove('btn-primary'); b.classList.add('bg-white', 'text-gray-600');
+                });
+            }
+        }
+
+        function setFortuneCategory(cat) {
+            document.querySelectorAll('.f-cat-btn').forEach(btn => {
+                if(btn.dataset.cat === cat) {
+                    btn.classList.add('btn-primary'); btn.classList.remove('bg-gray-100', 'text-gray-600');
+                } else {
+                    btn.classList.remove('btn-primary'); btn.classList.add('bg-gray-100', 'text-gray-600');
+                }
+            });
+
+            if(currentFortuneType === 'tarot') {
+                currentTarotCat = cat; 
+                document.getElementById('tarot-pick-prompt').classList.add('hidden');
+                document.getElementById('tarot-deck-area').classList.remove('hidden');
+                document.getElementById('tarot-deck-area').classList.add('flex');
+                initTarotDeck(); 
+            } else {
+                generateFortuneResult(cat); 
+            }
+        }
+
+        function getTarotBackStyle() {
+            const val = document.getElementById('fortune-char-select').value;
+            let bgUrl = '';
+            if (val === '사막여우 밤밤') bgUrl = 'https://placehold.co/100x150/ff9f43/fff4e0?text=BamBam';
+            else if (val === '토끼 베리') bgUrl = 'https://placehold.co/100x150/f472b6/fce7f3?text=Berry';
+            return bgUrl ? `background-image: url('${bgUrl}');` : '';
+        }
+
+        function updateTarotBacks() {
+            if(currentFortuneType === 'tarot') initTarotDeck();
+        }
+
+        function initTarotDeck() {
+            selectedTarotCards = [];
+            const pool = document.getElementById('tarot-card-pool');
+            const slots = document.getElementById('tarot-selected-slots');
+            document.getElementById('tarot-instruction').innerText = `카드를 3장 뽑아주세요 (0/3)`;
+            document.getElementById('tarot-reveal-btn').classList.add('hidden');
+            
+            slots.innerHTML = `
+                <div class="w-16 h-24 md:w-20 md:h-28 border-2 border-dashed border-purple-300 rounded-xl flex items-center justify-center text-xs font-bold text-purple-300 bg-purple-50" id="t-slot-0">과거</div>
+                <div class="w-16 h-24 md:w-20 md:h-28 border-2 border-dashed border-purple-300 rounded-xl flex items-center justify-center text-xs font-bold text-purple-300 bg-purple-50" id="t-slot-1">현재</div>
+                <div class="w-16 h-24 md:w-20 md:h-28 border-2 border-dashed border-purple-300 rounded-xl flex items-center justify-center text-xs font-bold text-purple-300 bg-purple-50" id="t-slot-2">미래</div>
+            `;
+
+            pool.innerHTML = '';
+            const backStyle = getTarotBackStyle();
+            for(let i=0; i<7; i++) {
+                pool.innerHTML += `
+                    <div class="tarot-card-wrapper w-12 h-16 md:w-16 md:h-24" onclick="pickTarotCard(this)">
+                        <div class="tarot-card"><div class="tarot-face tarot-back rounded-md shadow-sm border border-purple-400" style="${backStyle}"></div></div>
+                    </div>
+                `;
+            }
+        }
+
+        function pickTarotCard(el) {
+            if(selectedTarotCards.length >= 3) return;
+            el.querySelector('.tarot-card').classList.add('picked');
+            const randomCard = tarotMockData[Math.floor(Math.random() * tarotMockData.length)];
+            selectedTarotCards.push(randomCard);
+            
+            const slot = document.getElementById(`t-slot-${selectedTarotCards.length - 1}`);
+            slot.innerHTML = `
+                <div class="w-full h-full bg-white border-2 border-purple-400 rounded-xl shadow-md flex flex-col items-center justify-center p-1">
+                    <i class="fa-solid ${randomCard.icon} ${randomCard.color} text-2xl mb-1"></i>
+                    <span class="text-[10px] font-black text-center leading-tight">${randomCard.name}</span>
+                </div>
+            `;
+            slot.className = "w-16 h-24 md:w-20 md:h-28";
+            
+            document.getElementById('tarot-instruction').innerText = `카드를 3장 뽑아주세요 (${selectedTarotCards.length}/3)`;
+            if(selectedTarotCards.length === 3) document.getElementById('tarot-reveal-btn').classList.remove('hidden');
+        }
+
+        function generateFortuneResult(cat = '전체') {
+            const resultArea = document.getElementById('fortune-result-content');
+            let charName = document.getElementById('fortune-char-select').value;
+
+            if(currentFortuneType === 'tarot') {
+                if(selectedTarotCards.length < 3) return;
+                cat = currentTarotCat || '전체';
+                document.getElementById('tarot-deck-area').classList.add('hidden');
+                document.getElementById('tarot-deck-area').classList.remove('flex');
+                document.getElementById('fortune-category-tabs').classList.add('hidden');
+                resultArea.classList.remove('hidden');
+                document.getElementById('tarot-retry-btn').classList.remove('hidden');
+
+                let cardsHTML = `<div class="flex justify-center gap-4 mb-4">`;
+                const labels = ["과거", "현재", "미래"];
+                selectedTarotCards.forEach((card, idx) => {
+                    cardsHTML += `<div class="flex flex-col items-center"><span class="text-[10px] font-bold text-purple-500 mb-1 bg-purple-50 px-2 rounded-full border border-purple-100">${labels[idx]}</span>
+                        <div class="w-16 h-24 bg-white border-2 border-purple-400 rounded-lg flex flex-col items-center justify-center p-1 shadow-md">
+                            <i class="fa-solid ${card.icon} ${card.color} text-2xl mb-1"></i><span class="text-[10px] font-black text-center">${card.name}</span></div></div>`;
+                });
+                cardsHTML += `</div>`;
+
+                resultArea.innerHTML = `<div class="flex flex-col items-center justify-center h-full"><i class="fa-solid fa-spinner fa-spin text-4xl text-purple-400 mb-4"></i> <span class="font-bold text-gray-600 text-lg">카드를 해석하고 있습니다...</span></div>`;
+                
+                setTimeout(() => {
+                    const tarotData = {
+                        '전체': {
+                            flow: `과거의 강렬한 <strong>[${selectedTarotCards[0].name}]</strong> 기운이 바탕이 되어, 현재 <strong>[${selectedTarotCards[1].name}]</strong>의 상황을 맞이했습니다. 이 흐름은 머지않아 <strong>[${selectedTarotCards[2].name}]</strong>의 미래로 이어지며 당신에게 긍정적인 통찰력을 줄 것입니다.`,
+                            today: "[행운지수: 88%] 지금 겪고 있는 작은 변화들이 모여 큰 행운을 만들어내고 있습니다. 직관을 믿고 마음이 이끄는 대로 행동하세요.",
+                            luckyNum: "3, 9", luckyDir: "보라색", luckyItem: "은반지",
+                            advice: "카드는 당신이 올바른 길을 가고 있다고 말해주고 있어요. 주저하지 말고 힘차게 나아가세요!"
+                        },
+                        '연애': {
+                             flow: `과거 <strong>[${selectedTarotCards[0].name}]</strong> 카드의 영향으로 현재 <strong>[${selectedTarotCards[1].name}]</strong>의 감정 상태에 도달했습니다. 미래의 <strong>[${selectedTarotCards[2].name}]</strong> 카드는 관계의 긍정적인 터닝포인트를 예고합니다.`,
+                             today: "[행운지수: 92%] 솔직한 마음을 표현하기 좋은 날입니다. 마음에 둔 사람이 있다면 진심을 담아 연락해보세요.",
+                             luckyNum: "2, 6", luckyDir: "핑크색", luckyItem: "달콤한 디저트",
+                             advice: "사랑은 타이밍! 오늘 당신에게 다가오는 기회를 절대 놓치지 마세요."
+                        },
+                        '사업': {
+                             flow: `과거의 <strong>[${selectedTarotCards[0].name}]</strong> 경험이 현재의 <strong>[${selectedTarotCards[1].name}]</strong> 상황을 만들었습니다. 다가올 <strong>[${selectedTarotCards[2].name}]</strong> 기운은 새로운 프로젝트나 확실한 성과를 의미합니다.`,
+                             today: "[행운지수: 85%] 중요한 결정을 내려야 할 순간이 다가옵니다. 철저한 준비와 자신감이 성공의 열쇠가 될 것입니다.",
+                             luckyNum: "4, 8", luckyDir: "오후 2시", luckyItem: "다이어리",
+                             advice: "당신의 능력은 이미 충분합니다. 스스로를 굳게 믿고 거침없이 추진해보세요!"
+                        },
+                        '재물': {
+                             flow: `과거 <strong>[${selectedTarotCards[0].name}]</strong>의 흐름이 현재 <strong>[${selectedTarotCards[1].name}]</strong>의 재물운에 영향을 주고 있습니다. <strong>[${selectedTarotCards[2].name}]</strong> 카드는 금전적인 안정을 향한 긍정적 신호입니다.`,
+                             today: "[행운지수: 80%] 갑작스러운 지출보다는 저축과 계획이 필요한 시기입니다. 꼼꼼한 관리가 예상치 못한 이득을 가져옵니다.",
+                             luckyNum: "1, 7", luckyDir: "골드", luckyItem: "동전 지갑",
+                             advice: "오늘 아낀 작은 금액이 훗날 엄청나게 큰 행운의 씨앗이 될 거예요!"
+                        }
+                    };
+                    let selectedTarot = tarotData[cat];
+
+                    resultArea.innerHTML = cardsHTML + `
+                        <div class="border-b-2 border-purple-100 pb-3 mb-4 mt-6">
+                            <h4 class="text-xl font-black text-purple-800 flex items-center justify-center gap-2"><i class="fa-brands fa-galactic-senate text-purple-600"></i> ${charName}의 [${cat}] 타로 리딩</h4>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 shadow-sm">
+                                <h5 class="font-black text-purple-900 mb-2"><i class="fa-solid fa-layer-group"></i> 쓰리카드 흐름 분석</h5>
+                                <p class="text-sm leading-relaxed text-gray-700">${selectedTarot.flow}</p>
+                            </div>
+                            <div class="bg-white border-2 border-gray-100 p-4 rounded-xl shadow-sm">
+                                <h5 class="font-bold text-gray-800 mb-2 flex items-center gap-1"><i class="fa-solid fa-sun text-orange-500"></i> 오늘의 운세</h5>
+                                <p class="text-sm leading-relaxed text-gray-600">${selectedTarot.today}</p>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 text-center mt-4">
+                                <div class="bg-gray-50 rounded-lg p-2 border border-gray-200"><p class="text-[10px] text-gray-500 font-bold mb-1">행운의 숫자</p><p class="text-xs font-black text-purple-600">${selectedTarot.luckyNum}</p></div>
+                                <div class="bg-gray-50 rounded-lg p-2 border border-gray-200"><p class="text-[10px] text-gray-500 font-bold mb-1">럭키 포인트</p><p class="text-xs font-black text-blue-600">${selectedTarot.luckyDir}</p></div>
+                                <div class="bg-gray-50 rounded-lg p-2 border border-gray-200"><p class="text-[10px] text-gray-500 font-bold mb-1">행운 아이템</p><p class="text-xs font-black text-pink-600">${selectedTarot.luckyItem}</p></div>
+                            </div>
+                            <div class="bg-gray-800 text-white p-4 rounded-xl shadow-md mt-2 flex items-start gap-3">
+                                <div class="text-yellow-400 text-2xl mt-1"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                                <div>
+                                    <h5 class="font-bold text-sm mb-1 text-yellow-300">${charName}의 조언!</h5>
+                                    <p class="text-xs text-gray-300 leading-relaxed">${selectedTarot.advice}</p>
+                                </div>
+                            </div>
+                        </div>`;
+                        
+                    currentFortuneSpeeches = [
+                        `과거의 ${selectedTarotCards[0].name} 기운이 느껴져!`,
+                        `지금 상황은 ${selectedTarotCards[1].name} 같아!`,
+                        `미래에는 ${selectedTarotCards[2].name} 기운이 강하네!`,
+                        `행운템인 ${selectedTarot.luckyItem} 꼭 챙겨!`,
+                        `행운의 숫자 ${selectedTarot.luckyNum}를 기억해 둬!`
+                    ];
+                }, 1000);
+                return;
+            }
+
+            // 별자리, 사주 로직
+            const iconColor = currentFortuneType === 'horoscope' ? 'blue' : 'red';
+            const iconClass = currentFortuneType === 'horoscope' ? 'fa-star' : 'fa-scroll';
+
+            resultArea.innerHTML = `<div class="flex flex-col items-center justify-center h-full"><i class="fa-solid fa-spinner fa-spin text-4xl text-${iconColor}-400 mb-4"></i> <span class="font-bold text-gray-600 text-lg">점괘를 분석 중입니다...</span></div>`;
+            
+            setTimeout(() => {
+                let content = '';
+                
+                if(currentFortuneType === 'horoscope') {
+                    const horoscopeData = {
+                        '전체': {
+                            life: "뛰어난 호기심과 다재다능한 매력을 타고났습니다. 탁월한 소통 능력으로 어디서든 사람들의 시선을 사로잡고 빛나는 존재감을 보여주는 별자리의 명운입니다.",
+                            today: "[행운지수: 95%] 행성의 배치가 당신에게 완벽하게 유리하게 작용하는 하루입니다! 뜻밖의 기분 좋은 소식이나 새로운 인연이 기대됩니다.",
+                            luckyNum: "5, 7", luckyDir: "남쪽", luckyItem: "반짝이는 키링",
+                            advice: "오후에 에너지가 급상승합니다. 망설이던 일이 있다면 과감하게 오늘 시도해보세요!"
+                        },
+                        '연애': {
+                            life: "금성의 부드러운 에너지를 받아 다정하고 로맨틱한 기운을 풍깁니다. 상대방의 마음을 편안하게 해주는 타고난 힐링 매력이 있습니다.",
+                            today: "[행운지수: 90%] 매력이 한층 돋보이는 날입니다. 짝사랑 중이라면 오늘이 바로 눈도장을 찍을 수 있는 최적의 타이밍입니다.",
+                            luckyNum: "2, 8", luckyDir: "서쪽", luckyItem: "장미향 향수",
+                            advice: "가벼운 미소와 다정한 인사 한마디면 충분합니다. 긍정적인 에너지를 마음껏 뿜어내세요!"
+                        },
+                        '사업': {
+                            life: "지혜를 상징하는 수성의 보호를 받아, 분석력이 뛰어나고 위기 상황에서 기지를 발휘하는 훌륭한 문제 해결 능력을 지녔습니다.",
+                            today: "[행운지수: 85%] 머리가 맑아지고 아이디어가 샘솟는 하루! 복잡했던 문제의 실마리를 찾고 동료들에게 인정받을 수 있습니다.",
+                            luckyNum: "3, 9", luckyDir: "북쪽", luckyItem: "블루투스 이어폰",
+                            advice: "회의가 있다면 주저하지 말고 적극적으로 의견을 내보세요. 당신의 아이디어가 채택될 확률이 높습니다."
+                        },
+                        '재물': {
+                            life: "안정을 추구하는 토성의 영향으로 금전 감각이 현실적이며, 요행보다는 서서히 부를 축적해 나가는 대기만성형의 탄탄한 재물운입니다.",
+                            today: "[행운지수: 88%] 예상치 못한 꽁돈이 생기거나, 평소 고민하던 물건을 아주 저렴하게 득템할 수 있는 소소한 횡재수가 있습니다.",
+                            luckyNum: "4, 6", luckyDir: "동쪽", luckyItem: "가죽 폰케이스",
+                            advice: "오늘은 기분 좋은 소비를 해도 좋습니다. 나를 위한 작은 선물을 사보는 건 어떨까요?"
+                        }
+                    };
+                    
+                    let selectedHoro = horoscopeData[cat];
+
+                    content = `
+                        <div class="border-b-2 border-blue-100 pb-3 mb-4">
+                            <h4 class="text-xl font-black text-blue-800 flex items-center gap-2"><i class="fa-solid fa-star text-blue-600"></i> ${charName}의 [${cat}] 별자리 분석</h4>
+                            <p class="text-xs text-gray-500 mt-1">별들의 움직임이 당신에게 전하는 우주의 메세지입니다.</p>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 shadow-sm">
+                                <h5 class="font-black text-blue-900 mb-2"><i class="fa-solid fa-meteor"></i> 타고난 별자리 총운</h5>
+                                <p class="text-sm leading-relaxed text-gray-700">${selectedHoro.life}</p>
+                            </div>
+                            <div class="bg-white border-2 border-gray-100 p-4 rounded-xl shadow-sm">
+                                <h5 class="font-bold text-gray-800 mb-2 flex items-center gap-1"><i class="fa-solid fa-sun text-orange-500"></i> 오늘의 운세 흐름</h5>
+                                <p class="text-sm leading-relaxed text-gray-600">${selectedHoro.today}</p>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 text-center mt-4">
+                                <div class="bg-gray-50 rounded-lg p-2 border border-gray-200"><p class="text-[10px] text-gray-500 font-bold mb-1">행운의 숫자</p><p class="text-xs font-black text-blue-600">${selectedHoro.luckyNum}</p></div>
+                                <div class="bg-gray-50 rounded-lg p-2 border border-gray-200"><p class="text-[10px] text-gray-500 font-bold mb-1">길한 방향</p><p class="text-xs font-black text-green-600">${selectedHoro.luckyDir}</p></div>
+                                <div class="bg-gray-50 rounded-lg p-2 border border-gray-200"><p class="text-[10px] text-gray-500 font-bold mb-1">행운 아이템</p><p class="text-xs font-black text-pink-600">${selectedHoro.luckyItem}</p></div>
+                            </div>
+                            <div class="bg-gray-800 text-white p-4 rounded-xl shadow-md mt-2 flex items-start gap-3">
+                                <div class="text-yellow-400 text-2xl mt-1"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                                <div>
+                                    <h5 class="font-bold text-sm mb-1 text-yellow-300">${charName}의 조언!</h5>
+                                    <p class="text-xs text-gray-300 leading-relaxed">${selectedHoro.advice}</p>
+                                </div>
+                            </div>
+                        </div>`;
+                        
+                    currentFortuneSpeeches = [
+                        `오늘은 ${selectedHoro.luckyNum}가 행운의 숫자야!`,
+                        `${selectedHoro.luckyDir}쪽 방향으로 가보면 어때?`,
+                        `오늘의 행운템은 ${selectedHoro.luckyItem}이야! 꼭 챙겨!`,
+                        `별들의 기운이 널 향하고 있어!`,
+                        `오늘 완전 럭키비키하잖아?`
+                    ];
+                } else if(currentFortuneType === 'saju') {
+                    // ... 사주 데이터 (이전과 동일하게 유지) ...
+                    const sajuData = {
+                        '전체': {
+                            life: "본래 맑고 곧은 목(木)의 기운을 띠고 태어나 성장 욕구가 강하고 곧은 성품을 지녔습니다. 험난한 파도 속에서도 중심을 잃지 않는 강한 생명력이 인생 전반을 밝게 비추고 있습니다.",
+                            today: "[행운지수: 88%] 막혔던 기운이 트이고 새로운 활력이 돋아나는 기분 좋은 하루입니다. 오랫동안 마음속으로 준비해온 일이 있다면 오늘 세상 밖으로 꺼내보세요.",
+                            luckyNum: "3, 8", luckyDir: "동쪽", luckyItem: "나무 소재의 액세서리",
+                            advice: "화(火) 기운을 북돋아 주면 현재의 운세가 더욱 시너지를 발휘합니다. 붉은색이나 오렌지색 계열의 아이템을 포인트로 착용해 보세요!"
+                        },
+                        '연애': {
+                            life: "따뜻한 흙(土)의 기운이 마음속에 자리 잡아, 주변 사람들에게 안정감을 주고 깊은 신뢰를 쌓는 긍정적인 인연운을 타고났습니다.",
+                            today: "[행운지수: 92%] 평소 서먹했던 사람과의 오해가 눈 녹듯 사라지고 유대감이 깊어지는 날입니다. 마음에 두고 있는 사람이 있다면 가벼운 인사를 건네보세요.",
+                            luckyNum: "2, 7", luckyDir: "남쪽", luckyItem: "따뜻한 허브티",
+                            advice: "상대방의 말을 경청하는 자세가 오늘 당신의 매력을 200% 끌어올려줄 거예요. 활짝 웃는 얼굴을 잊지 마세요!"
+                        },
+                        '사업': {
+                            life: "예리하고 단단한 금(金)의 기운을 품고 있어, 한 번 결심한 목표는 기필코 이루어내고 성취를 거두는 타고난 리더의 명운입니다.",
+                            today: "[행운지수: 80%] 계획했던 프로젝트나 업무에서 눈에 띄는 진전이 있는 날입니다. 귀인의 도움이 따르니 주저하지 말고 당신의 아이디어를 펼쳐보세요.",
+                            luckyNum: "4, 9", luckyDir: "서쪽", luckyItem: "금속 재질의 펜",
+                            advice: "중요한 결정은 오전 11시에서 오후 1시 사이에 내리는 것이 좋습니다. 자신감을 가지고 당당하게 나아가세요!"
+                        },
+                        '재물': {
+                            life: "넓은 바다와 같은 수(水)의 기운이 흐르고 있어, 재물이 끊임없이 순환하고 고이지 않으며 유연하게 부를 축적하는 길(吉)한 사주입니다.",
+                            today: "[행운지수: 75%] 횡재수보다는 성실함이 큰 보상으로 돌아오는 '정재(正財)'의 날입니다. 작게라도 저축을 하거나 재무 계획을 세우면 훗날 큰 기쁨으로 돌아옵니다.",
+                            luckyNum: "1, 6", luckyDir: "북쪽", luckyItem: "검은색 지갑",
+                            advice: "무리한 요행이나 계획에 없는 지출은 피하고, 오늘은 차곡차곡 내실을 다지며 하루를 마무리하는 것이 좋습니다."
+                        }
+                    };
+
+                    let selectedSaju = sajuData[cat];
+
+                    content = `
+                        <div class="border-b-2 border-red-100 pb-3 mb-4">
+                            <h4 class="text-xl font-black text-red-800 flex items-center gap-2"><i class="fa-solid fa-scroll text-red-600"></i> ${charName}의 [${cat}] 사주풀이</h4>
+                            <p class="text-xs text-gray-500 mt-1">당신의 사주 팔자(四柱八字) 오행 상생상극을 정밀하게 풀어보았어요.</p>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-red-50 p-4 rounded-xl border border-red-100 shadow-sm">
+                                <h5 class="font-black text-red-900 mb-2"><i class="fa-solid fa-seedling"></i> 평생의 맑은 기운 (인생 총운)</h5>
+                                <p class="text-sm leading-relaxed text-gray-700">${selectedSaju.life}</p>
+                            </div>
+                            <div class="bg-white border-2 border-gray-100 p-4 rounded-xl shadow-sm">
+                                <h5 class="font-bold text-gray-800 mb-2 flex items-center gap-1"><i class="fa-solid fa-sun text-orange-500"></i> 오늘의 운세 흐름</h5>
+                                <p class="text-sm leading-relaxed text-gray-600">${selectedSaju.today}</p>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 text-center mt-4">
+                                <div class="bg-gray-50 rounded-lg p-2 border border-gray-200"><p class="text-[10px] text-gray-500 font-bold mb-1">행운의 숫자</p><p class="text-xs font-black text-red-600">${selectedSaju.luckyNum}</p></div>
+                                <div class="bg-gray-50 rounded-lg p-2 border border-gray-200"><p class="text-[10px] text-gray-500 font-bold mb-1">길한 방향</p><p class="text-xs font-black text-green-600">${selectedSaju.luckyDir}</p></div>
+                                <div class="bg-gray-50 rounded-lg p-2 border border-gray-200"><p class="text-[10px] text-gray-500 font-bold mb-1">행운 아이템</p><p class="text-xs font-black text-pink-600">${selectedSaju.luckyItem}</p></div>
+                            </div>
+                            <div class="bg-gray-800 text-white p-4 rounded-xl shadow-md mt-2 flex items-start gap-3">
+                                <div class="text-yellow-400 text-2xl mt-1"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                                <div>
+                                    <h5 class="font-bold text-sm mb-1 text-yellow-300">${charName}의 조언!</h5>
+                                    <p class="text-xs text-gray-300 leading-relaxed">${selectedSaju.advice}</p>
+                                </div>
+                            </div>
+                        </div>`;
+                        
+                    currentFortuneSpeeches = [
+                        `행운의 숫자 ${selectedSaju.luckyNum}를 기억해 둬!`,
+                        `${selectedSaju.luckyDir}쪽 방향으로 가보면 어때?`,
+                        `오늘의 행운템은 ${selectedSaju.luckyItem}이야!`,
+                        `맑은 기운이 널 도와주고 있어!`,
+                        `모든 일이 순조롭게 풀릴 거야!`
+                    ];
+                }
+                resultArea.innerHTML = content;
+            }, 1000);
+        }
+
+        function resetTarot() {
+            document.getElementById('tarot-retry-btn').classList.add('hidden');
+            document.getElementById('fortune-result-content').classList.add('hidden');
+            document.getElementById('fortune-category-tabs').classList.remove('hidden');
+            document.getElementById('tarot-deck-area').classList.remove('hidden');
+            document.getElementById('tarot-deck-area').classList.add('flex');
+            initTarotDeck();
+        }
+
+        // --- 데이트 룸 로직 ---
+        const dateScenarios = {
+            cafe: { start: "놀이공원에 사람 정말 많다! 뭐부터 탈까?", choices: ["롤러코스터 가자!", "회전목마 어때?"], res1: "역시 스릴 넘치는 게 최고지! 😆 (호감도 +10)", res2: "사진 예쁘게 나오겠다! 가자~ 😊 (호감도 +5)" },
+            park: { start: "방과후에 같이 걸으니까 좋다. 배 안 고파?", choices: ["떡볶이 먹으러 갈래?", "아이스크림 콜!"], res1: "내가 진짜 맛있는 떡볶이집 알아! 떡순튀 가자! 😍 (호감도 +15)", res2: "좋아! 초코맛으로 먹을래 🍦 (호감도 +5)" },
+            movie: { start: "이 영화 진짜 기대했어. 팝콘은 무슨 맛 할까?", choices: ["달콤한 카라멜 팝콘!", "반반 팝콘이 국룰이지!"], res1: "나도 단 거 땡겼는데! 찌찌뽕! 🍿 (호감도 +10)", res2: "역시 센스쟁이! 둘 다 먹자! 🍿 (호감도 +10)" }
+        };
+
+        function resetDate() {
+            const theme = document.getElementById('date-theme-select').value || 'cafe';
+            const char = document.getElementById('date-char-select').value || '밤밤';
+            
+            let charColor = '#fbcfe8'; // 기본 핑크 (밤밤)
+            if(char === '베리') charColor = '#bfdbfe'; // 블루
+            if(char === '푸푸') charColor = '#fef08a'; // 옐로우
+            document.querySelector('#date-character-model .absolute.bottom-0').style.backgroundColor = charColor;
+
+            const bgMap = { cafe: "Amusement+Park", park: "School+Classroom", movie: "Movie+Theater" };
+            document.getElementById('play-date-home').style.backgroundImage = `url('https://placehold.co/800x600/ffe4e6/fda4af?text=${bgMap[theme]}')`;
+
+            document.getElementById('date-dialogue').innerText = `"${char}(이)가 말합니다: ${dateScenarios[theme].start}"`;
+            document.getElementById('date-choices').innerHTML = `
+                <button class="flex-1 btn-cute bg-pink-100 hover:bg-pink-200 text-pink-900 py-2 text-sm border-pink-300" onclick="selectDateChoice(1, '${theme}')">${dateScenarios[theme].choices[0]}</button>
+                <button class="flex-1 btn-cute bg-blue-100 hover:bg-blue-200 text-blue-900 py-2 text-sm border-blue-300" onclick="selectDateChoice(2, '${theme}')">${dateScenarios[theme].choices[1]}</button>
+            `;
+        }
+
+        function selectDateChoice(choiceIdx, theme) {
+            const char = document.getElementById('date-char-select').value;
+            const res = choiceIdx === 1 ? dateScenarios[theme].res1 : dateScenarios[theme].res2;
+            document.getElementById('date-dialogue').innerText = `"${char}: ${res}"`;
+            document.getElementById('date-choices').innerHTML = `<p class="w-full text-center text-sm font-bold text-gray-500 pt-2">대화가 마무리되었습니다. 우측 상단의 '한번 더 데이트'를 눌러보세요!</p>`;
+        }
+
+
+        // --- 5. 우리네컷 사진 촬영 ---
+        let photoStrip = []; 
+        let cameraRot = 0; let cameraZoom = 1; let currentMode = 1;
+
+        function uploadBackground(e) {
+            const file = e.target.files[0];
+            if(file) document.getElementById('photo-bg-img').style.backgroundImage = `url(${URL.createObjectURL(file)})`;
+        }
+
+        // 1인/2인 피사체 변경
+        function setPhotoMode(players) {
+            currentMode = players;
+            document.getElementById('mode-1p-btn').classList.toggle('btn-primary', players === 1);
+            document.getElementById('mode-1p-btn').classList.toggle('bg-white', players !== 1);
+            document.getElementById('mode-2p-btn').classList.toggle('btn-primary', players === 2);
+            document.getElementById('mode-2p-btn').classList.toggle('bg-white', players !== 2);
+            
+            const subject = document.getElementById('photo-subject');
+            if(players === 1) {
+                subject.innerHTML = `
+                    <div class="w-28 h-36 bg-white rounded-[50px] border-4 border-bamkids-dark flex flex-col items-center pt-5 shadow-2xl">
+                        <div class="flex gap-2 mb-2"><div class="w-3 h-3 bg-bamkids-dark rounded-full"></div><div class="w-3 h-3 bg-bamkids-dark rounded-full"></div></div>
+                        <div class="w-full h-14 bg-pink-400 absolute bottom-0 border-t-4 border-bamkids-dark"></div>
+                    </div>`;
+            } else {
+                subject.innerHTML = `
+                    <div class="w-24 h-32 bg-white rounded-[40px] border-4 border-bamkids-dark flex flex-col items-center pt-4 shadow-xl">
+                        <div class="flex gap-2 mb-2"><div class="w-2 h-2 bg-bamkids-dark rounded-full"></div><div class="w-2 h-2 bg-bamkids-dark rounded-full"></div></div>
+                        <div class="w-full h-12 bg-pink-400 absolute bottom-0 border-t-4 border-bamkids-dark"></div>
+                    </div>
+                    <div class="w-24 h-32 bg-white rounded-[40px] border-4 border-bamkids-dark flex flex-col items-center pt-4 shadow-xl">
+                        <div class="flex gap-2 mb-2"><div class="w-2 h-2 bg-bamkids-dark rounded-full"></div><div class="w-2 h-2 bg-bamkids-dark rounded-full"></div></div>
+                        <div class="w-full h-12 bg-blue-400 absolute bottom-0 border-t-4 border-bamkids-dark"></div>
+                    </div>`;
+            }
+        }
+
+        function changePose(pose) {
+            showMsg(`캐릭터가 '${pose}' 포즈를 취합니다! 📸`);
+            const subject = document.getElementById('photo-subject');
+            // 포즈 변경 시 애니메이션 효과 부여
+            subject.classList.add('animate-bounce');
+            setTimeout(() => { subject.classList.remove('animate-bounce'); }, 500);
+        }
+
+        function rotateSubject(deg) { cameraRot += deg; updateCameraTransform(); }
+        function zoomSubject(scaleStep) {
+            cameraZoom += scaleStep;
+            if(cameraZoom < 0.5) cameraZoom = 0.5; if(cameraZoom > 2.0) cameraZoom = 2.0;
+            updateCameraTransform();
+        }
+        function updateCameraTransform() {
+            document.getElementById('photo-subject').style.transform = `translateZ(${ (cameraZoom-1)*200 }px) rotateY(${cameraRot}deg) scale(${cameraZoom})`;
+        }
+
+        function takeSinglePhoto() {
+            if(photoStrip.length >= 4) { showMsg('이미 4컷이 다 찼습니다.\n다시 찍으려면 한 장을 삭제해주세요.'); return; }
+            
+            const btn = document.getElementById('single-shoot-btn');
+            const flash = document.getElementById('photo-flash');
+            
+            btn.disabled = true; btn.innerHTML = '찰칵...';
+            flash.style.opacity = '1'; setTimeout(() => { flash.style.opacity = '0'; }, 100);
+
+            setTimeout(() => {
+                document.getElementById('photo-status').innerText = "이 컷을 보관할까요?";
+                document.getElementById('photo-confirm-ui').classList.remove('hidden');
+                btn.classList.add('hidden');
+            }, 500);
+        }
+
+        function discardPhoto() { resetShootUI(); }
+        function keepPhoto() {
+            photoStrip.push(`https://placehold.co/200x150/fbcfe8/be185d?text=Cut+${photoStrip.length + 1}`);
+            renderStrip(); resetShootUI();
+            
+            if(photoStrip.length === 4) {
+                const btn = document.getElementById('final-4cut-btn');
+                btn.disabled = false; btn.classList.remove('opacity-50'); btn.classList.add('animate-pulse');
+            }
+        }
+
+        function resetShootUI() {
+            document.getElementById('photo-confirm-ui').classList.add('hidden');
+            const btn = document.getElementById('single-shoot-btn');
+            btn.classList.remove('hidden'); btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-camera mr-2"></i> 촬영 찰칵!';
+            document.getElementById('photo-status').innerText = `${photoStrip.length}/4 컷 완료`;
+        }
+
+        function renderStrip() {
+            const container = document.getElementById('photo-strip-container');
+            container.innerHTML = '';
+            
+            photoStrip.forEach((imgSrc, index) => {
+                const slot = document.createElement('div');
+                slot.className = "w-full aspect-[4/3] bg-white rounded border-2 border-gray-300 relative overflow-hidden group shadow-sm";
+                slot.innerHTML = `
+                    <img src="${imgSrc}" class="w-full h-full object-cover">
+                    <button class="absolute top-1 right-1 bg-red-500 text-white w-6 h-6 rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity" onclick="deletePhoto(${index})"><i class="fa-solid fa-xmark"></i></button>
+                    <div class="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] px-1 rounded font-bold">${index + 1}</div>`;
+                container.appendChild(slot);
+            });
+
+            for(let i = photoStrip.length; i < 4; i++) {
+                const empty = document.createElement('div');
+                empty.className = "w-full aspect-[4/3] bg-gray-200 rounded border-2 border-dashed border-gray-300 flex items-center justify-center";
+                empty.innerHTML = `<span class="text-gray-400 font-bold text-sm">+</span>`;
+                container.appendChild(empty);
+            }
+        }
+
+        function deletePhoto(index) {
+            photoStrip.splice(index, 1); renderStrip();
+            document.getElementById('photo-status').innerText = `${photoStrip.length}/4 컷 완료`;
+            const finalBtn = document.getElementById('final-4cut-btn');
+            finalBtn.disabled = true; finalBtn.classList.remove('animate-pulse');
+        }
+
+        function complete4Cut() {
+            if(photoStrip.length < 4) { showMsg('4컷을 모두 채워주세요!'); return; }
+            showMsg('완성된 4컷 사진이 갤러리에 저장되었습니다!\n공유하기를 눌러 자랑해보세요!');
+        }
+
+    </script>
+</body>
+</html>
