@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLE 희망 바이어 선정 리포트</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fbf9f5',
+                            100: '#f5efe4',
+                            200: '#e8dcc7',
+                            300: '#d7c2a3',
+                            500: '#b08b58',
+                            600: '#967143',
+                            800: '#4a3b2a',
+                            900: '#2c2219',
+                        },
+                        accent: {
+                            tier1: '#10b981', // Emerald
+                            tier2: '#3b82f6', // Blue
+                            tier3: '#8b5cf6', // Purple
+                            danger: '#ef4444', // Red
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Embedded CSS for Chart Containers and custom scrollbars */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 360px;
+            }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1ebd9;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-[#FAF8F5] text-slate-800 font-sans antialiased selection:bg-amber-200 selection:text-slate-900">
+
+<!-- Chosen Palette: Warm Sand & Slate Harmony (Warm neutrals with distinct tier accent colors) -->
+
+<!-- Application Structure Plan:
+     1. Navigation Header & Dashboard Hero Banner: High-level overview of total analyzed buyers (9 buyers), key priority tiers, and core strategy metrics for CLE IP monetization.
+     2. Interactive Tier Directory (Section 1): Categorized cards with real-time filtering (by Tier, Business Category, and Search query) allowing quick inspection of business resources, key IPs, collaboration direction, and risk factors.
+     3. Financial & Scale Analytics (Section 2): Responsive Chart.js visualizations (Bar & Radar Charts) comparing retail/GMV scale, profitability, and functional capability metrics across top buyers.
+     4. CLE Project-Based Matcher (Section 3): An interactive decision matrix allowing CLE to filter candidates based on target IP projects (ENHYPEN WORLD, New Anime IP, Duda & Dada, Virtual Idol).
+     5. Summary Matrix & Risk Management (Section 4): Complete filterable database table summarizing all 9 target buyers with tier status, core synergy, and risk mitigation takeaways.
+     Rationale: Designed to transform static text into an interactive strategic consulting tool for executive decision-making. -->
+
+<!-- Visualization & Content Choices:
+     - Financial & Retail Scale -> Dynamic Horizontal Bar Chart (Chart.js / Canvas) -> Interactive hover and dataset toggling -> Allows direct comparison of market clout among buyers.
+     - Buyer Capability Matrix -> Radar Chart (Chart.js / Canvas) -> Visual comparison of buyer strengths (E-commerce, TCG, Pop Toys, Animation Co-production, Retail Network).
+     - Filtering & Project Matcher -> Vanilla JS dynamic state management & DOM manipulation -> Real-time feedback when exploring specific CLE IP needs.
+     - Confirmation: NO SVG graphics or Mermaid JS used. Visual elements built with Tailwind CSS, Canvas, and standard Unicode typography. -->
+
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 bg-[#FAF8F5]/90 backdrop-blur-md border-b border-amber-200/60 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-amber-800 text-amber-100 font-bold text-lg shadow-sm">CLE</span>
+                    <div>
+                        <h1 class="text-base font-bold text-slate-900 leading-tight">CLE 희망 바이어 선정 리포트</h1>
+                        <p class="text-xs text-amber-700/80 font-medium">중국 시장 IP 라이선싱 및 파트너십 전략 대시보드</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-1 lg:space-x-2 text-xs sm:text-sm font-medium text-slate-600">
+                    <a href="#overview" class="px-3 py-2 rounded-lg hover:text-amber-800 hover:bg-amber-100/50 transition">개요</a>
+                    <a href="#directory" class="px-3 py-2 rounded-lg hover:text-amber-800 hover:bg-amber-100/50 transition">바이어 티어</a>
+                    <a href="#analytics" class="px-3 py-2 rounded-lg hover:text-amber-800 hover:bg-amber-100/50 transition">규모 분석</a>
+                    <a href="#matching" class="px-3 py-2 rounded-lg hover:text-amber-800 hover:bg-amber-100/50 transition">프로젝트 매칭</a>
+                    <a href="#matrix" class="px-3 py-2 rounded-lg hover:text-amber-800 hover:bg-amber-100/50 transition">종합 매트릭스</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- Hero / Overview Banner -->
+        <section id="overview" class="bg-gradient-to-br from-amber-900 via-slate-900 to-amber-950 text-white rounded-3xl p-6 sm:p-8 lg:p-10 shadow-xl relative overflow-hidden">
+            <div class="relative z-10 max-w-3xl space-y-4">
+                <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    전략 컨설팅 리포트 | 2026 UPDATE
+                </span>
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug">
+                    중국 시장 최적의 IP 파트너십 타겟 9개사 정밀 분석
+                </h2>
+                <p class="text-amber-100/80 text-sm sm:text-base leading-relaxed">
+                    본 리포트는 CLE의 핵심 IP(<span class="text-amber-300 font-semibold">ENHYPEN WORLD</span>, <span class="text-amber-300 font-semibold">신규 애니메이션 IP</span>, <span class="text-amber-300 font-semibold">Duda & Dada</span>, <span class="text-amber-300 font-semibold">버추얼 아이돌</span>)의 성공적인 중국 진출 및 상업화를 위해 총 9개 주요 바이어의 자원, 대표 IP, 협력 방향 및 리스크를 종합 분석합니다.
+                </p>
+                
+                <!-- Quick KPI Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-amber-800/60">
+                    <div class="bg-white/5 rounded-2xl p-3 border border-white/10">
+                        <div class="text-xs text-amber-200/70">분석 바이어 총수</div>
+                        <div class="text-xl sm:text-2xl font-bold text-white mt-1">9개사</div>
+                    </div>
+                    <div class="bg-white/5 rounded-2xl p-3 border border-white/10">
+                        <div class="text-xs text-emerald-300/80">⭐ 제1티어 (최우선)</div>
+                        <div class="text-xl sm:text-2xl font-bold text-emerald-400 mt-1">4개사</div>
+                    </div>
+                    <div class="bg-white/5 rounded-2xl p-3 border border-white/10">
+                        <div class="text-xs text-blue-300/80">⭐⭐ 제2티어 (차별화)</div>
+                        <div class="text-xl sm:text-2xl font-bold text-blue-400 mt-1">4개사</div>
+                    </div>
+                    <div class="bg-white/5 rounded-2xl p-3 border border-white/10">
+                        <div class="text-xs text-purple-300/80">⭐⭐⭐ 제3티어 (채널)</div>
+                        <div class="text-xl sm:text-2xl font-bold text-purple-400 mt-1">1개사</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 1: Buyer Tier Directory with Filter & Search -->
+        <section id="directory" class="space-y-6">
+            <div class="border-b border-amber-200/80 pb-4">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="text-amber-600">01.</span> 희망 바이어 상세 포트폴리오
+                </h2>
+                <p class="text-sm text-slate-600 mt-1">
+                    각 바이어의 기업 개요, 대표 IP, CLE와의 협력 제안 및 주요 리스크 요인을 확인하고 필터링할 수 있습니다.
+                </p>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-amber-200/70 shadow-sm flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
+                <!-- Tier Buttons -->
+                <div class="flex flex-wrap items-center gap-2" id="tier-filters">
+                    <span class="text-xs font-semibold text-slate-500 mr-1">티어 선택:</span>
+                    <button data-tier="all" class="filter-tier-btn active px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold bg-amber-800 text-white shadow-sm transition">
+                        전체 (9)
+                    </button>
+                    <button data-tier="tier1" class="filter-tier-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition">
+                        ⭐ 제1티어 (4)
+                    </button>
+                    <button data-tier="tier2" class="filter-tier-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition">
+                        ⭐⭐ 제2티어 (4)
+                    </button>
+                    <button data-tier="tier3" class="filter-tier-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-purple-50 hover:text-purple-700 transition">
+                        ⭐⭐⭐ 제3티어 (1)
+                    </button>
+                </div>
+
+                <!-- Search Input -->
+                <div class="relative min-w-[240px]">
+                    <input type="text" id="buyer-search" placeholder="기업명, IP, 키워드 검색..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:bg-white transition">
+                    <span class="absolute left-3 top-2.5 text-slate-400 text-xs">🔍</span>
+                </div>
+            </div>
+
+            <!-- Buyer Cards Grid -->
+            <div id="buyer-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically populated via JS -->
+            </div>
+        </section>
+
+        <!-- Section 2: Financial & Market Scale Data Visualizations -->
+        <section id="analytics" class="space-y-6">
+            <div class="border-b border-amber-200/80 pb-4">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="text-amber-600">02.</span> 바이어 규모 및 역량 다차원 비교
+                </h2>
+                <p class="text-sm text-slate-600 mt-1">
+                    바이어의 매출액/소매액 연간 규모와 주요 비즈니스 역량(유통망, IP 수, 이커머스, 콘텐츠 제작 등)을 객관적으로 비교합니다.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Chart 1: Financial Scale Bar Chart -->
+                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-amber-200/70 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-base font-bold text-slate-900">주요 바이어 연간 사업/소매 규모</h3>
+                            <span class="text-xs px-2 py-1 bg-amber-50 text-amber-800 rounded-md font-medium">위안/달러 기준 환산</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">
+                            중국 시장 내 바이어의 자본력 및 라이선싱 소매액(GMV/매출액) 규모 비교
+                        </p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="scaleChart"></canvas>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-3 text-center">
+                        * 알리피시 & 예주인은 글로벌 IP 라이선스 상품 소매액(Retail GMV) 기준, 팝마트/카유/블록스/위에원은 기업 연간 매출액 기준
+                    </p>
+                </div>
+
+                <!-- Chart 2: Strategic Capabilities Radar Chart -->
+                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-amber-200/70 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-base font-bold text-slate-900">주요 5대 파트너 유형별 역량 분포</h3>
+                            <span class="text-xs px-2 py-1 bg-amber-50 text-amber-800 rounded-md font-medium">역량 스코어</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">
+                            오프라인 매장, 온라인 이커머스, TCG/카드, 완구 개발, 콘텐츠 제작 역량 비교
+                        </p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-3 text-center">
+                        * CLE 프로젝트 목적에 적합한 특화 역량을 가진 기업을 파악하기 위한 정성 평가 지표
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: CLE Project-Based Strategic Recommendation Engine -->
+        <section id="matching" class="space-y-6">
+            <div class="border-b border-amber-200/80 pb-4">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="text-amber-600">03.</span> CLE 프로젝트별 최적 매칭 매칭기
+                </h2>
+                <p class="text-sm text-slate-600 mt-1">
+                    CLE가 추진하고자 하는 개별 IP 프로젝트를 선택하면, 최선의 시너지를 창출할 추천 바이어와 핵심 협력안을 제시합니다.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-amber-200/70 shadow-sm p-6 space-y-6">
+                <!-- Project Selection Tabs -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="project-selector">
+                    <button data-project="enhypen" class="project-btn active p-4 rounded-xl border-2 border-amber-600 bg-amber-50/60 text-left transition">
+                        <div class="text-xs text-amber-700 font-semibold mb-1">프로젝트 01</div>
+                        <div class="text-sm font-bold text-slate-900">ENHYPEN WORLD</div>
+                        <div class="text-[11px] text-slate-500 mt-1">K-pop 아이돌 캐릭터 IP</div>
+                    </button>
+                    <button data-project="newanime" class="project-btn p-4 rounded-xl border border-slate-200 hover:border-amber-300 text-left transition">
+                        <div class="text-xs text-slate-400 font-semibold mb-1">프로젝트 02</div>
+                        <div class="text-sm font-bold text-slate-900">신규 애니메이션 IP</div>
+                        <div class="text-[11px] text-slate-500 mt-1">제작 예정 신작 프로젝트</div>
+                    </button>
+                    <button data-project="duda" class="project-btn p-4 rounded-xl border border-slate-200 hover:border-amber-300 text-left transition">
+                        <div class="text-xs text-slate-400 font-semibold mb-1">프로젝트 03</div>
+                        <div class="text-sm font-bold text-slate-900">Duda & Dada</div>
+                        <div class="text-[11px] text-slate-500 mt-1">키즈/패밀리향 애니 IP</div>
+                    </button>
+                    <button data-project="virtual" class="project-btn p-4 rounded-xl border border-slate-200 hover:border-amber-300 text-left transition">
+                        <div class="text-xs text-slate-400 font-semibold mb-1">프로젝트 04</div>
+                        <div class="text-sm font-bold text-slate-900">버추얼 아이돌</div>
+                        <div class="text-[11px] text-slate-500 mt-1">서브컬처/버추얼 애니</div>
+                    </button>
+                </div>
+
+                <!-- Project Dynamic Match View -->
+                <div id="project-match-content" class="bg-slate-50 rounded-xl p-5 border border-slate-200/80 space-y-4">
+                    <!-- Dynamic rendering via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Partnership Matrix & Summary Risk Table -->
+        <section id="matrix" class="space-y-6">
+            <div class="border-b border-amber-200/80 pb-4">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="text-amber-600">04.</span> 종합 요약 및 파트너십 매트릭스
+                </h2>
+                <p class="text-sm text-slate-600 mt-1">
+                    9개 분석 대상 기업 전체의 티어 분류, 핵심 협력 가치, 주요 타겟 영역 및 리스크 관리 포인트를 한눈에 비교합니다.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-amber-200/70 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                        <thead>
+                            <tr class="bg-amber-900 text-amber-100 font-semibold uppercase tracking-wider">
+                                <th class="p-3.5 sm:p-4 border-b border-amber-800">분류</th>
+                                <th class="p-3.5 sm:p-4 border-b border-amber-800">회사명</th>
+                                <th class="p-3.5 sm:p-4 border-b border-amber-800">핵심 협력 가치</th>
+                                <th class="p-3.5 sm:p-4 border-b border-amber-800">주요 타겟 영역</th>
+                                <th class="p-3.5 sm:p-4 border-b border-amber-800">핵심 리스크 관리 포인트</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700">
+                            <!-- Tier 1 -->
+                            <tr class="hover:bg-emerald-50/40 transition">
+                                <td class="p-3.5 sm:p-4 font-bold text-emerald-700 bg-emerald-50/30 whitespace-nowrap">⭐ 제1티어</td>
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-900 whitespace-nowrap">팝마트 (POP MART)</td>
+                                <td class="p-3.5 sm:p-4">ENHYPEN WORLD 팝토이 개발 + 애니메이션 공동 제작</td>
+                                <td class="p-3.5 sm:p-4"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-xs">아트토이 / 하이엔드 수집품</span></td>
+                                <td class="p-3.5 sm:p-4 text-slate-500">성장세 둔화 및 수익 분배 협상 시 우월적 지위 주의</td>
+                            </tr>
+                            <tr class="hover:bg-emerald-50/40 transition">
+                                <td class="p-3.5 sm:p-4 font-bold text-emerald-700 bg-emerald-50/30 whitespace-nowrap">⭐ 제1티어</td>
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-900 whitespace-nowrap">알리피시 (Alifish)</td>
+                                <td class="p-3.5 sm:p-4">ENHYPEN WORLD 중국 총대행 + 전방향 라이선싱 운영</td>
+                                <td class="p-3.5 sm:p-4"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-xs">종합 IP 라이선싱 / 이커머스</span></td>
+                                <td class="p-3.5 sm:p-4 text-slate-500">중간 에이전시 개입에 따른 IP 품질 및 브랜딩 통제력 약화 가능성</td>
+                            </tr>
+                            <tr class="hover:bg-emerald-50/40 transition">
+                                <td class="p-3.5 sm:p-4 font-bold text-emerald-700 bg-emerald-50/30 whitespace-nowrap">⭐ 제1티어</td>
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-900 whitespace-nowrap">카유 (Kayou)</td>
+                                <td class="p-3.5 sm:p-4">ENHYPEN WORLD 소장용 카드 + TCG 품목 개발</td>
+                                <td class="p-3.5 sm:p-4"><span class="px-2 py-0.5 rounded bg-purple-100 text-purple-800 text-xs">컬렉터블 카드 (TCG)</span></td>
+                                <td class="p-3.5 sm:p-4 text-slate-500">지분 환매 계약(13.5억 위안) 불확실성 및 단일 카드 품목 의존도</td>
+                            </tr>
+                            <tr class="hover:bg-emerald-50/40 transition">
+                                <td class="p-3.5 sm:p-4 font-bold text-emerald-700 bg-emerald-50/30 whitespace-nowrap">⭐ 제1티어</td>
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-900 whitespace-nowrap">예주인 (Yizhouren)</td>
+                                <td class="p-3.5 sm:p-4">ENHYPEN WORLD 라이선싱 대행 + 《Duda & Dada》 운영</td>
+                                <td class="p-3.5 sm:p-4"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-xs">글로벌/국내 브랜드 대행</span></td>
+                                <td class="p-3.5 sm:p-4 text-slate-500">비상장사 재무 정보 제한 및 아동용 IP 중심 구조</td>
+                            </tr>
+
+                            <!-- Tier 2 -->
+                            <tr class="hover:bg-blue-50/40 transition">
+                                <td class="p-3.5 sm:p-4 font-bold text-blue-700 bg-blue-50/30 whitespace-nowrap">⭐⭐ 제2티어</td>
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-900 whitespace-nowrap">위에원그룹 (China Lit.)</td>
+                                <td class="p-3.5 sm:p-4">신규 애니메이션 내용 협력 + IP 컬래버레이션</td>
+                                <td class="p-3.5 sm:p-4"><span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-xs">웹소설 기반 IP / 콘텐츠</span></td>
+                                <td class="p-3.5 sm:p-4 text-slate-500">낮은 순이익률 및 순수 라이선싱 대행 역량 한계</td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/40 transition">
+                                <td class="p-3.5 sm:p-4 font-bold text-blue-700 bg-blue-50/30 whitespace-nowrap">⭐⭐ 제2티어</td>
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-900 whitespace-nowrap">티엔뤄항 (Skynet Asia)</td>
+                                <td class="p-3.5 sm:p-4">ENHYPEN WORLD 중고품 브랜드 라이선싱 대행</td>
+                                <td class="p-3.5 sm:p-4"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-xs">종합 소비재 라이선싱</span></td>
+                                <td class="p-3.5 sm:p-4 text-slate-500">소규모 기업 체급(약 51명)으로 인한 대형 자원 투입의 한계</td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/40 transition">
+                                <td class="p-3.5 sm:p-4 font-bold text-blue-700 bg-blue-50/30 whitespace-nowrap">⭐⭐ 제2티어</td>
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-900 whitespace-nowrap">52TOYS</td>
+                                <td class="p-3.5 sm:p-4">ENHYPEN WORLD 하드코어 토이 + 애니메이션 공동 제작</td>
+                                <td class="p-3.5 sm:p-4"><span class="px-2 py-0.5 rounded bg-rose-100 text-rose-800 text-xs">변형 토이 / 캡슐 토이</span></td>
+                                <td class="p-3.5 sm:p-4 text-slate-500">팝마트 대비 5% 미만의 소규모 체급, 미미한 영업이익(3,200만 위안)</td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/40 transition">
+                                <td class="p-3.5 sm:p-4 font-bold text-blue-700 bg-blue-50/30 whitespace-nowrap">⭐⭐ 제2티어</td>
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-900 whitespace-nowrap">블록스 (Bloks)</td>
+                                <td class="p-3.5 sm:p-4">ENHYPEN WORLD 블록 피규어 개발</td>
+                                <td class="p-3.5 sm:p-4"><span class="px-2 py-0.5 rounded bg-teal-100 text-teal-800 text-xs">조립식 블록 완구</span></td>
+                                <td class="p-3.5 sm:p-4 text-slate-500">73개 수임 IP 대비 자체 IP 2개로 외부 IP 분배금 부담 높음</td>
+                            </tr>
+
+                            <!-- Tier 3 -->
+                            <tr class="hover:bg-purple-50/40 transition">
+                                <td class="p-3.5 sm:p-4 font-bold text-purple-700 bg-purple-50/30 whitespace-nowrap">⭐⭐⭐ 제3티어</td>
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-900 whitespace-nowrap">빌리빌리 (Bilibili)</td>
+                                <td class="p-3.5 sm:p-4">ENHYPEN 팬덤 운영 + 버추얼 아이돌 및 애니메이션 배포</td>
+                                <td class="p-3.5 sm:p-4"><span class="px-2 py-0.5 rounded bg-purple-100 text-purple-800 text-xs">Z세대 커뮤니티 / 배포</span></td>
+                                <td class="p-3.5 sm:p-4 text-slate-500">최근에야 분기 흑자 전환, 자체 몰의 단독 실물 유통 규모 한계</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Company Detail Modal -->
+        <div id="company-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar p-6 sm:p-8 space-y-6 shadow-2xl relative">
+                <button id="modal-close-btn" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 text-xl font-bold p-2">✕</button>
+                <div id="modal-body">
+                    <!-- Dynamic rendering via JS -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 py-8 mt-16 text-xs sm:text-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <p class="font-semibold text-slate-200">CLE 희망 바이어 선정 리포트 대시보드</p>
+                <p class="text-slate-500 mt-0.5">대중국 IP 라이선싱 및 상업화 파트너십 전략 분석</p>
+            </div>
+            <p class="text-slate-500 text-center md:text-right">
+                &copy; 2026 CLE Strategic Intelligence. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Application JavaScript Logic -->
+    <script>
+        // Data Store (All 9 Buyers - Tencent Removed)
+        const buyersData = [
+            {
+                id: "popmart",
+                name: "팝마트 (POP MART / 泡泡玛特)",
+                tier: "tier1",
+                tierLabel: "⭐ 제1티어",
+                category: "아트토이 / 하이엔드 수집품",
+                badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200",
+                financials: "2026년 상반기 매출 171.73억 위안, 순이익 50.38억 위안, 매출총이익률 69.7%",
+                scaleNumber: 171.73, // RMB 100M
+                scaleUnit: "억 위안 (상반기 매출)",
+                stores: "내륙 오프라인 매장 379개, 로봇 스토어 2,192개 (2026.06)",
+                ips: "MOLLY, LABUBU, DIMOO, SKULLPANDA, PUCKY; 디즈니, 산리오, 카카오프렌즈 등",
+                collaborations: [
+                    "ENHYPEN WORLD 팝토이 개발: 블라인드 박스, 피규어, MEGA 시리즈 고부가가치 개발",
+                    "신규 애니메이션 IP 팝토이 연동: 콘텐츠 + 파생상품 일체형 동시 개발",
+                    "애니메이션 콘텐츠 공동 제작: Eyescream Studio 애니 제작 역량 연계 프로젝트"
+                ],
+                risks: [
+                    "성장세 둔화: 2026년 상반기 20% 성장 목표 달성 불확실 인정",
+                    "해외 매출 감소: 해외 매출 49.72억 위안 (전년 동기 대비 11.6% 하락)",
+                    "핵심 IP 인기 하락: LABUBU 매출 상반기 7.5% 하락",
+                    "높은 협상력: 리더기업으로서 수익 배분 시 우월적 지위 행사 가능성"
+                ],
+                scores: [95, 90, 85, 95, 80] // [Offline, Ecommerce, TCG, Toy/Figure, Animation/Content]
+            },
+            {
+                id: "alifish",
+                name: "알리피시 (Alifish / 阿里鱼)",
+                tier: "tier1",
+                tierLabel: "⭐ 제1티어",
+                category: "종합 IP 라이선싱 / 이커머스",
+                badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200",
+                financials: "2025년 기준 소매액 41억 달러 (아태 1위, 세계 6위 라이선시)",
+                scaleNumber: 295.2, // USD 4.1B = ~295억 RMB
+                scaleUnit: "억 위안 상당 (소매 GMV)",
+                stores: "Tmall, Taobao 트래픽 직접 연동 및 Chiikawa 상하이 플래그십 등",
+                ips: "포켓몬, 산리오 패밀리(5년 독점), 짱구는 못말려, 카카오프렌즈, 란마 1/2",
+                collaborations: [
+                    "ENHYPEN WORLD 중국 총대행: 중국 라이선싱 전권 위탁, 서브라이선시 발굴, 이커머스 운영",
+                    "아트웍 디자인 및 현지화: 중국 시장 맞춤형 디자인 스타일가이드 구축",
+                    "신규 애니메이션 IP 라이선싱: 신작 애니메이션 상업화 전개",
+                    "이커머스 클로즈드 루프: Tmall/Taobao 플래그십 direct-to-consumer 거점"
+                ],
+                risks: [
+                    "통제력 약화: 알리피시가 중간 매개체로 작동하여 브랜드 품질 통제 약화 우려",
+                    "수익성 압박: 저마진 소매 확대에 따른 전반적 마진율 하락 우려",
+                    "그룹 전략 영향: 알리픽처스 수뇌부 및 알리바바 전체 전략 변화에 연동"
+                ],
+                scores: [60, 98, 65, 80, 75]
+            },
+            {
+                id: "kayou",
+                name: "카유 (Kayou / 卡游)",
+                tier: "tier1",
+                tierLabel: "⭐ 제1티어",
+                category: "컬렉터블 카드 (TCG)",
+                badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200",
+                financials: "중국 TCG 점유율 60%+, 2024년 매출 100억 위안+, 순이익 44.66억 위안",
+                scaleNumber: 100.0,
+                scaleUnit: "억 위안 (연간 매출)",
+                stores: "전국 문구/완구 채널망, 동남아 및 유럽 진출",
+                ips: "마이 리틀 포니, 나루토, tokidoki, Panini 월드컵 카드 등 70개 이상",
+                collaborations: [
+                    "ENHYPEN WORLD 소장용 카드: K-pop 팬덤 타겟 멤버 개인/단체/싸인 카드 제작",
+                    "신규 애니메이션 IP 카드 개발: 애니 출시와 동시 TCG 컬렉션 라인업 출시",
+                    "컬래버레이션 기프트 박스: 카드 + 굿즈 한정판 박스를 통한 명절 프로모션"
+                ],
+                risks: [
+                    "지분 환매 압박: 세쿼이아/텐센트 대상 13.5억 위안 지분 환매 VAA 불확실성",
+                    "단일 품목 의존: TCG 카드 의존도가 높아 타 제품군 확장 검증 필요",
+                    "비상장 기업: 재무 공시의 제약"
+                ],
+                scores: [75, 80, 100, 70, 50]
+            },
+            {
+                id: "yizhouren",
+                name: "예주인 (Yizhouren / 艺洲人)",
+                tier: "tier1",
+                tierLabel: "⭐ 제1티어",
+                category: "글로벌/국내 브랜드 라이선싱 대행",
+                badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200",
+                financials: "IP 라이선싱 소매액 38.7억 달러 (글로벌 라이선싱 에이전시 12위)",
+                scaleNumber: 278.6, // USD 3.87B = ~278억 RMB
+                scaleUnit: "억 위안 상당 (소매 GMV)",
+                stores: "중국 내 라이선시 네트워크, 국가 중점 애니메이션 기업",
+                ips: "스폰지밥, PAW Patrol(퍼피구조대), 인피니티 내로, 홍소두 등",
+                collaborations: [
+                    "ENHYPEN WORLD 중국 라이선싱 대행: 20년 노하우 활용 브랜드 라이선싱 전담",
+                    "《Duda & Dada》 라이선싱 운영: 아동/패밀리향 IP 운영 강점 결합",
+                    "신규 애니메이션 IP 공동 투자 및 운영: IP 투자 역량을 활용한 시너지"
+                ],
+                risks: [
+                    "비상장 기업: 자금력 검증의 제한성",
+                    "아동용 IP 집중: K-pop 타겟 정합성에 대한 검증 필요",
+                    "체급 한계: 알리피시/팝마트 대비 직접 자원 투입 스케일 제약"
+                ],
+                scores: [70, 75, 60, 75, 80]
+            },
+            {
+                id: "chinalit",
+                name: "위에원그룹 (China Literature / 阅文集团)",
+                tier: "tier2",
+                tierLabel: "⭐⭐ 제2티어",
+                category: "웹소설 기반 IP / 콘텐츠",
+                badgeColor: "bg-blue-100 text-blue-800 border-blue-200",
+                financials: "2026년 상반기 매출 35.31억 위안, IP 파생상품 GMV 7.8억 위안",
+                scaleNumber: 35.31,
+                scaleUnit: "억 위안 (상반기 매출)",
+                stores: "온라인 웹소설 플랫폼, 싱가포르 유니버설 스튜디오 등 해외 거점",
+                ips: "경여년, 투파창궁, 궤벽지주, 전직고수, 대봉타경인",
+                collaborations: [
+                    "신규 애니메이션 IP 콘텐츠 협력: 웹소설 IP와의 크로스오버 및 세계관 연계",
+                    "IP 컬래버레이션: ENHYPEN WORLD x 위에원 웹소설 IP 한정 굿즈 및 이벤트",
+                    "애니메이션 콘텐츠 방영권 허가: 위에원 생태계 내 애니 방영"
+                ],
+                risks: [
+                    "낮은 순이익: 지배주주 순이익 1.35억 위안 수준으로 수익성 제한",
+                    "온라인 사업 감소: 전통 웹소설 매출 7.3% 감소",
+                    "단순 굿즈 대행 한계: 굿즈 유통보다는 영상/애니 각색에 치중"
+                ],
+                scores: [40, 70, 40, 50, 95]
+            },
+            {
+                id: "skynet",
+                name: "티엔뤄항 (Skynet Asia / 天络行)",
+                tier: "tier2",
+                tierLabel: "⭐⭐ 제2티어",
+                category: "종합 소비재 라이선싱",
+                badgeColor: "bg-blue-100 text-blue-800 border-blue-200",
+                financials: "2025년 기준 라이선싱 소매액 6.122억 달러 (세계 51위)",
+                scaleNumber: 44.0, // USD 612M = ~44억 RMB
+                scaleUnit: "억 위안 상당 (소매 GMV)",
+                stores: "200개 이상 피허가사(Licensee) 네트워크",
+                ips: "테디베어, 럭키몽키, 중국항공우주(CNSPACE), 병마용, 파워퍼프걸 등",
+                collaborations: [
+                    "ENHYPEN WORLD 중고품 브랜드 라이선싱 대행: 의류, 홈퍼니싱, FMCG 라이선싱",
+                    "신규 애니메이션 IP 브랜드 라이선싱: 카테고리별 전문 피허가사 매칭",
+                    "프로모션 라이선싱 및 팝업 이벤트: FMCG 및 오프라인 오프라인 이벤트"
+                ],
+                risks: [
+                    "비상장 소규모: 임직원 약 51명 수준으로 조직 체급 한계",
+                    "문화/예술 IP 편중: K-pop 및 애니 IP 경험 수용성 검증 필요",
+                    "자원 집중도 제약: 글로벌 플랫폼에 비해 자원 투입 한계"
+                ],
+                scores: [65, 60, 50, 60, 60]
+            },
+            {
+                id: "52toys",
+                name: "52TOYS",
+                tier: "tier2",
+                tierLabel: "⭐⭐ 제2티어",
+                category: "변형 토이 / 캡슐 토이 / 피규어",
+                badgeColor: "bg-blue-100 text-blue-800 border-blue-200",
+                financials: "2024년 매출 6.3억 위안, 조정 순이익 3,200만 위안 (점유율 1.2%)",
+                scaleNumber: 6.3,
+                scaleUnit: "억 위안 (연간 매출)",
+                stores: "중국 팝토이 매장, 가챠/캡슐 토이 자판기망",
+                ips: "디즈니, 워너브라더스, 주토피아, 미니언즈, CiCiLu 등",
+                collaborations: [
+                    "ENHYPEN WORLD 하드코어 토이 개발: 변형 토이, 메카닉, 캡슐 토이 차별화",
+                    "신규 애니메이션 캐릭터 장난감화: 캐릭터 입체 피규어 개발",
+                    "애니메이션 공동 제작: 자체 애니 제작 의지를 반영한 숏폼 애니 공동 기획"
+                ],
+                risks: [
+                    "소규모 체급: 매출이 팝마트의 5% 미만 수준",
+                    "미미한 수익성: 영업이익 3,200만 위안으로 박한 마진 구조",
+                    "외부 IP 높은 의존도: 자체 IP 비중이 24.5%에 불과"
+                ],
+                scores: [60, 65, 55, 90, 65]
+            },
+            {
+                id: "bloks",
+                name: "블록스 (Bloks / 布鲁可)",
+                tier: "tier2",
+                tierLabel: "⭐⭐ 제2티어",
+                category: "조립식 블록 완구 (積木人)",
+                badgeColor: "bg-blue-100 text-blue-800 border-blue-200",
+                financials: "2026년 상반기 매출 17.76억 위안 (+32.7%), 순이익 3.87억 위안",
+                scaleNumber: 17.76,
+                scaleUnit: "억 위안 (상반기 매출)",
+                stores: "홍콩 상장사 (00325.HK), 중국 완구 유통망",
+                ips: "울트라맨, 트랜스포머, 포켓몬, 하츠네 미쿠, 디즈니 등 73개 라이선스 IP",
+                collaborations: [
+                    "ENHYPEN WORLD 블록 피규어: 조립식 피규어(블록 피규어) 제품 개발",
+                    "신규 애니메이션 IP 브릭 토이: 신작 완구 기획",
+                    "컬래버레이션 블라인드 박스 / 블록: 블라인드 박스 플레이 결합 브릭 토이"
+                ],
+                risks: [
+                    "외부 IP 과다 의존: 73개 수임 IP 대비 자체 IP 2개로 분배금 마진 압박",
+                    "K-pop 팬덤 정합성: 블록 완구 형태에 대한 팬덤 수용성 검증 필요",
+                    "마진율 하락세: 상반기 마진율 소폭 감소"
+                ],
+                scores: [70, 75, 45, 95, 40]
+            },
+            {
+                id: "bilibili",
+                name: "빌리빌리 (Bilibili / 哔哩哔哩)",
+                tier: "tier3",
+                tierLabel: "⭐⭐⭐ 제3티어",
+                category: "Z세대 ACG 커뮤니티 / 배포",
+                badgeColor: "bg-purple-100 text-purple-800 border-purple-200",
+                financials: "MAU 3억 명+, 2026년 Q1 조정 순이익 5.85억 위안 (첫 흑자 전환)",
+                scaleNumber: 58.5, // quarterly run-rate adjusted
+                scaleUnit: "억 위안 (Q1 분기 매출)",
+                stores: "Bilibili Mall (ACG 굿즈 차별화 커머스), B站 국창 커뮤니티",
+                ips: "타깃 애니 《时光代理人》(1,600회 라이선스), bilibiliGoods, A-SOUL",
+                collaborations: [
+                    "ENHYPEN 내용 홍보 및 팬덤 운영: Z세대 서브컬처 팬덤 바이럴 마케팅 핵심 거점",
+                    "버추얼 아이돌 협력: 빌리빌리 버추얼 아티스트 역량 결합 시너지",
+                    "Bilibili Mall 굿즈 판매 & 신규 애니 배포: ACG 유저 직접 타겟팅"
+                ],
+                risks: [
+                    "수익 지속성: 최근에야 첫 흑자 전환하여 안정성 모니터링 필요",
+                    "이커머스 규모 한계: Bilibili Mall 규모가 타오바오/티몰 대비 작음",
+                    "게임 부문 약세: 주요 수익원 중 하나 축소 중"
+                ],
+                scores: [30, 85, 50, 60, 90]
+            }
+        ];
+
+        // Project Matcher Data Rationale
+        const projectData = {
+            enhypen: {
+                title: "ENHYPEN WORLD 프로젝트",
+                subtitle: "K-pop 아이돌 캐릭터 IP를 통한 고부가가치 MD 및 라이선스 사업",
+                recommendations: [
+                    {
+                        company: "카유 (Kayou)",
+                        tier: "1티어",
+                        role: "소장용 포토카드 / TCG 개발",
+                        desc: "K-pop 팬덤의 수집 욕구와 카유의 TCG 생산/유통 독점력이 결합하여 즉각적인 고수익 창출 가능."
+                    },
+                    {
+                        company: "팝마트 (POP MART)",
+                        tier: "1티어",
+                        role: "피규어 / 블라인드 박스 / MEGA 시리즈",
+                        desc: "고급 아트토이화 전략으로 K-pop 팬덤 유입 및 해외 팝마트 매장망을 통한 시너지 극대화."
+                    },
+                    {
+                        company: "알리피시 (Alifish)",
+                        tier: "1티어",
+                        role: "중국 총대행 & 티몰 플래그십 운영",
+                        desc: "중국 전역 서브라이선싱 수임 및 알리바바 이커머스 채널을 통한 안정적인 물류 및 판매 조율."
+                    },
+                    {
+                        company: "블록스 (Bloks)",
+                        tier: "2티어",
+                        role: "조립식 블록 피규어 개발",
+                        desc: "외부 IP 수요가 높은 블록스와의 손잡음으로 차별화된 굿즈 라인업 구축."
+                    }
+                ]
+            },
+            newanime: {
+                title: "신규 애니메이션 IP 프로젝트",
+                subtitle: "Eyescream Studio의 애니 제작 역량을 활용한 '콘텐츠 + 파생상품' 기획",
+                recommendations: [
+                    {
+                        company: "팝마트 (POP MART)",
+                        tier: "1티어",
+                        role: "애니메이션 공동 제작 및 완구 동시 기획",
+                        desc: "팝마트의 IP 콘텐츠 기획 전환 타이밍에 맞춰 신작 애니메이션 Co-production 검토."
+                    },
+                    {
+                        company: "위에원그룹 (China Literature)",
+                        tier: "2티어",
+                        role: "웹소설 크로스오버 & 미디어 믹스",
+                        desc: "중국 최대 웹소설 IP 플랫폼과의 원작/스핀오프 협력을 통한 대중적 인지도 확보."
+                    },
+                    {
+                        company: "52TOYS",
+                        tier: "2티어",
+                        role: "하드코어 메카닉 / 변형 완구 개발",
+                        desc: "숏폼 애니 제작 의지와 변형/가챠 토이 기술을 활용한 정밀 캐릭터 상품화."
+                    },
+                    {
+                        company: "빌리빌리 (Bilibili)",
+                        tier: "3티어",
+                        role: "국산 애니 채널 방영 & 서브컬처 팬덤 확보",
+                        desc: "3억 MAU ACG 유저 대상 애니 방영 및 버추얼 아이돌 시너지 유도."
+                    }
+                ]
+            },
+            duda: {
+                title: "Duda & Dada (두다다쿵) 프로젝트",
+                subtitle: "아동 및 패밀리 타겟 검증된 글로벌 애니메이션 IP",
+                recommendations: [
+                    {
+                        company: "예주인 (Yizhouren)",
+                        tier: "1티어",
+                        role: "중국 지역 독점 라이선싱 총대행",
+                        desc: "《스폰지밥》, 《PAW Patrol》 등 아동/패밀리향 IP 운영 20년 노하우를 지닌 최적의 에이전시."
+                    },
+                    {
+                        company: "티엔뤄항 (Skynet Asia)",
+                        tier: "2티어",
+                        role: "의류 / 문구 / FMCG 카테고리 라이선싱",
+                        desc: "200개 이상의 FMCG 완구 피허가사 네트워크를 통한 생활밀착형 상품화."
+                    }
+                ]
+            },
+            virtual: {
+                title: "버추얼 아이돌 프로젝트",
+                subtitle: "서브컬처 팬덤 및 디지털 아티스트 연계 프로젝트",
+                recommendations: [
+                    {
+                        company: "빌리빌리 (Bilibili)",
+                        tier: "3티어",
+                        role: "버추얼 인큐베이팅 & Bilibili Mall 세일즈",
+                        desc: "A-SOUL 등 중국 버추얼 아이돌 생태계 최대 거점으로 바이럴 및 전용 커머스 최적화."
+                    },
+                    {
+                        company: "팝마트 (POP MART)",
+                        tier: "1티어",
+                        role: "버추얼 아이돌 MEGA 수집용 피규어",
+                        desc: "디지털 팬덤을 실물 하이엔드 피규어 소장욕구로 전환시키는 크로스오버."
+                    }
+                ]
+            }
+        };
+
+        // DOM Rendering logic
+        document.addEventListener("DOMContentLoaded", () => {
+            renderBuyerCards('all');
+            initScaleChart();
+            initRadarChart();
+            renderProjectMatches('enhypen');
+            setupEventListeners();
+        });
+
+        // 1. Render Buyer Directory Cards
+        function renderBuyerCards(filterTier, searchQuery = '') {
+            const container = document.getElementById('buyer-cards-grid');
+            container.innerHTML = '';
+
+            const filtered = buyersData.filter(buyer => {
+                const matchesTier = (filterTier === 'all' || buyer.tier === filterTier);
+                const matchesSearch = searchQuery === '' || 
+                    buyer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    buyer.ips.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    buyer.category.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesTier && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full bg-white rounded-2xl p-8 text-center text-slate-500 border border-amber-200/60">
+                        검색 조건에 일치하는 바이어가 없습니다.
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(buyer => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl border border-amber-200/70 shadow-sm hover:shadow-md transition flex flex-col justify-between p-5 space-y-4";
+                
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex items-start justify-between gap-2">
+                            <span class="inline-block px-2.5 py-1 rounded-md text-xs font-bold border ${buyer.badgeColor}">
+                                ${buyer.tierLabel}
+                            </span>
+                            <span class="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                                ${buyer.category}
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 group-hover:text-amber-700 leading-snug">
+                                ${buyer.name}
+                            </h3>
+                            <p class="text-xs text-amber-800/80 font-medium mt-1">
+                                📊 ${buyer.financials}
+                            </p>
+                        </div>
+                        <div class="bg-amber-50/50 rounded-xl p-3 text-xs space-y-1 border border-amber-100">
+                            <div class="text-slate-500 font-semibold">대표 IP / 협력사:</div>
+                            <div class="text-slate-700 line-clamp-2">${buyer.ips}</div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs text-slate-400">협력 제안 ${buyer.collaborations.length}건</span>
+                        <button onclick="openCompanyModal('${buyer.id}')" class="px-3 py-1.5 rounded-lg bg-amber-800 hover:bg-amber-900 text-white text-xs font-semibold transition">
+                            상세 분석 보기
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // 2. Open Detail Modal
+        window.openCompanyModal = function(id) {
+            const buyer = buyersData.find(b => b.id === id);
+            if (!buyer) return;
+
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = `
+                <div class="space-y-6">
+                    <div class="flex items-start justify-between border-b border-amber-200 pb-4 pr-6">
+                        <div>
+                            <span class="inline-block px-2.5 py-1 rounded-md text-xs font-bold border ${buyer.badgeColor} mb-2">
+                                ${buyer.tierLabel} | ${buyer.category}
+                            </span>
+                            <h2 class="text-xl font-bold text-slate-900">${buyer.name}</h2>
+                        </div>
+                    </div>
+
+                    <!-- Business Scale -->
+                    <div class="bg-amber-50 rounded-2xl p-4 space-y-1">
+                        <div class="text-xs font-bold text-amber-900">회사 개요 및 핵심 자원</div>
+                        <p class="text-xs text-slate-700 leading-relaxed">${buyer.financials}</p>
+                        ${buyer.stores ? `<p class="text-xs text-slate-600 mt-1">🏢 유통 네트워크: ${buyer.stores}</p>` : ''}
+                    </div>
+
+                    <!-- IPs -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">대표 IP 및 파트너십 사례</h4>
+                        <p class="text-xs text-slate-800 bg-slate-50 p-3 rounded-xl border border-slate-200">${buyer.ips}</p>
+                    </div>
+
+                    <!-- Strategic Synergy -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-700">CLE와의 구체적 협력 방향</h4>
+                        <ul class="space-y-2">
+                            ${buyer.collaborations.map(collab => `
+                                <li class="text-xs text-slate-700 bg-emerald-50/60 p-2.5 rounded-xl border border-emerald-100 flex items-start gap-2">
+                                    <span class="text-emerald-600 font-bold">✓</span>
+                                    <span>${collab}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+
+                    <!-- Risks -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-rose-700">주요 리스크 및 고려사항</h4>
+                        <ul class="space-y-2">
+                            ${buyer.risks.map(risk => `
+                                <li class="text-xs text-slate-700 bg-rose-50/60 p-2.5 rounded-xl border border-rose-100 flex items-start gap-2">
+                                    <span class="text-rose-500 font-bold">⚠</span>
+                                    <span>${risk}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('company-modal').classList.remove('hidden');
+        };
+
+        // 3. Render Project Matcher View
+        function renderProjectMatches(projectKey) {
+            const data = projectData[projectKey];
+            if (!data) return;
+
+            const container = document.getElementById('project-match-content');
+            container.innerHTML = `
+                <div class="border-b border-slate-200 pb-3">
+                    <h3 class="text-base font-bold text-slate-900">${data.title}</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">${data.subtitle}</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    ${data.recommendations.map(item => `
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-900 text-sm">${item.company}</span>
+                                <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">${item.tier}</span>
+                            </div>
+                            <div class="text-xs font-semibold text-amber-700">${item.role}</div>
+                            <p class="text-xs text-slate-600 leading-relaxed">${item.desc}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // 4. Initialize Chart 1: Financial Scale Bar Chart
+        function initScaleChart() {
+            const ctx = document.getElementById('scaleChart').getContext('2d');
+            
+            // Selected representative buyers for scale chart
+            const labels = ['알리피시 (소매GMV)', '예주인 (소매GMV)', '팝마트 (매출액)', '카유 (매출액)', '티엔뤄항 (소매GMV)', '위에원 (매출액)', '블록스 (매출액)', '52TOYS (매출액)'];
+            const dataValues = [295.2, 278.6, 171.73, 100.0, 44.0, 35.31, 17.76, 6.3];
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '사업/소매 환산 규모 (억 위안 RMB)',
+                        data: dataValues,
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.85)',
+                            'rgba(16, 185, 129, 0.75)',
+                            'rgba(16, 185, 129, 0.65)',
+                            'rgba(16, 185, 129, 0.55)',
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(59, 130, 246, 0.6)',
+                            'rgba(59, 130, 246, 0.5)',
+                            'rgba(59, 130, 246, 0.4)'
+                        ],
+                        borderColor: 'rgba(255,255,255,0.8)',
+                        borderWidth: 1.5,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` 규모: 약 ${context.raw} 억 위안 (RMB)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#f1f5f9' },
+                            ticks: {
+                                callback: function(val) { return val + '억'; },
+                                font: { size: 10 }
+                            }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { size: 11, weight: '500' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 5. Initialize Chart 2: Strategic Capabilities Radar Chart
+        function initRadarChart() {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['오프라인 매장', '이커머스 커머스', 'TCG/카드 완구', '팝토이/피규어', '애니/콘텐츠 제작'],
+                    datasets: [
+                        {
+                            label: '팝마트 (POP MART)',
+                            data: [95, 90, 85, 95, 80],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: '알리피시 (Alifish)',
+                            data: [60, 98, 65, 80, 75],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: '카유 (Kayou)',
+                            data: [75, 80, 100, 70, 50],
+                            borderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#e2e8f0' },
+                            grid: { color: '#f1f5f9' },
+                            pointLabels: {
+                                font: { size: 10, weight: 'bold' }
+                            },
+                            ticks: { display: false, min: 0, max: 100 }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 6. Setup Event Listeners
+        function setupEventListeners() {
+            // Tier Filter Buttons
+            const filterBtns = document.querySelectorAll('.filter-tier-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('active', 'bg-amber-800', 'text-white');
+                        b.classList.add('bg-slate-100', 'text-slate-700');
+                    });
+                    btn.classList.add('active', 'bg-amber-800', 'text-white');
+                    btn.classList.remove('bg-slate-100', 'text-slate-700');
+
+                    const tier = btn.getAttribute('data-tier');
+                    const searchQuery = document.getElementById('buyer-search').value;
+                    renderBuyerCards(tier, searchQuery);
+                });
+            });
+
+            // Search Input
+            const searchInput = document.getElementById('buyer-search');
+            searchInput.addEventListener('input', (e) => {
+                const activeTierBtn = document.querySelector('.filter-tier-btn.active');
+                const tier = activeTierBtn ? activeTierBtn.getAttribute('data-tier') : 'all';
+                renderBuyerCards(tier, e.target.value);
+            });
+
+            // Project Selector Buttons
+            const projectBtns = document.querySelectorAll('.project-btn');
+            projectBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    projectBtns.forEach(b => {
+                        b.classList.remove('active', 'border-2', 'border-amber-600', 'bg-amber-50/60');
+                        b.classList.add('border', 'border-slate-200');
+                    });
+                    btn.classList.add('active', 'border-2', 'border-amber-600', 'bg-amber-50/60');
+                    btn.classList.remove('border', 'border-slate-200');
+
+                    const proj = btn.getAttribute('data-project');
+                    renderProjectMatches(proj);
+                });
+            });
+
+            // Modal Close
+            document.getElementById('modal-close-btn').addEventListener('click', () => {
+                document.getElementById('company-modal').classList.add('hidden');
+            });
+            document.getElementById('company-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'company-modal') {
+                    document.getElementById('company-modal').classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
