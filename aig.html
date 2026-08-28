@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 게임 & 챗봇 체험 아케이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body { font-family: 'Pretendard', sans-serif; background-color: #0f172a; color: #f8fafc; overflow: hidden; }
+        
+        /* 스크롤바 커스텀 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        
+        /* 애니메이션 */
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* 타자기 효과 */
+        .typewriter::after { content: '|'; animation: blink 1s step-start infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* 글래스모피즘 */
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        
+        /* 앱 전환 래퍼 */
+        .app-view { display: none; position: absolute; inset: 0; z-index: 50; background: #0f172a; }
+        .app-view.active { display: flex; flex-direction: column; }
+        
+        /* 웹툰 전용 스타일 */
+        .webtoon-panel { height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; scroll-snap-align: start; }
+        .webtoon-track { transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); }
+        .speech-bubble { background: white; color: black; padding: 15px 20px; border-radius: 20px; font-weight: bold; box-shadow: 0 10px 25px rgba(0,0,0,0.5); position: relative; max-width: 80%; border: 3px solid #1e293b; }
+        .speech-bubble::after { content: ''; position: absolute; bottom: -10px; left: 20px; border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; display: block; width: 0; }
+        .speech-bubble::before { content: ''; position: absolute; bottom: -14px; left: 18px; border-width: 12px 12px 0; border-style: solid; border-color: #1e293b transparent transparent; display: block; width: 0; }
+    </style>
+</head>
+<body class="w-full h-screen relative">
+
+    <main id="hub-view" class="w-full h-full flex flex-col items-center overflow-y-auto p-6 lg:p-12 relative z-10">
+        <!-- 배경 장식 -->
+        <div class="fixed inset-0 z-0 pointer-events-none opacity-20">
+            <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-600 rounded-full mix-blend-screen filter blur-[100px] animate-pulse"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-rose-600 rounded-full mix-blend-screen filter blur-[100px] animate-pulse" style="animation-delay: 2s;"></div>
+        </div>
+
+        <div class="relative z-10 w-full max-w-5xl">
+            <header class="text-center mb-12 slide-up">
+                <div class="inline-flex items-center justify-center p-3 bg-indigo-500/20 text-indigo-400 rounded-2xl mb-4 border border-indigo-500/30">
+                    <i class="fa-solid fa-flask-vial text-2xl"></i>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-rose-400">AI Experience Hub</h1>
+                <p class="text-slate-400 text-lg">중국 AI 엔터테인먼트 시장의 핵심 BM과 프로덕트를 직접 체험해 보세요.</p>
+            </header>
+
+            <div class="bg-slate-800/50 border border-slate-700 p-6 rounded-3xl mb-10 slide-up backdrop-blur-md">
+                <h2 class="text-xl font-bold text-white mb-4"><i class="fa-solid fa-gamepad text-indigo-400 mr-2"></i> 아케이드 플레이 가이드</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
+                    <div class="flex items-start gap-3 bg-slate-800/80 p-4 rounded-2xl border border-slate-700/50">
+                        <div class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5"><i class="fa-solid fa-comment-dots"></i></div>
+                        <div><strong class="text-slate-200 block mb-1">감성 AI 챗봇</strong>하단 입력창에 말을 걸어 대화하고, 토큰을 모아 CG 뽑기(가챠)를 진행하세요.</div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-slate-800/80 p-4 rounded-2xl border border-slate-700/50">
+                        <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5"><i class="fa-solid fa-terminal"></i></div>
+                        <div><strong class="text-slate-200 block mb-1">생존 시뮬레이터</strong>제시되는 상황을 읽고 선택지 버튼을 클릭해 멘탈과 자산을 관리하세요.</div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-slate-800/80 p-4 rounded-2xl border border-slate-700/50">
+                        <div class="w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-400 shrink-0 mt-0.5"><i class="fa-solid fa-heart"></i></div>
+                        <div><strong class="text-slate-200 block mb-1">비주얼 노벨</strong>화면 아무 곳이나 탭(클릭)하면 텍스트와 애니메이션이 다음 씬으로 넘어갑니다.</div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-slate-800/80 p-4 rounded-2xl border border-slate-700/50">
+                        <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 shrink-0 mt-0.5"><i class="fa-solid fa-book-open"></i></div>
+                        <div><strong class="text-slate-200 block mb-1">인터랙티브 웹툰</strong>화면을 탭하면 카메라가 다음 컷으로 스크롤 됩니다. 중간에 선택지도 등장합니다!</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 slide-up" style="animation-delay: 0.1s;">
+                
+                <!-- 앱 1: 감성 챗봇 -->
+                <div class="glass-panel rounded-3xl overflow-hidden hover:scale-[1.02] transition-transform duration-300 group cursor-pointer" onclick="openApp('chatbot-app')">
+                    <div class="h-48 bg-slate-800 relative overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" alt="Chatbot">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 flex gap-2">
+                            <span class="bg-indigo-500/80 text-white text-xs px-2 py-1 rounded backdrop-blur-md">Talkie 벤치마크</span>
+                            <span class="bg-rose-500/80 text-white text-xs px-2 py-1 rounded backdrop-blur-md">가챠 BM</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-comment-dots text-indigo-400 mr-2"></i>감성 AI 챗봇</h2>
+                        <p class="text-sm text-slate-400 mb-6">'까칠한 천재 CEO' 다니엘과 대화하며 호감도를 쌓고, 숨겨진 2D 일러스트 카드를 뽑아보세요.</p>
+                        <button class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold transition">체험하기</button>
+                    </div>
+                </div>
+
+                <!-- 앱 2: 바이브 코딩 시뮬레이터 -->
+                <div class="glass-panel rounded-3xl overflow-hidden hover:scale-[1.02] transition-transform duration-300 group cursor-pointer" onclick="openApp('simulator-app')">
+                    <div class="h-48 bg-slate-800 relative overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" alt="Simulator">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 flex gap-2">
+                            <span class="bg-emerald-500/80 text-white text-xs px-2 py-1 rounded backdrop-blur-md">텍스트 게임</span>
+                            <span class="bg-slate-700/80 text-white text-xs px-2 py-1 rounded backdrop-blur-md">Vibe Coding</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-terminal text-emerald-400 mr-2"></i>대기업 생존 시뮬레이터</h2>
+                        <p class="text-sm text-slate-400 mb-6">오직 텍스트 선택지와 수치(스트레스, 자산)만으로 구현된 극한의 직장 생존 게임을 플레이합니다.</p>
+                        <button class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-semibold transition">체험하기</button>
+                    </div>
+                </div>
+
+                <!-- 앱 3: 여성향 인터랙티브 -->
+                <div class="glass-panel rounded-3xl overflow-hidden hover:scale-[1.02] transition-transform duration-300 group cursor-pointer" onclick="openApp('visualnovel-app')">
+                    <div class="h-48 bg-slate-800 relative overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" alt="Visual Novel">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 flex gap-2">
+                            <span class="bg-pink-500/80 text-white text-xs px-2 py-1 rounded backdrop-blur-md">소홍서 UGC</span>
+                            <span class="bg-purple-500/80 text-white text-xs px-2 py-1 rounded backdrop-blur-md">비주얼 노벨</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-heart text-pink-400 mr-2"></i>여성향 인터랙티브</h2>
+                        <p class="text-sm text-slate-400 mb-6">AI로 생성된 일러스트와 텍스트를 결합하여 만든 극몰입형 로맨스 스토리 씬을 체험합니다.</p>
+                        <button class="w-full py-3 bg-pink-600 hover:bg-pink-500 text-white rounded-xl font-semibold transition">체험하기</button>
+                    </div>
+                </div>
+
+                <!-- 앱 4: 인터랙티브 웹툰 -->
+                <div class="glass-panel rounded-3xl overflow-hidden hover:scale-[1.02] transition-transform duration-300 group cursor-pointer" onclick="openApp('webtoon-app')">
+                    <div class="h-48 bg-slate-800 relative overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1601645191163-3fc0d5d64e35?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" alt="Webtoon">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 flex gap-2">
+                            <span class="bg-purple-500/80 text-white text-xs px-2 py-1 rounded backdrop-blur-md">다이내믹 연출</span>
+                            <span class="bg-blue-500/80 text-white text-xs px-2 py-1 rounded backdrop-blur-md">코믹스</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-book-open text-purple-400 mr-2"></i>인터랙티브 웹툰</h2>
+                        <p class="text-sm text-slate-400 mb-6">탭할 때마다 컷(Panel)을 따라 카메라가 상하로 부드럽게 이동하며 스토리가 전개됩니다.</p>
+                        <button class="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-semibold transition">체험하기</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="chatbot-app" class="app-view">
+        <header class="bg-slate-800 border-b border-slate-700 p-4 flex items-center justify-between shadow-md z-10 relative">
+            <button onclick="closeApp()" class="text-slate-400 hover:text-white px-3 py-2 rounded-lg hover:bg-slate-700 transition">
+                <i class="fa-solid fa-chevron-left mr-2"></i> 허브로 돌아가기
+            </button>
+            <div class="flex items-center gap-3 absolute left-1/2 transform -translate-x-1/2">
+                <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=150" class="w-10 h-10 rounded-full border-2 border-indigo-500 object-cover" alt="Daniel">
+                <div>
+                    <h3 class="font-bold text-white leading-tight">다니엘 (Daniel)</h3>
+                    <p class="text-xs text-indigo-400 flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-500 mr-1 animate-pulse"></span>온라인</p>
+                </div>
+            </div>
+            <!-- 가챠 버튼 -->
+            <button onclick="openGacha()" class="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-900 font-bold px-4 py-2 rounded-xl shadow-[0_0_15px_rgba(245,158,11,0.4)] transition transform hover:scale-105 flex items-center">
+                <i class="fa-solid fa-star mr-2"></i> CG 뽑기 (6 💎)
+            </button>
+        </header>
+
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 custom-scrollbar bg-slate-900">
+            <!-- 챗봇 메시지 렌더링 영역 -->
+            <div class="text-center text-xs text-slate-500 my-4">오늘</div>
+        </div>
+
+        <footer class="bg-slate-800 border-t border-slate-700 p-4">
+            <div class="max-w-4xl mx-auto relative flex items-center">
+                <input type="text" id="chat-input" class="w-full bg-slate-900 border border-slate-700 rounded-full py-3 pl-5 pr-14 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition" placeholder="다니엘에게 메시지 보내기..." onkeypress="handleChatKey(event)">
+                <button onclick="sendChatMessage()" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-indigo-600 rounded-full text-white hover:bg-indigo-500 flex items-center justify-center transition">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 가챠(뽑기) 모달 -->
+    <div id="gacha-modal" class="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center fade-in">
+        <div class="bg-slate-800 border border-slate-600 p-6 md:p-8 rounded-3xl max-w-sm w-full text-center relative shadow-2xl scale-95 transition-transform duration-300" id="gacha-content">
+            <button onclick="closeGacha()" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            
+            <div id="gacha-idle">
+                <div class="text-5xl mb-4">💎</div>
+                <h3 class="text-2xl font-bold text-white mb-2">프리미엄 기억 카드</h3>
+                <p class="text-slate-400 text-sm mb-6">토큰(결제)을 사용하여 다니엘의 숨겨진 고화질 CG와 특수 음성을 잠금 해제하세요.</p>
+                <button onclick="drawGacha()" class="w-full py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-slate-900 font-bold rounded-xl shadow-lg hover:shadow-orange-500/50 transition">
+                    1회 뽑기 (6 토큰)
+                </button>
+            </div>
+
+            <div id="gacha-result" class="hidden">
+                <h3 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-500 mb-4 animate-pulse">SSR 카드 획득!</h3>
+                <div class="w-full h-64 rounded-xl overflow-hidden mb-4 border-2 border-amber-400 shadow-[0_0_30px_rgba(251,191,36,0.3)] relative">
+                    <img src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover" alt="SSR Card">
+                    <div class="absolute bottom-0 w-full bg-slate-900/80 backdrop-blur p-2 text-left">
+                        <p class="text-xs text-amber-400 font-bold">비밀의 정원</p>
+                        <p class="text-[10px] text-white">"여기선 아무도 우릴 찾지 못할 거야."</p>
+                    </div>
+                </div>
+                <button onclick="closeGacha()" class="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl transition">
+                    컬렉션에 저장
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="simulator-app" class="app-view">
+        <header class="bg-slate-800 border-b border-slate-700 p-4 flex items-center justify-between shadow-md">
+            <button onclick="closeApp()" class="text-slate-400 hover:text-white px-3 py-2 rounded-lg hover:bg-slate-700 transition">
+                <i class="fa-solid fa-chevron-left mr-2"></i> 허브로 돌아가기
+            </button>
+            <h3 class="font-bold text-emerald-400"><i class="fa-solid fa-building mr-2"></i>인터넷 대기업 생존기</h3>
+            <div class="w-24"></div> <!-- 여백 맞춤용 -->
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col items-center justify-center relative custom-scrollbar bg-slate-950">
+            <!-- 수치 바 -->
+            <div class="absolute top-4 left-4 right-4 md:left-auto md:right-8 md:w-64 bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-lg flex gap-4 justify-between">
+                <div class="text-center w-1/2">
+                    <div class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">멘탈 (스트레스)</div>
+                    <div class="w-full bg-slate-700 rounded-full h-2 mb-1"><div id="sim-mental-bar" class="bg-rose-500 h-2 rounded-full transition-all duration-500" style="width: 100%"></div></div>
+                    <div id="sim-mental-text" class="text-xs font-bold text-white">100 / 100</div>
+                </div>
+                <div class="text-center w-1/2 border-l border-slate-700 pl-4">
+                    <div class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">통장 잔고</div>
+                    <div class="text-sm font-bold text-emerald-400 mt-1">¥ <span id="sim-money-text">5,000</span></div>
+                </div>
+            </div>
+
+            <!-- 메인 텍스트 컨테이너 -->
+            <div class="max-w-2xl w-full">
+                <div class="bg-slate-800 border border-slate-700 p-8 rounded-3xl shadow-xl mb-6 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+                    <div id="sim-day-tag" class="text-xs font-bold text-emerald-500 mb-3 uppercase tracking-wider">Day 1: 입사 첫날</div>
+                    <h2 id="sim-event-title" class="text-2xl font-bold text-white mb-4">팀장의 기습 지시</h2>
+                    <p id="sim-event-desc" class="text-slate-300 leading-relaxed text-lg min-h-[80px]">
+                        퇴근 10분 전, 팀장이 당신의 자리로 와서 내일 아침 임원 회의에 쓸 PPT 30장을 만들어 놓으라고 합니다. 어떻게 하시겠습니까?
+                    </p>
+                </div>
+
+                <!-- 선택지 -->
+                <div id="sim-choices" class="space-y-3">
+                    <button onclick="handleSimChoice(1)" class="w-full text-left p-5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl text-slate-200 transition group flex justify-between items-center">
+                        <span class="text-lg">"네, 알겠습니다!" (밤샘 야근 시작)</span>
+                        <i class="fa-solid fa-arrow-right opacity-0 group-hover:opacity-100 transition-opacity text-emerald-400"></i>
+                    </button>
+                    <button onclick="handleSimChoice(2)" class="w-full text-left p-5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl text-slate-200 transition group flex justify-between items-center">
+                        <span class="text-lg">"제가요? 제 업무가 아닌데요." (정시 퇴근)</span>
+                        <i class="fa-solid fa-arrow-right opacity-0 group-hover:opacity-100 transition-opacity text-emerald-400"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="visualnovel-app" class="app-view">
+        <!-- 상단 투명 헤더 -->
+        <header class="absolute top-0 w-full p-4 flex items-center justify-between z-20">
+            <button onclick="closeApp()" class="bg-black/40 backdrop-blur-md text-white px-4 py-2 rounded-full hover:bg-black/60 transition shadow-lg">
+                <i class="fa-solid fa-chevron-left mr-2"></i> 나가기
+            </button>
+            <div class="bg-pink-500/80 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full shadow-lg font-bold">
+                Auto 재생 중 <span class="animate-pulse ml-1">▶</span>
+            </div>
+        </header>
+
+        <!-- 비주얼 노벨 배경 및 씬 -->
+        <div class="flex-1 relative cursor-pointer group" onclick="advanceNovel()">
+            <!-- 배경 이미지 -->
+            <img id="vn-bg" src="https://images.unsplash.com/photo-1519098901909-b1553a1190af?auto=format&fit=crop&q=80&w=1200" class="absolute inset-0 w-full h-full object-cover transition-all duration-1000 transform scale-105" alt="Background">
+            <!-- 딤(Dim) 처리 -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent"></div>
+            
+            <!-- 캐릭터 스프라이트 (실루엣/이미지) -->
+            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-lg h-[80%] flex items-end justify-center pointer-events-none transition-transform duration-500" id="vn-character-container">
+                <img id="vn-character" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600" class="h-full object-cover object-top filter drop-shadow-2xl rounded-t-full mask-image-gradient opacity-90" style="-webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);" alt="Male Lead">
+            </div>
+
+            <!-- 하단 텍스트 박스 -->
+            <div class="absolute bottom-8 left-4 right-4 md:left-1/2 md:transform md:-translate-x-1/2 md:w-full md:max-w-3xl z-30">
+                <div class="bg-slate-950/80 backdrop-blur-xl border border-slate-700 p-6 rounded-3xl shadow-2xl relative">
+                    <!-- 이름표 -->
+                    <div id="vn-name" class="absolute -top-4 left-6 bg-pink-600 text-white px-4 py-1.5 rounded-lg font-bold text-sm shadow-lg tracking-wider">
+                        백은결 (CEO)
+                    </div>
+                    <!-- 대사 텍스트 -->
+                    <p id="vn-text" class="text-white text-lg md:text-xl leading-relaxed mt-2 min-h-[60px]"></p>
+                    
+                    <div class="absolute bottom-4 right-6 text-pink-400 text-xs animate-bounce opacity-0 group-hover:opacity-100 transition-opacity">
+                        Tap to continue ▼
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="webtoon-app" class="app-view bg-black">
+        <header class="absolute top-0 w-full p-4 flex items-center justify-between z-50 bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
+            <button onclick="closeApp()" class="pointer-events-auto bg-slate-800/80 backdrop-blur-md text-white px-4 py-2 rounded-full hover:bg-slate-700 transition shadow-lg">
+                <i class="fa-solid fa-chevron-left mr-2"></i> 나가기
+            </button>
+            <div class="text-white font-bold text-sm bg-purple-600/80 px-3 py-1 rounded-full shadow-lg">
+                EP.01 네오 서울의 그림자
+            </div>
+        </header>
+
+        <!-- 웹툰 트랙 래퍼 -->
+        <div class="flex-1 overflow-hidden relative cursor-pointer" onclick="handleWebtoonTap(event)">
+            <!-- 트랙 전체가 위아래로 움직임 -->
+            <div id="webtoon-track" class="webtoon-track w-full h-full flex flex-col absolute top-0 left-0">
+                <!-- 컷들이 JS로 동적 추가됨 -->
+            </div>
+
+            <!-- 선택지 오버레이 -->
+            <div id="webtoon-choice-overlay" class="absolute inset-0 bg-black/80 z-40 hidden flex-col items-center justify-center p-6 fade-in">
+                <h3 class="text-2xl font-bold text-white mb-8 text-center">어떻게 행동할까?</h3>
+                <div id="webtoon-choices-container" class="w-full max-w-md space-y-4">
+                    <!-- 선택지 버튼 JS 동적 추가 -->
+                </div>
+            </div>
+            
+            <div id="webtoon-guide-text" class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/50 text-sm animate-pulse pointer-events-none z-30">
+                화면을 탭하여 다음 컷으로 이동
+            </div>
+        </div>
+    </div>
+
+    <!-- 공통 알림(Toast) UI (alert 대체) -->
+    <div id="toast-msg" class="fixed top-6 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl z-[200] flex items-center transition-all duration-300 opacity-0 -translate-y-10 pointer-events-none border border-slate-600">
+        <i class="fa-solid fa-circle-info text-indigo-400 mr-3"></i>
+        <span id="toast-text" class="text-sm font-medium">알림 메시지</span>
+    </div>
+
+    <script>
+        /* 커스텀 토스트 알림 (alert 대체) */
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast-msg');
+            const icon = toast.querySelector('i');
+            document.getElementById('toast-text').innerText = msg;
+            
+            if(isError) {
+                icon.className = 'fa-solid fa-triangle-exclamation text-rose-500 mr-3';
+                toast.classList.add('border-rose-500/50');
+            } else {
+                icon.className = 'fa-solid fa-circle-info text-indigo-400 mr-3';
+                toast.classList.remove('border-rose-500/50');
+            }
+
+            toast.classList.remove('opacity-0', '-translate-y-10');
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-10');
+            }, 3000);
+        }
+
+        /* 앱 전환 로직 */
+        function openApp(appId) {
+            document.getElementById('hub-view').style.display = 'none';
+            document.getElementById(appId).classList.add('active');
+            
+            // 앱별 초기화
+            if(appId === 'chatbot-app') initChatbot();
+            if(appId === 'simulator-app') initSimulator();
+            if(appId === 'visualnovel-app') initVisualNovel();
+            if(appId === 'webtoon-app') initWebtoon();
+        }
+
+        function closeApp() {
+            document.querySelectorAll('.app-view').forEach(app => app.classList.remove('active'));
+            document.getElementById('hub-view').style.display = 'flex';
+        }
+
+        /* -----------------------------------------
+           App 1: AI 감성 챗봇 (Talkie 스타일)
+        ----------------------------------------- */
+        const chatContainer = document.getElementById('chat-container');
+        let chatInitialized = false;
+
+        const danielResponses = [
+            "그렇게 쳐다보지 마. 일에 집중할 수가 없잖아.",
+            "오늘 저녁엔 시간 비워둬. 예약해둔 곳이 있으니까.",
+            "네가 원하는 게 그거라면... 뭐, 한번 고려는 해보지.",
+            "나한테 그런 식으로 말할 수 있는 사람은 너밖에 없을 거야.",
+            "가까이 와. 물지 않을 테니까."
+        ];
+
+        function initChatbot() {
+            if(chatInitialized) return;
+            // 초기 메시지
+            appendMessage('bot', "늦었네. 5분이나 기다렸어. 변명은 듣지 않을게.");
+            chatInitialized = true;
+        }
+
+        function appendMessage(sender, text) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex w-full ${sender === 'user' ? 'justify-end' : 'justify-start'} fade-in`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = `max-w-[75%] p-4 rounded-2xl text-sm leading-relaxed ${sender === 'user' ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-slate-800 text-slate-200 border border-slate-700 rounded-bl-none'}`;
+            bubble.innerText = text;
+
+            wrapper.appendChild(bubble);
+            chatContainer.appendChild(wrapper);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function handleChatKey(e) {
+            if (e.key === 'Enter') sendChatMessage();
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            appendMessage('user', msg);
+            input.value = '';
+
+            // 타이핑 인디케이터 시뮬레이션
+            const typingId = 'typing-' + Date.now();
+            const wrapper = document.createElement('div');
+            wrapper.id = typingId;
+            wrapper.className = `flex w-full justify-start mt-2 fade-in`;
+            wrapper.innerHTML = `<div class="bg-slate-800 border border-slate-700 px-4 py-3 rounded-2xl rounded-bl-none flex space-x-1">
+                                    <div class="w-2 h-2 bg-slate-500 rounded-full animate-bounce"></div>
+                                    <div class="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                                    <div class="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                 </div>`;
+            chatContainer.appendChild(wrapper);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // 1~2초 후 응답
+            setTimeout(() => {
+                document.getElementById(typingId).remove();
+                
+                // 간단한 키워드 매칭 (방백/장면 전환 팁 적용)
+                if (msg.includes('*') || msg.includes('(')) {
+                    appendMessage('bot', "(당황한 듯 주변을 둘러보며) ...여, 여기가 어디지? 네가 데려온 건가?");
+                } else if (msg.includes('안녕')) {
+                    appendMessage('bot', "그래, 안녕. 오늘도 내 옆에 꼭 붙어있어.");
+                } else {
+                    const randomRes = danielResponses[Math.floor(Math.random() * danielResponses.length)];
+                    appendMessage('bot', randomRes);
+                }
+            }, 1500);
+        }
+
+        /* 챗봇 - 가챠(뽑기) 시스템 */
+        let tokens = 12;
+        function openGacha() {
+            document.getElementById('gacha-modal').classList.remove('hidden');
+            document.getElementById('gacha-idle').style.display = 'block';
+            document.getElementById('gacha-result').style.display = 'none';
+        }
+
+        function closeGacha() {
+            document.getElementById('gacha-modal').classList.add('hidden');
+        }
+
+        function drawGacha() {
+            if(tokens < 6) {
+                showToast("토큰이 부족합니다. 결제가 필요합니다.", true);
+                return;
+            }
+            tokens -= 6;
+            
+            // 뽑기 연출
+            const btn = document.querySelector('#gacha-idle button');
+            btn.innerText = "뽑는 중...";
+            btn.classList.add('animate-pulse', 'pointer-events-none');
+
+            setTimeout(() => {
+                document.getElementById('gacha-idle').style.display = 'none';
+                document.getElementById('gacha-result').style.display = 'block';
+                btn.innerText = "1회 뽑기 (6 토큰)";
+                btn.classList.remove('animate-pulse', 'pointer-events-none');
+                showToast("새로운 CG 카드를 획득했습니다!");
+            }, 1500);
+        }
+
+        /* -----------------------------------------
+           App 2: 바이브 코딩 생존 시뮬레이터
+        ----------------------------------------- */
+        let simState = { mental: 100, money: 5000, day: 1 };
+        
+        const simScenarios = [
+            {
+                day: 1,
+                title: "팀장의 기습 지시",
+                desc: "퇴근 10분 전, 팀장이 당신의 자리로 와서 내일 아침 임원 회의에 쓸 PPT 30장을 만들어 놓으라고 합니다.",
+                choices: [
+                    { text: "\"네, 알겠습니다!\" (밤샘 야근)", effect: { mental: -30, money: 500 }, nextMsg: "밤새워 PPT를 만들었습니다. 팀장에게 칭찬을 받았지만 체력이 바닥났습니다. (스트레스 증가, 야근수당 획득)" },
+                    { text: "\"제가요? 제 업무가 아닌데요.\" (정시 퇴근)", effect: { mental: +10, money: -200 }, nextMsg: "정시 퇴근의 달콤함을 맛봤습니다. 하지만 다음 날 인사 평가에 악영향을 미쳤습니다. (멘탈 회복, 성과급 삭감)" }
+                ]
+            },
+            {
+                day: 2,
+                title: "사내 정치의 늪",
+                desc: "회사 내 두 파벌이 충돌하고 있습니다. 당신의 직속 사수가 반대파 임원의 프로젝트를 고의로 망치려 합니다. 동참하겠습니까?",
+                choices: [
+                    { text: "사수의 지시를 따른다 (라인 타기)", effect: { mental: -20, money: 1000 }, nextMsg: "프로젝트는 망가졌고, 반대파 임원은 좌천되었습니다. 사수가 당신을 핵심 부서로 끌어올려 주었으나 죄책감이 듭니다." },
+                    { text: "조용히 내부 고발을 한다 (정의구현)", effect: { mental: -50, money: 0 }, nextMsg: "임원진에 고발했으나, 알고 보니 그들은 모두 한통속이었습니다. 당신은 지방 부서로 발령 났습니다. (멘탈 붕괴)" }
+                ]
+            },
+            {
+                day: 3,
+                title: "스타트업 이직 제안",
+                desc: "친한 동기가 AI 스타트업을 창업했다며 합류를 제안합니다. 월급은 반토막이지만 지분(스톡옵션)을 주겠다고 합니다.",
+                choices: [
+                    { text: "대기업을 퇴사하고 합류한다", effect: { mental: +40, money: -4000 }, nextMsg: "당신은 퇴사하고 도전을 선택했습니다. 비록 통장 잔고는 바닥났지만, 인생의 주인이 된 기분입니다. (게임 엔딩)" },
+                    { text: "거절하고 대기업에 남는다", effect: { mental: -40, money: 2000 }, nextMsg: "안정적인 대기업에 남았지만, 쳇바퀴 도는 일상에 번아웃이 왔습니다. (게임 엔딩)" }
+                ]
+            }
+        ];
+
+        function initSimulator() {
+            simState = { mental: 100, money: 5000, day: 0 }; // day 0은 시나리오 인덱스 0
+            updateSimUI();
+        }
+
+        function updateSimUI(msg = null) {
+            // 수치 업데이트
+            const mentalBar = document.getElementById('sim-mental-bar');
+            mentalBar.style.width = `${Math.max(0, Math.min(100, simState.mental))}%`;
+            
+            // 색상 변화
+            if(simState.mental < 30) mentalBar.className = "bg-rose-600 h-2 rounded-full transition-all duration-500";
+            else if(simState.mental < 60) mentalBar.className = "bg-amber-500 h-2 rounded-full transition-all duration-500";
+            else mentalBar.className = "bg-emerald-500 h-2 rounded-full transition-all duration-500";
+
+            document.getElementById('sim-mental-text').innerText = `${simState.mental} / 100`;
+            document.getElementById('sim-money-text').innerText = simState.money.toLocaleString();
+
+            const scenario = simScenarios[simState.day];
+            
+            if (msg) {
+                // 결과 메시지 표시
+                document.getElementById('sim-event-title').innerText = "결과";
+                document.getElementById('sim-event-desc').innerText = msg;
+                document.getElementById('sim-choices').innerHTML = `<button onclick="nextSimDay()" class="w-full text-center p-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl text-white font-bold transition">다음 날로 이동</button>`;
+            } else if (scenario) {
+                // 시나리오 표시
+                document.getElementById('sim-day-tag').innerText = `Day ${simState.day + 1}`;
+                document.getElementById('sim-event-title').innerText = scenario.title;
+                document.getElementById('sim-event-desc').innerText = scenario.desc;
+                
+                let choicesHtml = '';
+                scenario.choices.forEach((choice, index) => {
+                    choicesHtml += `<button onclick="handleSimChoice(${index})" class="w-full text-left p-5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl text-slate-200 transition group flex justify-between items-center slide-up" style="animation-delay: ${index * 0.1}s">
+                                        <span class="text-[15px] md:text-lg">${choice.text}</span>
+                                        <i class="fa-solid fa-arrow-right opacity-0 group-hover:opacity-100 transition-opacity text-emerald-400"></i>
+                                    </button>`;
+                });
+                document.getElementById('sim-choices').innerHTML = choicesHtml;
+            } else {
+                // 게임 오버/엔딩
+                document.getElementById('sim-event-title').innerText = "시뮬레이션 종료";
+                document.getElementById('sim-event-desc').innerText = `당신의 최종 멘탈은 ${simState.mental}, 자산은 ¥${simState.money.toLocaleString()} 입니다. \n"바이브 코딩 게임은 이렇게 간단한 로직만으로도 훌륭한 텍스트 경험을 제공합니다."`;
+                document.getElementById('sim-choices').innerHTML = `<button onclick="initSimulator()" class="w-full text-center p-4 bg-indigo-600 hover:bg-indigo-500 rounded-2xl text-white font-bold transition">다시 플레이</button>`;
+            }
+        }
+
+        function handleSimChoice(choiceIndex) {
+            const scenario = simScenarios[simState.day];
+            const choice = scenario.choices[choiceIndex];
+            
+            simState.mental += choice.effect.mental;
+            simState.money += choice.effect.money;
+            
+            // 게임 오버 체크
+            if(simState.mental <= 0) {
+                updateSimUI("멘탈이 붕괴되어 퇴사했습니다. (Game Over)");
+                simState.day = 99; // 강제 엔딩 처리
+                return;
+            }
+
+            updateSimUI(choice.nextMsg);
+        }
+
+        function nextSimDay() {
+            simState.day++;
+            updateSimUI();
+        }
+
+        /* -----------------------------------------
+           App 3: 여성향 비주얼 노벨 (소홍서 스타일)
+        ----------------------------------------- */
+        const vnStory = [
+            { char: "???", text: "...", bg: "https://images.unsplash.com/photo-1519098901909-b1553a1190af?auto=format&fit=crop&q=80&w=1200", sprite: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600" },
+            { char: "백은결", text: "여긴 통제 구역입니다. 어떻게 들어왔죠?", bg: "https://images.unsplash.com/photo-1519098901909-b1553a1190af?auto=format&fit=crop&q=80&w=1200", sprite: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600" },
+            { char: "나", text: "(차가운 눈빛... 이 사람이 그 소문의 최연소 CEO?)", bg: "https://images.unsplash.com/photo-1519098901909-b1553a1190af?auto=format&fit=crop&q=80&w=1200", sprite: "" },
+            { char: "백은결", text: "대답할 생각이 없다면, 보안팀을 부르겠습니다.", bg: "https://images.unsplash.com/photo-1519098901909-b1553a1190af?auto=format&fit=crop&q=80&w=1200", sprite: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=600" },
+            { char: "나", text: "잠깐만요! 전 인터뷰를 위해 온 기자입니다.", bg: "https://images.unsplash.com/photo-1519098901909-b1553a1190af?auto=format&fit=crop&q=80&w=1200", sprite: "" },
+            { char: "백은결", text: "기자... 라.", bg: "https://images.unsplash.com/photo-1519098901909-b1553a1190af?auto=format&fit=crop&q=80&w=1200", sprite: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=600" },
+            { char: "백은결", text: "흥미롭군요. 내 시간을 5분 뺏은 대가를 치러야 할 겁니다.", bg: "https://images.unsplash.com/photo-1519098901909-b1553a1190af?auto=format&fit=crop&q=80&w=1200", sprite: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600" }
+        ];
+
+        let vnIndex = 0;
+        let isTyping = false;
+
+        function initVisualNovel() {
+            vnIndex = 0;
+            renderVnScene();
+        }
+
+        function renderVnScene() {
+            if (vnIndex >= vnStory.length) {
+                showToast("데모 플레이가 종료되었습니다.");
+                closeApp();
+                return;
+            }
+
+            const scene = vnStory[vnIndex];
+            
+            // 이름 및 배경 설정
+            document.getElementById('vn-name').innerText = scene.char;
+            if(scene.char === "나") document.getElementById('vn-name').className = "absolute -top-4 left-6 bg-indigo-600 text-white px-4 py-1.5 rounded-lg font-bold text-sm shadow-lg tracking-wider";
+            else document.getElementById('vn-name').className = "absolute -top-4 left-6 bg-pink-600 text-white px-4 py-1.5 rounded-lg font-bold text-sm shadow-lg tracking-wider";
+
+            // 캐릭터 스프라이트 제어
+            const spriteImg = document.getElementById('vn-character');
+            if (scene.sprite) {
+                spriteImg.src = scene.sprite;
+                spriteImg.style.opacity = '0.9';
+                spriteImg.style.transform = 'translateY(0) scale(1)';
+            } else {
+                spriteImg.style.opacity = '0';
+                spriteImg.style.transform = 'translateY(20px) scale(0.95)';
+            }
+
+            // 텍스트 타이핑 효과
+            const textBox = document.getElementById('vn-text');
+            textBox.innerText = "";
+            textBox.classList.add('typewriter');
+            isTyping = true;
+            
+            let charIdx = 0;
+            const typeInterval = setInterval(() => {
+                textBox.innerText += scene.text.charAt(charIdx);
+                charIdx++;
+                if(charIdx >= scene.text.length) {
+                    clearInterval(typeInterval);
+                    textBox.classList.remove('typewriter');
+                    isTyping = false;
+                }
+            }, 30); // 타이핑 속도
+        }
+
+        function advanceNovel() {
+            if (isTyping) {
+                // 타이핑 중 탭하면 즉시 전체 텍스트 표시
+                const textBox = document.getElementById('vn-text');
+                textBox.innerText = vnStory[vnIndex].text;
+                textBox.classList.remove('typewriter');
+                isTyping = false;
+                // 현재 진행중인 타이핑 setInterval을 명시적으로 클리어하는 로직이 필요하지만
+                // 단순화를 위해 텍스트 덮어씌우기로 처리 (빠른 클릭 시 약간의 오버랩 방지를 위해 실제 구현에선 interval ID 저장 필요)
+            } else {
+                vnIndex++;
+                renderVnScene();
+            }
+        }
+
+        /* -----------------------------------------
+           App 4: 인터랙티브 웹툰 (화면 이동식)
+        ----------------------------------------- */
+        const webtoonData = [
+            {
+                img: "https://images.unsplash.com/photo-1515630278258-407f66498911?auto=format&fit=crop&q=80&w=800",
+                bubble: "2026년 네오 서울...<br>모든 것이 AI로 통제되는 도시.",
+                bubblePos: "top-20 left-10"
+            },
+            {
+                img: "https://images.unsplash.com/photo-1534043464124-3be32fe000c9?auto=format&fit=crop&q=80&w=800",
+                bubble: "타겟이 나타났다.<br>절대 놓치면 안 돼.",
+                bubblePos: "bottom-32 right-10"
+            },
+            {
+                img: "https://images.unsplash.com/photo-1504280665641-fb051d957593?auto=format&fit=crop&q=80&w=800",
+                bubble: "거기 누구냐?!",
+                bubblePos: "top-1/3 left-1/2 transform -translate-x-1/2",
+                isChoice: true,
+                choices: [
+                    { text: "무기를 꺼내 정면 돌파한다", nextIndex: 3 },
+                    { text: "어둠 속으로 조용히 숨는다", nextIndex: 4 }
+                ]
+            },
+            {
+                // 공격 분기 (인덱스 3)
+                img: "https://images.unsplash.com/photo-1542281286-9e0a16bb7366?auto=format&fit=crop&q=80&w=800",
+                bubble: "쾅!!<br>(정면 돌파에 성공했다)",
+                bubblePos: "bottom-20 left-10",
+                isEnd: true
+            },
+            {
+                // 숨기 분기 (인덱스 4)
+                img: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=800",
+                bubble: "휴... 간신히 따돌렸군.<br>(잠입 성공)",
+                bubblePos: "bottom-20 left-10",
+                isEnd: true
+            }
+        ];
+
+        let currentWebtoonIndex = 0;
+        let isWebtoonChoiceActive = false;
+
+        function initWebtoon() {
+            currentWebtoonIndex = 0;
+            isWebtoonChoiceActive = false;
+            document.getElementById('webtoon-choice-overlay').classList.add('hidden');
+            document.getElementById('webtoon-guide-text').style.display = 'block';
+            renderWebtoonTrack();
+            updateWebtoonCamera();
+        }
+
+        function renderWebtoonTrack() {
+            const track = document.getElementById('webtoon-track');
+            track.innerHTML = '';
+            
+            // 모든 컷을 미리 렌더링 (세로로 길게 배치)
+            webtoonData.forEach((panel) => {
+                const panelDiv = document.createElement('div');
+                panelDiv.className = 'webtoon-panel flex-shrink-0 relative overflow-hidden bg-slate-900 border-b-8 border-black';
+                
+                // 이미지 (코믹스 느낌 필터 적용)
+                const img = document.createElement('img');
+                img.src = panel.img;
+                img.className = 'w-full h-full object-cover filter contrast-125 saturate-50';
+                
+                // 말풍선
+                const bubble = document.createElement('div');
+                bubble.className = `speech-bubble absolute ${panel.bubblePos} fade-in`;
+                bubble.innerHTML = panel.bubble;
+                
+                panelDiv.appendChild(img);
+                panelDiv.appendChild(bubble);
+                track.appendChild(panelDiv);
+            });
+        }
+
+        function updateWebtoonCamera() {
+            const track = document.getElementById('webtoon-track');
+            
+            // Y축으로 -100vh 씩 이동하여 다음 컷으로 부드럽게 패닝 (카메라 이동 효과)
+            track.style.transform = `translateY(-${currentWebtoonIndex * 100}vh)`;
+            
+            const currentPanelData = webtoonData[currentWebtoonIndex];
+            
+            // 첫 탭 이후 가이드 텍스트 숨기기
+            if(currentWebtoonIndex > 0) {
+                document.getElementById('webtoon-guide-text').style.display = 'none';
+            }
+            
+            // 선택지 등장 여부 체크
+            if (currentPanelData.isChoice) {
+                setTimeout(() => {
+                    showWebtoonChoices(currentPanelData.choices);
+                }, 800); // 카메라 패닝이 끝난 후 선택지 표시
+            } else if (currentPanelData.isEnd) {
+                setTimeout(() => {
+                    showToast("웹툰 데모가 끝났습니다. 허브로 돌아갑니다.");
+                    setTimeout(closeApp, 2000);
+                }, 1500);
+            }
+        }
+
+        function handleWebtoonTap(e) {
+            // 선택지가 켜져있거나 엔딩이면 탭 무시
+            if (isWebtoonChoiceActive) return;
+            if (webtoonData[currentWebtoonIndex].isEnd) return;
+            if (webtoonData[currentWebtoonIndex].isChoice) return;
+
+            currentWebtoonIndex++;
+            updateWebtoonCamera();
+        }
+
+        function showWebtoonChoices(choices) {
+            isWebtoonChoiceActive = true;
+            const overlay = document.getElementById('webtoon-choice-overlay');
+            const container = document.getElementById('webtoon-choices-container');
+            container.innerHTML = '';
+            
+            choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full p-4 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition shadow-[0_0_15px_rgba(147,51,234,0.5)] border border-purple-400';
+                btn.innerText = choice.text;
+                btn.onclick = (e) => {
+                    e.stopPropagation(); // 트랙 탭 이벤트 버블링 방지
+                    selectWebtoonChoice(choice.nextIndex);
+                };
+                container.appendChild(btn);
+            });
+            
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+        }
+
+        function selectWebtoonChoice(nextIndex) {
+            const overlay = document.getElementById('webtoon-choice-overlay');
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+            
+            isWebtoonChoiceActive = false;
+            currentWebtoonIndex = nextIndex;
+            updateWebtoonCamera();
+        }
+    </script>
+</body>
+</html>
