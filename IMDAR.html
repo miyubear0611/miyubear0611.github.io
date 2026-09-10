@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talent Accelerator Programme (TAP) - IMDA</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            background-color: #f8fafc;
+        }
+        
+        /* New Readable Highlight Style (Light blue bg, dark blue text, border bottom) */
+        .highlight {
+            background-color: #e0f2fe; /* Light blue */
+            color: #0369a1; /* Dark blue */
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            border-bottom: 2px solid #7dd3fc;
+        }
+
+        .section-header {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Bilingual Card Grid */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        @media (min-width: 1024px) {
+            .grid-layout {
+                grid-template-columns: 1fr 1fr;
+                gap: 2.5rem;
+            }
+        }
+
+        .en-card { background-color: #ffffff; border-top: 4px solid #3b82f6; }
+        .kr-card { background-color: #f0fdfa; border-top: 4px solid #14b8a6; }
+
+        /* Media Value Chain Custom UI (Recreating the image) */
+        .vc-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .vc-inner {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .bg-imda-dev { background-color: #4a8cdb; }
+        .bg-imda-prod { background-color: #1b4b7d; }
+        .bg-imda-dist { background-color: #0d2240; }
+        
+        .vc-dark-box {
+            color: white;
+            padding: 1.25rem;
+            margin-top: auto;
+            border-radius: 0.375rem;
+        }
+    </style>
+</head>
+<body class="text-slate-800 leading-relaxed text-lg">
+
+    <header class="bg-[#003366] text-white py-12 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-3xl md:text-5xl font-bold tracking-tight mb-3">Talent Accelerator Programme (TAP)</h1>
+            <h2 class="text-xl md:text-2xl font-medium text-blue-200">인재 액셀러레이터 프로그램</h2>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-20">
+
+        <section id="overview">
+            <div class="section-header">
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-900">Programme Overview</h2>
+                <p class="text-slate-500 mt-1">프로그램 개요</p>
+            </div>
+            
+            <div class="grid-layout">
+                <!-- English Overview -->
+                <div class="en-card p-6 md:p-8 rounded-b-xl shadow-sm relative">
+                    <span class="absolute top-4 right-4 text-xs font-bold bg-blue-100 text-blue-700 px-2 py-1 rounded">ENG</span>
+                    <h3 class="text-xl font-bold text-slate-900 mb-5 leading-snug">
+                        <span class="highlight">Approximately S$200 million (~US$154 million) over 3 years</span>, covering development mentorships, production co-funding, and distribution marketing support.
+                    </h3>
+                    <p class="text-slate-800 space-y-5 leading-relaxed text-justify">
+                        The Talent Accelerator Programme (TAP) is a new approximately S$200 million programme launched by IMDA on 3 December 2025 to support Singapore's media industry. Running for three years, TAP represents a major commitment to develop creative talent, strengthen co-production partnerships, and build a more resilient media industry. It brings a sharper focus on global distribution and genre-driven Intellectual Property (IP) development, with structured pathways for Singapore's talent to progress in the film and television industry.<br><br>
+                        TAP supports the full media value chain — from development to production and distribution — so that promising ideas from Singapore can reach global audiences. The programme introduces structured pathways to grow talent at each stage of the media value chain, giving professionals a clear roadmap to grow their craft and commercial skills. The S$200 million investment signals IMDA's commitment to ensuring Made-with-Singapore content stands out on the international stage, building a stronger pipeline of stories with global appeal and positioning Singapore as a co-production hub and trusted creative partner in the region.
+                    </p>
+                </div>
+                <!-- Korean Overview -->
+                <div class="kr-card p-6 md:p-8 rounded-b-xl shadow-sm relative">
+                    <span class="absolute top-4 right-4 text-xs font-bold bg-teal-100 text-teal-700 px-2 py-1 rounded">KOR</span>
+                    <h3 class="text-xl font-bold text-slate-900 mb-5 leading-snug">
+                        <span class="highlight">3년에 걸쳐 약 2억 싱가포르 달러(미화 약 1억 5,400만 달러) 투입</span>, 개발 멘토링, 제작 공동 자금 지원 및 배급 마케팅 지원 포함.
+                    </h3>
+                    <p class="text-slate-800 space-y-5 leading-relaxed text-justify">
+                        인재 액셀러레이터 프로그램(TAP)은 싱가포르 미디어 산업을 지원하기 위해 2025년 12월 3일 IMDA가 새롭게 출범한 약 2억 싱가포르 달러(S$) 규모의 프로그램입니다. 3년 동안 진행되는 TAP는 창의적인 인재를 양성하고, 공동 제작 파트너십을 강화하며, 보다 탄력적인 미디어 산업을 구축하기 위한 대규모 공약입니다. 이 프로그램은 글로벌 배급 및 장르 중심의 지식재산권(IP) 개발에 더욱 초점을 맞추며, 싱가포르의 인재가 영화 및 TV 산업에서 발전할 수 있도록 체계적인 경로를 제공합니다.<br><br>
+                        TAP는 싱가포르의 유망한 아이디어가 전 세계 관객에게 다가갈 수 있도록 개발부터 제작, 배급에 이르는 미디어 가치 사슬 전체를 지원합니다. 이 프로그램은 미디어 가치 사슬의 각 단계에서 인재를 양성하기 위한 체계적인 경로를 도입하여 전문가들에게 전문 기술과 상업적 능력을 키울 수 있는 명확한 로드맵을 제공합니다. 2억 싱가포르 달러의 투자는 싱가포르산(Made-with-Singapore) 콘텐츠가 국제 무대에서 두각을 나타내도록 보장하고, 글로벌 호소력을 갖춘 스토리 파이프라인을 강화하며, 싱가포르를 지역 내 공동 제작 허브이자 신뢰할 수 있는 크리에이티브 파트너로 자리매김하겠다는 IMDA의 강력한 의지를 나타냅니다.
+                    </p>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-center">
+                <a href="https://grants.sg/grants/imda-tap" target="_blank" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                    Apply via Official Site (Grants.sg) / 공식 사이트 지원
+                </a>
+            </div>
+        </section>
+
+        <section id="eligibility-and-apply" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-slate-50 px-6 py-5 border-b border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-900">Eligibility Criteria & How to Apply</h2>
+                <p class="text-slate-500 mt-1">자격 요건 및 지원 방법</p>
+            </div>
+            
+            <div class="p-6 md:p-8 space-y-10">
+                <!-- Eligibility Criteria -->
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-4 border-l-4 border-blue-500 pl-3">Eligibility Criteria / 자격 요건</h3>
+                        <ul class="space-y-4 text-slate-800 bg-slate-50 p-6 rounded-xl border border-slate-100 h-full">
+                            <li class="flex flex-col"><span class="font-bold text-blue-600 mb-1">01. Singapore media professionals and companies</span><span class="text-slate-600 text-base">싱가포르 미디어 전문가 및 기업</span></li>
+                            <li class="flex flex-col"><span class="font-bold text-blue-600 mb-1">02. Film and television industry participants</span><span class="text-slate-600 text-base">영화 및 TV 산업 종사자</span></li>
+                            <li class="flex flex-col"><span class="font-bold text-blue-600 mb-1">03. Applicable across the media value chain (development, production, distribution)</span><span class="text-slate-600 text-base">미디어 가치 사슬 전반(개발, 제작, 배급)에 적용 가능</span></li>
+                            <li class="flex flex-col"><span class="font-bold text-blue-600 mb-1">04. Specific eligibility criteria for each initiative will be released with industry calls in <span class="highlight">Q1 2026</span></span><span class="text-slate-600 text-base">각 이니셔티브에 대한 구체적인 자격 요건은 <span class="font-bold text-slate-800">2026년 1분기</span> 산업 공모와 함께 발표될 예정입니다.</span></li>
+                        </ul>
+                    </div>
+                    <!-- How to Apply -->
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-4 border-l-4 border-teal-500 pl-3">How to Apply / 지원 방법</h3>
+                        <ul class="space-y-4 text-slate-800 bg-teal-50/30 p-6 rounded-xl border border-teal-100 h-full">
+                            <li class="flex flex-col"><span class="font-bold text-teal-700 mb-1">1. Apply through IMDA's industry calls (application details to be released in Q1 2026)</span><span class="text-slate-600 text-base">IMDA의 산업 공모를 통해 지원 (지원 세부 정보는 2026년 1분기에 발표 예정)</span></li>
+                            <li class="flex flex-col"><span class="font-bold text-teal-700 mb-1">2. Stay informed by monitoring IMDA's press releases and website for updates</span><span class="text-slate-600 text-base">업데이트된 소식은 IMDA 보도자료 및 웹사이트를 지속적으로 모니터링하여 확인</span></li>
+                            <li class="flex flex-col"><span class="font-bold text-teal-700 mb-1">3. Prepare project proposals, production plans, and distribution strategies</span><span class="text-slate-600 text-base">프로젝트 제안서, 제작 계획 및 배급 전략 준비</span></li>
+                            <li class="flex flex-col"><span class="font-bold text-teal-700 mb-1">4. More information on the application process will be released in Q1 2026</span><span class="text-slate-600 text-base">지원 절차에 대한 자세한 정보는 2026년 1분기에 발표될 예정입니다.</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-amber-50 border-l-4 border-amber-400 p-4 text-amber-800 text-base">
+                    <strong>Note:</strong> The programme was announced in December 2025. Full application details are pending.<br>
+                    <strong>참고:</strong> 이 프로그램은 2025년 12월에 발표되었습니다. 전체 지원 세부 정보는 아직 공개 대기 중입니다.
+                </div>
+            </div>
+        </section>
+
+        <section id="tv-projects" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-[#003366] px-6 py-5 border-b border-slate-200 text-white">
+                <h2 class="text-2xl font-bold">TAP Support for TV Projects</h2>
+                <p class="text-blue-200 mt-1">TV 프로젝트를 위한 TAP 지원</p>
+            </div>
+            
+            <div class="p-6 md:p-8 space-y-10">
+                <p class="text-slate-800">
+                    TAP provides funding support for both scripted and unscripted TV content with strong commercial potential and clear market demand.<br>
+                    <span class="text-slate-600 text-base block mt-2">TAP는 상업적 잠재력이 크고 시장 수요가 명확한 대본형(scripted) 및 비대본형(unscripted) TV 콘텐츠 모두에 자금 지원을 제공합니다.</span>
+                </p>
+
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 border-b-2 border-slate-200 pb-2">The programme offers funding support for the following types of TV projects:<br><span class="text-base text-slate-500 font-normal">본 프로그램은 다음 유형의 TV 프로젝트에 자금을 지원합니다:</span></h3>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="bg-blue-50 border border-blue-100 p-5 rounded-xl">
+                            <h4 class="font-bold text-blue-900 text-lg">Regional co-productions</h4>
+                            <p class="text-slate-800 mb-3 text-base">TV projects developed with regional partners and targeted at Southeast Asian and broader Asian markets.</p>
+                            <h4 class="font-bold text-teal-800 text-base mt-3 border-t border-blue-200 pt-3">지역 공동 제작</h4>
+                            <p class="text-slate-700 text-base">동남아시아 및 더 넓은 아시아 시장을 타겟으로 지역 파트너와 함께 개발된 TV 프로젝트.</p>
+                        </div>
+                        <div class="bg-blue-50 border border-blue-100 p-5 rounded-xl">
+                            <h4 class="font-bold text-blue-900 text-lg">Global co-productions</h4>
+                            <p class="text-slate-800 mb-3 text-base">Global premium and mainstream TV content designed for international platforms and global distribution.</p>
+                            <h4 class="font-bold text-teal-800 text-base mt-3 border-t border-blue-200 pt-3">글로벌 공동 제작</h4>
+                            <p class="text-slate-700 text-base">국제 플랫폼 및 글로벌 배급을 위해 설계된 글로벌 프리미엄 및 메인스트림 TV 콘텐츠.</p>
+                        </div>
+                        <div class="bg-blue-50 border border-blue-100 p-5 rounded-xl">
+                            <h4 class="font-bold text-blue-900 text-lg">Licensed IP adaptations</h4>
+                            <p class="text-slate-800 mb-3 text-base">TV projects based on existing intellectual property with proven commercial appeal.</p>
+                            <h4 class="font-bold text-teal-800 text-base mt-3 border-t border-blue-200 pt-3">라이선스 IP 각색</h4>
+                            <p class="text-slate-700 text-base">상업적 매력이 입증된 기존 지식재산권(IP)을 기반으로 한 TV 프로젝트.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- Eligibility for TV -->
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-4 border-l-4 border-indigo-500 pl-3">Eligibility criteria / 자격 요건</h3>
+                        <p class="mb-3 font-semibold">Applicants must meet all the following requirements (지원자는 다음 요건을 모두 충족해야 합니다):</p>
+                        <ul class="space-y-4">
+                            <li class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                <strong>Be a Singapore-registered company.</strong>
+                                <div class="text-slate-600 mt-1 text-base">싱가포르에 등록된 기업일 것.</div>
+                            </li>
+                            <li class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                <strong>Adopt the Tripartite Standards for Procurement of Services (TAFEP) for Media Freelancers.</strong>
+                                <div class="text-slate-600 mt-1 text-base">미디어 프리랜서를 위한 서비스 조달 관련 노사정 표준(TAFEP)을 채택할 것.</div>
+                            </li>
+                            <li class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                <strong>Able to show proof of commissioner interest or commitment for the proposed project, e.g. letter of intent, deal memo, partnership agreement, etc.</strong>
+                                <div class="text-slate-600 mt-1 text-base">의향서(LOI), 거래 메모, 파트너십 계약 등 제안된 프로젝트에 대한 커미셔너의 관심이나 약정을 증명할 수 있을 것.</div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Grant Support -->
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-4 border-l-4 border-emerald-500 pl-3">Grant support / 보조금 지원 규모</h3>
+                        <p class="mb-4">Grants are determined based on project expenses that IMDA qualifies for support – funding quantums are as follows:<br>
+                        <span class="text-base text-slate-600">보조금은 IMDA가 지원 대상으로 인정하는 프로젝트 비용을 기준으로 결정되며, 자금 지원 규모는 다음과 같습니다:</span></p>
+                        
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5 mb-6 text-center">
+                            <span class="block font-bold text-emerald-800 text-xl"><span class="highlight text-2xl">Up to 50%</span> of qualified spend for SMEs</span>
+                            <span class="block text-emerald-700 text-base mt-1">중소기업(SME) 적격 비용의 최대 50%</span>
+                            <hr class="border-emerald-200 my-3">
+                            <span class="block font-medium text-slate-700">Up to 30% for non-SMEs</span>
+                            <span class="block text-slate-600 text-base">비중소기업의 경우 최대 30%</span>
+                        </div>
+
+                        <ul class="space-y-4">
+                            <li class="p-4 border border-slate-200 rounded-lg">
+                                <strong class="text-slate-900 text-lg">Scripted series (대본형 시리즈):</strong><br>
+                                IMDA’s funding will be capped at <span class="highlight">S$1 million per episode</span>. Applicants should also be aware that an overall project cap will apply for the whole project.<br>
+                                <span class="text-base text-slate-600 block mt-2">IMDA의 자금 지원은 <span class="font-bold text-slate-800">에피소드당 최대 100만 싱가포르 달러(S$)</span>로 제한됩니다. 전체 프로젝트에 대한 총 지원 한도도 적용된다는 점을 유의해야 합니다.</span>
+                            </li>
+                            <li class="p-4 border border-slate-200 rounded-lg">
+                                <strong class="text-slate-900 text-lg">Unscripted series (비대본형 시리즈):</strong><br>
+                                IMDA’s funding will be capped at <span class="highlight">S$700k per episode</span>. Applicants should also be aware that an overall project cap will apply for the whole project.<br>
+                                <span class="text-base text-slate-600 block mt-2">IMDA의 자금 지원은 <span class="font-bold text-slate-800">에피소드당 최대 70만 싱가포르 달러(S$)</span>로 제한됩니다. 전체 프로젝트에 대한 총 지원 한도도 적용된다는 점을 유의해야 합니다.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-200 pt-8">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 border-l-4 border-purple-500 pl-3">Mode of application / 지원 방식</h3>
+                    <ul class="space-y-4 list-disc pl-5">
+                        <li>
+                            Interested applicants who meet all the eligibility criteria described above, may write to IMDA with your project proposal here.<br>
+                            <span class="text-base text-slate-600 block mt-1">위에 설명된 모든 자격 요건을 충족하는 관심 있는 지원자는 지정된 곳으로 프로젝트 제안서를 IMDA에 제출하십시오.</span>
+                        </li>
+                        <li>
+                            Interested applicants who have yet to secure interest or commitment from commissioner(s) / platform(s), may participate in upcoming calls for participation that IMDA will launch with content commissioners / platforms / distributors. Should your project(s) be selected by the content commissioners / platforms / distributors for commissioning, you may then apply for IMDA’s TAP TV grant.<br>
+                            <span class="text-base text-slate-600 block mt-1">아직 커미셔너/플랫폼의 관심이나 약정을 확보하지 못한 관심 있는 지원자는 IMDA가 콘텐츠 커미셔너/플랫폼/배급사와 함께 시작할 다가오는 참여 공모에 참여할 수 있습니다. 귀하의 프로젝트가 위탁을 위해 이들에 의해 선정되면 IMDA의 TAP TV 보조금을 신청할 수 있습니다.</span>
+                        </li>
+                    </ul>
+                    <p class="mt-4 font-bold text-blue-700 bg-blue-50 p-3 rounded">
+                        IMDA will publish open calls when they are available.<br>
+                        <span class="text-base text-blue-600 font-normal">IMDA는 공모가 준비되면 공개 공모를 발표할 예정입니다.</span>
+                    </p>
+                </div>
+                
+                <div class="mt-6 flex justify-center">
+                    <a href="https://www.imda.gov.sg/about-imda/research-and-statistics/support-for-industry-sectors/media/tap/tv" target="_blank" class="inline-flex items-center px-6 py-3 border border-slate-300 text-base font-medium rounded-md shadow-sm text-slate-700 bg-white hover:bg-slate-50">
+                        View Official Details on TV Projects / TV 프로젝트 공식 안내 보기
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="proposals-minimally-include" class="mt-16">
+            <div class="bg-[#111827] text-white p-8 md:p-12 rounded-2xl shadow-xl border border-slate-700">
+                <h3 class="text-3xl font-bold mb-8 border-b border-slate-600 pb-4">
+                    Proposals must minimally include:<br>
+                    <span class="text-xl text-slate-400 font-normal mt-2 block">제출된 제안서에는 최소한 다음 사항이 포함되어야 합니다:</span>
+                </h3>
+                
+                <div class="space-y-8">
+                    <!-- Project Documentation -->
+                    <div>
+                        <p class="text-lg leading-relaxed">
+                            <span class="text-[#facc15] font-bold text-xl">1. Project documentation:</span> 
+                            Detailed project proposal. Proposal to include: Synopsis and key story arcs. State number of episodes in series and duration per episode, Target audience and state why concept will appeal to them, Evidence of commissioner / platform interest or commitment, Co-production partnership agreements or letters of intent.
+                        </p>
+                        <p class="text-base text-slate-400 mt-2 bg-slate-800 p-4 rounded-lg border border-slate-700">
+                            <span class="text-[#facc15] font-bold">1. 프로젝트 문서:</span> 상세한 프로젝트 제안서. 포함 내용: 시놉시스 및 주요 스토리 아크. 시리즈의 에피소드 수와 에피소드당 재생 시간 명시, 타겟 관객층 및 콘셉트가 어필할 수 있는 이유, 커미셔너/플랫폼의 관심 또는 약정 증빙, 공동 제작 파트너십 계약서 또는 의향서(LOI).
+                        </p>
+                    </div>
+
+                    <!-- Financial Documentation -->
+                    <div>
+                        <p class="text-lg leading-relaxed">
+                            <span class="text-[#4ade80] font-bold text-xl">2. Financial documentation:</span> 
+                            Detailed budget breakdown and financing plan, Revenue projections and monetisation / commercialisation plan.
+                        </p>
+                        <p class="text-base text-slate-400 mt-2 bg-slate-800 p-4 rounded-lg border border-slate-700">
+                            <span class="text-[#4ade80] font-bold">2. 재무 문서:</span> 상세 예산 내역 및 자금 조달 계획, 수익 예측 및 수익화/상업화 계획.
+                        </p>
+                    </div>
+
+                    <!-- Creative Documentation -->
+                    <div>
+                        <p class="text-lg leading-relaxed">
+                            <span class="text-[#c084fc] font-bold text-xl">3. Creative documentation:</span> 
+                            Distribution and marketing strategy, Evidence of genre expertise and target audience identification, Creative team credentials and track record. Credentials of Showrunner / Producer, Director and Scriptwriter will be critical information.
+                        </p>
+                        <p class="text-base text-slate-400 mt-2 bg-slate-800 p-4 rounded-lg border border-slate-700">
+                            <span class="text-[#c084fc] font-bold">3. 크리에이티브 문서:</span> 배급 및 마케팅 전략, 장르 전문성 및 타겟 관객 식별 증빙 자료, 크리에이티브 팀의 자격 증명 및 실적. (쇼러너/프로듀서, 감독, 각본가의 자격 증명이 핵심 정보가 됩니다.)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="press-release" class="border-t-2 border-slate-300 pt-16">
+            <div class="text-center mb-10">
+                <span class="text-sm font-bold text-blue-600 uppercase tracking-widest bg-blue-100 px-3 py-1 rounded">Press Release / 보도자료</span>
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mt-6 max-w-4xl mx-auto leading-tight">
+                    IMDA Launches Talent Accelerator Programme to Develop Singapore’s Media Industry Talent, Grow Original IPs and Expand Global Partnerships
+                </h2>
+                <h3 class="text-lg md:text-xl font-medium text-slate-600 mt-4 max-w-4xl mx-auto">
+                    IMDA, 싱가포르 미디어 산업 인재 양성, 오리지널 IP 육성 및 글로벌 파트너십 확대를 위한 인재 액셀러레이터 프로그램 출범
+                </h3>
+                <p class="text-sm font-bold text-slate-500 mt-6">03 Dec 2025 | 5 mins read (읽는 데 5분 소요)</p>
+            </div>
+
+            <div class="grid-layout items-start">
+                <!-- English Press Release Text -->
+                <div class="space-y-6">
+                    <p class="font-bold text-xl">Programme focuses on film and television content and creates a structured pathway for local talent to progress across the entire media value chain from ideation to global distribution.</p>
+                    <p class="font-bold text-slate-500">SINGAPORE – 03 DEC 2025</p>
+                    <p><strong>1.</strong> The Infocomm Media Development Authority (IMDA) has launched a new development programme, the Talent Accelerator Programme (TAP), to support Singapore’s media industry. This is an approximately S$200 million programme that will run for three years and is a major commitment to develop our creative talent, strengthen co-production partnerships, and build a more resilient media industry. Through TAP, IMDA aims to bring a sharper focus on global distribution as well as genre-driven Intellectual Property (IP) development in the industry. To support this, structured pathways have been designed for Singapore’s talent to progress in the film and television industry.</p>
+                    <p><strong>2.</strong> The announcement on TAP was made today by Singapore’s Senior Minister of State for Digital Development and Information (MDDI) & Ministry of Health (MOH), Mr Tan Kiat How, at the opening of the Asia TV Forum and Market (ATF) 2025, part of the Singapore Media Festival (SMF), hosted by IMDA.</p>
+                    
+                    <h4 class="font-bold text-2xl text-blue-900 mt-8 mb-4 border-b pb-2">IMDA’s New Talent Accelerator Programme (TAP)</h4>
+                    <p><strong>3.</strong> TAP supports the full media value chain, from development, to production and distribution, so that promising ideas from Singapore can reach global audiences. Since film and television industries have different creative and commercial realities, TAP is designed to help both industries capture the most value from the demand available in today’s competitive backdrop.</p>
+                    <p><strong>4.</strong> Under TAP, IMDA introduces structured pathways to grow talent in Singapore’s media industry. This will facilitate a laser-sharp focus on the vertical expertise development that our talents require at each stage of the media value chain – giving them a clear roadmap to grow their craft as well as commercial skills to advance in their careers.</p>
+                    <ul class="space-y-4">
+                        <li class="bg-white p-4 rounded-lg border-l-4 border-blue-500 shadow-sm">
+                            <strong>a) Development stage:</strong> IMDA will matchmake media professionals and companies to what the commissioners/buyers are looking for and provide access to:
+                            <ul class="list-disc pl-5 mt-2 space-y-2 text-base text-slate-700">
+                                <li>Mentorships and masterclasses in areas such as story development (originals, or adaptations), pitching skills and deal negotiation, to finesse their stories and proposals. This allows our companies to strengthen not just their creative concepts but also the commercial foundations of their projects, including financing models, distribution planning, and IP ownership structures, all of which are all essential to the sustainability of the industry.</li>
+                                <li>Global streamers and platforms, commissioners, international production houses and showrunners to allow local talent to gain needful exposure to the global market and increase their chances of penetration.</li>
+                            </ul>
+                        </li>
+                        <li class="bg-white p-4 rounded-lg border-l-4 border-blue-700 shadow-sm">
+                            <strong>b) Production stage:</strong> IMDA will co-fund co-productions, covering the full spectrum of regional and global co-productions, and films and TV (scripted and unscripted) as well as IPs adaptations for screen. This will establish Singapore as a co-production hub in the region.
+                        </li>
+                        <li class="bg-white p-4 rounded-lg border-l-4 border-blue-900 shadow-sm">
+                            <strong>c) Distribution stage:</strong> IMDA will elevate the profile of Made-with-Singapore content, talent and production companies with a dedicated in-house marketing team. In addition, a marketing fund will be structured for select projects to increase visibility.
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Korean Press Release Text -->
+                <div class="space-y-6 text-slate-700 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <p class="font-bold text-xl text-slate-900">이 프로그램은 영화 및 TV 콘텐츠에 중점을 두며, 아이디어 구상에서 글로벌 배급에 이르기까지 미디어 가치 사슬 전반에 걸쳐 현지 인재가 성장할 수 있는 체계적인 경로를 마련합니다.</p>
+                    <p class="font-bold text-slate-500">싱가포르 – 2025년 12월 3일</p>
+                    <p><strong>1.</strong> 정보통신미디어개발청(IMDA)은 싱가포르 미디어 산업을 지원하기 위한 새로운 개발 프로그램인 인재 액셀러레이터 프로그램(TAP)을 출범했습니다. 이 프로그램은 3년간 진행되는 약 2억 싱가포르 달러 규모의 프로그램으로, 우리의 창의적 인재를 양성하고, 공동 제작 파트너십을 강화하며, 보다 탄력적인 미디어 산업을 구축하기 위한 주요 공약입니다. TAP를 통해 IMDA는 산업 내 장르 중심의 지식재산권(IP) 개발뿐만 아니라 글로벌 배급에 더욱 초점을 맞추는 것을 목표로 합니다. 이를 지원하기 위해 싱가포르의 인재들이 영화 및 TV 산업에서 발전할 수 있도록 체계적인 경로가 설계되었습니다.</p>
+                    <p><strong>2.</strong> TAP에 대한 발표는 오늘 IMDA가 주최하는 싱가포르 미디어 페스티벌(SMF)의 일환인 2025 아시아 TV 포럼 및 마켓(ATF) 개막식에서 싱가포르 디지털발전정보부(MDDI) 및 보건부(MOH) 국무선임장관인 탄 키앗 하우(Tan Kiat How)가 진행했습니다.</p>
+                    
+                    <h4 class="font-bold text-2xl text-teal-800 mt-8 mb-4 border-b pb-2 border-slate-300">IMDA의 새로운 인재 액셀러레이터 프로그램 (TAP)</h4>
+                    <p><strong>3.</strong> TAP는 싱가포르의 유망한 아이디어가 전 세계 관객에게 다가갈 수 있도록 개발부터 제작, 배급에 이르는 미디어 가치 사슬 전체를 지원합니다. 영화와 TV 산업은 각기 다른 창의적, 상업적 현실을 가지고 있으므로, TAP는 오늘날의 경쟁이 치열한 환경에서 두 산업 모두 가용한 수요로부터 최대의 가치를 포착할 수 있도록 설계되었습니다.</p>
+                    <p><strong>4.</strong> TAP에 따라 IMDA는 싱가포르 미디어 산업의 인재를 양성하기 위한 체계적인 경로를 도입합니다. 이는 미디어 가치 사슬의 각 단계에서 인재에게 요구되는 수직적 전문성 개발에 초점을 맞출 수 있도록 촉진하여, 인재들이 커리어를 발전시킬 수 있는 전문 기술과 상업적 능력을 키울 수 있는 명확한 로드맵을 제공합니다.</p>
+                    <ul class="space-y-4">
+                        <li class="bg-white p-4 rounded-lg border-l-4 border-teal-500 shadow-sm">
+                            <strong>a) 개발 단계 (Development stage):</strong> IMDA는 커미셔너/구매자가 찾는 바에 맞춰 미디어 전문가와 기업을 매칭하고 다음에 대한 접근을 제공합니다:
+                            <ul class="list-disc pl-5 mt-2 space-y-2 text-base text-slate-600">
+                                <li>스토리 및 제안서를 다듬기 위한 스토리 개발(오리지널 또는 각색), 피칭 기술 및 거래 협상과 같은 분야의 멘토링 및 마스터클래스. 이를 통해 우리 기업들은 창의적인 콘셉트뿐만 아니라 산업의 지속 가능성에 필수적인 자금 조달 모델, 배급 계획, IP 소유권 구조를 포함한 프로젝트의 상업적 기반을 강화할 수 있습니다.</li>
+                                <li>현지 인재가 글로벌 시장에 필요한 노출 기회를 얻고 시장 진출 가능성을 높일 수 있도록 글로벌 스트리머 및 플랫폼, 커미셔너, 국제 제작사 및 쇼러너와의 연계 지원.</li>
+                            </ul>
+                        </li>
+                        <li class="bg-white p-4 rounded-lg border-l-4 border-teal-700 shadow-sm">
+                            <strong>b) 제작 단계 (Production stage):</strong> IMDA는 지역 및 글로벌 공동 제작, 스크린용 IP 각색뿐만 아니라 영화 및 TV(대본형 및 비대본형)의 전체 스펙트럼을 포괄하는 공동 제작 자금을 공동 지원할 것입니다. 이를 통해 싱가포르를 이 지역의 공동 제작 허브로 자리매김할 것입니다.
+                        </li>
+                        <li class="bg-white p-4 rounded-lg border-l-4 border-teal-900 shadow-sm">
+                            <strong>c) 배급 단계 (Distribution stage):</strong> IMDA는 전담 사내 마케팅 팀을 통해 싱가포르산 콘텐츠, 인재 및 제작사의 인지도를 높일 것입니다. 또한 가시성을 높이기 위해 선별된 프로젝트에 대한 마케팅 펀드가 조성될 것입니다.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-16 text-center">
+                <p class="text-lg font-medium text-slate-800 mb-6">
+                    5. IMDA’s support in the media value chain for Singapore media professionals and companies is summarised in the diagram below.<br>
+                    <span class="text-base text-slate-600">(싱가포르 미디어 전문가 및 기업을 위한 미디어 가치 사슬에서의 IMDA 지원은 아래 다이어그램에 요약되어 있습니다.)</span>
+                </p>
+                
+                <h4 class="text-3xl font-bold text-[#003366] mb-8 bg-[#e6f0fa] inline-block px-8 py-3 rounded-xl border border-blue-100 shadow-sm">
+                    IMDA’s Support in Media Value Chain<br>
+                    <span class="block text-lg font-medium text-[#1b4b7d] mt-1">미디어 가치 사슬에서의 IMDA 지원</span>
+                </h4>
+                
+                <!-- Media Value Chain Bilingual HTML UI Box -->
+                <div class="max-w-7xl mx-auto px-4 mb-8 text-left">
+                    <div class="flex flex-col lg:flex-row gap-6 items-stretch">
+                        
+                        <!-- DEVELOPMENT -->
+                        <div class="flex-1 vc-card">
+                            <div class="bg-[#4a8cdb] text-white text-center py-4 font-bold text-xl tracking-wider rounded-t-lg">
+                                DEVELOPMENT<br><span class="text-sm font-medium text-blue-100">개발 단계</span>
+                            </div>
+                            <div class="vc-inner shadow-md rounded-b-lg text-base">
+                                <p class="mb-2">Creation of stories usually presented in the form of creative concepts and proposals.</p>
+                                <p class="mb-4 text-blue-800 text-sm font-medium pb-4 border-b border-slate-200">스토리를 창작하고 주로 창의적인 콘셉트와 제안서 형태로 제시.</p>
+                                
+                                <p class="font-bold text-slate-800 mb-1">Comprises (포함 내용):</p>
+                                <ol class="list-decimal list-outside ml-5 mb-6 space-y-3">
+                                    <li class="pl-1">
+                                        Conceptualising a creative concept
+                                        <div class="text-blue-800 text-sm font-medium">창의적 콘셉트 구상</div>
+                                    </li>
+                                    <li class="pl-1">
+                                        Pitching the story to a buyer or a demand driver
+                                        <div class="text-blue-800 text-sm font-medium">바이어 또는 수요자에게 스토리 피칭</div>
+                                    </li>
+                                </ol>
+
+                                <div class="vc-dark-box bg-[#347cc9] shadow-inner text-sm space-y-4">
+                                    <ol class="list-decimal list-outside ml-4 space-y-4 font-medium">
+                                        <li class="pl-1">
+                                            Masterclasses/ mentorships for both development and pitching
+                                            <div class="text-blue-100 mt-1 font-normal">개발 및 피칭을 위한 마스터클래스/멘토링</div>
+                                        </li>
+                                        <li class="pl-1">
+                                            Adaptation and development funding
+                                            <div class="text-blue-100 mt-1 font-normal">각색 및 개발 자금 지원</div>
+                                        </li>
+                                        <li class="pl-1">
+                                            IMDA-driven pitch platforms for direct access to buyers / commissioners
+                                            <div class="text-blue-100 mt-1 font-normal">바이어/커미셔너 직접 접근을 위한 IMDA 주도 피치 플랫폼</div>
+                                        </li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Arrow -->
+                        <div class="hidden lg:flex items-center justify-center -mx-4 z-10">
+                            <svg class="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </div>
+
+                        <!-- PRODUCTION -->
+                        <div class="flex-1 vc-card">
+                            <div class="bg-[#1b4b7d] text-white text-center py-4 font-bold text-xl tracking-wider rounded-t-lg">
+                                PRODUCTION<br><span class="text-sm font-medium text-blue-200">제작 단계</span>
+                            </div>
+                            <div class="vc-inner shadow-md rounded-b-lg text-base">
+                                <p class="mb-2">Producing a story.</p>
+                                <p class="mb-4 text-blue-800 text-sm font-medium pb-4 border-b border-slate-200">스토리 제작.</p>
+                                
+                                <p class="font-bold text-slate-800 mb-1">Comprises (포함 내용):</p>
+                                <ol class="list-decimal list-outside ml-5 mb-6 space-y-3">
+                                    <li class="pl-1">
+                                        Making of the content (filming and editing)
+                                        <div class="text-blue-800 text-sm font-medium">콘텐츠 제작 (촬영 및 편집)</div>
+                                    </li>
+                                    <li class="pl-1">
+                                        Pitching the project for sales representation
+                                        <div class="text-blue-800 text-sm font-medium">판매 대행을 위한 프로젝트 피칭</div>
+                                    </li>
+                                    <li class="pl-1">
+                                        Structuring the deal between buyer and seller of the IP
+                                        <div class="text-blue-800 text-sm font-medium">IP 바이어와 셀러 간의 거래 구조화</div>
+                                    </li>
+                                </ol>
+
+                                <div class="vc-dark-box bg-[#1b4b7d] shadow-inner text-sm space-y-4">
+                                    <ol class="list-decimal list-outside ml-4 space-y-4 font-medium">
+                                        <li class="pl-1">
+                                            Funding support for: (자금 지원 대상:)
+                                            <ul class="list-[lower-alpha] list-outside ml-5 mt-2 space-y-3 font-normal">
+                                                <li>
+                                                    [Film] new features, regional and global co-productions
+                                                    <div class="text-blue-200 mt-0.5">[영화] 신규 장편, 지역 및 글로벌 공동 제작</div>
+                                                </li>
+                                                <li>
+                                                    [TV] global co-productions in scripted and unscripted content
+                                                    <div class="text-blue-200 mt-0.5">[TV] 대본형 및 비대본형 콘텐츠의 글로벌 공동 제작</div>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="pl-1 pt-3 border-t border-[#2a64a3]">
+                                            Masterclasses for pitching and deal structuring
+                                            <div class="text-blue-200 mt-1 font-normal">피칭 및 거래 구조화를 위한 마스터클래스</div>
+                                        </li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Arrow -->
+                        <div class="hidden lg:flex items-center justify-center -mx-4 z-10">
+                            <svg class="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </div>
+
+                        <!-- DISTRIBUTION -->
+                        <div class="flex-1 vc-card">
+                            <div class="bg-[#0b192c] text-white text-center py-4 font-bold text-xl tracking-wider rounded-t-lg">
+                                DISTRIBUTION<br><span class="text-sm font-medium text-slate-300">배급 단계</span>
+                            </div>
+                            <div class="vc-inner shadow-md rounded-b-lg text-base">
+                                <p class="mb-2">Reaching audiences with the story via platforms and media networks, and to generate revenue from it.</p>
+                                <p class="mb-4 text-blue-800 text-sm font-medium pb-4 border-b border-slate-200">플랫폼 및 미디어 네트워크를 통해 관객에게 스토리를 전달하고 수익을 창출.</p>
+                                
+                                <p class="font-bold text-slate-800 mb-1">Comprises (포함 내용):</p>
+                                <ol class="list-decimal list-outside ml-5 mb-6 space-y-3">
+                                    <li class="pl-1">
+                                        Bringing content to audiences and achieving commercial outcomes
+                                        <div class="text-blue-800 text-sm font-medium">콘텐츠를 관객에게 제공하고 상업적 성과 달성</div>
+                                    </li>
+                                </ol>
+
+                                <div class="vc-dark-box bg-[#0b192c] shadow-inner text-sm space-y-4">
+                                    <p class="font-bold">Marketing support for: <span class="font-normal text-slate-300">(마케팅 지원 대상:)</span></p>
+                                    <ol class="list-decimal list-outside ml-4 space-y-4 font-medium">
+                                        <li class="pl-1">
+                                            Promoting end products to consumers
+                                            <div class="text-slate-300 mt-1 font-normal">소비자 대상 최종 제품 홍보</div>
+                                        </li>
+                                        <li class="pl-1 pt-2">
+                                            Representation at international competitions
+                                            <div class="text-slate-300 mt-1 font-normal">국제 대회 출품 및 대표 참가</div>
+                                        </li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-layout items-start mt-12">
+                <!-- English Final Sections -->
+                <div class="space-y-6">
+                    <p><strong>6.</strong> Interested companies and professionals can apply for initiatives under TAP through IMDA’s industry calls. More details on the application process will be released in Q1 2026.</p>
+                    
+                    <h4 class="font-bold text-2xl text-blue-900 mt-8 mb-4 border-b pb-2">Bringing Made-with-Singapore Stories to the Global Stage</h4>
+                    <p><strong>7.</strong> Singapore is demonstrating how strategic international partnerships, such as the recent unscripted partnership with Warner Bros. Discovery (WBD), can amplify local storytelling on the global stage, with filmmakers collaborating with renowned international partners to bring authentic Singapore narratives to prestigious worldwide platforms.</p>
+                    
+                    <div class="bg-blue-50 border-l-4 border-blue-600 p-6 rounded-r-xl my-6">
+                        <p class="italic text-lg text-slate-800 mb-4">"IMDA is building a robust ecosystem where international partners see Singapore not just as a location, but as an essential creative collaborator. We believe that Singapore talent can hold their own alongside the world's best. TAP signals a fresh chapter in our endeavour to support and develop our film and television talent through world-class mentorships and masterclasses, strategic global partnerships, and a new wave of co-production opportunities. We hope to usher in a new era of Made-With-Singapore stories, that are made for the world."</p>
+                        <p class="font-bold text-blue-900">– Ms Yvonne Tang<br><span class="text-sm font-normal">Assistant Chief Executive, Media Industry Group, IMDA</span></p>
+                    </div>
+
+                    <p><strong>8.</strong> For more details on SMF and its partner events, please see Annex A (168.71KB) or visit www.imda.gov.sg/smf.</p>
+                    <p class="font-bold text-sm text-slate-500 uppercase">LAST UPDATED: 03 Dec 2025</p>
+                </div>
+
+                <!-- Korean Final Sections -->
+                <div class="space-y-6 text-slate-700 bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <p><strong>6.</strong> 관심 있는 기업 및 전문가는 IMDA의 산업 공모를 통해 TAP 산하 이니셔티브에 지원할 수 있습니다. 지원 절차에 대한 자세한 내용은 2026년 1분기에 발표될 예정입니다.</p>
+
+                    <h4 class="font-bold text-2xl text-teal-800 mt-8 mb-4 border-b pb-2 border-slate-300">싱가포르산(Made-with-Singapore) 스토리를 글로벌 무대로</h4>
+                    <p><strong>7.</strong> 싱가포르의 최근 워너 브라더스 디스커버리(WBD)와의 비대본형 파트너십과 같은 전략적 국제 협력은 글로벌 무대에서 현지의 스토리텔링을 어떻게 확장할 수 있는지 보여줍니다. 영화 제작자들은 세계적으로 명성 있는 파트너들과 협력하여 싱가포르의 진정성 있는 서사를 권위 있는 전 세계 플랫폼에 선보이고 있습니다.</p>
+                    
+                    <div class="bg-teal-50 border-l-4 border-teal-600 p-6 rounded-r-xl my-6">
+                        <p class="text-lg text-slate-800 mb-4">"IMDA는 국제 파트너들이 싱가포르를 단순한 로케이션 장소가 아니라 필수적인 크리에이티브 협력자로 인식할 수 있도록 강력한 생태계를 구축하고 있습니다. 우리는 싱가포르 인재들이 세계 최고 수준의 인재들과 어깨를 나란히 할 수 있다고 믿습니다. TAP는 세계 최고 수준의 멘토링 및 마스터클래스, 전략적 글로벌 파트너십, 그리고 새로운 공동 제작 기회의 물결을 통해 영화 및 TV 인재를 지원하고 육성하려는 우리의 노력에 새로운 장을 열었음을 알립니다. 우리는 전 세계를 위해 제작되는 싱가포르산(Made-With-Singapore) 스토리의 새로운 시대를 열기를 희망합니다."</p>
+                        <p class="font-bold text-teal-900">– 이본 탕 (Ms Yvonne Tang)<br><span class="text-sm font-normal">IMDA 미디어 산업 그룹 부대표</span></p>
+                    </div>
+
+                    <p><strong>8.</strong> SMF 및 파트너 행사에 대한 자세한 내용은 부록 A(168.71KB)를 참조하거나 www.imda.gov.sg/smf를 방문하십시오.</p>
+                    <p class="font-bold text-sm text-slate-500 uppercase">최종 업데이트: 2025년 12월 3일</p>
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-center">
+                <a href="https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2025/talent-accelerator-programme" target="_blank" class="inline-flex items-center px-6 py-3 border border-slate-300 text-base font-medium rounded-md shadow-sm text-slate-700 bg-white hover:bg-slate-50">
+                    View Official Press Release / 공식 보도자료 보기
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 mt-16 py-8 text-center text-slate-500 text-base">
+        <p>This page is an overview based on IMDA announcements. For official queries, please refer to the official IMDA channels.</p>
+    </footer>
+
+</body>
+</html>
