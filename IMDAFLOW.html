@@ -106,27 +106,32 @@
             <!-- Tab 1 -->
             <button onclick="switchTab('tab-eligibility')" id="btn-tab-eligibility" class="tab-btn flex items-center px-6 py-4 text-sm md:text-base font-bold transition-all focus:outline-none ko-text rounded-t-lg mx-1 bg-blue-50 text-blue-700 border-t-2 border-l border-r border-blue-200 shadow-[0_4px_0_0_#eff6ff_inset]">
                 <svg class="w-5 h-5 mr-2 icon-svg text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                1. 자격 요건
+                자격 요건
             </button>
             <!-- Tab 2 -->
             <button onclick="switchTab('tab-funding')" id="btn-tab-funding" class="tab-btn flex items-center px-6 py-4 text-sm md:text-base font-bold transition-all focus:outline-none ko-text rounded-t-lg mx-1 text-gray-500 hover:text-gray-900 hover:bg-gray-50 border-t-2 border-transparent">
                 <svg class="w-5 h-5 mr-2 icon-svg text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                2. 지원 규모
+                지원 규모
             </button>
             <!-- Tab 3 -->
             <button onclick="switchTab('tab-expenses')" id="btn-tab-expenses" class="tab-btn flex items-center px-6 py-4 text-sm md:text-base font-bold transition-all focus:outline-none ko-text rounded-t-lg mx-1 text-gray-500 hover:text-gray-900 hover:bg-gray-50 border-t-2 border-transparent">
                 <svg class="w-5 h-5 mr-2 icon-svg text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                3. 비용 항목
+                비용 항목
             </button>
             <!-- Tab 4 -->
             <button onclick="switchTab('tab-application')" id="btn-tab-application" class="tab-btn flex items-center px-6 py-4 text-sm md:text-base font-bold transition-all focus:outline-none ko-text rounded-t-lg mx-1 text-gray-500 hover:text-gray-900 hover:bg-gray-50 border-t-2 border-transparent">
                 <svg class="w-5 h-5 mr-2 icon-svg text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                4. 신청 절차
+                신청 절차
             </button>
             <!-- Tab 5 -->
+            <button onclick="switchTab('tab-timeline')" id="btn-tab-timeline" class="tab-btn flex items-center px-6 py-4 text-sm md:text-base font-bold transition-all focus:outline-none ko-text rounded-t-lg mx-1 text-gray-500 hover:text-gray-900 hover:bg-gray-50 border-t-2 border-transparent">
+                <svg class="w-5 h-5 mr-2 icon-svg text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                예상 소요 기간
+            </button>
+            <!-- Tab 6 -->
             <button onclick="switchTab('tab-references')" id="btn-tab-references" class="tab-btn flex items-center px-6 py-4 text-sm md:text-base font-bold transition-all focus:outline-none ko-text rounded-t-lg mx-1 text-gray-500 hover:text-gray-900 hover:bg-gray-50 border-t-2 border-transparent">
                 <svg class="w-5 h-5 mr-2 icon-svg text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                5. 공식 출처/링크
+                공식 출처/링크
             </button>
         </nav>
     </div>
@@ -285,35 +290,64 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                     <h4 class="font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2">인력 & 서비스 (Manpower & Services)</h4>
-                    <ul class="space-y-2 ko-text text-gray-700 font-medium">
-                        <li>• 인건비 (기본급 및 고용주 CPF 기여금만 해당) / 탤런트(출연료)</li>
-                        <li>• 전문 수수료 / 서비스 (Professional Fees / Services)</li>
-                        <li>• 법률 비용 (Legal Fees)</li>
+                    <ul class="space-y-3 ko-text text-gray-700 font-medium">
+                        <li>
+                            • 인건비 (기본급 및 고용주 CPF 기여금만 해당) / 탤런트(출연료)
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Manpower (only basic salary & Employer's CPF contribution) / Talent</div>
+                        </li>
+                        <li>
+                            • 전문 수수료 / 서비스
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Professional Fees / Services</div>
+                        </li>
+                        <li>
+                            • 법률 비용
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Legal Fees</div>
+                        </li>
                     </ul>
                 </div>
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                     <h4 class="font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2">제작 인프라 (Production Infrastructure)</h4>
-                    <ul class="space-y-2 ko-text text-gray-700 font-medium">
-                        <li>• 하드웨어/소프트웨어 및 지식재산권(IP) 라이선싱</li>
-                        <li>• 장비 대여 및 로케이션 대여 비용</li>
-                        <li>• 미술 / 세트 부서 비용 (Art / Set Department)</li>
-                        <li>• 마스터 프린트 / 테이프</li>
+                    <ul class="space-y-3 ko-text text-gray-700 font-medium">
+                        <li>
+                            • 하드웨어/소프트웨어 및 지식재산권(IP) 라이선싱
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Hardware / Software, Intellectual Property Licensing</div>
+                        </li>
+                        <li>
+                            • 장비 대여 및 로케이션 대여 비용
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Equipment Rental, Location Rental</div>
+                        </li>
+                        <li>
+                            • 미술 / 세트 부서 비용
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Art / Set Department</div>
+                        </li>
+                        <li>
+                            • 마스터 프린트 / 테이프
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Master Print / Tapes</div>
+                        </li>
                     </ul>
                 </div>
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm md:col-span-2">
                     <h4 class="font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2">부대 비용 (Ancillary Costs)</h4>
-                    <ul class="space-y-2 ko-text text-gray-700 font-medium grid md:grid-cols-2 gap-2">
-                        <li>• 여행 및 숙박 비용 (Travel & Accommodation Costs)</li>
-                        <li>• 지상 교통비 (Ground Transport)</li>
-                        <li>• 프로젝트 파이낸싱 (보험, 완료 보증, 은행 수수료 등)</li>
+                    <ul class="space-y-3 ko-text text-gray-700 font-medium grid md:grid-cols-2 gap-x-4 gap-y-3">
+                        <li>
+                            • 여행 및 숙박 비용
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Travel & Accommodation Costs</div>
+                        </li>
+                        <li>
+                            • 지상 교통비
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Ground Transport</div>
+                        </li>
+                        <li class="md:col-span-2">
+                            • 프로젝트 파이낸싱 (보험, 완료 보증, 은행 수수료 등)
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Project Financing (e.g. insurance, completion bond, bank charges etc.)</div>
+                        </li>
                     </ul>
                 </div>
             </div>
 
             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                <h4 class="font-bold text-blue-900 mb-2 text-lg">🎯 싱가포르 인력 참여 인정 직무 (20명 KPI 매칭 가이드)</h4>
+                <h4 class="font-bold text-blue-900 mb-2 text-lg">🎯 싱가포르 인력 참여 인정 직무</h4>
                 <div class="mb-2">
-                    <div class="font-medium text-gray-900 ko-text">IMDA는 싱가포르인/영주권자가 아래의 주요 직무(Credited roles)에 배정되는 것을 중요하게 평가합니다. MM2가 언급한 '20명 KPI'를 맞추기 위해 다음 포지션들을 우선 배정하세요.</div>
                     <div class="text-sm text-gray-500 mt-1 italic en-text">List of credited roles expected of Singaporeans/PRs includes:</div>
                 </div>
                 <div class="flex flex-wrap gap-2 mt-4">
@@ -371,36 +405,66 @@
                 <h4 class="font-bold text-xl text-gray-900 mb-4 text-center ko-text">📝 필수 제출 3대 서류 (Proposals must minimally include) <span class="badge-tap ml-2">TAP TV 최신 규정</span></h4>
                 <div class="grid md:grid-cols-3 gap-4">
                     <div class="p-5 bg-white border border-gray-200 shadow-sm rounded-xl hover:border-indigo-300 transition-colors">
-                        <h5 class="font-bold text-indigo-700 mb-3 text-lg ko-text">1. 프로젝트 문서</h5>
-                        <ul class="text-sm space-y-2 text-gray-700 font-medium ko-text list-disc pl-4">
-                            <li>시놉시스, 에피소드 수, 재생 시간</li>
-                            <li>타겟 관객층 및 어필 이유</li>
-                            <li class="font-bold text-red-600 bg-red-50 p-1 rounded">커미셔너/플랫폼 약정 증빙 (LOI 등)</li>
-                            <li>공동 제작 파트너십 계약서</li>
+                        <h5 class="font-bold text-indigo-700 mb-3 text-lg ko-text">1. 프로젝트 문서 <span class="text-sm font-medium en-text block text-indigo-400 mt-0.5">Project documentation</span></h5>
+                        <ul class="text-sm space-y-4 text-gray-700 font-medium ko-text list-disc pl-4">
+                            <li>
+                                시놉시스, 에피소드 수, 재생 시간
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Synopsis and key story arcs. State number of episodes in series and duration per episode.</div>
+                            </li>
+                            <li>
+                                타겟 관객층 및 어필 이유
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Target audience and state why concept will appeal to them.</div>
+                            </li>
+                            <li class="font-bold text-red-600 bg-red-50 p-2 rounded-md -ml-2">
+                                커미셔너/플랫폼 약정 증빙 (LOI 등)
+                                <div class="text-[11px] text-red-500 italic en-text mt-1 font-normal">Evidence of commissioner / platform interest or commitment.</div>
+                            </li>
+                            <li>
+                                공동 제작 파트너십 계약서
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Co-production partnership agreements or letters of intent.</div>
+                            </li>
                         </ul>
                     </div>
                     <div class="p-5 bg-white border border-gray-200 shadow-sm rounded-xl hover:border-green-300 transition-colors">
-                        <h5 class="font-bold text-green-700 mb-3 text-lg ko-text">2. 재무 문서</h5>
-                        <ul class="text-sm space-y-2 text-gray-700 font-medium ko-text list-disc pl-4">
-                            <li>상세 예산 내역 (Detailed budget)</li>
-                            <li>자금 조달 계획 (Financing plan)</li>
-                            <li>수익 예측 및 상업화 계획</li>
+                        <h5 class="font-bold text-green-700 mb-3 text-lg ko-text">2. 재무 문서 <span class="text-sm font-medium en-text block text-green-400 mt-0.5">Financial documentation</span></h5>
+                        <ul class="text-sm space-y-4 text-gray-700 font-medium ko-text list-disc pl-4">
+                            <li>
+                                상세 예산 내역
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Detailed budget breakdown.</div>
+                            </li>
+                            <li>
+                                자금 조달 계획
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Financing plan.</div>
+                            </li>
+                            <li>
+                                수익 예측 및 상업화 계획
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Revenue projections and monetisation / commercialisation plan.</div>
+                            </li>
                         </ul>
                     </div>
                     <div class="p-5 bg-white border border-gray-200 shadow-sm rounded-xl hover:border-purple-300 transition-colors">
-                        <h5 class="font-bold text-purple-700 mb-3 text-lg ko-text">3. 크리에이티브 문서</h5>
-                        <ul class="text-sm space-y-2 text-gray-700 font-medium ko-text list-disc pl-4">
-                            <li>배급 및 마케팅 전략</li>
-                            <li>장르 전문성 증빙</li>
-                            <li class="font-bold text-blue-700 bg-blue-50 p-1 rounded">제작진(쇼러너/감독/각본가 등) 자격 증명 및 실적</li>
+                        <h5 class="font-bold text-purple-700 mb-3 text-lg ko-text">3. 크리에이티브 문서 <span class="text-sm font-medium en-text block text-purple-400 mt-0.5">Creative documentation</span></h5>
+                        <ul class="text-sm space-y-4 text-gray-700 font-medium ko-text list-disc pl-4">
+                            <li>
+                                배급 및 마케팅 전략
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Distribution and marketing strategy.</div>
+                            </li>
+                            <li>
+                                장르 전문성 증빙
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Evidence of genre expertise and target audience identification.</div>
+                            </li>
+                            <li class="font-bold text-blue-700 bg-blue-50 p-2 rounded-md -ml-2">
+                                제작진 자격 증명 및 실적
+                                <div class="text-[11px] text-blue-500 italic en-text mt-1 font-normal leading-tight">Creative team credentials and track record. Credentials of Showrunner / Producer, Director and Scriptwriter will be critical information.</div>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tab 5: References & Links -->
-        <div id="tab-references" class="tab-content space-y-8">
+        <!-- Tab 5: Timeline -->
+        <div id="tab-timeline" class="tab-content space-y-8">
             
             <!-- Timeline -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center py-8">
@@ -423,7 +487,10 @@
                     </div>
                 </div>
             </div>
+        </div>
 
+        <!-- Tab 6: References & Links -->
+        <div id="tab-references" class="tab-content space-y-8">
             <!-- Official Links -->
             <div class="bg-slate-50 p-6 rounded-xl shadow-inner border border-slate-200">
                 <div class="border-b-2 border-gray-200 pb-3 mb-5 mt-2">
