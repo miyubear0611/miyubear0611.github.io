@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高阶霍格沃茨分院测试 - 灵魂档案</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Noto+Serif+SC:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #07050f;
+            --panel-bg: rgba(15, 12, 25, 0.75);
+            --panel-border: rgba(255, 255, 255, 0.05);
+            --gold-light: #fbe69b;
+            --gold-primary: #d4af37;
+            --gold-dark: #8a6d1c;
+            
+            --g-color: #ef4444; /* Gryffindor Red */
+            --s-color: #10b981; /* Slytherin Emerald */
+            --r-color: #3b82f6; /* Ravenclaw Blue */
+            --h-color: #eab308; /* Hufflepuff Yellow */
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background-color: var(--bg-base);
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.8;
+            margin: 0;
+            transition: all 0.3s ease;
+        }
+
+        body[lang="en"] { font-family: 'Cinzel', serif; }
+        body[lang="ko"] { font-family: 'Noto Sans KR', sans-serif; }
+        body[lang="fa"] { font-family: 'Vazirmatn', sans-serif; }
+        
+        .title-font { font-family: 'Cinzel', 'Noto Serif SC', serif; }
+        body[lang="ko"] .title-font { font-family: 'Noto Sans KR', sans-serif; font-weight: 700; }
+        body[lang="fa"] .title-font { font-family: 'Vazirmatn', sans-serif; font-weight: 700; }
+
+        /* Dynamic Abyss Background */
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(147, 51, 234, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 60%);
+            filter: blur(40px);
+            animation: abyssBreathe 15s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+        @keyframes abyssBreathe {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.15); opacity: 1; }
+        }
+
+        .stardust {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;
+            background-image: radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)), radial-gradient(1.5px 1.5px at 80px 70px, #fff, rgba(0,0,0,0)), radial-gradient(1px 1px at 150px 160px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat; background-size: 200px 200px; opacity: 0.1; animation: drift 100s linear infinite;
+        }
+        @keyframes drift { from { transform: translateY(0); } to { transform: translateY(-2000px); } }
+
+        .glass-card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.02);
+            border-radius: 1.5rem;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+        }
+        .option-btn::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%;
+            background: rgba(212, 175, 55, 0); transition: all 0.3s ease;
+        }
+        body[dir="rtl"] .option-btn::before { left: auto; right: 0; }
+        
+        .option-btn:hover {
+            background: rgba(212, 175, 55, 0.04);
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+            color: #fff;
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.4);
+        }
+        .option-btn:hover::before { background: var(--gold-primary); width: 4px; }
+        
+        .option-btn.selected-flash {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: var(--gold-primary);
+            color: var(--gold-light);
+            transform: scale(0.98);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3), inset 0 0 15px rgba(212,175,55,0.1);
+        }
+        .option-btn.selected-flash::before { background: var(--gold-primary); width: 100%; opacity: 0.15; }
+
+        .gold-text-gradient {
+            background: linear-gradient(to right, var(--gold-light), var(--gold-primary), #a68422);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .fade-enter { animation: fadeEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .fade-exit { animation: fadeExit 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeEnter { from { opacity: 0; transform: translateY(15px); filter: blur(4px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+        @keyframes fadeExit { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-15px); filter: blur(4px); } }
+
+        .house-percent-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 0; border-bottom: 1px dashed rgba(255,255,255,0.08);
+            font-weight: 700; font-family: 'Cinzel', 'Noto Serif SC', serif;
+            letter-spacing: 0.05em; font-size: 15px;
+        }
+        .house-percent-row:last-child { border-bottom: none; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(212,175,55,0.5); }
+    </style>
+</head>
+<body class="flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8">
+
+    <div class="ambient-bg"></div>
+    <div class="stardust"></div>
+
+    <div id="progress-container" class="hidden fixed top-0 left-0 w-full h-1 bg-gray-950 z-50">
+        <div id="progress-bar" class="h-full bg-gradient-to-r from-amber-700 via-yellow-500 to-amber-200 transition-all duration-500 shadow-[0_0_10px_#d4af37]" style="width: 0%"></div>
+    </div>
+
+    <div class="fixed top-4 right-4 z-50 ltr:right-4 rtl:left-4 rtl:right-auto">
+        <select id="lang-switcher" onchange="changeLanguage(this.value)" class="bg-black/60 text-amber-500 border border-amber-500/30 rounded-lg py-1.5 px-3 outline-none backdrop-blur-md text-sm cursor-pointer shadow-lg hover:bg-black/80 transition font-medium focus:ring-2 focus:ring-amber-500/50">
+            <option value="0">中文 (Chinese)</option>
+            <option value="1">English</option>
+            <option value="2">فارسی (Persian)</option>
+            <option value="3">한국어 (Korean)</option>
+        </select>
+    </div>
+
+    <div id="app" class="max-w-[1024px] w-full relative z-10">
+        
+        <div id="intro-screen" class="glass-card p-8 md:p-14 fade-enter max-h-[85vh] overflow-y-auto">
+            <div class="text-center mb-14">
+                <h2 id="ui-subtitle" class="text-[11px] text-gray-500 tracking-[0.4em] uppercase mb-4 font-bold">潜意识精神图谱 · 40题终极完整版</h2>
+                <h1 id="ui-title" class="text-4xl md:text-5xl font-black title-font gold-text-gradient tracking-widest drop-shadow-2xl mb-6">
+                    高阶分院仪式
+                </h1>
+                <p id="ui-intro-desc" class="text-[14.5px] text-gray-300 leading-[2] max-w-4xl mx-auto font-medium">
+                    本测试旨在摒弃传统的表象喜好测试。忘记你喜欢的颜色，忘记你偏爱的动物。真正的魔法潜能，藏在你面对黑暗、冲突与抉择时的本能反应中。<br><br>
+                    在人类的心理图谱中，没有任何一种特质是绝对的正或负。喜恶同因，同一种底层驱动力在不同情境下，会绽放光辉，也可能投射出阴影。在开始前，请重新认识这四种底层人格：
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+                <!-- Slytherin Intro -->
+                <div class="bg-black/40 p-6 rounded-2xl border border-emerald-900/40 hover:border-emerald-500/60 transition duration-500 group relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 blur-2xl rounded-full group-hover:bg-emerald-500/20 transition duration-500"></div>
+                    <h3 id="ui-h-s-title" class="text-xl font-bold text-emerald-400 mb-2 title-font tracking-wider relative z-10">🐍 斯莱特林 (Slytherin)</h3>
+                    <p id="ui-h-s-sub" class="text-[11px] text-emerald-200/50 mb-3 uppercase tracking-widest font-bold relative z-10">底层驱动：战略性的实用主义者</p>
+                    <p id="ui-h-s-desc" class="text-[13.5px] text-gray-300 leading-relaxed relative z-10">
+                        <strong class="text-emerald-500">正面展现：</strong> 极致的理性与效率。具有极高的边界感，是天生的战略家，能精准计算风险与收益；对划定在“自己人”圈子里的人极其护短忠诚；在危机中能保持冷酷的清醒，懂得蛰伏。<br><br>
+                        <strong class="text-gray-500">负面投射：</strong> 当安全感匮乏时，极易滑向马基雅维利主义（为达目的不择手段）。过度的防御机制会导致冷血以及对权力的病态垄断。
+                    </p>
+                </div>
+
+                <!-- Hufflepuff Intro -->
+                <div class="bg-black/40 p-6 rounded-2xl border border-yellow-900/40 hover:border-yellow-500/60 transition duration-500 group relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-yellow-500/10 blur-2xl rounded-full group-hover:bg-yellow-500/20 transition duration-500"></div>
+                    <h3 id="ui-h-h-title" class="text-xl font-bold text-yellow-400 mb-2 title-font tracking-wider relative z-10">🦡 赫奇帕奇 (Hufflepuff)</h3>
+                    <p id="ui-h-h-sub" class="text-[11px] text-yellow-200/50 mb-3 uppercase tracking-widest font-bold relative z-10">底层驱动：坚韧的系统构建者</p>
+                    <p id="ui-h-h-desc" class="text-[13.5px] text-gray-300 leading-relaxed relative z-10">
+                        <strong class="text-yellow-500">正面展现：</strong> 极高的情绪韧性（抗挫折能力）与同理心。他们相信持续的努力和协作，面对冲突时是极其优秀的缓冲器与修复者，拥有最广博的善意和不离不弃的包容。<br><br>
+                        <strong class="text-gray-500">负面投射：</strong> 极易为了集体和谐而压抑自我真实需求（讨好型人格倾向）。在快速变革或生死决断的关头可能显得优柔寡断。
+                    </p>
+                </div>
+
+                <!-- Ravenclaw Intro -->
+                <div class="bg-black/40 p-6 rounded-2xl border border-blue-900/40 hover:border-blue-500/60 transition duration-500 group relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/10 blur-2xl rounded-full group-hover:bg-blue-500/20 transition duration-500"></div>
+                    <h3 id="ui-h-r-title" class="text-xl font-bold text-blue-400 mb-2 title-font tracking-wider relative z-10">🦅 拉文克劳 (Ravenclaw)</h3>
+                    <p id="ui-h-r-sub" class="text-[11px] text-blue-200/50 mb-3 uppercase tracking-widest font-bold relative z-10">底层驱动：认知的独立开拓者</p>
+                    <p id="ui-h-r-desc" class="text-[13.5px] text-gray-300 leading-relaxed relative z-10">
+                        <strong class="text-blue-500">正面展现：</strong> 极其强大的认知灵活性与客观性。不被世俗评价体系绑架，能在混乱中抽离寻找逻辑解。思想的先锋，拥有跳出框架的绝对原创力和纯粹的好奇心。<br><br>
+                        <strong class="text-gray-500">负面投射：</strong> 容易陷入“象牙塔式的冷漠”。过度沉迷于理论逻辑时会剥离对他人的情感共鸣，表现出高高在上的智力傲慢与精英主义。
+                    </p>
+                </div>
+
+                <!-- Gryffindor Intro -->
+                <div class="bg-black/40 p-6 rounded-2xl border border-red-900/40 hover:border-red-500/60 transition duration-500 group relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-red-500/10 blur-2xl rounded-full group-hover:bg-red-500/20 transition duration-500"></div>
+                    <h3 id="ui-h-g-title" class="text-xl font-bold text-red-400 mb-2 title-font tracking-wider relative z-10">🦁 格兰芬多 (Gryffindor)</h3>
+                    <p id="ui-h-g-sub" class="text-[11px] text-red-200/50 mb-3 uppercase tracking-widest font-bold relative z-10">底层驱动：道德直觉的践行者</p>
+                    <p id="ui-h-g-desc" class="text-[13.5px] text-gray-300 leading-relaxed relative z-10">
+                        <strong class="text-red-500">正面展现：</strong> 纯粹的道德勇气。当认定某件事是“对的”时，会爆发出惊人的行动力，敢于打破不合理规则直面强权，不惜牺牲自身既得利益捍卫弱小。<br><br>
+                        <strong class="text-gray-500">负面投射：</strong> 极易被情绪和道德直觉绑架，陷入非黑即白的二元论。信念走向极端时会产生强烈的莽撞及道德绑架他人的倾向。
+                    </p>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <p id="ui-warning" class="text-amber-500/80 italic mb-6 text-[13.5px] tracking-widest">“分院帽能刺穿你的伪装。请凭第一直觉作答，不要思考‘怎样选才像个好人’。”</p>
+                <button id="ui-start-btn" onclick="startQuiz()" class="bg-transparent border border-amber-500/80 text-amber-500 hover:bg-amber-500 hover:text-gray-900 font-bold py-4 px-14 rounded-full text-[17px] transition-all duration-300 shadow-[0_0_20px_rgba(217,119,6,0.15)] hover:shadow-[0_0_40px_rgba(217,119,6,0.4)] title-font tracking-widest">
+                    接受潜意识凝视
+                </button>
+            </div>
+        </div>
+
+        <div id="quiz-screen" class="hidden glass-card p-8 md:p-14 min-h-[650px] flex flex-col relative">
+            <div class="flex justify-between items-end mb-12 border-b border-gray-700/50 pb-4 relative z-10">
+                <span id="question-counter" class="text-sm font-bold tracking-widest text-amber-500 title-font uppercase">
+                    Q. 1 / 40
+                </span>
+                <p id="flavor-text" class="text-[11px] tracking-[0.3em] text-gray-500 uppercase title-font transition-opacity duration-500 animate-pulse rtl:text-right"></p>
+            </div>
+
+            <div id="question-container" class="flex-grow flex flex-col justify-center mb-8 relative z-10">
+                <h2 id="question-text" class="text-xl md:text-[22px] font-bold mb-10 leading-[1.8] text-gray-100 drop-shadow-md">
+                    载入中...
+                </h2>
+                <div id="options-container" class="space-y-4 w-full mx-auto"></div>
+            </div>
+            
+            <div class="flex justify-start mt-auto pt-4 relative z-10 h-10">
+                <button onclick="prevQuestion()" id="prev-btn" class="hidden text-gray-500 hover:text-amber-500 px-4 py-2 rounded-xl transition duration-300 text-[13px] tracking-widest flex items-center gap-2 group">
+                    <span class="transform group-hover:-translate-x-1 rtl:group-hover:translate-x-1 transition duration-300">←</span> <span id="ui-prev">重塑记忆 (上一题)</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="hidden glass-card p-8 md:p-14">
+            
+            <div class="text-center mb-14 fade-enter" style="animation-delay: 0.1s;">
+                <h2 id="ui-res-subtitle" class="text-[10px] text-gray-400 tracking-[0.8em] uppercase mb-4">潜 意 识 解 析 完 成</h2>
+                <h1 id="ui-res-title" class="text-4xl md:text-6xl font-black title-font gold-text-gradient mb-4 drop-shadow-lg">
+                    你的灵魂档案
+                </h1>
+                <p id="ui-res-desc" class="text-gray-400 text-[13px] tracking-widest font-medium">所有的社会赞许性伪装已被剥离，以下是你的真实动机图谱。</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-14">
+                <!-- Left Column: Radar Chart & Exact Percentages -->
+                <div class="lg:col-span-5 bg-black/40 p-8 rounded-3xl border border-gray-800 flex flex-col items-center fade-enter shadow-2xl relative h-fit lg:sticky top-10" style="animation-delay: 0.3s;">
+                    <div class="w-full max-w-[280px] aspect-square relative z-10 mb-10 mt-4">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                    <div id="house-percentages" class="w-full mt-4 z-10"></div>
+                </div>
+
+                <!-- Right Column: 4-Tier Dynamic Cards -->
+                <div class="lg:col-span-7 flex flex-col justify-center space-y-5 fade-enter" id="four-tier-container" style="animation-delay: 0.5s;">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <div class="bg-black/50 p-8 md:p-12 rounded-[2rem] border border-amber-900/30 relative overflow-hidden fade-enter shadow-2xl" style="animation-delay: 0.7s;">
+                <div class="absolute -right-20 -top-20 w-80 h-80 bg-amber-600/10 blur-[80px] rounded-full pointer-events-none"></div>
+                
+                <h3 class="text-amber-500 font-bold mb-8 title-font flex items-center gap-3 text-2xl tracking-widest">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477-4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span id="ui-hat-title">分院帽的低语 (The Hat's Whisper)</span>
+                </h3>
+                
+                <!-- The Essay Content -->
+                <div id="hat-whisper-content" class="space-y-8 text-gray-300 text-[15px] leading-[2.2] tracking-wide" dir="auto">
+                </div>
+            </div>
+            
+            <div class="text-center mt-16 fade-enter" style="animation-delay: 0.9s;">
+                <button onclick="location.reload()" id="ui-restart" class="text-gray-500 hover:text-amber-500 tracking-widest text-sm transition-colors duration-300 border-b border-transparent hover:border-amber-500 pb-1 font-medium">
+                    清除记忆，重新审视
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentLang = 0; // 0: ZH, 1: EN, 2: FA, 3: KO
+        let isTransitioning = false;
+        let globalFinalData = []; 
+        let hasCalculated = false;
+        let userPsychProfile = { isFakeHero: false, isFakeRational: false }; // Saved to retain translation logic
+
+        const uiTexts = {
+            subtitle: ["潜意识精神图谱 · 40题终极完整版", "Deep Subconscious Profile · 40 Questions Ultimate", "نمایه ناخودآگاه عمیق · نسخه نهایی ۴۰ سوالی", "심층 잠재의식 프로파일 · 40문항 최종판"],
+            title: ["高阶分院仪式", "Advanced Sorting Ceremony", "مراسم گروه‌بندی پیشرفته", "고급 기숙사 배정식"],
+            introDesc: [
+                "本测试旨在摒弃传统的表象喜好测试。忘记你喜欢的颜色，忘记你偏爱的动物。真正的魔法潜能，藏在你面对黑暗、冲突与抉择时的本能反应中。<br><br>在人类的心理图谱中，没有任何一种特质是绝对的正或负。喜恶同因，同一种底层驱动力在不同情境下，会绽放光辉，也可能投射出阴影。在开始前，请重新认识这四种底层人格：",
+                "This test discards traditional superficial preferences. Forget your favorite color or animal. True magic potential hides in your instinctive reactions to darkness, conflict, and choices.<br><br>In the psychological spectrum, no trait is absolutely positive or negative. The same underlying drive can radiate brilliance or cast a shadow depending on the situation. Before we begin, re-examine these four core personas:",
+                "این آزمون ترجیحات سطحی سنتی را کنار می‌گذارد. رنگ یا حیوان مورد علاقه خود را فراموش کنید. پتانسیل جادویی واقعی در واکنش‌های غریزی شما به تاریکی، درگیری و انتخاب‌ها نهفته است.<br><br>در طیف روانشناختی، هیچ ویژگی کاملاً مثبت یا منفی نیست. یک انگیزه درونی می‌تواند بسته به موقعیت، درخشش داشته باشد یا سایه بیفکند. پیش از شروع، این چهار شخصیت پایه را بازبینی کنید:",
+                "이 테스트는 전통적인 표면적 선호도 조사를 배제합니다. 좋아하는 색깔이나 동물은 잊으세요. 진정한 마법의 잠재력은 어둠, 갈등, 선택에 직면했을 때의 본능적인 반응 속에 숨어 있습니다.<br><br>인간의 심리 스펙트럼에서 절대적으로 긍정적이거나 부정적인 특성은 없습니다. 동일한 기저 원동력도 상황에 따라 빛을 발하거나 그림자를 드리울 수 있습니다. 시작하기 전에 이 4가지 기저 인격을 다시 살펴보세요:"
+            ],
+            h_s_title: ["🐍 斯莱特林 (Slytherin)", "🐍 Slytherin", "🐍 اسلیترین", "🐍 슬리데린"],
+            h_s_sub: ["底层驱动：战略性的实用主义者", "Core Drive: Strategic Pragmatist", "محرک اصلی: عملگرای استراتژیک", "기저 동인: 전략적 실용주의자"],
+            h_s_desc: ["<strong class='text-emerald-500'>正面展现：</strong> 极致的理性与效率。具有极高的边界感，是天生的战略家，能精准计算风险与收益；对划定在“自己人”圈子里的人极其护短忠诚；在危机中能保持冷酷的清醒，懂得蛰伏。<br><br><strong class='text-gray-500'>负面投射：</strong> 当安全感匮乏时，极易滑向马基雅维利主义（为达目的不择手段）。过度的防御机制会导致冷血以及对权力的病态垄断。", "<strong class='text-emerald-500'>Positive:</strong> Extreme rationality and efficiency. Natural strategists with high boundaries, precise in risk-reward calculations. Fiercely and exclusively loyal to their 'inner circle'. Coldly lucid in crises, knowing how to lie low.<br><br><strong class='text-gray-500'>Shadow:</strong> When lacking security, prone to Machiavellianism (the end justifies the means). Excessive defense mechanisms lead to ruthlessness and a pathological monopoly on power.", "<strong class='text-emerald-500'>مثبت:</strong> عقلانیت و کارایی افراطی. استراتژیست‌های ذاتی با مرزهای بالا، دقیق در محاسبه ریسک و پاداش. وفاداری شدید به 'حلقه خودی'. در بحران‌ها کاملاً هوشیار.<br><br><strong class='text-gray-500'>سایه:</strong> در صورت کمبود امنیت، مستعد ماکیاولیسم (هدف وسیله را توجیه می‌کند). مکانیسم‌های دفاعی بیش از حد منجر به بی‌رحمی و انحصار بیمارگونه قدرت می‌شود.", "<strong class='text-emerald-500'>긍정적 발현:</strong> 극도의 이성과 효율성. 경계가 뚜렷하며, 위험과 보상을 정확히 계산하는 타고난 전략가입니다. '내 사람'에게는 확고한 충성심을 보입니다. 위기 상황에서 냉혹할 정도로 이성적이며 최후의 승리를 위해 엎드릴 줄 압니다.<br><br><strong class='text-gray-500'>부정적 투영:</strong> 안전감이 결핍될 때 마키아벨리즘에 빠지기 쉽습니다. 과도한 방어 기제는 냉혈함과 권력에 대한 병적인 독점으로 이어질 수 있습니다."],
+            h_h_title: ["🦡 赫奇帕奇 (Hufflepuff)", "🦡 Hufflepuff", "🦡 هافلپاف", "🦡 후플푸프"],
+            h_h_sub: ["底层驱动：坚韧的系统构建者", "Core Drive: Resilient System Builder", "محرک اصلی: سازنده سیستم انعطاف پذیر", "기저 동인: 회복력 있는 시스템 구축자"],
+            h_h_desc: ["<strong class='text-yellow-500'>正面展现：</strong> 极高的情绪韧性（抗挫折能力）与同理心。他们相信持续的努力和协作，面对冲突时是极其优秀的缓冲器与修复者，拥有最广博的善意和不离不弃的包容。<br><br><strong class='text-gray-500'>负面投射：</strong> 极易为了集体和谐而压抑自我真实需求（讨好型人格倾向）。在快速变革或生死决断的关头可能显得优柔寡断。", "<strong class='text-yellow-500'>Positive:</strong> High emotional resilience (AQ) and empathy. They believe in sustained effort and collaboration. Excellent buffers and healers in conflicts, possessing vast kindness and unwavering inclusivity.<br><br><strong class='text-gray-500'>Shadow:</strong> Highly prone to suppressing true self-needs for collective harmony (people-pleasing). During rapid changes or life-or-death decisions, they may appear indecisive.", "<strong class='text-yellow-500'>مثبت:</strong> تاب‌آوری عاطفی بالا و همدلی. ضربه‌گیرها و التیام‌دهنده‌های عالی در درگیری‌ها، دارای مهربانی وسیع و پذیرش تزلزل‌ناپذیر.<br><br><strong class='text-gray-500'>سایه:</strong> بسیار مستعد سرکوب نیازهای واقعی خود به خاطر هماهنگی جمعی (مهرطلبی). در طول تصمیمات مرگ و زندگی، ممکن است مردد به نظر برسند.", "<strong class='text-yellow-500'>긍정적 발현:</strong> 뛰어난 감정적 회복탄력성(AQ)과 공감 능력. 갈등 상황에서 훌륭한 완충재이자 치유자 역할을 하며, 넓은 선의와 끝없는 포용력을 지닙니다.<br><br><strong class='text-gray-500'>부정적 투영:</strong> 집단의 조화를 위해 자신의 진짜 욕구를 억압하기 쉽습니다(사람을 기쁘게 하려는 성향). 생사가 걸린 결정의 순간에 우유부단해 보일 수 있습니다."],
+            h_r_title: ["🦅 拉文克劳 (Ravenclaw)", "🦅 Ravenclaw", "🦅 ریونکلا", "🦅 래번클로"],
+            h_r_sub: ["底层驱动：认知的独立开拓者", "Core Drive: Independent Cognitive Pioneer", "محرک اصلی: پیشگام شناختی مستقل", "기저 동인: 인지적 독립 개척자"],
+            h_r_desc: ["<strong class='text-blue-500'>正面展现：</strong> 极其强大的认知灵活性与客观性。不被世俗评价体系绑架，能在混乱中抽离寻找逻辑解。思想的先锋，拥有跳出框架的绝对原创力和纯粹的好奇心。<br><br><strong class='text-gray-500'>负面投射：</strong> 容易陷入“象牙塔式的冷漠”。过度沉迷于理论逻辑时会剥离对他人的情感共鸣，表现出高高在上的智力傲慢与精英主义。", "<strong class='text-blue-500'>Positive:</strong> Extremely powerful cognitive flexibility and objectivity. Unbound by worldly evaluation systems, they detach from chaos to find logical pathways. Intellectual pioneers with absolute originality and pure curiosity.<br><br><strong class='text-gray-500'>Shadow:</strong> Prone to 'ivory tower apathy'. When overly obsessed with theory and logic, they strip away emotional resonance with others, displaying aloof intellectual arrogance and elitism.", "<strong class='text-blue-500'>مثبت:</strong> انعطاف‌پذیری شناختی و عینیت بسیار قدرتمند. پیشگامان فکری با اصالت مطلق برای تفکر خارج از چارچوب و کنجکاوی ناب.<br><br><strong class='text-gray-500'>سایه:</strong> مستعد 'بی‌تفاوتی برج عاج'. هنگامی که بیش از حد وسواس تئوری دارند، طنین عاطفی با دیگران را از بین می‌برند و تکبر فکری را نشان می‌دهند.", "<strong class='text-blue-500'>긍정적 발현:</strong> 매우 강력한 인지적 유연성과 객관성. 세속적인 평가에 얽매이지 않으며, 혼란 속에서도 시스템의 맥락을 분리해 논리적 해답을 찾습니다. 틀을 깨는 절대적인 독창성과 순수한 호기심을 지닌 선구자입니다.<br><br><strong class='text-gray-500'>부정적 투영:</strong> '상아탑의 냉담함'에 빠지기 쉽습니다. 이론과 논리에 과도하게 집착할 때 타인과의 감정적 공명을 배제하며, 거만할 정도의 지적 오만함과 엘리트주의를 보일 수 있습니다."],
+            h_g_title: ["🦁 格兰芬多 (Gryffindor)", "🦁 Gryffindor", "🦁 گریفیندور", "🦁 그리핀도르"],
+            h_g_sub: ["底层驱动：道德直觉的践行者", "Core Drive: Moral Intuition Practitioner", "محرک اصلی: تمرین کننده شهود اخلاقی", "기저 동인: 도덕적 직관의 실천자"],
+            h_g_desc: ["<strong class='text-red-500'>正面展现：</strong> 纯粹的道德勇气。当认定某件事是“对的”时，会爆发出惊人的行动力，敢于打破不合理规则直面强权，不惜牺牲自身既得利益捍卫弱小。<br><br><strong class='text-gray-500'>负面投射：</strong> 极易被情绪和道德直觉绑架，陷入非黑即白的二元论。信念走向极端时会产生强烈的莽撞及道德绑架他人的倾向。", "<strong class='text-red-500'>Positive:</strong> Pure moral courage. When they deem something 'right', they erupt with astonishing action, daring to break unreasonable rules and confront tyranny to defend the weak.<br><br><strong class='text-gray-500'>Shadow:</strong> Easily hijacked by emotions and moral intuition, falling into black-and-white dualism. When beliefs turn extreme, it breeds recklessness and a tendency to violently impose their moral standards on others.", "<strong class='text-red-500'>مثبت:</strong> شجاعت اخلاقی ناب. هنگامی که چیزی را 'درست' می‌دانند، جرأت می‌کنند قوانین غیرمنطقی را زیر پا بگذارند و با ظلم مقابله کنند.<br><br><strong class='text-gray-500'>سایه:</strong> به راحتی توسط احساسات و شهود اخلاقی ربوده می‌شوند و به ثنویت سیاه و سفید می‌افتند. باعث بی‌احتیاطی و تمایل به تحمیل استانداردهای اخلاقی خود به دیگران می‌شود.", "<strong class='text-red-500'>긍정적 발현:</strong> 순수한 도덕적 용기. 어떤 일이 '옳다'고 확신하면 놀라운 행동력을 폭발시키며, 불합리한 규칙을 깨고 권력에 맞서는 것을 두려워하지 않고 약자를 보호합니다.<br><br><strong class='text-gray-500'>부정적 투영:</strong> 감정과 도덕적 직관에 쉽게 휘둘려 흑백 논리에 빠지기 쉽습니다. 신념이 극단으로 치달을 때 무모함이 생겨나며, 자신의 도덕적 잣대로 타인을 폭력적으로 억압하려는 경향을 보일 수 있습니다."],
+            warning: ["“分院帽能刺穿你的伪装。请凭第一直觉作答，不要思考‘怎样选才像个好人’。”", "“The Hat pierces camouflage. Answer with instinct, not what a 'good person' would do.”", "“کلاه استتار را می‌شکافد. با غریزه پاسخ دهید، نه آنچه یک 'انسان خوب' انجام می‌دهد.”", "“모자는 위장을 꿰뚫어 봅니다. '좋은 사람'처럼 보일까 생각하지 말고 직감대로 답하세요.”"],
+            startBtn: ["接受潜意识凝视", "Accept Subconscious Gaze", "پذیرش نگاه ناخودآگاه", "잠재의식의 응시 받아들이기"],
+            prev: ["重塑记忆 (上一题)", "Reshape Memory (Prev)", "بازسازی حافظه (قبلی)", "기억 재구성 (이전)"],
+            resSub: ["潜 意 识 解 析 完 成", "SUBCONSCIOUS ANALYSIS COMPLETE", "تحلیل ناخودآگاه کامل شد", "잠재의식 분석 완료"],
+            resTitle: ["你的灵魂档案", "Your Soul Archive", "پرونده روح شما", "당신의 영혼 아카이브"],
+            resDesc: ["所有的社会赞许性伪装已被剥离，以下是你的真实动机图谱。", "All social camouflage is stripped. Below is your true motive spectrum.", "تمام استتارهای اجتماعی برداشته شده است. در زیر طیف انگیزه واقعی شما قرار دارد.", "모든 사회적 위장이 벗겨졌습니다. 다음은 당신의 진정한 동기 스펙트럼입니다."],
+            hatTitle: ["分院帽的低语 (The Hat's Whisper)", "The Hat's Whisper", "زمزمه کلاه", "분류 모자의 속삭임"],
+            restart: ["清除记忆，重新审视", "Clear Memory & Restart", "پاک کردن حافظه و شروع مجدد", "기억 지우기 و 재시작"]
+        };
+
+        const tierTitles = [
+            ["PRIMARY CORE / 核心动机", "PRIMARY CORE", "محرک اصلی", "PRIMARY CORE / 핵심 동기"],
+            ["SECONDARY TRAIT / 执行手段", "SECONDARY TRAIT", "ویژگی ثانویه", "SECONDARY TRAIT / 실행 수단"],
+            ["LATENT BUFFER / 潜藏特质", "LATENT BUFFER", "ویژگی پنهان", "LATENT BUFFER / 잠재적 특성"],
+            ["THE SHADOW / 暗影缺失", "THE SHADOW", "سایه / غیبت", "THE SHADOW / 그림자 결핍"]
+        ];
+
+        // Deep Analysis Translation Dictionaries for the Hat's Essay
+        const dictLabels = {
+            alignment: ["真实度判定", "Alignment Check", "بررسی تطابق", "진실성 판정"],
+            fusion: ["融合侧写", "Fusion Profile", "نمایه تلفیقی", "융합 프로파일"],
+            latent: ["第三特质分析", "Latent Buffer Analysis", "تحلیل ویژگی پنهان", "잠재 특성 분석"],
+            shadow: ["暗影缺失深度剖析", "Deep Shadow Analysis", "تحلیل عمیق سایه", "심층 그림자 분석"]
+        };
+
+        const flavorTexts = [
+            ["潜意识波段共振中...", "Resonating subconscious bands...", "طنین باندهای ناخودآگاه...", "잠재의식 주파수 공명 중..."],
+            ["剥离表象道德伪装...", "Stripping moral camouflage...", "برداشتن استتار اخلاقی...", "표면적 도덕 위장 벗겨내는 중..."],
+            ["探寻底层防御机制...", "Probing defense mechanisms...", "بررسی مکانیسم‌های دفاعی...", "기저 방어 기제 탐색 중..."],
+            ["触碰深层恐惧与野心...", "Touching deep fears & ambitions...", "لمس ترس‌ها و جاه‌طلبی‌های عمیق...", "깊은 두려움과 야망에 닿는 중..."],
+            ["解构价值抉择网格...", "Deconstructing value grid...", "ساختارشکنی شبکه ارزش...", "가치 선택 그리드 해체 중..."]
+        ];
+
+        const houseData = {
+            'Slytherin': { name: ['斯莱特林', 'Slytherin', 'اسلیترین', '슬리데린'], color: '#10b981' },
+            'Gryffindor': { name: ['格兰芬多', 'Gryffindor', 'گریفیندور', '그리핀도르'], color: '#ef4444' },
+            'Ravenclaw': { name: ['拉文克劳', 'Ravenclaw', 'ریونکلا', '래번클로'], color: '#3b82f6' },
+            'Hufflepuff': { name: ['赫奇帕奇', 'Hufflepuff', 'هافلپاف', '후플푸프'], color: '#eab308' }
+        };
+
+        const rawQuestions = [
+            // M1: Moral Foundations
+            [ ["你发现社团领袖暗中挪用对手资金购买装备。","Leader embezzled funds for your club.","رهبر باشگاه بودجه رقیب را برای تجهیزات شما اختلاس کرد.","리더가 라이벌의 자금을 횡령하여 팀 장비를 샀습니다."],
+              ["G", ["公开举报，正义不分阵营","Report publicly, justice is blind","گزارش علنی، عدالت کور است","공개 고발, 정의는 편을 가르지 않음"]], ["S", ["私下要挟，换取资源倾斜","Blackmail for resources","باج‌گیری برای منابع","자원을 얻기 위해 비밀리에 협박"]], ["H", ["痛苦劝阻，求他悄悄还钱","Beg him to return it","التماس برای بازگرداندن پول","조용히 돈을 돌려주라고 간곡히 설득"]], ["R", ["保持沉默，作为博弈观察样本","Observe the ecosystem change","مشاهده تغییرات اکوسیستم","침묵하며 생태계 변화를 관찰"]] ],
+            [ ["才华横溢但极度恶劣的异类想加入团队，能保送最高评级。","A toxic genius wants to join, guaranteeing top grades.","یک نابغه سمی می‌خواهد بپیوندد و نمره عالی را تضمین کند.","재능은 뛰어나지만 성격이 최악인 천재가 팀에 합류하려 합니다. 최고 등급 보장."],
+              ["S", ["榨干知识，用完即弃","Use them, discard after","استفاده کن، بعد دور بینداز","지식만 뽑아먹고 목표 달성 후 방출"]], ["G", ["坚决拒绝，尊严高于评级","Refuse, dignity over grades","رد کردن، عزت مهم‌تر از نمره است","단호히 거절, 존엄성이 등급보다 중요"]], ["H", ["接纳并试图感化他","Accept and try to heal them","پذیرش و تلاش برای درمان آنها","받아들이고 그를 감화시키려 노력"]], ["R", ["无视脾气，只看学术产出","Ignore temper, focus on output","نادیده گرفتن اخلاق، تمرکز بر خروجی","성질은 무시하고 학문적 결과에만 집중"]] ],
+            [ ["处于狂热支持激进变革的集会中，你发现致命隐患。","In a fanatic rally for change, you spot a fatal flaw.","در یک تجمع متعصبانه، شما یک نقص کشنده را می‌بینید.","급진적 변화를 광적으로 지지하는 집회에서 치명적인 결함을 발견했습니다."],
+              ["G", ["夺过扩音咒喝止，不怕变公敌","Shout to stop, risk being the enemy","فریاد برای توقف، خطر دشمن شدن","마이크를 빼앗아 소리쳐 막음, 공공의 적이 되어도 무방"]], ["S", ["迅速离场，做个人避险准备","Leave quickly, prepare own defense","ترک سریع، آماده‌سازی دفاع شخصی","신속히 자리를 뜨고 개인적인 대비책 마련"]], ["H", ["悄悄劝说边缘人，建立缓冲带","Quietly warn people at the edges","هشدار آرام به افراد حاشیه‌ای","가장자리의 사람들을 조용히 설득하여 완충지대 형성"]], ["R", ["默不作声，当做社会学观察","Observe mutely as a sociology study","مشاهده خاموش به عنوان مطالعه جامعه‌شناسی","침묵하며 사회학적 관찰 대상으로 삼음"]] ],
+            [ ["发现建国历史其实是无耻谎言和屠杀。","The founding history is actually a bloody lie.","تاریخ تاسیس در واقع یک دروغ خونین است.","건국 역사가 사실은 부끄러운 거짓과 학살이었음을 알게 됨."],
+              ["H", ["隐藏秘密，大众安宁高于真相","Hide it, peace over truth","پنهان کردن آن، صلح مهم‌تر از حقیقت","비밀 은폐, 대중의 평안이 진실보다 중요"]], ["R", ["公之于众，真理具有绝对独立价值","Publish it, truth is absolute","انتشار آن، حقیقت مطلق است","대중에게 공개, 진리는 절대적 가치를 지님"]], ["S", ["作为核威慑要挟高层攫取特权","Use as blackmail for privileges","استفاده به عنوان باج‌گیری برای امتیازات","고위층을 협박하여 특권을 얻는 카드로 사용"]], ["G", ["带头推翻虚伪政权","Lead rebellion against fake regime","رهبری شورش علیه رژیم جعلی","거짓 정권을 무너뜨리는 데 앞장섬"]] ],
+            [ ["完美反击宿敌的计划，会连带让其无辜家人破产。","Perfect revenge will bankrupt enemy's innocent family.","انتقام کامل خانواده بی‌گناه دشمن را ورشکست می‌کند.","숙적에게 완벽한 반격을 가할 계획이지만, 그의 무고한 가족이 파산하게 됨."],
+              ["G", ["放弃，祸不及家人是底线","Abandon it, family is off-limits","رها کردن، خانواده خط قرمز است","포기, 가족을 건드리지 않는 것이 마지노선"]], ["S", ["执行，别人死活与我无关","Execute, their fate isn't my concern","اجرا، سرنوشت آنها به من ربطی ندارد","실행, دیگران 내 알 바 아님"]], ["H", ["执行后匿名资助其家人","Execute but anonymously fund family","اجرا اما کمک مالی ناشناس به خانواده","실행 후 익명으로 그의 가족을 후원"]], ["R", ["失去兴趣，转而研究系统漏洞","Lose interest, study the exploit","از دست دادن علاقه، مطالعه آسیب‌پذیری","흥미 상실, 시스템 취약점 연구로 전환"]] ],
+            [ ["面临荒谬的禁令：禁止课余私下讨论高阶魔咒。","Absurd decree: No discussing advanced magic privately.","فرمان پوچ: بحث خصوصی در مورد جادوی پیشرفته ممنوع.","황당한 법령: 방과 후 고급 마법에 대한 사적인 토론 금지."],
+              ["G", ["公开撕毁法令，大声宣讲抗议","Tear it up, protest publicly","پاره کردن آن، اعتراض علنی","법령을 찢고 공개적으로 항의 연설"]], ["S", ["表面服从，暗中建立地下黑市","Obey outwardly, build black market","اطاعت ظاهری، ایجاد بازار سیاه","겉으로는 복종, 암암리에 지하 시장 구축"]], ["H", ["遵守并走正规程序申请废除","Follow it, apply to repeal legally","پیروی، تلاش برای لغو قانونی","준수하며 합법적인 절차를 통해 폐지 신청"]], ["R", ["利用条文字眼漏洞，用暗号讨论","Exploit loopholes, use ciphers","سوءاستفاده از خلأها، استفاده از رمزها","법 조항의 허점을 이용해 암호로 토론"]] ],
+            [ ["百年核心仪式在现代效率极低且带歧视色彩。","Century-old core ritual is now inefficient and discriminatory.","مراسم اصلی صد ساله اکنون ناکارآمد و تبعیض‌آمیز است.","100년 된 핵심 의식이 현대에는 비효율적이고 차별적임."],
+              ["G", ["公开抨击拒绝参与，不惧大逆不道","Publicly denounce and refuse","محکوم کردن علنی و امتناع","공개적으로 비판하고 참여 거부"]], ["S", ["表面维持体面，暗中修改以利己","Maintain facade, modify for self-gain","حفظ ظاهر، تغییر برای نفع شخصی","겉모습은 유지하되 나에게 유리하게 몰래 수정"]], ["H", ["极其谨慎，花数年温和渐进注入新元素","Cautiously infuse new elements over years","تزریق محتاطانه عناصر جدید در طول سال‌ها","매우 신중하게 수년에 걸쳐 새로운 요소 주입"]], ["R", ["深入研究原始逻辑，还原其学术本质","Study original logic, restore essence","مطالعه منطق اصلی، بازیابی ذات","기원 논리를 깊이 연구하여 학술적 본질 복원"]] ],
+            [ ["亲生兄弟犯下严重商业诈骗。你收到了逮捕令。","Your brother committed severe fraud. You must arrest him.","برادر شما مرتکب کلاهبرداری شدید شده است. باید او را دستگیر کنید.","친형제가 심각한 사기를 저지름. 당신이 체포 명령을 받음."],
+              ["G", ["亲自带队抓捕，法律面前无亲情","Arrest him personally, law over family","دستگیری شخصی او، قانون فراتر از خانواده","직접 체포, 법 앞에 가족 없음"]], ["S", ["通风报信安排逃亡，销毁证据","Tip him off, destroy evidence","خبر دادن به او، نابود کردن مدارک","도망치도록 미리 알려주고 증거 인멸"]], ["H", ["劝其自首争取宽大，尽力帮打官司","Urge surrender, help with defense","تشویق به تسلیم، کمک در دفاع","자수를 권유하고 변호를 돕기 위해 최선을 다함"]], ["R", ["移交案件避嫌，研究他利用的金融漏洞","Transfer case, study the financial exploit","انتقال پرونده، مطالعه سوءاستفاده مالی","사건 이관 후 그가 이용한 금융 취약점 연구"]] ],
+            [ ["获得不受监管的巨额基金，面对极度贫困犯罪社区：","Huge unregulated fund for a poor, high-crime community:","صندوق بزرگ بدون نظارت برای یک جامعه فقیر و پرجرم:","빈곤하고 범죄율이 높은 지역을 위한 거액의 자금을 얻음:"],
+              ["H", ["直接买食物挨家分发，解决饿死危机","Buy food directly, solve starvation","خرید مستقیم غذا، حل مشکل گرسنگی","식량을 사서 직접 나눠주며 당장의 굶주림 해결"]], ["G", ["武装训练青年，教他们向高层夺权","Arm the youth to overthrow oppressors","تسلیح جوانان برای سرنگونی ظالمان","청년들을 무장시키고 억압자들에게 맞서도록 교육"]], ["S", ["挑选几个天才儿童倾注资源培养成精英","Focus all resources to train a few elites","تمرکز تمام منابع برای آموزش چند نخبه","소수의 천재에게 모든 자원을 집중하여 엘리트로 양성"]], ["R", ["建研究所调查贫困根源，发布白皮书","Build institute to study roots of poverty","ساخت موسسه برای مطالعه ریشه‌های فقر","연구소를 세워 빈곤의 근본 원인 조사 및 백서 발간"]] ],
+            [ ["残忍霸凌过你的人遭遇变故，一无所有跪求原谅。","Your cruel bully, now ruined, begs for your forgiveness.","قلدر بی‌رحم شما، اکنون ویران شده، برای بخشش التماس می‌کند.","당신을 잔인하게 괴롭혔던 자가 몰락하여 무릎 꿇고 용서를 빔."],
+              ["G", ["拒绝原谅，恶就是恶，冷眼旁观","Refuse, evil is evil, watch them suffer","رد کردن، شر شر است، تماشای رنج آنها","용서 거부, 악은 악일 뿐, 냉정하게 지켜봄"]], ["S", ["表面原谅，趁机利用他变成廉价棋子","Pretend to forgive, use as cheap pawn","تظاهر به بخشش، استفاده به عنوان مهره ارزان","겉으로만 용서하고 그를 값싼 체스 말로 이용"]], ["H", ["真正原谅并伸出援手，拉他一把","Truly forgive and extend a helping hand","واقعاً بخشیدن و دراز کردن دست یاری","진심으로 용서하고 도움의 손길을 내밈"]], ["R", ["无情感波澜，观察创伤如何重塑他的人格","No emotion, observe how trauma reshapes them","بدون احساس، مشاهده چگونگی تغییر آنها توسط تروما","감정 동요 없이 트라우마가 그의 인격을 어떻게 재구성하는지 관찰"]] ],
+
+            // M2: Cognitive Closure
+            [ ["研究极其反感、不道德的黑魔法理论。","Researching a highly immoral dark magic theory.","تحقیق در مورد یک نظریه جادوی سیاه بسیار غیراخلاقی.","극도로 혐오스럽고 비도덕적인 흑마법 이론을 연구하게 됨."],
+              ["G", ["带批判意识去彻底驳倒它","Study to vehemently debunk it","مطالعه برای رد کردن شدید آن","철저히 반박하기 위해 비판적 의식을 가지고 연구"]], ["R", ["若逻辑自洽，会沉浸在精妙中","Immerse in its logic if self-consistent","غوطه‌ور شدن در منطق آن اگر سازگار باشد","논리가 일관된다면 그 정교함에 몰입함"]], ["S", ["重点研究反制手段以保护自己","Study countermeasures for defense","مطالعه اقدامات متقابل برای دفاع شخصی","자신을 보호하기 위한 대응책 연구에 집중"]], ["H", ["探究其产生的悲惨历史背景","Investigate its tragic history","بررسی زمینه تاریخی غم‌انگیز آن","그것이 생겨난 비극적 역사적 배경 탐구"]] ],
+            [ ["导师布置了一个可能根本无解的开放性课题。","Open-ended assignment that might be entirely unsolvable.","تکلیف باز که ممکن است کاملاً غیرقابل حل باشد.","해답이 없을지도 모르는 개방형 과제를 받음."],
+              ["R", ["兴奋，试图发明全新逻辑语言重新定义问题","Excited, invent new logic to redefine it","هیجان‌زده، اختراع منطق جدید برای بازتعریف آن","흥분함, 완전히 새로운 논리 언어를 발명해 문제 재정의 시도"]], ["S", ["分析导师偏好，投其所好拿高分","Analyze professor's preference for high grade","تجزیه و تحلیل ترجیح استاد برای نمره بالا","교수의 취향을 분석해 높은 점수를 받기 위해 맞춤형 전략 구사"]], ["H", ["召集团队头脑风暴，产出阶段性成果","Brainstorm with team for milestone results","طوفان فکری با تیم برای نتایج مرحله‌ای","팀원들을 모아 브레인스토밍, 단계적인 성과 창출"]], ["G", ["凭直觉选定方向，死磕到底强行撞开门","Pick a gut direction, force it through","انتخاب جهت با غریزه، فشار برای عبور","직감으로 방향을 정하고, 끝까지 파고들어 억지로라도 돌파구 마련"]] ],
+            [ ["你发现最权威恩师的核心定律有致命漏洞。","You find a fatal flaw in your mentor's core theory.","شما یک نقص کشنده در نظریه اصلی مربی خود پیدا می‌کنید.","가장 권위 있는 은사의 핵심 이론에서 치명적인 결함을 발견함."],
+              ["R", ["立刻发表严谨论文指出漏洞","Publish paper exposing the flaw immediately","انتشار فوری مقاله برای افشای نقص","즉시 결함을 지적하는 엄밀한 논문 발표"]], ["H", ["私下交给他，让他以'自我修正'名义发表","Give it privately so he can 'self-correct'","دادن خصوصی برای اینکه بتواند 'خود را اصلاح کند'","명예를 위해 사적으로 전달하여 '자체 수정' 형식으로 발표하게 함"]], ["G", ["课上当众指出，不能让谬误误导大众","Call it out publicly to stop misinformation","فراخوانی علنی برای توقف اطلاعات غلط","수업 중 공개적으로 지적, 대중이 오도되는 것을 막음"]], ["S", ["隐藏漏洞，作为独享认知信息差未来套利","Hide it to exploit the information gap later","پنهان کردن آن برای سوءاستفاده از شکاف اطلاعاتی","결함을 숨기고 나만의 정보 격차로 만들어 미래에 이익 창출"]] ],
+            [ ["偶然截获对手核心加密通讯。","Intercepted rival's encrypted core communication.","رهگیری ارتباطات رمزگذاری شده رقیب.","경쟁자의 핵심 암호 통신을 우연히 가로챔."],
+              ["S", ["破解并使用，信息差就是实力","Crack and use, info is power","رمزگشایی و استفاده، اطلاعات قدرت است","해독하여 사용, 정보 격차가 곧 실력"]], ["G", ["拒绝偷看，要求光明正大决胜负","Refuse to look, demand fair fight","امتناع از نگاه کردن، تقاضای مبارزه عادلانه","훔쳐보기를 거부하고 정정당당한 승부 요구"]], ["R", ["不看内容，只研究其加密算法","Ignore content, study encryption","نادیده گرفتن محتوا، مطالعه رمزنگاری","내용은 안 보고 암호화 알고리즘만 연구"]], ["H", ["交还并指出漏洞，提议重新竞赛","Return it, point out flaw, suggest restart","بازگرداندن، اشاره به نقص، پیشنهاد شروع مجدد","돌려주고 취약점을 알려준 뒤 공정한 재경기 제안"]] ],
+            [ ["极其精准的预言显示你将遭遇重大失败。","Precise prophecy predicts your inevitable major failure.","پیشگویی دقیق، شکست بزرگ اجتناب‌ناپذیر شما را پیش‌بینی می‌کند.","극도로 정확한 예언이 당신의 피할 수 없는 큰 실패를 보여줌."],
+              ["G", ["发誓用尽手段逆天改命","Vow to defy fate at all costs","عهد به مبارزه با سرنوشت به هر قیمتی","모든 수단을 동원해 운명을 바꾸겠다고 맹세"]], ["S", ["暗中计算变量，布下安全防线","Calculate variables, prepare safety nets","محاسبه متغیرها، آماده‌سازی شبکه‌های ایمنی","변수를 계산하고 안전 방어선 구축"]], ["R", ["解构预言系统寻找量子漏洞","Deconstruct prophecy system for flaws","ساختارشکنی سیستم پیشگویی برای یافتن نقص","예언 سیستم 자체를 해체하여 양자적 결함 탐색"]], ["H", ["接受无常，告知亲友共渡难关","Accept it, tell family to brace together","پذیرش آن، اطلاع به خانواده برای مقاومت با هم","무상함을 받아들이고 가족에게 알려 함께 극복 준비"]] ],
+            [ ["被迫为极度反感的观点辩护。","Forced to debate for a stance you deeply despise.","مجبور به دفاع از موضعی که عمیقاً از آن متنفرید.","극도로 혐오하는 주장을 옹호하는 토론을 해야 함."],
+              ["G", ["罢赛，拒绝精神分裂","Quit, refuse cognitive dissonance","انصراف، امتناع از ناهماهنگی شناختی","대회 포기, 정신적 분열 거부"]], ["R", ["化身魔鬼代言人，享受逻辑推演","Play devil's advocate, enjoy the logic","بازی در نقش وکیل مدافع شیطان، لذت بردن از منطق","악마의 변호인이 되어 논리적 추론을 즐김"]], ["S", ["不择手段找漏洞击溃对方，只想赢","Use any tactic to win, disregard beliefs","استفاده از هر تاکتیکی برای پیروزی، نادیده گرفتن باورها","수단방법 가리지 않고 이기는 데만 집중"]], ["H", ["寻找其中一丝合理的成分打动评委","Find a sliver of reason to sway judges","یافتن اندکی دلیل برای متقاعد کردن داوران","심사위원을 감동시킬 일말의 타당한 요소 찾기"]] ],
+            [ ["如果你可以选择一种终极的学习模式：","If you could choose an ultimate learning mode:","اگر می‌توانستید یک حالت یادگیری نهایی را انتخاب کنید:","궁극의 학습 방식을 선택할 수 있다면:"],
+              ["S", ["成为极狭窄领域的绝对霸主，无人能挑战","Absolute dominance in a niche to be unchallenged","تسلط مطلق در یک زمینه خاص برای بی‌رقیب بودن","도전받지 않는 특정 분야의 절대적 지배자"]], ["R", ["涉猎所有学科，寻找交叉点构建世界模型","Study all fields to build a universal model","مطالعه همه زمینه‌ها برای ساخت یک مدل جهانی","모든 학문을 섭렵하여 융합적인 세계 모델 구축"]], ["G", ["掌握所有危机中能当剑使的实战技能","Master practical skills to use as weapons in crises","تسلط بر مهارت‌های عملی برای استفاده در بحران‌ها","위기 상황에서 무기처럼 쓸 수 있는 실전 기술 마스터"]], ["H", ["学习带来疗愈和维持社会运转的实用技术","Learn healing/maintenance tech to serve society","یادگیری تکنولوژی شفا/نگهداری برای خدمت به جامعه","사회를 치유하고 유지하는 데 기여하는 실용 기술 학습"]] ],
+            [ ["进入浩如烟海、毫无目录的古老档案馆找线索：","Entering a vast, catalog-less archive for a clue:","ورود به یک آرشیو وسیع و بدون فهرست برای یافتن سرنخ:","목록도 없는 방대한 고대 문서 보관소에서 단서를 찾을 때:"],
+              ["G", ["直奔看起来最核心、最危险的区域","Rush to the most central, dangerous area","شتاب به مرکزی‌ترین و خطرناک‌ترین منطقه","가장 핵심적이고 위험해 보이는 구역으로 직행"]], ["S", ["寻找禁书区或锁上的柜子","Look for restricted sections or locked cabinets","جستجوی بخش‌های ممنوعه یا کمدهای قفل شده","금서 구역이나 잠긴 캐비닛부터 찾기"]], ["R", ["随手翻阅，沉迷于极其有趣的边缘知识","Get distracted by fascinating random trivia","حواس‌پرتی با اطلاعات جزئی جالب و تصادفی","손에 잡히는 대로 읽다가 흥미로운 주변 지식에 빠짐"]], ["H", ["建立简单分类法，稳扎稳打推进搜索","Build a basic sorting system and search methodically","ساخت یک سیستم مرتب‌سازی پایه و جستجوی سیستماتیک","간단한 분류법을 만들어 차근차근 검색 진행"]] ],
+            [ ["挖掘出散发强大能量但用途不明的远古造物。","Excavated a powerful artifact of unknown purpose.","کشف یک مصنوع باستانی قدرتمند با هدف نامعلوم.","강력한 에너지를 뿜지만 용도를 알 수 없는 고대 유물을 발굴함."],
+              ["S", ["封锁消息偷偷运走，绝不让外人染指","Secretly secure it, let no outsiders touch it","تامین امنیت مخفیانه، اجازه ندهید غریبه‌ها آن را لمس کنند","비밀리에 운반하여 외부인의 접근을 차단"]], ["G", ["穿好防护服强行施放魔咒试探边界","Force test it with spells wearing hazmat","آزمایش اجباری با طلسم با لباس محافظ","방호복을 입고 마법을 강제로 걸어 한계를 시험"]], ["R", ["绝对不碰，日以继夜只做客体化数据分析","Never touch it, only run objective data analysis","هرگز آن را لمس نکنید، فقط تحلیل داده‌های عینی انجام دهید","절대 만지지 않고 밤낮으로 객관적인 데이터 분석만 진행"]], ["H", ["立即上报最高机构派防爆小队接管","Report to authorities for a bomb squad","گزارش به مقامات برای تیم خنثی‌سازی بمب","즉시 최고 기관에 보고하여 폭발물 처리반이 인계하게 함"]] ],
+            [ ["假设已掌握世间所有知识，接下来最想做：","If you mastered all knowledge, what next?","اگر بر تمام دانش‌ها مسلط می‌شدید، بعد چه می‌کردید؟","세상의 모든 지식을 통달했다면, 다음으로 하고 싶은 일은:"],
+              ["G", ["彻底消除世间压迫，成为正义守护者","End all oppression, become guardian of justice","پایان دادن به تمام ظلم‌ها، تبدیل شدن به نگهبان عدالت","세상의 모든 억압을 없애고 정의의 수호자가 됨"]], ["S", ["建立绝对完美的规则确保自己长治久安","Build perfect rules to ensure your eternal rule","ساخت قوانین بی‌نقص برای تضمین حکومت ابدی خود","나의 영구적인 지배를 보장하는 완벽한 규칙 수립"]], ["H", ["编纂无偏见百科全书无偿留给后人","Compile unbiased encyclopedia for posterity","تدوین دایره‌المعارف بی‌طرفانه برای آیندگان","후세에게 대가 없이 남길 편견 없는 백과사전 편찬"]], ["R", ["感到巨大的空虚，生命失去探索意义","Feel immense emptiness; exploration loses meaning","احساس پوچی عمیق؛ کاوش معنای خود را از دست می‌دهد","거대한 공허함을 느낌, 삶의 탐구 의미 상실"]] ],
+
+            // M3: Stress & Dark Triad
+            [ ["察觉核心团队因高层错误即将崩盘。","Notice core team is collapsing due to upper management.","متوجه فروپاشی تیم اصلی به دلیل مدیریت ارشد می‌شوید.","고위층의 실수로 핵심 팀이 붕괴 직전임을 깨달음."],
+              ["S", ["转移资产，优雅跳船","Transfer assets, jump ship elegantly","انتقال دارایی‌ها، ترک هوشمندانه کشتی","자산 빼돌리고 우아하게 침몰선 탈출"]], ["H", ["默默加班修补，缓冲底层伤害","Work quietly to buffer damage for juniors","کار بی‌صدا برای کاهش آسیب به افراد پایین‌رده","묵묵히 야근하며 결함 수정, 아랫사람들의 피해 완충"]], ["R", ["窃取核心档案，视作衰退样本","Steal archives, view as a decay sample","سرقت آرشیوها، مشاهده به عنوان نمونه زوال","핵심 파일 빼내어 붕괴 표본으로 삼음"]], ["G", ["公开揭露，加速崩盘也无惧","Expose publicly, unafraid of acceleration","افشای علنی، نترسیدن از تسریع فروپاشی","공개 폭로, 붕괴가 가속되더라도 두렵지 않음"]] ],
+            [ ["掌握了同窗竞争对手足以丧失资格的隐私把柄。","Hold a secret that disqualifies your rival friend.","رازی در دست دارید که رقیب دوستانه شما را رد صلاحیت می‌کند.","경쟁 중인 동기의 자격을 박탈할 수 있는 사생활 약점을 잡음."],
+              ["S", ["隐晦引导考官注意到，动用杠杆赢","Subtly hint it to examiners to win","اشاره ظریف به داوران برای پیروزی","심사관이 눈치채도록 은근히 유도, 지렛대 활용"]], ["G", ["绝对保密，必须在公平规则下凭实力赢","Keep secret, must win fairly on merit","حفظ راز، باید عادلانه و بر اساس شایستگی پیروز شد","절대 비밀 유지, 공정한 규칙 아래 실력으로 이겨야 함"]], ["R", ["无视把柄，重构答辩逻辑在更高维度碾压","Ignore it, crush them with superior logic","نادیده گرفتن آن، شکست دادن با منطق برتر","약점 무시, 더 차원 높은 논리로 압살"]], ["H", ["纠结，若他更需要甚至考虑退出或双赢","Torn, might quit or seek win-win if he needs it more","مردد، ممکن است انصراف دهد یا به دنبال برد-برد باشد","고민함, 그가 더 간절하다면 양보나 윈윈 고려"]] ],
+            [ ["直属上级窃取你成果高升并掌握生杀大权。","Boss steals your work, gets promoted, now controls you.","رئیس کار شما را می‌دزدد، ترفیع می‌گیرد، اکنون شما را کنترل می‌کند.","직속 상사가 내 성과를 훔쳐 승진하고 내 생사여탈권을 쥠."],
+              ["G", ["越级实名举报，当面对峙","Report over his head, confront openly","گزارش به مقامات بالاتر، رویارویی علنی","실명으로 상급 기관에 고발, 대면 항의"]], ["S", ["忍辱负重收集证据，等他最依赖你时毁灭他","Gather dirt, destroy him when he needs you most","جمع‌آوری مدرک، نابودی او وقتی به شما نیاز دارد","증거 모으며 인내하다 그가 날 가장 의지할 때 파멸시킴"]], ["R", ["开发迭代版本，让他的窃取成果瞬间贬值","Develop v2.0, rendering his stolen work obsolete","توسعه نسخه جدید، بی‌ارزش کردن کار سرقت شده","업그레이드 버전 개발해 그의 도둑질 성과를 휴지조각으로 만듦"]], ["H", ["默默承受，但内心筑起高墙不再信任","Endure silently, but build walls of distrust","تحمل بی‌صدا، اما ساخت دیوارهای بی‌اعتمادی","묵묵히 견디되 마음의 벽을 쌓고 다신 안 믿음"]] ],
+            [ ["匿名信指五人核心圈内有叛徒出卖你。","Anonymous letter says 1 of 5 closest friends is a traitor.","نامه ناشناس می‌گوید ۱ نفر از ۵ دوست صمیمی شما خائن است.","익명 편지: 가장 친한 5명 중 1명이 배신자라고 함."],
+              ["S", ["立刻切断五人信息访问权，只信自己","Cut their access immediately, trust no one","قطع دسترسی فوری آنها، بی‌اعتمادی به همه","즉시 5명의 정보 접근권 차단, 자신만 믿음"]], ["G", ["召集五人当面对质，要求叛徒站出来","Confront all 5, demand traitor steps up","رویارویی با هر ۵ نفر، تقاضای معرفی خائن","5명을 소집해 대면하고 배신자가 나서기를 요구"]], ["H", ["维持表面好，暗中提高警惕等待破绽","Maintain facade, stay alert for flaws","حفظ ظاهر، هوشیار ماندن برای یافتن نقص","겉으로는 친하게 지내되 암암리에 경계하며 허점 기다림"]], ["R", ["布下捕鼠夹透露不同假秘密锁定叛徒","Set traps with different fake secrets to catch them","تله‌گذاری با رازهای جعلی مختلف برای دستگیری","각기 دیگر 가짜 비밀을 흘려 배신자 색출(쥐덫)"]] ],
+            [ ["在极重要场合犯下常识错误，引死对头大笑。","Make a stupid mistake at a major event, rivals laugh.","اشتباه احمقانه‌ای در یک رویداد مهم انجام می‌دهید، رقبا می‌خندند.","매우 중요한 자리에서 상식적인 실수를 하여 라이벌이 폭소함."],
+              ["G", ["羞愤交加，言语反击试图用气势压过","Furious, attack back verbally to dominate","خشمگین، حمله کلامی برای تسلط","수치심과 분노로 반격하여 기선 제압 시도"]], ["R", ["抛冷幽默引向深奥领域，用智力掩盖","Use dry humor/obscure trivia to flex intellect","استفاده از طنز تلخ/اطلاعات مبهم برای نشان دادن هوش","고차원적 유머나 심오한 주제로 화제를 돌려 지적 우위 과시"]], ["H", ["诚恳认错甚至自嘲，只要不伤人品就行","Admit it sincerely and self-deprecate","اعتراف صادقانه و خودتخریبی","진솔하게 인정하고 자조함, 인품 평가만 괜찮다면 OK"]], ["S", ["波澜不惊飞速找替罪羊（暗示设备/资料有误）","Stay calm, swiftly find a scapegoat (blame equipment)","آرام ماندن، یافتن سریع یک قربانی (مقصر دانستن تجهیزات)","태연하게 희생양을 찾아 책임 전가(장비나 자료 탓)"]] ],
+            [ ["获得24小时不可被制裁的绝对权力：","Granted 24 hours of absolute, unsanctioned power:","اعطای ۲۴ ساعت قدرت مطلق و بدون تحریم:","24시간 동안 절대적인 무소불위의 권력을 얻음:"],
+              ["G", ["颁布强制法令强行缔造“正确”乌托邦","Force a 'correct' utopia via strict decrees","تحمیل یک آرمان‌شهر 'درست' از طریق فرمان‌های سختگیرانه","강제 법령을 통해 내가 옳다고 믿는 유토피아 강제로 건설"]], ["H", ["克制不用，深知不受限的权力会腐蚀心智","Refrain from using it, knowing power corrupts","امتناع از استفاده، با علم به اینکه قدرت فاسد می‌کند","절대 권력의 부패를 알기에 사용 자제"]], ["S", ["精准利用拔除政敌，巩固长期利益","Surgically remove rivals to secure long-term gains","حذف دقیق رقبا برای تضمین دستاوردهای بلندمدت","정적을 제거하고 장기적 이익을 공고히 하는 데 정밀하게 활용"]], ["R", ["当成社会实验，观察人在绝对服从下的扭曲","Treat as social experiment on absolute obedience","برخورد به عنوان آزمایش اجتماعی در مورد اطاعت مطلق","절대 복종 상황에서의 인간 심리 왜곡을 관찰하는 사회 실험으로 여김"]] ],
+            [ ["阻止毁灭城市的唯一方案是毁掉一个无辜家庭。","Saving the city requires destroying one innocent family.","نجات شهر نیازمند نابودی یک خانواده بی‌گناه است.","도시 멸망을 막을 유일한 방법이 한 무고한 가정을 파괴하는 것임."],
+              ["S", ["毫不犹豫执行，一城大于一家","Execute without hesitation, city > family","اجرا بدون تردید، شهر > خانواده","망설임 없이 실행, 도시가 한 가정보다 큼"]], ["H", ["执行，背负创伤余生暗中补偿","Execute, carry trauma, compensate anonymously","اجرا، تحمل ضربه روحی، جبران ناشناس","실행하되 평생 트라우마를 안고 몰래 보상"]], ["G", ["拒绝二选一，冒死强寻完美方案","Refuse binary choice, risk death for fix","امتناع از انتخاب دوگانه، خطر مرگ برای راه‌حل کامل","양자택일 거부, 목숨 걸고 완벽한 해결책 모색"]], ["R", ["跳出伦理，尝试重写微观规则","Ignore ethics, try rewriting micro-physics","نادیده گرفتن اخلاق، تلاش برای بازنویسی فیزیک خرد","윤리에서 벗어나 미시 물리학적 규칙 재작성 시도"]] ],
+            [ ["即将离任巅峰组织，必须选拔接班人：","Leaving your peak organization, must choose successor:","ترک سازمان در اوج خود، باید جانشین انتخاب کنید:","최고의 조직에서 퇴임하며 후계자를 선택해야 함:"],
+              ["G", ["选能力最强最像你的人，哪怕野心难驾驭","Pick the strongest mini-me, even if wildly ambitious","انتخاب قوی‌ترین فرد شبیه خود، حتی اگر بسیار جاه‌طلب باشد","가장 유능하고 나와 닮은 사람 선택, 야망이 통제 안 돼도 무방"]], ["S", ["选平庸但绝对忠诚的人，确保你能在幕后掌权","Pick loyal mediocrity so you rule from shadows","انتخاب فردی متوسط اما وفادار تا از سایه‌ها حکومت کنید","무능하더라도 절대 충성하는 사람을 뽑아 막후에서 통치"]], ["H", ["建严收集体决策制度，削弱首领绝对权力","Build a collective committee, stripping absolute power","ایجاد یک کمیته جمعی، سلب قدرت مطلق","집단 의사결정 제도를 구축하여 1인의 절대 권력 약화"]], ["R", ["选思维最独特不合群的人看会产生什么变量","Pick the weirdest outlier just to see what happens","انتخاب عجیب‌ترین فرد فقط برای دیدن نتیجه","가장 특이하고 아웃사이더인 사람을 뽑아 어떤 변수가 생길지 관찰"]] ],
+            [ ["因为你的微小失误毁了重要成果，还没人发现：","Your tiny mistake ruined a big project, no one knows yet:","اشتباه کوچک شما یک پروژه بزرگ را ویران کرد، هنوز کسی نمی‌داند:","나의 작은 실수로 중요한 성과가 망가졌고 아직 아무도 모름:"],
+              ["G", ["立刻站出来承认，带着谎言活比死难受","Confess immediately; living a lie is worse than death","اعتراف فوری؛ زندگی با دروغ بدتر از مرگ است","즉시 나서서 인정, 거짓말을 안고 사는 건 죽기보다 싫음"]], ["S", ["迅速销毁一切指向你的痕迹，理性止损","Destroy all evidence pointing to you; rational damage control","نابود کردن تمام شواهدی که به شما اشاره دارد؛ کنترل منطقی آسیب","나를 향한 모든 증거를 신속히 인멸, 이성적인 손절"]], ["H", ["疯狂熬夜暗中弥补，补不回来就加倍对团队好","Pull all-nighters to fix it secretly or overcompensate later","شب‌بیداری برای اصلاح مخفیانه یا جبران بیش از حد در آینده","밤을 새워 몰래 수습 시도, 안 되면 팀원들에게 다른 방식으로 두 배로 잘함"]], ["R", ["详细记录毁灭过程，发现意想不到的副反应数据","Document the ruin process, finding unexpected data anomaly","مستندسازی فرآیند خرابی، یافتن ناهنجاری داده‌های غیرمنتظره","파괴 과정을 상세히 기록하여 예상치 못한 부작용 데이터 발견"]] ],
+            [ ["生存考核中发现保送前三的关键线索（五人队）：","Found a clue guaranteeing top 3 survival (team of 5):","یافتن سرنخی که بقای ۳ نفر اول را تضمین می‌کند (تیم ۵ نفره):","생존 평가에서 선착순 3명 합격을 보장하는 핵심 단서 발견 (팀원 5명):"],
+              ["S", ["隐瞒线索，确保自己和最信任的两人过关，抛弃另外俩","Hide it, secure spots for yourself + 2 best friends, ditch rest","پنهان کردن، تضمین جایگاه برای خود + ۲ دوست صمیمی، رها کردن بقیه","단서를 숨기고 나와 가장 믿는 두 명의 합격 보장, 나머지 둘은 버림"]], ["H", ["必须向全队公开，要么一起过要么一起死","Share it with all; survive together or fail together","به اشتراک گذاشتن با همه؛ با هم زنده بمانید یا با هم شکست بخورید","팀 전원에게 공개, 다 같이 합격하거나 다 같이 탈락하거나"]], ["G", ["独自带着线索冲终点，强者凭实力赢是自然法则","Rush to end alone; strong winning is natural law","تنها به پایان عجله کنید؛ پیروزی قوی قانون طبیعت است","혼자 단서를 들고 결승점으로 돌진, 강자가 실력으로 이기는 것이 순리"]], ["R", ["试图利用线索反向破译考核系统，修改“三人”规则","Try reverse-engineering the system to change the '3' rule","تلاش برای مهندسی معکوس سیستم برای تغییر قانون '۳'","단서를 이용해 평가 시스템을 역추적하여 '3명' 규칙 자체의 수정 시도"]] ],
+
+            // M4: Existentialism & Micro-behavior
+            [ ["不了解你的人在公开场合带有偏见地严厉批评你。","A stranger harshly & unfairly criticizes your life choices publicly.","یک غریبه به شدت و ناعادلانه از انتخاب‌های زندگی شما در ملاء عام انتقاد می‌کند.","당신을 잘 모르는 사람이 공개적인 자리에서 편견을 가지고 가혹하게 비판함."],
+              ["G", ["怒不可遏当面回击要求道歉，尊严不可侵犯","Furiously strike back demanding apology; dignity is sacred","حمله متقابل خشمگینانه با درخواست عذرخواهی؛ عزت مقدس است","분노하여 대면 반격 및 사과 요구, 존엄성 침해 불가"]], ["S", ["表面微笑，暗中调查把柄寻找机会毁掉他","Smile, secretly investigate dirt to destroy them later","لبخند زدن، بررسی مخفیانه نقاط ضعف برای نابودی آنها در آینده","겉으로는 웃고, 암암리에 약점을 조사해 훗날 철저히 파멸시킬 기회 모색"]], ["H", ["默默无视，找懂你的亲密朋友寻求情感安慰","Ignore it, seek emotional comfort from close friends","نادیده گرفتن، جستجوی آرامش عاطفی از دوستان نزدیک","묵묵히 무시하고 나를 이해하는 친한 친구에게 감정적 위로를 구함"]], ["R", ["剥离情绪，冷酷分析批评中是否有1%的客观事实","Detach emotion, coldly analyze if 1% is objectively true","جداسازی احساسات، تحلیل سرد برای یافتن ۱٪ حقیقت عینی","감정을 배제하고, 비판 속에 1%의 객관적 사실이라도 있는지 냉철하게 분석"]] ],
+            [ ["繁琐无聊作业，有不会被抓的作弊捷径。","Tedious homework, uncatchable cheat available.","تکالیف خسته‌کننده، تقلب غیرقابل کشف موجود است.","지루한 과제, 안 들키는 완벽한 치트키 발견."],
+              ["H", ["拒绝使用，诚实是底线","Refuse, honesty is the baseline","امتناع، صداقت خط پایه است","사용 거부, 정직이 마지노선"]], ["G", ["找教授抗议作业无理，拒写","Protest to professor, refuse to do it","اعتراض به استاد، امتناع از انجام آن","교수에게 과제 부당함 항의 및 작성 거부"]], ["S", ["毫不犹豫使用，省时间做正事","Use immediately, save time for real goals","استفاده فوری، صرفه‌جویی در زمان برای اهداف واقعی","망설임 없이 사용, 시간 아껴서 진짜 목표에 투자"]], ["R", ["边用边改良捷径算法","Use it while optimizing the cheat algorithm","استفاده همزمان با بهینه‌سازی الگوریتم تقلب","사용하면서 치트 알고리즘 개량 시도"]] ],
+            [ ["小组作业划水偷懒的人私下求你帮掩盖让他拿满分。","Lazy groupmate begs you to cover for them to get full marks.","هم‌گروهی تنبل به شما التماس می‌کند که او را پوشش دهید تا نمره کامل بگیرد.","조별 과제 무임승차자가 만점을 받게 해달라고 사적으로 부탁함."],
+              ["S", ["答应他，但暗示他欠你巨大的人情未来讨回","Agree, hinting they owe you a massive favor to cash later","موافقت، با اشاره به اینکه یک لطف بزرگ به شما بدهکارند","동의하지만, 나중에갚아야 할 큰 빚을 졌다는 것을 암시함"]], ["H", ["帮掩盖维系和气，私下温和劝诫下次不要这样","Cover to keep peace, gently warn them privately for next time","پوشش برای حفظ صلح، هشدار ملایم خصوصی برای دفعه بعد","화합을 위해 덮어주고, 다음엔 그러지 말라고 개인적으로 부드럽게 타이름"]], ["G", ["果断拒绝并报告，不劳而获是极大不公","Refuse flatly and report them; freeloading is unjust","امتناع قاطعانه و گزارش آنها؛ مفت‌خوری ناعادلانه است","단호히 거절하고 보고함, 무임승차는 심각한 불공정"]], ["R", ["根本不在乎，只要没拉低我得分就毫无意义","Don't care at all; meaningless as long as my grade is safe","전혀 신경 안 씀, 내 점수만 안 깎이면 내 알 바 아님"]] ],
+            [ ["被迫参加长达三小时毫无意义的集会。","Forced into a 3-hour utterly meaningless assembly.","مجبور به حضور در یک مجمع ۳ ساعته کاملا بی‌معنی.","3시간짜리 아무 의미 없는 강제 집회에 참석해야 함."],
+              ["G", ["找借口直接离场，不浪费生命","Make excuse and leave, won't waste life","بهانه‌تراشی و ترک، عمر را تلف نمی‌کنم","핑계 대고 바로 퇴장, 내 인생 낭비 불가"]], ["R", ["脑内推演理论，彻底屏蔽外界","Retreat to mind palace, block out world","عقب‌نشینی به قصر ذهن، مسدود کردن دنیای بیرون","뇌내 이론 시뮬레이션, 외부 세계 완벽 차단"]], ["H", ["装出专注样子，尊重演讲者","Pretend to focus out of respect","تظاهر به تمرکز از روی احترام","집중하는 척이라도 함, 연설자에 대한 예의"]], ["S", ["观察全场人微表情，分析权力结构","Observe micro-expressions for power dynamics","مشاهده ریزحالت‌ها برای پویایی قدرت","참석자들 미세 표정 관찰하며 권력 구조 분석"]] ],
+            [ ["发现自己核心存在不可逆缺陷，终生无法释放某高阶魔咒。","Discover irreversible core defect preventing a high-tier spell forever.","کشف نقص اصلی غیرقابل برگشت که برای همیشه مانع یک طلسم سطح بالا می‌شود.","핵심적인 영구 결함을 발견하여 특정 고급 마법을 평생 쓸 수 없게 됨."],
+              ["H", ["平和接受局限，把精力集中在能做好的事上","Accept limits peacefully, focus on what you can do well","پذیرش آرام محدودیت‌ها، تمرکز بر آنچه می‌توانید خوب انجام دهید","한계를 평화롭게 받아들이고, 잘할 수 있는 일에 집중함"]], ["G", ["疯狂地狱特训，坚信意志和汗水能冲破物理极限","Insane hell-training, believing sheer will breaks physics","تمرینات جهنمی دیوانه‌وار، با اعتقاد به اینکه اراده فیزیک را می‌شکند","의지와 땀으로 물리적 한계를 깰 수 있다고 믿고 지옥 훈련 돌입"]], ["S", ["严密封锁机密，去寻找威力更大的隐秘黑魔法平替","Seal the secret, seek a deadlier dark magic substitute","پنهان کردن راز، جستجوی جایگزین جادوی سیاه کشنده‌تر","기밀로 부치고, 더 강력하고 은밀한 흑마법을 찾아 완벽한 대체재로 삼음"]], ["R", ["极兴奋，将自己当实验样本研究排斥底层机制","Thrilled! Use self as test subject to study rejection mechanics","هیجان‌زده! استفاده از خود به عنوان نمونه آزمایش برای مطالعه مکانیک طرد","매우 흥분함, 자신을 실험체로 삼아 결함 배척의 기저 메커니즘 연구"]] ],
+            [ ["无人监督的完整一周假期，默认状态：","A completely unsupervised, chore-free week off. Default state:","یک هفته تعطیلات کاملا بدون نظارت و بدون کار. حالت پیش‌فرض:","아무런 간섭 없는 온전한 1주일 휴가, 기본 상태는:"],
+              ["R", ["陷进冷门爱好没日没夜研究，忘记吃饭","Dive blindly into obscure hobby, forgetting to eat","غوطه‌ور شدن کورکورانه در سرگرمی مبهم، فراموش کردن غذا خوردن","마이너한 취미에 밤낮없이 빠져들어 밥 먹는 것도 잊음"]], ["H", ["做饭睡觉，花大量时间陪伴家人宠物","Cook, sleep, spend huge time with family/pets","آشپزی، خواب، صرف زمان زیاد با خانواده/حیوانات خانگی","요리하고 푹 자며, 가족이나 반려동물과 많은 시간을 보냄"]], ["S", ["悄悄定战略自学核心课，正是弯道超车好时机","Secretly strategize & self-study; time to overtake others","استراتژی مخفیانه و خودآموزی؛ زمان سبقت از دیگران","조용히 전략을 짜고 핵심 과목 독학, 남들 쉴 때가 추월할 적기"]], ["G", ["待在家会窒息，立刻找一场哪怕危险的冒险","Suffocate at home, immediately seek risky adventure","خفگی در خانه، جستجوی فوری ماجراجویی خطرناک","집에 있으면 숨 막힘, 위험하더라도 당장 모험을 떠남"]] ],
+            [ ["弄丢了价值很低但陪伴多年、充满回忆的随身物品。","Lost a worthless but heavily sentimental item of many years.","گم کردن یک وسیله بی‌ارزش اما بسیار احساسی مربوط به سال‌ها پیش.","가치는 낮지만 수년간 함께해 추억이 가득한 물건을 잃어버림."],
+              ["H", ["深深悲伤失落，失去生命历史锚点，久久无法释怀","Deeply devastated, mourning the lost historical anchor","شدیدا ویران شده، سوگواری برای لنگر تاریخی گمشده","인생의 중요한 닻을 잃은 듯 깊은 슬픔과 상실감에 빠져 오래 못 벗어남"]], ["G", ["屋子翻底朝天不眠不休找，不允许自己放弃","Tear house apart sleeplessly; refusing to 'give up'","زیر و رو کردن خانه بدون خواب؛ امتناع از 'تسلیم شدن'","집을 뒤집어엎고 밤새 찾음, 스스로 포기하는 것을 용납 못 함"]], ["S", ["短暂烦躁后压制情绪，转身买更贵更好的替代品","Briefly annoyed, suppress it, go buy a pricier upgrade","کمی عصبانیت، سرکوب آن، خرید یک ارتقاء گران‌تر","잠시 짜증 내다 감정을 억누르고, 더 비싸고 좋은 대체품 구매"]], ["R", ["分析自己为何会对死物产生如此强烈情感依赖","Analyze *why* you formed such strong emotional attachment","تحلیل اینکه *چرا* چنین وابستگی عاطفی قوی ایجاد کرده‌اید","생명 없는 물건에 왜 그토록 강한 감정적 의존을 하는지 스스로 심리 분석"]] ],
+            [ ["被指派管理社团里买零食的微薄预算。","Assigned to manage a tiny snack budget for the club.","وظیفه مدیریت یک بودجه کوچک تنقلات برای باشگاه.","동아리 간식 구매용의 아주 적은 예산 관리를 맡음."],
+              ["H", ["发起投票统口味，确保绝对平均让每个人开心","Poll everyone to ensure perfectly equal happiness","نظرسنجی از همه برای اطمینان از شادی کاملا برابر","모두가 평등하게 만족하도록 투표를 통해 취향 통계 분석"]], ["S", ["满足基本后，巧妙迎合几个最有话语权的核心成员","Cover basics, then cater to the few power-players","پوشش اصول، سپس جلب رضایت چند فرد قدرتمند","기본만 맞추고, 발언권이 센 핵심 멤버 몇 명의 취향에 교묘하게 맞춤"]], ["G", ["厌烦繁文缛节，随便买点应付，更想做大事","Hate the red tape, buy whatever quickly; want real tasks","نفرت از تشریفات اداری، خرید سریع هر چیزی؛ خواهان کارهای واقعی","복잡한 거 싫어함, 대충 사서 때우고 더 큰 일에 집중하고 싶음"]], ["R", ["建数学模型计算最高热量/营养转化率搭配","Build math model for optimal calorie/nutrition ratio","ساخت مدل ریاضی برای نسبت بهینه کالری/تغذیه","최고의 열량/영양 전환율을 얻을 수 있는 수학적 조합 모델 구축"]] ],
+            [ ["公园散步看到陌生人坐在长椅上崩溃大哭。","See a complete stranger weeping uncontrollably on a park bench.","دیدن یک غریبه که به شدت روی نیمکت پارک گریه می‌کند.","공원 벤치에서 모르는 사람이 통곡하는 것을 봄."],
+              ["H", ["走上前递纸巾，轻声问需要人陪说话吗","Walk up, offer tissue, ask if they need company","نزدیک شدن، دادن دستمال، پرسیدن اینکه آیا به همراه نیاز دارند","다가가 휴지를 건네며, 말동무가 필요한지 부드럽게 물어봄"]], ["G", ["警惕环顾四周找伤害他的人，随时准备干预","Alertly scan perimeter for the attacker, ready to brawl","بررسی هوشیارانه محیط برای یافتن مهاجم، آماده برای درگیری","누가 해를 끼쳤는지 경계하며 주변을 살피고 즉각 개입 준비"]], ["R", ["远远观察推演什么样的人生逻辑链导致这一刻","Observe from afar, deducing the life logic chain to this","مشاهده از دور، استنتاج زنجیره منطقی زندگی تا این لحظه","멀리서 관찰하며 어떤 인생의 논리 구조가 이 붕괴를 초래했는지 추론"]], ["S", ["直接走过。时间宝贵，卷入陌生人麻烦极度不负责","Keep walking. Time is precious; involving strangers is irresponsible","به راه خود ادامه دهید. زمان ارزشمند است؛ درگیر شدن با غریبه‌ها غیرمسئولانه است","그냥 지나감. 내 시간은 소중하며, 남의 문제에 얽히는 건 무책임한 짓"]] ],
+            [ ["能告诉你准确死期的镜子，你看吗？","A mirror showing your exact death date. Look?","آینه‌ای که تاریخ دقیق مرگ شما را نشان می‌دهد. نگاه می‌کنید؟","정확한 사망일을 알려주는 거울, 보겠습니까?"],
+              ["G", ["绝不看，提前知道剥夺勇敢活的意义","Never look, ruins the bravery of living","هرگز نگاه نکنید، دانستن شجاعت زندگی را از بین می‌برد","절대 안 봄, 미리 알면 용기 있게 살 의미가 사라짐"]], ["R", ["看，了解系统终结是客观知识的一部分","Look, knowing system's end is pure data","نگاه کنید، دانستن پایان سیستم داده خالص است","봄, 시스템의 종결을 아는 것은 객관적 지식의 일부임"]], ["S", ["看，明确倒计时才能最完美规划实现野心","Look, countdown needed to plan ambitions","نگاه کنید، شمارش معکوس برای برنامه‌ریزی کامل جاه‌طلبی‌ها لازم است","봄, 카운트다운을 알아야 야망 실현을 완벽히 계획할 수 있음"]], ["H", ["绝不看，只想过好当下，徒增焦虑无益","Never look, just live now, anxiety is useless","هرگز نگاه نکنید، فقط اکنون زندگی کنید، اضطراب بی‌فایده است","절대 안 봄, 현재에 충실하고 싶음, 불안감만 커짐"]] ]
+        ];
+
+        let questions = [];
+        rawQuestions.forEach((q, i) => {
+            let options = q.slice(1).map(opt => ({ house: opt[0], text: opt[1] }));
+            for (let j = options.length - 1; j > 0; j--) {
+                const k = Math.floor(Math.random() * (j + 1));
+                [options[j], options[k]] = [options[k], options[j]];
+            }
+            questions.push({ id: "q" + i, text: q[0], options: options });
+        });
+
+        const tier3Texts = {
+            'S': ["你并非天生冷酷，但在被逼到绝境时，你的“防御性护盾”会无情开启，这层特质是你最后的止损机制。", "You are not inherently cold, but when pushed, your 'defensive shield' activates ruthlessly as a final loss-control mechanism.", "ذاتاً سرد نیستید، اما وقتی در تنگنا قرار می‌گیرید، 'سپر دفاعی' شما بی‌رحمانه به عنوان آخرین مکانیسم کنترل ضرر فعال می‌شود.", "본래 냉혹하진 않지만 궁지에 몰리면 '방어막'이 무자비하게 작동하는 최후의 손절 기제를 지녔습니다."],
+            'G': ["你有基础的正义感，它作为一道“道德备用阀”，只在底线被彻底击穿时才会爆发。", "You have a baseline of justice, a 'moral fallback' that erupts only when your boundaries are completely shattered.", "شما عدالت پایه‌ای دارید، یک 'سوپاپ اطمینان اخلاقی' که فقط با شکستن کامل مرزها فوران می‌کند.", "마지노선이 완전히 무너질 때만 폭발하는 '도덕적 예비 밸브'로서의 정의감을 가지고 있습니다."],
+            'R': ["你不痴迷学术求知，但在处理危机时，你能迅速切换出“实用好奇心”来寻找破局点。", "Not obsessed with academic learning, but in crises, you can switch on 'practical curiosity' to break deadlocks.", "شیفته یادگیری آکادمیک نیستید، اما در بحران‌ها می‌توانید 'کنجکاوی عملی' را برای شکستن بن‌بست‌ها فعال کنید.", "학구열에 집착하진 않지만, 위기 시에는 '실용적 호기심'을 발동하여 난관을 돌파할 수 있습니다."],
+            'H': ["你对大众保有“有限共情”，偶尔愿意在不损害自身核心利益的前提下施舍善意。", "You hold 'bounded empathy', occasionally dispensing kindness provided it doesn't harm your core interests.", "شما 'همدلی محدود' دارید، گهگاه مهربانی می‌کنید به شرطی که به منافع اصلی شما آسیب نرساند.", "핵심 이익을 해치지 않는 선에서 가끔 선의를 베푸는 '제한적 공감'을 유지합니다."]
+        };
+
+        const shadowTexts = {
+            'S': ["你潜意识极度排斥马基雅维利主义。你拒绝将人际关系视为交易，鄙视虚伪慕强。这极致地保全了你灵魂的纯净度，但这也是你最致命的软肋。在零和博弈的残酷修罗场中，你缺乏最基本的自我保护铠甲，极易成为他人野心的垫脚石。", "You subconsciously reject Machiavellianism entirely. You refuse to view relationships as transactions. This preserves your moral purity but leaves you utterly vulnerable in zero-sum environments, easily becoming a stepping stone for others' ambitions.", "شما به طور ناخودآگاه ماکیاولیسم را کاملاً رد می‌کنید. شما از تلقی روابط به عنوان معاملات امتناع می‌ورزید. این خلوص اخلاقی شما را حفظ می‌کند اما شما را در محیط‌های بی‌رحم کاملاً آسیب‌پذیر می‌کند.", "잠재의식적으로 마키아벨리즘을 극도로 배척합니다. 인간관계를 거래로 보지 않으며, 도덕적 순수성은 지키지만 제로섬 게임의 잔혹한 환경에서는 기본적인 방어막조차 없어 남의 야망에 희생되기 쉽습니다."],
+            'G': ["你彻底剥离了“鲁莽的英雄主义”。你极度厌恶被情绪绑架和无谓牺牲。你拥有绝对的战略定力和保身哲学，永远谋定而后动。但这种极端的防御与克制，也可能让你错失那些只有纵身一跃、不顾一切才能创造的奇迹。", "You've completely stripped away 'reckless heroism'. You despise emotional hijacking and pointless sacrifice. You have absolute strategic composure, but this extreme defense might make you miss miracles that require a leap of faith.", "شما 'قهرمان‌بازی بی‌باکانه' را کاملاً کنار گذاشته‌اید. شما از ربوده شدن احساسی و فداکاری بی‌معنی متنفرید. شما آرامش استراتژیک مطلقی دارید، اما این دفاع افراطی ممکن است باعث شود معجزاتی را از دست بدهید.", "'무모한 영웅주의'를 철저히 배제했습니다. 감정적 휩쓸림과 무의미한 희생을 혐오합니다. 절대적인 전략적 평정심을 가졌지만, 이러한 극단적 방어는 뛰어들어야만 만들 수 있는 기적을 놓치게 할 수 있습니다."],
+            'R': ["你对“象牙塔”毫无兴趣。你获取的每一个知识，都必须立刻投入实战或变现。你拒绝一切无用的精神内耗，这让你极其务实且高效。但这可能让你变得反智，陷入只顾眼前的短视，忽视事物底层长远的系统性规律。", "Zero interest in the 'Ivory Tower'. Every piece of knowledge must have immediate utility. This extreme pragmatism makes you highly efficient but risks anti-intellectualism, trapping you in short-sightedness and blinding you to long-term systemic truths.", "هیچ علاقه‌ای به 'برج عاج' ندارید. هر دانشی باید بلافاصله کاربرد داشته باشد. این عمل‌گرایی افراطی شما را بسیار کارآمد می‌کند اما خطر کوته‌بینی دارد.", "'상아탑'에 전혀 관심이 없습니다. 모든 지식은 즉각 실전에 투입되거나 이익이 되어야 합니다. 극도로 현실적이고 효율적이지만, 본질적인 시스템의 법칙을 간과하는 근시안에 빠질 위험이 있습니다."],
+            'H': ["你是一座孤岛。你极度抗拒为了集体的虚假和谐而委屈自己，拒绝向下兼容。你锋芒毕露，不屑于做团队的缓冲器，认为庸人才需要抱团取暖。这极致地保全了你的自我边界，但在系统崩塌时，你也注定孤立无援。", "You are an island. You violently resist compromising yourself for fake collective harmony. You refuse to be a social buffer, preserving your boundaries perfectly. However, this ensures you will stand entirely alone when the system collapses.", "شما یک جزیره هستید. شما به شدت در برابر سازش برای هماهنگی کاذب گروهی مقاومت می‌کنید. شما از ضربه‌گیر اجتماعی بودن امتناع می‌ورزید. اما این تضمین می‌کند که در زمان فروپاشی سیستم تنها خواهید ماند.", "당신은 고립된 섬입니다. 집단의 거짓된 조화를 위해 자신을 억누르는 것을 극도로 거부합니다. 팀의 완충재 역할을 경멸하며 자아의 경계는 완벽히 지키지만, 시스템이 붕괴할 때 철저히 고립될 운명입니다."]
+        };
+
+        function updateUITexts() {
+            document.getElementById('ui-subtitle').innerHTML = uiTexts.subtitle[currentLang];
+            document.getElementById('ui-title').innerHTML = uiTexts.title[currentLang];
+            document.getElementById('ui-intro-desc').innerHTML = uiTexts.introDesc[currentLang];
+            
+            document.getElementById('ui-h-s-title').innerHTML = uiTexts.h_s_title[currentLang];
+            document.getElementById('ui-h-s-sub').innerHTML = uiTexts.h_s_sub[currentLang];
+            document.getElementById('ui-h-s-desc').innerHTML = uiTexts.h_s_desc[currentLang];
+            document.getElementById('ui-h-h-title').innerHTML = uiTexts.h_h_title[currentLang];
+            document.getElementById('ui-h-h-sub').innerHTML = uiTexts.h_h_sub[currentLang];
+            document.getElementById('ui-h-h-desc').innerHTML = uiTexts.h_h_desc[currentLang];
+            document.getElementById('ui-h-r-title').innerHTML = uiTexts.h_r_title[currentLang];
+            document.getElementById('ui-h-r-sub').innerHTML = uiTexts.h_r_sub[currentLang];
+            document.getElementById('ui-h-r-desc').innerHTML = uiTexts.h_r_desc[currentLang];
+            document.getElementById('ui-h-g-title').innerHTML = uiTexts.h_g_title[currentLang];
+            document.getElementById('ui-h-g-sub').innerHTML = uiTexts.h_g_sub[currentLang];
+            document.getElementById('ui-h-g-desc').innerHTML = uiTexts.h_g_desc[currentLang];
+
+            document.getElementById('ui-warning').innerHTML = uiTexts.warning[currentLang];
+            document.getElementById('ui-start-btn').innerHTML = uiTexts.startBtn[currentLang];
+            document.getElementById('ui-prev').innerHTML = uiTexts.prev[currentLang];
+            
+            document.getElementById('ui-res-subtitle').innerHTML = uiTexts.resSub[currentLang];
+            document.getElementById('ui-res-title').innerHTML = uiTexts.resTitle[currentLang];
+            document.getElementById('ui-res-desc').innerHTML = uiTexts.resDesc[currentLang];
+            document.getElementById('ui-hat-title').innerHTML = uiTexts.hatTitle[currentLang];
+            document.getElementById('ui-restart').innerHTML = uiTexts.restart[currentLang];
+        }
+
+        let currentIdx = 0;
+        let userAnswers = {};
+
+        function startQuiz() {
+            document.getElementById('intro-screen').classList.replace('fade-enter', 'fade-exit');
+            setTimeout(() => {
+                document.getElementById('intro-screen').classList.add('hidden');
+                document.getElementById('intro-screen').classList.remove('fade-exit');
+                document.getElementById('quiz-screen').classList.remove('hidden');
+                document.getElementById('quiz-screen').classList.add('fade-enter');
+                document.getElementById('progress-container').classList.remove('hidden');
+                renderQuestion();
+            }, 400);
+        }
+
+        function renderQuestion() {
+            isTransitioning = false;
+            const q = questions[currentIdx];
+            document.getElementById('question-counter').innerText = `Q. ${currentIdx + 1} / ${questions.length}`;
+            document.getElementById('progress-bar').style.width = `${((currentIdx) / questions.length) * 100}%`;
+            
+            const flavorEl = document.getElementById('flavor-text');
+            flavorEl.style.opacity = 0;
+            setTimeout(() => {
+                flavorEl.innerText = flavorTexts[Math.floor(Math.random() * flavorTexts.length)][currentLang];
+                flavorEl.style.opacity = 1;
+            }, 200);
+            
+            const qText = document.getElementById('question-text');
+            qText.style.opacity = 0;
+            setTimeout(() => {
+                qText.innerText = q.text[currentLang];
+                qText.style.transition = 'opacity 0.4s';
+                qText.style.opacity = 1;
+            }, 150);
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            container.style.opacity = 0;
+
+            setTimeout(() => {
+                q.options.forEach((opt) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'w-full text-left p-5 rounded-2xl option-btn text-[14.5px] font-medium text-gray-200 group focus:outline-none shadow-lg rtl:text-right';
+                    btn.innerHTML = `<div class="flex items-start"><span class="text-amber-500/80 mx-3 text-lg leading-none group-hover:text-amber-400 group-hover:animate-pulse transition-colors">✧</span><span class="flex-1 mt-0.5">${opt.text[currentLang]}</span></div>`;
+                    
+                    if (userAnswers[q.id] === opt.house) { btn.classList.add('selected-flash'); }
+
+                    btn.onclick = () => {
+                        if(isTransitioning) return;
+                        isTransitioning = true;
+                        container.querySelectorAll('button').forEach(b => {
+                            b.classList.remove('selected-flash');
+                            b.style.pointerEvents = 'none';
+                        });
+                        btn.classList.add('selected-flash');
+                        userAnswers[q.id] = opt.house;
+                        setTimeout(() => nextQuestion(), 450);
+                    };
+                    container.appendChild(btn);
+                });
+                container.style.transition = 'opacity 0.4s';
+                container.style.opacity = 1;
+            }, 200);
+
+            document.getElementById('prev-btn').classList.toggle('hidden', currentIdx === 0);
+        }
+
+        function nextQuestion() {
+            if (currentIdx < questions.length - 1) { currentIdx++; renderQuestion(); } 
+            else { 
+                hasCalculated = true;
+                calculateScoresAndProfile();
+                renderResultUI(true); 
+            }
+        }
+        function prevQuestion() { if (currentIdx > 0 && !isTransitioning) { currentIdx--; renderQuestion(); } }
+
+        function calculateScoresAndProfile() {
+            let scores = { 'G': 0, 'S': 0, 'R': 0, 'H': 0 };
+            for (let qId in userAnswers) scores[userAnswers[qId]] += 10;
+
+            userPsychProfile.isFakeHero = false;
+            userPsychProfile.isFakeRational = false;
+
+            // Algorithm: Fake Hero (Macro Good, Micro Selfish)
+            if ((userAnswers['q6'] === 'G' || userAnswers['q6'] === 'H') && (userAnswers['q32'] === 'S')) {
+                scores['G'] = Math.max(0, scores['G'] - 15);
+                scores['H'] = Math.max(0, scores['H'] - 10);
+                scores['S'] += 20;
+                userPsychProfile.isFakeHero = true;
+            }
+            // Algorithm: Fake Rational (Macro Objective, Micro Emotional)
+            if (userAnswers['q3'] === 'R' && (userAnswers['q30'] === 'G' || userAnswers['q30'] === 'S')) {
+                scores['R'] = Math.max(0, scores['R'] - 15);
+                scores['G'] += 10; scores['S'] += 10;
+                userPsychProfile.isFakeRational = true;
+            }
+
+            let totalScore = scores['G'] + scores['S'] + scores['R'] + scores['H'];
+            globalFinalData = [
+                { id: 'Slytherin', key:'S', score: totalScore > 0 ? Math.round((scores['S'] / totalScore) * 100) : 0, ...houseData['Slytherin'] },
+                { id: 'Ravenclaw', key:'R', score: totalScore > 0 ? Math.round((scores['R'] / totalScore) * 100) : 0, ...houseData['Ravenclaw'] },
+                { id: 'Gryffindor', key:'G', score: totalScore > 0 ? Math.round((scores['G'] / totalScore) * 100) : 0, ...houseData['Gryffindor'] },
+                { id: 'Hufflepuff', key:'H', score: totalScore > 0 ? Math.round((scores['H'] / totalScore) * 100) : 0, ...houseData['Hufflepuff'] }
+            ].sort((a, b) => b.score - a.score);
+        }
+
+        function generateWhisperText() {
+            let whisper = "";
+            let p1 = globalFinalData[0];
+            let p2 = globalFinalData[1];
+            let p4 = globalFinalData[3];
+
+            // 1. Core Alignment Text
+            const constTexts = {
+                fakeHero: [
+                    `<span class='text-amber-500 font-bold'>[${dictLabels.alignment[0]}]</span> 我能看到你内心的拉扯。在面对世界级灾难或宏大命题时，你极力标榜自己愿意牺牲一切去当个英雄；然而，当视线拉回微小的日常利益和琐事时，你高度敏锐的“自我保护机制”立刻接管了行为，寸步不让。你骗不了分院帽，你用伪装的高尚作为盾牌，掩盖你骨子里精于算计、绝对利己的真实底色。不用感到羞耻，这就是你在残酷世界中生存的护城河。`,
+                    `<span class='text-amber-500 font-bold'>[${dictLabels.alignment[1]}]</span> I see the tension within. In grand dilemmas, you posture as a self-sacrificing hero. Yet, in mundane conflicts, your 'self-preservation' takes over immediately. Slytherin calculation is your true core. You use nobility as a shield to hide your tactical egoism. Do not feel ashamed; this calculation is your moat in a cruel world.`,
+                    `<span class='text-amber-500 font-bold'>[${dictLabels.alignment[2]}]</span> در دوراهی‌های بزرگ، شما مانند یک قهرمان فداکار تظاهر می‌کنید. اما در درگیری‌های روزمره، 'حفظ بقای' شما فوراً کنترل را به دست می‌گیرد. محاسبات اسلیترین هسته واقعی شماست. شما از نجابت به عنوان سپری برای پنهان کردن خودپرستی تاکتیکی خود استفاده می‌کنید.`,
+                    `<span class='text-amber-500 font-bold'>[${dictLabels.alignment[3]}]</span> 거대한 딜레마에서는 영웅처럼 행동하려 하지만, 사소한 일상에서는 '자기 보호 본능'이 즉각 발동합니다. 슬리데린의 계산적인 면이 진짜 본성입니다. 고결함으로 당신의 전술적 이기주의를 감추지 마세요. 이 계산이 잔혹한 세상에서 당신을 지켜줍니다.`
+                ],
+                fakeRational: [
+                    `<span class='text-blue-400 font-bold'>[${dictLabels.alignment[0]}]</span> 绝妙的防御机制。你一直试图向世界展示一种无懈可击的客观与理智，仿佛只在乎真理。但在日常受挫或被冒犯时，你极易被自尊心绑架，爆发出强烈的攻击性。你的“理智”只是一层后天习得的脆弱铠甲，那颗冲动、渴望认可的心，才是真实的你。`,
+                    `<span class='text-blue-400 font-bold'>[${dictLabels.alignment[1]}]</span> A brilliant defense mechanism. You project flawless objectivity, caring only for truth. Yet, when personally offended, your ego hijacks you, erupting in defensive attacks. Your 'reason' is just fragile armor covering an impulsive heart that desperately craves validation.`,
+                    `<span class='text-blue-400 font-bold'>[${dictLabels.alignment[2]}]</span> یک مکانیسم دفاعی درخشان. شما عینیت بی‌نقص را نشان می‌دهید، اما وقتی شخصاً توهین می‌شوید، نفس شما را می‌رباید و فوران می‌کند. 'دلیل' شما فقط زرهی شکننده است که قلبی تکانشی را می‌پوشاند.`,
+                    `<span class='text-blue-400 font-bold'>[${dictLabels.alignment[3]}]</span> 훌륭한 방어 기제입니다. 완벽한 객관성을 보여주려 하지만, 개인적으로 모욕을 당할 때는 자존심이 발동해 공격적으로 변합니다. 당신의 '이성'은 인정받기를 갈망하는 충동적인 마음을 덮고 있는 연약한 갑옷일 뿐입니다.`
+                ],
+                pure: [
+                    `<span class='text-emerald-400 font-bold'>[${dictLabels.alignment[0]}]</span> 令人惊叹的连贯与纯粹。在你的意识深处，几乎没有“社会赞许”带来的伪装。无论是宏大的生死抉择，还是微观的利益纷争，你都遵循高度一致的底层逻辑。保持这份锋利吧。`,
+                    `<span class='text-emerald-400 font-bold'>[${dictLabels.alignment[1]}]</span> Astonishing purity. Deep down, you possess zero 'social desirability' camouflage. You follow an identical core logic in both macro and micro decisions. Maintain this sharpness.`,
+                    `<span class='text-emerald-400 font-bold'>[${dictLabels.alignment[2]}]</span> خلوص حیرت‌انگیز. در اعماق وجود، شما هیچ استتار اجتماعی ندارید. منطق اصلی شما در تصمیمات بزرگ و کوچک یکسان است.`,
+                    `<span class='text-emerald-400 font-bold'>[${dictLabels.alignment[3]}]</span> 놀라운 순수성입니다. 무의식 깊은 곳에 사회적 위장이 전혀 없습니다. 거시적 선택이든 미시적 이익이든 일관된 논리를 따릅니다. 이 날카로움을 유지하십시오.`
+                ]
+            };
+
+            if (userPsychProfile.isFakeHero) whisper += `<p>${constTexts.fakeHero[currentLang]}</p>`;
+            else if (userPsychProfile.isFakeRational) whisper += `<p>${constTexts.fakeRational[currentLang]}</p>`;
+            else whisper += `<p>${constTexts.pure[currentLang]}</p>`;
+
+            // 2. Fusion Profile Text
+            const fusionTexts = {
+                'S_H': ["极其罕见的组合：温和的结网者与隐蔽的掠夺者。你外表包容，但这只是保护色。你深知建立系统能最大程度降低风险，为你获取真正的资源铺平道路。", "Rare Fusion: The gentle web-weaver and hidden predator. Your inclusive facade is protective coloration. You build systems to lower risks and pave the way to real resources.", "ترکیب نادر: بافنده وب ملایم و شکارچی پنهان. نمای فراگیر شما رنگ محافظ است.", "희귀한 융합: 온화한 거미줄 짜는 자이자 숨겨진 포식자. 포용적인 겉모습은 보호색입니다."],
+                'G_S': ["带着大脑冲锋的剑客。你的核心是野心与行动，但你拒绝盲目送死。你总是先用政客般的算计和逻辑去拆解敌人，然后再发动最致命的审判。", "Brainy Swordsman. Driven by ambition and action, but refusing to die blindly. You dismantle enemies with political calculation before striking.", "شمشیرزن باهوش. با جاه‌طلبی و عمل هدایت می‌شود، اما از مرگ کورکورانه امتناع می‌ورزد.", "두뇌를 쓰는 검사. 야망과 행동력이 핵심이지만 맹목적인 죽음은 거부합니다."],
+                'R_S': ["学者的头脑，政客的心。你拥有剥离情感的绝对理智，但所有的求知欲最终都服务于利益掌控。你不会为了真理而死，你会用真理去统治。", "Scholar's mind, Politician's heart. Flawless rationality where all curiosity serves control. You won't die for truth; you rule with it.", "ذهن محقق، قلب سیاستمدار. عقلانیت بی‌نقص که در آن همه کنجکاوی‌ها در خدمت کنترل است.", "학자의 머리, 정치인의 가슴. 완벽한 이성을 지녔으며 모든 지적 호기심은 결국 통제를 위해 쓰입니다."],
+                'G_H': ["真正的大地之盾。你不仅拥有保护弱者的道德直觉，更拥有长年累月去修补社会裂痕的耐心。你既能拔剑，也能种树。", "Shield of the Earth. Moral intuition to protect the weak, paired with immense patience to heal societal rifts. You wield swords and plant trees.", "سپر زمین. شهود اخلاقی برای محافظت از ضعیفان، همراه با صبر بی‌پایان برای التیام شکاف‌های اجتماعی.", "진정한 대지의 방패. 약자를 보호하는 도덕적 직관과 사회적 균열을 치유하는 인내심을 동시에 지녔습니다."],
+                'R_G': ["破壁人。你追求真理，并且一旦认定理智上的正确，便会毫不犹豫地用行动打破枷锁，兼具思想深度与反叛勇气。", "The Wallbreaker. Seeking truth, once logically convinced, you shatter chains with action. Combining depth and rebellious courage.", "دیوارشکن. در جستجوی حقیقت، هنگامی که از نظر منطقی متقاعد شدید، زنجیرها را با عمل می‌شکنید.", "벽을 부수는 자. 진리를 추구하며 논리적으로 납득하면 행동으로 사슬을 부숴버립니다."],
+                'R_H': ["温和的解构者。你追求真理，但拒绝因为傲慢而伤害他人。你试图用逻辑去构建一个更公平的系统。", "Gentle Deconstructor. You seek truth but refuse arrogance. You use logic to build a fairer ecosystem for everyone.", "ساختارشکن ملایم. شما به دنبال حقیقت هستید اما از تکبر امتناع می ورزید.", "온화한 해체자. 진리를 추구하지만 오만함으로 타인에게 상처주는 것을 거부합니다."]
+            };
+            
+            let fusionKey = `${p1.key}_${p2.key}`;
+            let altFusionKey = `${p2.key}_${p1.key}`;
+            let fusionMsg = fusionTexts[fusionKey] || fusionTexts[altFusionKey];
+            if(fusionMsg) whisper += `<p><strong class='text-gray-100'>[${dictLabels.fusion[currentLang]}]</strong> ${fusionMsg[currentLang]}</p>`;
+
+            // 3. The Deep Shadow Analysis (Lowest House)
+            let shadowText = shadowTexts[p4.key][currentLang];
+            let shadowTitle = dictLabels.shadow[currentLang];
+            
+            whisper += `
+                <div class="mt-6 p-5 rounded-2xl bg-gray-900/50 border border-gray-700/50 shadow-inner">
+                    <h4 class="text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-3 border-b border-gray-700 pb-2 flex items-center justify-between">
+                        <span>${shadowTitle}</span>
+                        <span style="color:${p4.color}">${p4.name[currentLang]} (${p4.score}%)</span>
+                    </h4>
+                    <p class="text-[14px] leading-relaxed text-gray-300">
+                        ${shadowText}
+                    </p>
+                </div>
+            `;
+
+            return whisper;
+        }
+
+        function renderResultUI(animate) {
+            document.getElementById('progress-bar').style.width = '100%';
+            
+            if(animate) {
+                document.getElementById('quiz-screen').classList.add('hidden');
+                document.getElementById('result-screen').classList.remove('hidden');
+            }
+
+            // Render Exact Percentage List for all 4 houses
+            let listHtml = '';
+            globalFinalData.forEach(item => {
+                listHtml += `
+                <div class="house-percent-row">
+                    <span style="color:${item.color}">${item.name[currentLang]}</span>
+                    <span style="color:${item.color}">${item.score}%</span>
+                </div>`;
+            });
+            document.getElementById('house-percentages').innerHTML = listHtml;
+
+            // Render 4-Tier Detail Cards
+            const container = document.getElementById('four-tier-container');
+            container.innerHTML = '';
+            
+            globalFinalData.forEach((item, index) => {
+                let cardClass = `relative p-6 pl-8 border-l-[6px] rounded-r-2xl shadow-xl transition-all duration-300`;
+                let titleStr = tierTitles[index][currentLang];
+                let descStr = "";
+                let scoreSize = "text-xl font-bold";
+                let nameSize = "text-2xl font-bold";
+                let cardBorderColor = item.color;
+
+                if (index === 0) { // Primary
+                    descStr = uiTexts[`h_${item.key.toLowerCase()}_desc`][currentLang];
+                    cardClass += ` bg-black/40`;
+                    scoreSize = "text-3xl font-black";
+                    nameSize = "text-4xl font-black";
+                } else if (index === 1) { // Secondary
+                    const secDesc = [
+                        `你实现核心动机的战术手段，高度依赖于 <strong style="color:${item.color}">${item.name[0]}</strong> 的特质。`,
+                        `Your execution tactics heavily rely on <strong style="color:${item.color}">${item.name[1]}</strong> traits.`,
+                        `تاکتیک‌های اجرایی شما به شدت به ویژگی‌های <strong style="color:${item.color}">${item.name[2]}</strong> وابسته است.`,
+                        `핵심 동기를 실행하는 전술적 수단은 <strong style="color:${item.color}">${item.name[3]}</strong> 특성에 크게 의존합니다.`
+                    ];
+                    descStr = secDesc[currentLang];
+                    cardClass += ` bg-black/30`;
+                } else if (index === 2) { // Latent
+                    descStr = tier3Texts[item.key][currentLang];
+                    cardClass += ` bg-black/20 opacity-90`;
+                } else { // Shadow
+                    const whyLabel = ["为什么你排斥它？", "Why reject it?", "چرا آن را رد کنید؟", "왜 배척하는가?"];
+                    descStr = `<strong class="text-gray-300">${whyLabel[currentLang]}</strong> ${shadowTexts[item.key][currentLang]}`;
+                    cardClass = `relative p-6 pl-8 border-l-[6px] rounded-r-2xl border-gray-700 bg-gray-950/80 shadow-inner opacity-90`;
+                    cardBorderColor = '#64748b'; // Muted grey for shadow
+                }
+
+                container.innerHTML += `
+                    <div class="${cardClass}" style="border-left-color: ${cardBorderColor};">
+                        <div class="flex justify-between items-start mb-2 relative z-10">
+                            <h3 class="text-[10px] text-gray-400 uppercase tracking-[0.3em] font-bold">${titleStr}</h3>
+                            <span class="${scoreSize} title-font" style="color:${item.color}">${item.score}%</span>
+                        </div>
+                        <h2 class="${nameSize} title-font mb-3 relative z-10" style="color:${item.color}">${item.name[currentLang]}</h2>
+                        <p class="text-[13.5px] text-gray-300 leading-relaxed relative z-10 rtl:text-right">${descStr}</p>
+                    </div>
+                `;
+            });
+
+            // Set Hat Whisper Text
+            document.getElementById('hat-whisper-content').innerHTML = generateWhisperText();
+
+            renderRadarChart();
+        }
+
+        let myRadarChart = null;
+        function renderRadarChart() {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            let radarData = [0,0,0,0];
+            
+            // Map data to fixed positions: Slytherin, Ravenclaw, Gryffindor, Hufflepuff
+            globalFinalData.forEach(item => {
+                if(item.key==='S') radarData[0] = item.score;
+                if(item.key==='R') radarData[1] = item.score;
+                if(item.key==='G') radarData[2] = item.score;
+                if(item.key==='H') radarData[3] = item.score;
+            });
+
+            if(myRadarChart) myRadarChart.destroy();
+            
+            myRadarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: [ houseData['Slytherin'].name[currentLang], houseData['Ravenclaw'].name[currentLang], houseData['Gryffindor'].name[currentLang], houseData['Hufflepuff'].name[currentLang] ],
+                    datasets: [{
+                        data: radarData,
+                        backgroundColor: 'rgba(212, 175, 55, 0.12)',
+                        borderColor: 'rgba(212, 175, 55, 0.8)',
+                        pointBackgroundColor: ['#10b981', '#3b82f6', '#ef4444', '#eab308'],
+                        pointBorderColor: '#0b0914',
+                        pointHoverRadius: 8,
+                        pointRadius: 5,
+                        borderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.04)', circular: true },
+                            pointLabels: { font: { family: 'Cinzel, Noto Serif SC, sans-serif', size: 12, weight: 'bold' }, color: '#94a3b8' },
+                            ticks: { display: false, min: 0, max: Math.max(...radarData) + 10 }
+                        }
+                    },
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } }
+                }
+            });
+        }
+
+        // Handle language switch
+        function changeLanguage(val) {
+            currentLang = parseInt(val);
+            const b = document.body;
+            b.setAttribute('lang', ['zh', 'en', 'fa', 'ko'][currentLang]);
+            b.setAttribute('dir', currentLang === 2 ? 'rtl' : 'ltr');
+            
+            updateUITexts();
+            
+            if (!document.getElementById('quiz-screen').classList.contains('hidden')) { 
+                renderQuestion(); 
+            } else if (!document.getElementById('result-screen').classList.contains('hidden') && hasCalculated) {
+                // Instantly re-render the result screen using saved globalFinalData and userPsychProfile
+                renderResultUI(false);
+            }
+        }
+
+        // Init
+        changeLanguage(0);
+    </script>
+</body>
+</html>
