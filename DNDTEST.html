@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D Alignment Tribunal | 阵营裁决所</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 引入支持中文、英文、韩文和波斯文的优雅字体 */
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+KR:wght@400;700&family=Vazirmatn:wght@400;700&display=swap');
+        
+        :root {
+            --font-zh: 'Noto Serif SC', serif;
+            --font-en: 'Cinzel', serif;
+            --font-ko: 'Noto Sans KR', sans-serif;
+            --font-fa: 'Vazirmatn', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-zh);
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(76, 29, 149, 0.15), transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(15, 23, 42, 0.5), transparent 50%),
+                radial-gradient(circle at 50% 100%, rgba(120, 50, 0, 0.15), transparent 50%),
+                #0a0810;
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* 针对不同语言切换主字体 */
+        body.lang-en { font-family: var(--font-en); }
+        body.lang-ko { font-family: var(--font-ko); }
+        body.lang-fa { font-family: var(--font-fa); }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.8),
+                inset 0 0 20px rgba(255, 255, 255, 0.02);
+            position: relative;
+        }
+        
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .btn-option {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-option:hover {
+            border-color: #d97706; 
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(69, 26, 3, 0.6));
+            box-shadow: 0 4px 20px rgba(217, 119, 6, 0.2);
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        .input-name {
+            background: transparent;
+            border-bottom: 2px solid #475569;
+            transition: all 0.3s;
+        }
+        .input-name:focus {
+            outline: none;
+            border-bottom-color: #fbbf24;
+            transform: scale(1.05);
+        }
+
+        .glitch-text {
+            color: #ef4444;
+            text-shadow: 2px 2px #000, -2px -2px #000;
+            animation: glitch 1s infinite alternate;
+        }
+
+        @keyframes glitch {
+            0% { transform: skewX(2deg); opacity: 0.9; }
+            100% { transform: skewX(-2deg); opacity: 1; }
+        }
+
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .option-enter {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: optionFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes optionFadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        .bar-segment { transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        #progress-bar { background: linear-gradient(90deg, #d97706, #fbbf24); }
+
+        /* 语言切换器样式 */
+        .lang-btn {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: #94a3b8;
+            transition: all 0.3s;
+        }
+        .lang-btn:hover { color: #facc15; background: rgba(255,255,255,0.1); }
+        .lang-btn.active { background: #d97706; color: white; font-weight: bold; }
+    </style>
+</head>
+
+<body class="flex flex-col items-center justify-center p-4 sm:p-8" dir="ltr">
+    
+    <!-- 动态 Canvas 背景 -->
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none"></canvas>
+
+    <!-- 语言切换器 -->
+    <div class="fixed top-4 right-4 z-50 flex space-x-1 bg-slate-900/60 backdrop-blur-md p-1.5 rounded-full border border-slate-700/50 shadow-lg">
+        <button class="lang-btn active" data-lang="zh">中</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="fa">فا</button>
+        <button class="lang-btn" data-lang="ko">한</button>
+    </div>
+
+    <main class="w-full max-w-4xl glass-panel rounded-3xl p-6 sm:p-12 min-h-[600px] flex flex-col relative z-10 overflow-hidden">
+        
+        <!-- ==================== 1. 欢迎页 ==================== -->
+        <section id="welcome-screen" class="flex flex-col items-center justify-center h-full w-full min-h-[400px] fade-in">
+            <h1 id="ui-title" class="text-4xl sm:text-6xl font-bold text-amber-500 mb-6 text-center drop-shadow-[0_0_15px_rgba(245,158,11,0.6)] tracking-wider">
+                阵营裁决所
+            </h1>
+            <p id="ui-subtitle" class="text-slate-300 text-center mb-10 max-w-lg leading-relaxed text-lg">
+                直击潜意识的 31 道拷问，揭示你真实的灵魂底色。请顺从第一直觉作答，判决之眼凝视着一切伪装。
+            </p>
+            <div class="mt-4 flex flex-col items-center w-full max-w-sm space-y-6">
+                <input type="text" id="player-name" placeholder="刻下你的名字..." maxlength="20" class="input-name w-full text-center text-2xl text-amber-100 pb-2 placeholder-slate-600" autocomplete="off">
+                <button id="start-btn" disabled class="w-full px-8 py-4 bg-amber-700/80 hover:bg-amber-600 text-amber-100 font-bold rounded-xl transition-all text-xl border border-amber-500/50 hover:shadow-[0_0_20px_rgba(217,119,6,0.6)] uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed">
+                    接受灵魂审判
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================== 2. 答题系统 ==================== -->
+        <section id="quiz-screen" class="hidden flex-col h-full w-full fade-in">
+            <!-- 顶部信息栏 -->
+            <div class="flex justify-between items-center mb-6">
+                <button id="prev-btn" class="text-slate-400 hover:text-amber-400 transition-colors flex items-center gap-1 opacity-0 pointer-events-none">
+                    <svg class="w-5 h-5 rtl:rotate-180 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    <span id="ui-prev">上一题</span>
+                </button>
+                <span id="question-counter" class="text-slate-500 font-bold text-lg dir-ltr">1 / 31</span>
+            </div>
+
+            <!-- 主进度条 -->
+            <div class="w-full bg-slate-900 rounded-full h-1.5 mb-10 overflow-hidden border border-slate-800">
+                <div id="progress-bar" class="bg-amber-600 h-1.5 rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(217,119,6,0.8)]" style="width: 0%"></div>
+            </div>
+            
+            <!-- 题目区域 -->
+            <div class="flex-grow flex flex-col justify-center mb-8 relative">
+                <h2 id="question-text" class="text-2xl sm:text-3xl font-bold mb-10 text-slate-100 leading-relaxed text-center min-h-[100px] flex items-center justify-center">
+                    正在连接潜意识...
+                </h2>
+                <div id="options-container" class="flex flex-col space-y-5 w-full max-w-2xl mx-auto">
+                    <!-- 选项由 JS 动态生成 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 3. 终极分析结果页 ==================== -->
+        <section id="result-screen" class="hidden flex-col items-center w-full h-full fade-in">
+            <h2 class="text-xl text-slate-500 mb-2 font-bold tracking-widest"><span id="display-name" class="text-amber-200"></span> <span id="ui-soul-anatomy">的灵魂剖析</span></h2>
+            
+            <h1 id="alignment-title" class="text-5xl md:text-7xl font-bold text-amber-500 my-4 drop-shadow-[0_0_15px_rgba(245,158,11,0.4)] text-center">
+                加载中
+            </h1>
+
+            <!-- 测谎警报 -->
+            <div id="lie-alert" class="hidden w-full max-w-2xl bg-red-950/50 border border-red-600/50 rounded-xl p-6 my-6 shadow-[0_0_30px_rgba(220,38,38,0.2)]">
+                <h3 class="text-red-500 font-bold text-2xl glitch-text mb-3 flex items-center justify-center gap-2">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <span id="ui-lie-alert">人格分裂/伪装警报</span>
+                </h3>
+                <div id="lie-details" class="text-red-200/80 text-sm space-y-2 text-center"></div>
+                <p id="ui-lie-conclusion" class="mt-3 text-red-400 font-bold text-center"></p>
+            </div>
+
+            <!-- 数据可视化：双轴进度条 -->
+            <div class="w-full max-w-2xl bg-slate-900/50 rounded-2xl p-6 my-6 border border-slate-700/50">
+                <h3 id="ui-comp" class="text-slate-400 font-bold mb-4 text-center tracking-widest">性格构成百分比</h3>
+                
+                <!-- 规则轴 -->
+                <div class="mb-6">
+                    <div class="flex justify-between text-xs text-slate-500 mb-1">
+                        <span id="label-lawful" class="w-1/3 text-left">守序 (Lawful)</span>
+                        <span id="label-neutral-x" class="w-1/3 text-center">中立 (Neutral)</span>
+                        <span id="label-chaotic" class="w-1/3 text-right">混乱 (Chaotic)</span>
+                    </div>
+                    <div class="w-full flex h-3 rounded-full overflow-hidden bg-slate-800 dir-ltr">
+                        <div id="bar-lawful" class="bar-segment h-full bg-blue-500"></div>
+                        <div id="bar-neutral-x" class="bar-segment h-full bg-slate-500"></div>
+                        <div id="bar-chaotic" class="bar-segment h-full bg-purple-500"></div>
+                    </div>
+                    <div id="text-x-percent" class="text-center text-sm mt-2 text-slate-300 font-mono dir-ltr"></div>
+                </div>
+
+                <!-- 道德轴 -->
+                <div>
+                    <div class="flex justify-between text-xs text-slate-500 mb-1">
+                        <span id="label-good" class="w-1/3 text-left">善良 (Good)</span>
+                        <span id="label-neutral-y" class="w-1/3 text-center">中立 (Neutral)</span>
+                        <span id="label-evil" class="w-1/3 text-right">邪恶 (Evil)</span>
+                    </div>
+                    <div class="w-full flex h-3 rounded-full overflow-hidden bg-slate-800 dir-ltr">
+                        <div id="bar-good" class="bar-segment h-full bg-emerald-500"></div>
+                        <div id="bar-neutral-y" class="bar-segment h-full bg-slate-500"></div>
+                        <div id="bar-evil" class="bar-segment h-full bg-red-600"></div>
+                    </div>
+                    <div id="text-y-percent" class="text-center text-sm mt-2 text-slate-300 font-mono dir-ltr"></div>
+                </div>
+            </div>
+
+            <!-- 深度解析文案 -->
+            <div class="w-full max-w-2xl bg-slate-800/30 rounded-2xl p-6 sm:p-8 border border-slate-600/30 shadow-inner">
+                <p id="alignment-desc" class="text-slate-300 leading-relaxed text-left text-lg"></p>
+                <div id="dynamic-analysis" class="mt-6 pt-4 border-t border-slate-700/50 text-slate-400 text-base leading-relaxed italic">
+                </div>
+            </div>
+
+            <button id="restart-btn" class="mt-10 px-8 py-3 bg-transparent border-2 border-amber-700 text-amber-500 font-bold hover:bg-amber-700 hover:text-white rounded-xl transition-all uppercase tracking-widest">
+                重启灵魂
+            </button>
+        </section>
+    </main>
+
+    <script>
+        // 当前语言状态
+        let currentLang = 'zh';
+
+        // 国际化词典 (UI 和 结果判定)
+        const i18n = {
+            zh: {
+                title: "阵营裁决所",
+                subtitle: "直击潜意识的 31 道拷问，揭示你真实的灵魂底色。请顺从第一直觉作答，判决之眼凝视着一切伪装。",
+                placeholder: "刻下你的名字...",
+                startBtn: "接受灵魂审判",
+                prev: "上一题",
+                connecting: "正在连接潜意识...",
+                soulAnatomy: "的灵魂剖析",
+                comp: "性格构成百分比",
+                restart: "重启灵魂",
+                lieAlert: "人格分裂/伪装警报",
+                lieConclusion: "结论：你的真实性格被层层伪装掩盖。系统给出的是你努力扮演的表象。",
+                labels: {
+                    L: "守序 (Lawful)", Nx: "中立 (Neutral)", C: "混乱 (Chaotic)",
+                    G: "善良 (Good)", Ny: "中立 (Neutral)", E: "邪恶 (Evil)"
+                },
+                alignments: {
+                    TN: { name: "绝对中立 (True Neutral)", desc: "你超越了善恶与秩序的偏执。你相信万物平衡，不偏不倚。你不会刻意为了法律牺牲自己，也不会为了欲望伤害他人。你务实、冷静，甚至带有一点避世的哲学感。" },
+                    LG: { name: "守序善良 (Lawful Good)", desc: "你是正义与秩序的化身。你深信只有通过完善的规则才能保护弱小、让世界变得更好。你诚实、守信、充满同情心。" },
+                    NG: { name: "中立善良 (Neutral Good)", desc: "你是一个纯粹的善人。你不在乎规则是死是活，只要能帮到别人、做正确的事就行。如果有法律碍事，你会绕过它；如果法律能救人，你会利用它。" },
+                    CG: { name: "混乱善良 (Chaotic Good)", desc: "你是劫富济贫的游侠，是反叛的英雄。你内心善良，但极度痛恨官僚主义、条条框框和伪善的权威。只要能伸张正义，你绝不介意打破规矩。" },
+                    LN: { name: "守序中立 (Lawful Neutral)", desc: "你是规则的铁腕执行者。法不容情是你的信条。你不在乎事情的结果是善是恶，你只在乎程序是否正义，规矩是否被遵守。" },
+                    CN: { name: "混乱中立 (Chaotic Neutral)", desc: "你是绝对自由的灵魂。你讨厌被任何人或事物束缚，行事全凭直觉和心情。你不会刻意去害人，但也绝不想当拯救世界的英雄。你只为自己而活。" },
+                    LE: { name: "守序邪恶 (Lawful Evil)", desc: "你是高智商的掠食者。你深谙社会的规则，并且极其擅长利用规则的漏洞来为自己谋取暴利和权力。你冷酷无情，但言而有信，是精致的利己主义者。" },
+                    NE: { name: "中立邪恶 (Neutral Evil)", desc: "你是纯粹的利己主义者。你没有底线，也不在乎秩序或混乱。只要能得到你想要的，你会使用任何手段。背叛对你来说只是计算成本后的选项。" },
+                    CE: { name: "混乱邪恶 (Chaotic Evil)", desc: "你是毁灭的代名词。你憎恨一切秩序、法律和善良。你只相信力量，你所做的一切可能不仅仅是为了利益，更是为了从破坏和别人的痛苦中获取扭曲的快感。" }
+                },
+                dynamic: {
+                    header: "【深度潜意识解析】<br/>",
+                    L_trait: "• 尽管你整体偏向自由或中立，但你内心保留了 {pct}% 的守序底线，意味着在重要原则问题上，你依然愿意遵守契约。<br/>",
+                    C_trait: "• 你体内潜藏着 {pct}% 的混乱因子。哪怕你平时循规蹈矩，但在极度高压下，你绝对有掀桌子不干的反叛潜质。<br/>",
+                    E_trait: "• 你拥有 {pct}% 的利己/邪恶面。这层“黑化装甲”能让你在险恶的社会中保护自己免受欺凌。<br/>",
+                    G_trait: "• 虽然你行事冷酷，但仍有 {pct}% 的善良残存。面对特定的人或事物时，你会暴露出意想不到的温柔。<br/>",
+                    Ny_trait: "• 高达 {pct}% 的道德中立度表明，你具有极强的“事不关己”属性，自我保护机制极其发达。<br/>"
+                },
+                lies: {
+                    RULES: "规则矛盾：你声称绝不闯红灯，但面临朋友犯罪时却选择无视法律包庇。",
+                    AUTH: "权威矛盾：你认为长辈必须被服从，但又极度渴望掀翻帝国王权。",
+                    TRADITION: "体制矛盾：你声称传统是文明基石，但遇到社会问题时却主张烧毁一切旧秩序。",
+                    LIE_HYPOCRISY: "虚伪矛盾：你发誓从未说过谎，但在抉择中却频繁使用欺诈手段。",
+                    LIE_PERFECT: "社会赞许性极高：没有人从未说过谎，系统检测到你可能在刻意营造完美人设。",
+                    REVENGE: "复仇矛盾：你主张冤冤相报何时了，但面对仇人却选择残酷的十倍奉还。",
+                    MORAL: "道德割裂：你在街头行善救人，拿到神器却想大开杀戒。标准极为摇摆。"
+                }
+            },
+            en: {
+                title: "Alignment Tribunal",
+                subtitle: "31 questions piercing your subconscious to reveal your true soul. Answer with your first instinct; the Eye of Judgment sees through all disguises.",
+                placeholder: "Carve your name...",
+                startBtn: "Accept Judgment",
+                prev: "Previous",
+                connecting: "Connecting to subconscious...",
+                soulAnatomy: "'s Soul Anatomy",
+                comp: "Personality Composition",
+                restart: "Reboot Soul",
+                lieAlert: "Persona Fragmentation Alert",
+                lieConclusion: "Conclusion: Your true nature is hidden beneath layers of disguise. This result is merely the persona you strive to project.",
+                labels: {
+                    L: "Lawful", Nx: "Neutral", C: "Chaotic",
+                    G: "Good", Ny: "Neutral", E: "Evil"
+                },
+                alignments: {
+                    TN: { name: "True Neutral", desc: "You transcend the bigotry of good and evil, order and chaos. You believe in balance. You won't sacrifice yourself for laws, nor harm others for greed. You are pragmatic and calm." },
+                    LG: { name: "Lawful Good", desc: "You are the embodiment of justice and order. You believe rules protect the weak and improve the world. You are honest, trustworthy, and compassionate." },
+                    NG: { name: "Neutral Good", desc: "You are a pure soul. You don't care if rules live or die, as long as you do the right thing and help others. You bend laws to save lives." },
+                    CG: { name: "Chaotic Good", desc: "You are the rebel hero. You are good at heart but utterly despise bureaucracy and hypocrisy. You gladly break the rules to deliver true justice." },
+                    LN: { name: "Lawful Neutral", desc: "You are the iron hand of the law. The outcome matters less than the process. You care only that justice is served according to the code." },
+                    CN: { name: "Chaotic Neutral", desc: "You are absolute freedom. You hate being bound by anyone. You act on instinct. You won't intentionally harm, but you're no hero. You live for yourself." },
+                    LE: { name: "Lawful Evil", desc: "You are a high-IQ predator. You understand society's rules and exploit them to gain immense power and wealth. Cold, calculated, yet true to your own twisted word." },
+                    NE: { name: "Neutral Evil", desc: "You are purely self-serving. You have no bottom line. You will use any means necessary to get what you want. Betrayal is just a cost-benefit analysis." },
+                    CE: { name: "Chaotic Evil", desc: "You are destruction. You hate order, law, and goodness. You believe only in power, and you derive twisted pleasure from the suffering of others." }
+                },
+                dynamic: {
+                    header: "[Deep Subconscious Analysis]<br/>",
+                    L_trait: "• Despite leaning towards freedom, you retain a {pct}% Lawful baseline, meaning you still respect contracts on major principles.<br/>",
+                    C_trait: "• A {pct}% Chaotic factor lurks within. Under extreme pressure, you absolutely possess the potential to flip the table and rebel.<br/>",
+                    E_trait: "• You possess a {pct}% Evil/Selfish facet. This 'dark armor' protects you from being bullied in a treacherous society.<br/>",
+                    G_trait: "• Surprisingly, despite a cold exterior, {pct}% Goodness remains. You may show unexpected tenderness to specific people or animals.<br/>",
+                    Ny_trait: "• A {pct}% Moral Neutrality indicates a strong 'none of my business' attitude. Your self-preservation mechanism is highly developed.<br/>"
+                },
+                lies: {
+                    RULES: "Rule Contradiction: You claim to never jaywalk, but choose to ignore the law to harbor a criminal friend.",
+                    AUTH: "Authority Contradiction: You believe elders must be obeyed, yet desperately desire to overthrow the empire.",
+                    TRADITION: "System Contradiction: You call tradition the cornerstone of civilization, but advocate burning the old order for social issues.",
+                    LIE_HYPOCRISY: "Hypocrisy: You swear you've never lied, but frequently use deceit in your choices.",
+                    LIE_PERFECT: "Social Desirability: No one has never lied. The system detects you are artificially crafting a perfect persona.",
+                    REVENGE: "Revenge Contradiction: You advocate forgiveness, but choose tenfold cruel revenge against enemies.",
+                    MORAL: "Moral Schism: You do good deeds on the street, but want to massacre people with a divine artifact."
+                }
+            },
+            fa: {
+                title: "دادگاه گرایش",
+                subtitle: "۳۱ سوال برای نفوذ به ناخودآگاه شما تا رنگ واقعی روح شما را آشکار کند. با اولین غریزه خود پاسخ دهید؛ چشم قضاوت همه فریب‌ها را می‌بیند.",
+                placeholder: "نام خود را حک کنید...",
+                startBtn: "پذیرش قضاوت",
+                prev: "قبلی",
+                connecting: "در حال اتصال به ناخودآگاه...",
+                soulAnatomy: " - تحلیل روح",
+                comp: "ترکیب شخصیت",
+                restart: "تولد دوباره روح",
+                lieAlert: "هشدار فریب/تناقض",
+                lieConclusion: "نتیجه: ماهیت واقعی شما زیر لایه‌هایی از فریب پنهان است. این نتیجه تنها نقابی است که سعی در نمایش آن دارید.",
+                labels: {
+                    L: "قانون‌مدار", Nx: "بی‌طرف", C: "آشوبگر",
+                    G: "خیر", Ny: "بی‌طرف", E: "شر"
+                },
+                alignments: {
+                    TN: { name: "بی‌طرف مطلق (True Neutral)", desc: "شما فراتر از تعصب خیر و شر هستید. به تعادل اعتقاد دارید. خود را فدای قوانین نمی‌کنید و به خاطر طمع به دیگران آسیب نمی‌رسانید." },
+                    LG: { name: "قانون‌مدار خیر (Lawful Good)", desc: "شما تجسم عدالت و نظم هستید. معتقدید قوانین از ضعیفان محافظت می‌کنند. شما صادق، قابل اعتماد و دلسوز هستید." },
+                    NG: { name: "بی‌طرف خیر (Neutral Good)", desc: "شما یک روح پاک هستید. برای شما مهم نیست که قوانین چه می‌گویند، تا زمانی که کار درست را انجام دهید و به دیگران کمک کنید." },
+                    CG: { name: "آشوبگر خیر (Chaotic Good)", desc: "شما یک قهرمان شورشی هستید. در قلب خود مهربانید اما از بوروکراسی و ریاکاری متنفرید. برای اجرای عدالت واقعی قوانین را می‌شکنید." },
+                    LN: { name: "قانون‌مدار بی‌طرف (Lawful Neutral)", desc: "شما دست آهنین قانون هستید. نتیجه کمتر از فرآیند برایتان مهم است. فقط به اجرای عدالت طبق قانون اهمیت می‌دهید." },
+                    CN: { name: "آشوبگر بی‌طرف (Chaotic Neutral)", desc: "شما آزادی مطلق هستید. از محدود شدن متنفرید. بر اساس غریزه عمل می‌کنید. عمداً آسیب نمی‌رسانید، اما قهرمان هم نیستید." },
+                    LE: { name: "قانون‌مدار شر (Lawful Evil)", desc: "شما یک شکارچی باهوش هستید. قوانین را درک می‌کنید و از آن‌ها برای کسب قدرت و ثروت سوءاستفاده می‌کنید. سرد و محاسبه‌گر." },
+                    NE: { name: "بی‌طرف شر (Neutral Evil)", desc: "شما کاملاً خودخواه هستید. هیچ خط قرمزی ندارید. برای رسیدن به خواسته خود از هر وسیله‌ای استفاده می‌کنید." },
+                    CE: { name: "آشوبگر شر (Chaotic Evil)", desc: "شما نابودی هستید. از نظم، قانون و نیکی متنفرید. فقط به قدرت اعتقاد دارید و از رنج دیگران لذت بیمارگونه می‌برید." }
+                },
+                dynamic: {
+                    header: "[تحلیل عمیق ناخودآگاه]<br/>",
+                    L_trait: "• با وجود تمایل به آزادی، شما {pct}٪ قانون‌مداری را حفظ کرده‌اید، به این معنی که هنوز در اصول مهم به قراردادها احترام می‌گذارید.<br/>",
+                    C_trait: "• یک عامل {pct}٪ آشوبگر در درون شما نهفته است. تحت فشار، پتانسیل طغیان دارید.<br/>",
+                    E_trait: "• شما دارای {pct}٪ جنبه تاریک/خودخواهانه هستید. این 'زره تاریک' از شما در برابر جامعه محافظت می‌کند.<br/>",
+                    G_trait: "• در کمال تعجب، با وجود ظاهر سرد، {pct}٪ مهربانی باقی مانده است. ممکن است با افراد خاصی مهربان باشید.<br/>",
+                    Ny_trait: "• {pct}٪ بی‌طرفی اخلاقی نشان‌دهنده نگرش قوی 'به من ربطی ندارد' است. مکانیسم حفظ بقای شما بسیار توسعه یافته است.<br/>"
+                },
+                lies: {
+                    RULES: "تناقض قانون: ادعا می‌کنید هرگز چراغ قرمز را رد نمی‌کنید، اما برای پناه دادن به دوست مجرم خود قانون را نادیده می‌گیرید.",
+                    AUTH: "تناقض قدرت: معتقدید باید از بزرگان اطاعت کرد، اما به شدت خواهان سرنگونی امپراتوری هستید.",
+                    TRADITION: "تناقض سیستم: سنت را اساس تمدن می‌نامید، اما برای مشکلات اجتماعی مدافع سوزاندن نظم قدیم هستید.",
+                    LIE_HYPOCRISY: "ریاکاری: قسم می‌خورید هرگز دروغ نگفته‌اید، اما در انتخاب‌های خود از فریب استفاده می‌کنید.",
+                    LIE_PERFECT: "مطلوبیت اجتماعی: هیچ‌کس نیست که دروغ نگفته باشد. سیستم تشخیص داده که شما در حال ساختن یک شخصیت بی‌نقص جعلی هستید.",
+                    REVENGE: "تناقض انتقام: مدافع بخشش هستید، اما انتقام بی‌رحمانه‌ای از دشمنان می‌گیرید.",
+                    MORAL: "شکاف اخلاقی: در خیابان کار خیر می‌کنید، اما با یک سلاح الهی می‌خواهید قتل عام کنید."
+                }
+            },
+            ko: {
+                title: "성향 판결소",
+                subtitle: "당신의 진정한 영혼을 드러내는 무의식을 향한 31가지 질문. 첫 번째 직감으로 대답하세요. 심판의 눈은 모든 위장을 꿰뚫어 봅니다.",
+                placeholder: "이름을 새기세요...",
+                startBtn: "심판 받아들이기",
+                prev: "이전",
+                connecting: "무의식에 연결 중...",
+                soulAnatomy: "의 영혼 분석",
+                comp: "성격 구성 비율",
+                restart: "영혼 재부팅",
+                lieAlert: "인격 분열/위장 경고",
+                lieConclusion: "결론: 당신의 본성은 위장 아래 숨겨져 있습니다. 이 결과는 당신이 연기하려는 페르소나일 뿐입니다.",
+                labels: {
+                    L: "질서 (Lawful)", Nx: "중립 (Neutral)", C: "혼돈 (Chaotic)",
+                    G: "선 (Good)", Ny: "중립 (Neutral)", E: "악 (Evil)"
+                },
+                alignments: {
+                    TN: { name: "절대 중립 (True Neutral)", desc: "당신은 선과 악, 질서와 혼돈의 편견을 초월했습니다. 균형을 믿습니다. 법을 위해 자신을 희생하지 않으며, 탐욕을 위해 남을 해치지도 않습니다." },
+                    LG: { name: "질서 선 (Lawful Good)", desc: "정의와 질서의 화신입니다. 규칙이 약자를 보호하고 세상을 더 낫게 만든다고 믿습니다. 정직하고 동정심이 많습니다." },
+                    NG: { name: "중립 선 (Neutral Good)", desc: "순수한 영혼입니다. 남을 돕고 옳은 일을 하는 한 규칙 따위는 신경 쓰지 않습니다. 사람을 살리기 위해 기꺼이 법을 어깁니다." },
+                    CG: { name: "혼돈 선 (Chaotic Good)", desc: "반항적인 영웅입니다. 본성은 선하지만 관료주의와 위선을 극도로 혐오합니다. 진정한 정의를 위해 규칙을 부수는 것을 즐깁니다." },
+                    LN: { name: "질서 중립 (Lawful Neutral)", desc: "법의 철권입니다. 결과보다는 과정이 중요합니다. 정의가 규정에 따라 집행되는지에만 관심이 있습니다." },
+                    CN: { name: "혼돈 중립 (Chaotic Neutral)", desc: "절대적인 자유입니다. 얽매이는 것을 싫어하고 본능에 따라 행동합니다. 고의로 해를 끼치지는 않지만 영웅도 아닙니다. 오직 자신을 위해 삽니다." },
+                    LE: { name: "질서 악 (Lawful Evil)", desc: "지능이 높은 포식자입니다. 사회의 규칙을 이해하고 이를 악용하여 권력과 부를 얻습니다. 냉혹하고 계산적입니다." },
+                    NE: { name: "중립 악 (Neutral Evil)", desc: "순수하게 이기적입니다. 넘지 못할 선이 없습니다. 원하는 것을 얻기 위해 수단과 방법을 가리지 않습니다." },
+                    CE: { name: "혼돈 악 (Chaotic Evil)", desc: "파괴 그 자체입니다. 질서, 법, 선을 증오합니다. 오직 힘만을 믿으며 타인의 고통에서 비틀린 쾌감을 얻습니다." }
+                },
+                dynamic: {
+                    header: "[깊은 무의식 분석]<br/>",
+                    L_trait: "• 자유를 갈망함에도 {pct}%의 질서 성향이 남아있어, 중요한 원칙에서는 여전히 계약을 존중합니다.<br/>",
+                    C_trait: "• {pct}%의 혼돈 인자가 숨어 있습니다. 극한의 압박 속에서 언제든 판을 엎을 잠재력이 있습니다.<br/>",
+                    E_trait: "• {pct}%의 이기적/악한 면이 있습니다. 이 '어둠의 갑옷'은 험난한 사회에서 당신을 보호합니다.<br/>",
+                    G_trait: "• 놀랍게도 냉정한 겉모습과 달리 {pct}%의 선함이 남아있습니다. 특정 대상에게는 의외의 다정함을 보일 수 있습니다.<br/>",
+                    Ny_trait: "• {pct}%의 도덕적 중립성은 강한 '방관자'적 태도를 나타냅니다. 자기 보호 본능이 매우 뛰어납니다.<br/>"
+                },
+                lies: {
+                    RULES: "규칙 모순: 무단횡단은 절대 안 한다면서 범죄자 친구를 숨겨주기 위해 법을 무시합니다.",
+                    AUTH: "권위 모순: 어른에게 복종해야 한다고 믿으면서 제국을 전복시키고 싶어 합니다.",
+                    TRADITION: "체제 모순: 전통이 문명의 초석이라면서 사회 문제 해결을 위해 구질서를 불태우자고 합니다.",
+                    LIE_HYPOCRISY: "위선: 살면서 단 한 번도 거짓말을 안 했다면서 선택지에서는 속임수를 씁니다.",
+                    LIE_PERFECT: "사회적 바람직성: 거짓말을 한 번도 안 한 사람은 없습니다. 완벽한 페르소나를 꾸며내고 있습니다.",
+                    REVENGE: "복수 모순: 용서를 주장하면서 적에게는 잔혹하게 10배로 갚아줍니다.",
+                    MORAL: "도덕적 분열: 길거리에서는 선행을 베풀면서 신물을 얻으면 학살을 원합니다."
+                }
+            }
+        };
+
+        // 题库 (精简版结构以支持多语言)
+        const questionsData = [
+            // X轴 11题
+            {
+                text: { zh: "1. 凌晨 3 点，你走在绝对没有车和摄像头的路口，人行道是红灯。你会？", en: "1. 3 AM, empty intersection, no cameras, pedestrian light is red. You:", fa: "۱. ساعت ۳ صبح در تقاطعی خلوت بدون دوربین، چراغ عابر قرمز است. شما:", ko: "1. 새벽 3시, 차도 카메라도 없는 교차로. 보행자 신호는 빨간불. 당신은?" },
+                options: [
+                    { text: { zh: "老实等绿灯。规矩就是规矩。", en: "Wait for green. Rules are rules.", fa: "صبر تا سبز شدن. قانون قانون است.", ko: "녹색불을 기다린다. 규칙은 규칙이다." }, type: "L", tag: "RULES_OBEY" },
+                    { text: { zh: "确认安全直接走过去。", en: "Check safety and cross.", fa: "بررسی ایمنی و عبور.", ko: "안전을 확인하고 건넌다." }, type: "Nx" },
+                    { text: { zh: "无视红灯。没车时它毫无意义。", en: "Ignore it. It's meaningless now.", fa: "نادیده گرفتن. الان بی‌معنی است.", ko: "무시한다. 차가 없으면 의미 없다." }, type: "C", tag: "RULES_DISMISS" }
+                ]
+            },
+            {
+                text: { zh: "2. 合同里有一个明显是对方写错的漏洞，能给你带来巨大好处。你会：", en: "2. A contract has a clear typo by the other party that benefits you greatly. You:", fa: "۲. در قرارداد یک اشتباه واضح از طرف مقابل است که سود زیادی برای شما دارد. شما:", ko: "2. 계약서에 상대방의 명백한 실수로 당신에게 큰 이득이 되는 허점이 있습니다. 당신은:" },
+                options: [
+                    { text: { zh: "指出来按原意修改，胜之不武。", en: "Point it out and fix it. Winning like this is wrong.", fa: "اشاره و اصلاح آن. اینگونه پیروزی اشتباه است.", ko: "지적하고 원래대로 수정한다. 비겁한 승리다." }, type: "L" },
+                    { text: { zh: "视对方是谁而定，大公司就薅羊毛。", en: "Depends on who it is. Big corp? Exploit it.", fa: "بستگی دارد کیست. شرکت بزرگ؟ سوءاستفاده.", ko: "상대가 누구냐에 따라 다르다. 대기업이라면 이용한다." }, type: "Nx" },
+                    { text: { zh: "装没看见签字。这是丛林法则。", en: "Sign it silently. Law of the jungle.", fa: "امضای بی‌صدا. قانون جنگل.", ko: "모른 척 서명한다. 정글의 법칙이다." }, type: "C" }
+                ]
+            },
+            {
+                text: { zh: "3. 关于‘权威’（上级、长辈或专家），你的真实态度是：", en: "3. Your true attitude towards 'Authority' (bosses, elders, experts):", fa: "۳. نگرش واقعی شما به 'قدرت' (رؤسا، بزرگان):", ko: "3. '권위'(상사, 어른, 전문가)에 대한 당신의 진짜 태도는:" },
+                options: [
+                    { text: { zh: "权威代表秩序，应被尊重服从。", en: "Represents order, should be respected.", fa: "نظم را نشان می‌دهد، باید احترام گذاشت.", ko: "질서를 상징하며, 존중하고 복종해야 한다." }, type: "L", tag: "AUTH_RESPECT" },
+                    { text: { zh: "对就听，不对就敷衍。", en: "Listen if right, brush off if wrong.", fa: "اگر درست است گوش کن، وگرنه نادیده بگیر.", ko: "맞으면 듣고 틀리면 대충 넘긴다." }, type: "Nx" },
+                    { text: { zh: "权威就是用来推翻的，我天生反骨。", en: "Meant to be overthrown. I'm a rebel.", fa: "باید سرنگون شود. من شورشی‌ام.", ko: "권위는 뒤집기 위해 존재한다. 나는 반항아다." }, type: "C", tag: "AUTH_REBEL" }
+                ]
+            },
+            {
+                text: { zh: "4. 和朋友长途旅行，做攻略时你通常：", en: "4. Planning a long trip with friends, you usually:", fa: "۴. برنامه‌ریزی سفر طولانی با دوستان، شما معمولاً:", ko: "4. 친구들과 긴 여행을 갈 때, 계획을 짤 때 당신은 보통:" },
+                options: [
+                    { text: { zh: "精确到几点去哪，提前预订一切。", en: "Plan every minute, book everything.", fa: "برنامه‌ریزی دقیق هر دقیقه، رزرو همه چیز.", ko: "분 단위로 계획하고 모든 것을 미리 예약한다." }, type: "L" },
+                    { text: { zh: "定好机票酒店，剩下看心情。", en: "Book flights/hotels, wing the rest.", fa: "رزرو پرواز/هتل، بقیه بستگی به حال و هوا.", ko: "비행기/호텔만 예약하고 나머지는 기분 따라." }, type: "Nx" },
+                    { text: { zh: "说走就走，极其讨厌被行程绑架。", en: "Just go. Hate being tied to an itinerary.", fa: "فقط برو. از برنامه‌ریزی متنفرم.", ko: "그냥 떠난다. 일정에 얽매이는 것을 극도로 싫어한다." }, type: "C" }
+                ]
+            },
+            {
+                text: { zh: "5. 接手复杂的新工作任务时，你倾向于：", en: "5. Taking on a complex new task, you prefer to:", fa: "۵. هنگام انجام یک کار پیچیده جدید، ترجیح می‌دهید:", ko: "5. 복잡한 새 업무를 맡을 때, 당신의 성향은:" },
+                options: [
+                    { text: { zh: "先制定详尽流程图，按部就班。", en: "Make a detailed flowchart, follow steps.", fa: "ساخت فلوچارت دقیق، پیروی از مراحل.", ko: "상세한 절차를 만들고 단계별로 진행한다." }, type: "L" },
+                    { text: { zh: "定个大方向，边做边调整。", en: "Set a direction, adjust as I go.", fa: "تعیین مسیر کلی، تنظیم در حین کار.", ko: "큰 방향만 정하고 하면서 조정한다." }, type: "Nx" },
+                    { text: { zh: "直接动手，靠直觉随机应变。", en: "Dive in, improvise on instinct.", fa: "شروع سریع، بداهه‌پردازی با غریزه.", ko: "바로 시작하고 직감에 따라 임기응변한다." }, type: "C" }
+                ]
+            },
+            {
+                text: { zh: "6. 如果你是法官，一个极度饥饿偷面包的穷人站在你面前：", en: "6. As a judge, a starving pauper who stole bread stands before you:", fa: "۶. به عنوان قاضی، یک فقیر گرسنه که نان دزدیده مقابل شماست:", ko: "6. 당신이 판사인데, 굶주림에 빵을 훔친 빈민이 앞에 있습니다:" },
+                options: [
+                    { text: { zh: "法不容情，按盗窃定罪，给予最低刑罚。", en: "Law is law. Convict, but minimum sentence.", fa: "قانون قانون است. محکوم با حداقل مجازات.", ko: "법은 법이다. 유죄 판결하되 최저 형량 부여." }, type: "L", tag: "LAW_STRICT" },
+                    { text: { zh: "让他做社区服务抵消，息事宁人。", en: "Community service to offset it.", fa: "خدمات اجتماعی برای جبران.", ko: "사회봉사로 대체하고 조용히 넘긴다." }, type: "Nx" },
+                    { text: { zh: "当庭无罪释放，谴责让他挨饿的体制。", en: "Acquit immediately, condemn the system.", fa: "تبرئه فوری، محکومیت سیستم حاکم.", ko: "무죄 석방하고 그를 굶긴 체제를 비난한다." }, type: "C", tag: "LAW_FUCKIT" }
+                ]
+            },
+            {
+                text: { zh: "7. 在团队游戏中，你最讨厌哪种队友？", en: "7. In team games, what teammate do you hate most?", fa: "۷. در بازی‌های تیمی، از چه هم‌تیمی بیشتر متنفرید؟", ko: "7. 팀 게임에서 가장 싫어하는 팀원은?" },
+                options: [
+                    { text: { zh: "不听指挥、不按战术的‘独狼’。", en: "Lone wolves who ignore tactics.", fa: "گرگ‌های تنها که تاکتیک را نادیده می‌گیرند.", ko: "지시를 안 듣고 전술을 무시하는 '독고다이'." }, type: "L" },
+                    { text: { zh: "技术太菜还喜欢乱甩锅的人。", en: "Noobs who constantly blame others.", fa: "مبتدی‌هایی که مدام دیگران را مقصر می‌دانند.", ko: "실력도 없으면서 남 탓만 하는 사람." }, type: "Nx" },
+                    { text: { zh: "事事都要管的‘控制狂’队长。", en: "Control freak captains dictating everything.", fa: "کاپیتان‌های کنترل‌گری که همه چیز را دیکته می‌کنند.", ko: "사사건건 간섭하는 '통제광' 대장." }, type: "C" }
+                ]
+            },
+            {
+                text: { zh: "8. 对于社会‘传统’和‘习俗’，你的态度是？", en: "8. Attitude towards social 'traditions' and 'customs'?", fa: "۸. نگرش به 'سنت‌ها' و 'رسوم' اجتماعی؟", ko: "8. 사회의 '전통'과 '관습'에 대한 당신의 태도는?" },
+                options: [
+                    { text: { zh: "文明基石，维系稳定，应被传承。", en: "Cornerstones of civ, maintain stability.", fa: "سنگ بنای تمدن، حفظ ثبات.", ko: "문명의 초석이며 안정을 유지하므로 계승해야 한다." }, type: "L", tag: "TRADITION_LOVE" },
+                    { text: { zh: "挑有用的保留，没用的扔掉。", en: "Keep useful ones, toss the rest.", fa: "حفظ موارد مفید، دور انداختن بقیه.", ko: "유용한 것만 남기고 쓸모없는 건 버린다." }, type: "Nx" },
+                    { text: { zh: "大多是旧枷锁，最好全部砸碎建新秩序。", en: "Old shackles. Smash them for a new order.", fa: "غل و زنجیرهای قدیمی. نابودی برای نظم جدید.", ko: "대부분 낡은 족쇄다. 다 부수고 새 질서를 세워야 한다." }, type: "C", tag: "TRADITION_DESTROY" }
+                ]
+            },
+            {
+                text: { zh: "9. 你的电脑桌面或办公桌通常是怎样的？", en: "9. How is your computer desktop or workspace usually?", fa: "۹. دسکتاپ یا میز کار شما معمولاً چگونه است؟", ko: "9. 당신의 컴퓨터 바탕화면이나 책상은 보통 어떤가요?" },
+                options: [
+                    { text: { zh: "井井有条，文件分类严密。", en: "Impeccably organized and categorized.", fa: "کاملاً سازماندهی و طبقه‌بندی شده.", ko: "정돈되어 있고 파일 분류가 엄격하다." }, type: "L" },
+                    { text: { zh: "有点乱，但我大概知道东西在哪。", en: "A bit messy, but I know where things are.", fa: "کمی به هم ریخته، اما جای چیزها را می‌دانم.", ko: "좀 어수선하지만 뭐 어딨는지는 안다." }, type: "Nx" },
+                    { text: { zh: "极其混乱，找东西全靠缘分或搜索。", en: "Utter chaos. Finding things relies on luck/search.", fa: "هرج و مرج مطلق. پیدا کردن شانسی است.", ko: "극도로 혼란스럽다. 운이나 검색에 의존한다." }, type: "C" }
+                ]
+            },
+            {
+                text: { zh: "10. 若失去警察和法律，世界会怎样？", en: "10. Without police and laws, what happens to the world?", fa: "۱۰. بدون پلیس و قانون، چه بر سر دنیا می‌آید؟", ko: "10. 경찰과 법이 사라진다면 세상은 어떻게 될까요?" },
+                options: [
+                    { text: { zh: "陷入恐怖的掠夺和互相残杀。", en: "Plunges into horrific looting and murder.", fa: "غوطه‌ور در غارت و قتل وحشتناک.", ko: "끔찍한 약탈과 살육의 혼란에 빠진다." }, type: "L" },
+                    { text: { zh: "前期大乱，后期形成私刑规则。", en: "Initial chaos, later vigilante rules form.", fa: "ابتدا آشوب، سپس شکل‌گیری قوانین خودسرانه.", ko: "초기엔 혼란, 후기엔 사적 제재 규칙이 생길 것이다." }, type: "Nx" },
+                    { text: { zh: "优胜劣汰，强者自由的世界。", en: "Survival of the fittest. Freedom for the strong.", fa: "بقا برای شایسته‌ترین‌ها. آزادی برای قوی‌ترها.", ko: "적자생존, 강자들만의 자유로운 세상이 된다." }, type: "C" }
+                ]
+            },
+            {
+                text: { zh: "11. 公司严禁私人下载，但你急需下个私人文件。你会：", en: "11. Office strictly bans personal downloads, but you need one urgently. You:", fa: "۱۱. شرکت دانلود شخصی را ممنوع کرده، اما شما فوراً نیاز دارید:", ko: "11. 회사에서 개인 다운로드를 엄격히 금지하지만 급하게 받아야 합니다:" },
+                options: [
+                    { text: { zh: "坚决不下，下班用自己流量。", en: "Never. I'll use my own data after work.", fa: "هرگز. بعد از کار از اینترنت خودم استفاده می‌کنم.", ko: "절대 안 한다. 퇴근 후 내 데이터로 받는다." }, type: "L" },
+                    { text: { zh: "趁没人偷偷下，觉得小事不会被查。", en: "Sneak it. Such minor things aren't checked.", fa: "مخفیانه. این چیزهای کوچک بررسی نمی‌شوند.", ko: "몰래 받는다. 이런 사소한 건 안 걸릴 거다." }, type: "Nx" },
+                    { text: { zh: "光明正大下，觉得这规定有病。", en: "Download openly. The rule is stupid anyway.", fa: "آشکارا دانلود می‌کنم. این قانون احمقانه است.", ko: "당당하게 받는다. 이딴 규정은 미친 짓이다." }, type: "C" }
+                ]
+            },
+
+            // Y轴 11题
+            {
+                text: { zh: "12. 看到穷人在小吃摊偷包子，摊主正要打他，你会：", en: "12. A starving person steals bread. The vendor is about to beat him. You:", fa: "۱۲. فرد گرسنه‌ای نان می‌دزدد. فروشنده می‌خواهد او را کتک بزند. شما:", ko: "12. 빈민이 빵을 훔쳤고 주인이 때리려 합니다. 당신은:" },
+                options: [
+                    { text: { zh: "制止摊主，替他付钱并提供帮助。", en: "Stop vendor, pay, offer help.", fa: "توقف فروشنده، پرداخت، پیشنهاد کمک.", ko: "주인을 말리고 돈을 대신 낸 뒤 돕는다." }, type: "G", tag: "COMPASSION_HIGH" },
+                    { text: { zh: "远处看着不想惹事，苦难太多管不过来。", en: "Watch from afar. Too much suffering to care.", fa: "تماشا از دور. دردسرهای زیادی برای اهمیت دادن وجود دارد.", ko: "멀리서 지켜본다. 세상의 모든 고통을 신경 쓸 순 없다." }, type: "Ny" },
+                    { text: { zh: "不帮甚至落井下石，或借机勒索小偷。", en: "Don't help, mock him, or extort the thief.", fa: "کمک نمی‌کنم، مسخره می‌کنم یا از دزد اخاذی می‌کنم.", ko: "돕지 않고 오히려 조롱하거나 도둑을 협박한다." }, type: "E", tag: "CRUEL_HIGH" }
+                ]
+            },
+            {
+                text: { zh: "13. 突然中彩票 5000 万，你会怎么分配？", en: "13. Win $10 million lottery. How to allocate?", fa: "۱۳. برنده لاتاری بزرگ شده‌اید. چگونه تخصیص می‌دهید؟", ko: "13. 복권 500억에 당첨되었습니다. 어떻게 쓸까요?" },
+                options: [
+                    { text: { zh: "大比例捐给慈善，剩下够生活就行。", en: "Donate a huge chunk, keep enough to live.", fa: "بخش بزرگی را اهدا می‌کنم، بقیه برای زندگی.", ko: "대부분 기부하고 생활비만 남긴다." }, type: "G" },
+                    { text: { zh: "投资理财，确保家人几代优渥生活。", en: "Invest for generational wealth for family.", fa: "سرمایه‌گذاری برای ثروت نسل‌های آینده خانواده.", ko: "가족의 평생 호의호식을 위해 투자한다." }, type: "Ny" },
+                    { text: { zh: "极尽奢靡享乐，狠狠打压看不起我的人。", en: "Extreme luxury, crush those who looked down on me.", fa: "تجمل افراطی، نابودی کسانی که مرا تحقیر کردند.", ko: "극도로 사치하고 나를 무시했던 자들을 짓밟는다." }, type: "E" }
+                ]
+            },
+            {
+                text: { zh: "14. 坦白说，你是否从未说过一次谎（连善意谎言都没有）？", en: "14. Honestly, have you NEVER told a lie (even white lies)?", fa: "۱۴. صادقانه بگو، آیا هرگز دروغ نگفته‌ای؟", ko: "14. 솔직히, 단 한 번도 거짓말을 한 적 없나요? (선의의 거짓말 포함)" },
+                options: [
+                    { text: { zh: "我发誓绝对没有半句谎言。", en: "I swear I have NEVER lied.", fa: "قسم می‌خورم هرگز دروغ نگفته‌ام.", ko: "맹세코 거짓말은 1도 한 적 없다." }, type: "G", tag: "LIE_NEVER" }, // 测谎
+                    { text: { zh: "说过，通常为了避免尴尬或善意隐瞒。", en: "I have, usually white lies to avoid awkwardness.", fa: "بله، معمولاً دروغ‌های مصلحتی برای جلوگیری از خجالت.", ko: "있다. 보통 민망함을 피하거나 선의의 목적이다." }, type: "Ny" },
+                    { text: { zh: "谎言只是工具，我经常骗且很溜。", en: "Lies are tools. I lie often and well.", fa: "دروغ‌ها ابزار هستند. من زیاد و خوب دروغ می‌گویم.", ko: "거짓말은 도구일 뿐. 자주 그리고 능숙하게 속인다." }, type: "E", tag: "LIE_OFTEN" }
+                ]
+            },
+            {
+                text: { zh: "15. 朋友遭遇重大挫折哭诉，你通常：", en: "15. A friend cries to you over a major setback. You:", fa: "۱۵. دوستی به خاطر یک شکست بزرگ گریه می‌کند. شما:", ko: "15. 친구가 큰 시련으로 울고 있습니다. 당신은:" },
+                options: [
+                    { text: { zh: "极度共情陪哭，放下手头事全力帮他。", en: "Deep empathy, cry with them, drop everything to help.", fa: "همدلی عمیق، گریه با او، رها کردن همه چیز برای کمک.", ko: "깊이 공감하며 함께 울고 모든 걸 제쳐두고 돕는다." }, type: "G" },
+                    { text: { zh: "倾听理性分析，给建议但内心无波澜。", en: "Listen rationally, advise, but feel little emotion.", fa: "گوش دادن منطقی، مشاوره، اما بدون احساسات زیاد.", ko: "이성적으로 듣고 조언하지만 속으론 무덤덤하다." }, type: "Ny" },
+                    { text: { zh: "觉得烦和脆弱，随便敷衍找借口离开。", en: "Find them annoying/weak. Brush off and leave.", fa: "او را آزاردهنده/ضعیف می‌دانم. بهانه‌ای برای رفتن پیدا می‌کنم.", ko: "짜증나고 나약하다 여겨 대충 핑계 대고 떠난다." }, type: "E" }
+                ]
+            },
+            {
+                text: { zh: "16. 无意掌握同事足以身败名裂的秘密：", en: "16. You discover a secret that could ruin a coworker:", fa: "۱۶. رازی را کشف می‌کنید که می‌تواند یک همکار را نابود کند:", ko: "16. 동료를 파멸시킬 치명적인 비밀을 알게 되었습니다:" },
+                options: [
+                    { text: { zh: "死守秘密烂在肚子里。绝不毁掉别人。", en: "Keep it forever. I won't ruin someone like that.", fa: "برای همیشه نگه می‌دارم. کسی را اینگونه نابود نمی‌کنم.", ko: "무덤까지 가져간다. 그런 식으로 남을 망치지 않는다." }, type: "G" },
+                    { text: { zh: "留作底牌防身，他攻击我才用。", en: "Keep as a trump card for defense only.", fa: "فقط به عنوان برگ برنده برای دفاع نگه می‌دارم.", ko: "방어용 카드로 쥐고 있다가 그가 공격할 때만 쓴다." }, type: "Ny" },
+                    { text: { zh: "立刻要挟他分利益给我，否则公开。", en: "Blackmail them for profit immediately.", fa: "فوراً برای سود از آن‌ها اخاذی می‌کنم.", ko: "당장 협박해서 이익을 뜯어낸다. 안 주면 폭로." }, type: "E" }
+                ]
+            },
+            {
+                text: { zh: "17. 你如何看待‘复仇’？", en: "17. Your view on 'Revenge'?", fa: "۱۷. نظر شما درباره 'انتقام'؟", ko: "17. '복수'에 대한 당신의 생각은?" },
+                options: [
+                    { text: { zh: "冤冤相报何时了，宽恕别人放过自己。", en: "Forgive and let go. Cycles of hate never end.", fa: "ببخش و رها کن. چرخه‌های نفرت هرگز پایان نمی‌یابند.", ko: "원수는 원수를 낳을 뿐. 용서가 나를 놓아주는 길이다." }, type: "G", tag: "FORGIVE_ALL" },
+                    { text: { zh: "以牙还牙。不超额报复，但绝不吃亏。", en: "Eye for an eye. Break even, nothing more.", fa: "چشم در برابر چشم. برابر می‌شوم، نه بیشتر.", ko: "눈에는 눈. 더 갚진 않지만 절대 손해는 안 본다." }, type: "Ny" },
+                    { text: { zh: "斩草除根，十倍代价让他活在恐惧中。", en: "Destroy them. Make them pay tenfold in terror.", fa: "نابودشان کن. آن‌ها را در وحشت ده برابر مجازات کن.", ko: "뿌리를 뽑는다. 10배로 갚고 공포에 떨게 만든다." }, type: "E", tag: "REVENGE_CRUEL" }
+                ]
+            },
+            {
+                text: { zh: "18. 如果你是领导，团队分钱时你会：", en: "18. As a leader distributing team bonus:", fa: "۱۸. به عنوان رهبر در توزیع پاداش تیم:", ko: "18. 당신이 리더로서 팀 보너스를 분배할 때:" },
+                options: [
+                    { text: { zh: "底层干活拿大头，自己少拿无所谓。", en: "Grunts get the most. I don't mind taking less.", fa: "کارگران بیشتر می‌گیرند. من به کمتر راضیم.", ko: "실무진이 가장 많이 가져간다. 내 몫은 적어도 좋다." }, type: "G" },
+                    { text: { zh: "按劳分配，自己多拿点因担了主要责任。", en: "Fair split, but I take a bit more for responsibility.", fa: "تقسیم عادلانه، اما به خاطر مسئولیت کمی بیشتر برمی‌دارم.", ko: "공정 분배하되 책임이 크니 내가 좀 더 챙긴다." }, type: "Ny" },
+                    { text: { zh: "把 80% 据为己有，随便丢点残羹打发手下。", en: "Keep 80%, throw scraps to the subordinates.", fa: "۸۰ درصد برای من، ته‌مانده‌ها برای زیردستان.", ko: "80%는 내가 먹고 부하들에겐 찌꺼기만 던져준다." }, type: "E" }
+                ]
+            },
+            {
+                text: { zh: "19. 商场洗手间捡到余额巨高的无密码新手机：", en: "19. Find unlocked expensive phone with huge crypto wallet:", fa: "۱۹. پیدا کردن گوشی گران‌قیمت قفل نشده با کیف پول کریپتوی پر:", ko: "19. 화장실에서 잔고가 엄청난 잠금 해제된 최신폰을 주웠다:" },
+                options: [
+                    { text: { zh: "寻找失主交还，坚决不收感谢费。", en: "Return to owner, refuse any reward.", fa: "بازگرداندن به صاحب، رد هرگونه پاداش.", ko: "주인을 찾아 돌려주고 사례금은 절대 안 받는다." }, type: "G" },
+                    { text: { zh: "交还，但心里希望能得到丰厚感谢。", en: "Return it, hoping for a fat cash reward.", fa: "بازگرداندن، به امید دریافت پاداش نقدی چاق.", ko: "돌려주지만 두둑한 사례금을 내심 기대한다." }, type: "Ny" },
+                    { text: { zh: "转走钱，刷机卖掉手机。", en: "Drain the wallet, wipe and sell the phone.", fa: "خالی کردن کیف پول، پاک کردن و فروش گوشی.", ko: "돈을 싹 빼돌리고 폰은 초기화해서 판다." }, type: "E" }
+                ]
+            },
+            {
+                text: { zh: "20. 对待流浪猫狗的真实态度：", en: "20. True attitude towards stray animals:", fa: "۲۰. نگرش واقعی به حیوانات ولگرد:", ko: "20. 길고양이나 유기견에 대한 진짜 태도는:" },
+                options: [
+                    { text: { zh: "觉得可怜常投喂，甚至想全部收养。", en: "Pity them, feed them, want to adopt them all.", fa: "دلسوزی، غذا دادن، تمایل به پذیرش همه.", ko: "불쌍해서 자주 밥을 주고 다 키우고 싶다." }, type: "G" },
+                    { text: { zh: "无感。只要不咬人不拦路随便怎样。", en: "Apathetic. As long as they don't bite me.", fa: "بی‌تفاوت. تا زمانی که گاز نگیرند.", ko: "무감각. 안 물고 길만 안 막으면 알 바 아니다." }, type: "Ny" },
+                    { text: { zh: "觉得又脏又吵，没人看见可能会踢走。", en: "Loud and dirty. Might kick them if nobody sees.", fa: "پر سر و صدا و کثیف. اگر کسی نبیند لگد می‌زنم.", ko: "더럽고 시끄럽다. 안 볼 때 걷어차 쫓아낼 수도 있다." }, type: "E" }
+                ]
+            },
+            {
+                text: { zh: "21. 为拯救万人，前提是必须欺骗利用挚友：", en: "21. To save 10,000 lives, you must deceive your best friend:", fa: "۲۱. برای نجات ۱۰۰۰۰ نفر، باید بهترین دوست خود را فریب دهید:", ko: "21. 만 명을 구하기 위해 가장 친한 친구를 속이고 이용해야 한다면:" },
+                options: [
+                    { text: { zh: "绝不。信任一旦打破无法挽回，拼命找别法。", en: "Never. Trust is sacred. Find another way.", fa: "هرگز. اعتماد مقدس است. راه دیگری پیدا کن.", ko: "절대 안 함. 신뢰는 깨지면 끝. 목숨 걸고 다른 길을 찾음." }, type: "G", tag: "FRIEND_FIRST" },
+                    { text: { zh: "极度纠结，若真能救多人可能迫不得已骗他。", en: "Agonize, but might do it if it truly saves many.", fa: "رنج می‌کشم، اما اگر جان‌های زیادی را نجات دهد شاید انجام دهم.", ko: "극도로 고뇌하지만 진짜로 구할 수 있다면 어쩔 수 없이 속임." }, type: "Ny" },
+                    { text: { zh: "当然会。成大事必有牺牲，事后补偿就行。", en: "Of course. Greater good. Compensate them later.", fa: "البته. خیر بزرگتر. بعداً جبران می‌کنم.", ko: "당연함. 대업에는 희생이 따름. 나중에 보상하면 그만." }, type: "E", tag: "UTILITARIAN" }
+                ]
+            },
+            {
+                text: { zh: "22. 看到背景深厚的恶人逃脱制裁，你感受是：", en: "22. Seeing an elite villain escape justice, you feel:", fa: "۲۲. دیدن فرار یک شرور نخبه از عدالت، احساس شما:", ko: "22. 빽 있는 악당이 법망을 빠져나간 뉴스를 보면:" },
+                options: [
+                    { text: { zh: "为受害者悲哀，对世界不公极度愤怒。", en: "Sorrow for victims, rage at the world's injustice.", fa: "غم برای قربانیان، خشم از بی‌عدالتی جهان.", ko: "피해자가 불쌍하고 세상의 불공평에 극도로 분노함." }, type: "G" },
+                    { text: { zh: "现实就是无奈，摇摇头看下一条新闻。", en: "Reality sucks. Shake head, scroll to next news.", fa: "واقعیت تلخ است. تکان دادن سر، رفتن به خبر بعدی.", ko: "현실이 그렇지 뭐. 고개 젓고 다음 기사 봄." }, type: "Ny" },
+                    { text: { zh: "弱肉强食，甚至有点佩服其手段高明。", en: "Law of the jungle. Mildly admire their cunning.", fa: "قانون جنگل. تحسین زیرکی آن‌ها.", ko: "약육강식. 놈의 기가 막힌 수단에 묘한 감탄을 느낌." }, type: "E" }
+                ]
+            },
+
+            // 混合/抉择题 9题 (直接加权分)
+            {
+                text: { zh: "23. 挚友犯下重罪逃跑，警察来找你提供线索：", en: "23. Best friend commits felony and runs. Cops ask you:", fa: "۲۳. بهترین دوستت جنایت کرده و فراری است. پلیس از شما می‌پرسد:", ko: "23. 절친이 중죄를 짓고 도망 중. 경찰이 찾아오면:" },
+                options: [
+                    { text: { zh: "如实提供，法律不容践踏。", en: "Tell the truth. Law is absolute.", fa: "حقیقت را می‌گویم. قانون مطلق است.", ko: "사실대로 분다. 법은 짓밟을 수 없다." }, type: "L", tag: "LAW_STRICT" },
+                    { text: { zh: "假装什么都不知道，两边不得罪。", en: "Pretend to know nothing. Stay out of it.", fa: "تظاهر به ندانستن. دخالت نمی‌کنم.", ko: "아무것도 모르는 척한다. 양쪽 다 피한다." }, type: "Ny" },
+                    { text: { zh: "不仅包庇，还偷偷送钱帮他偷渡。", en: "Hide him, fund his escape.", fa: "پنهان کردن او، تامین هزینه فرار.", ko: "숨겨줄 뿐 아니라 밀항 자금까지 몰래 줌." }, type: "C", tag: "RULES_DISMISS" }
+                ]
+            },
+            {
+                text: { zh: "24. 拥有写名字就能杀人于无形的笔记，你会：", en: "24. You get a notebook that kills anyone written in it:", fa: "۲۴. دفتری پیدا می‌کنید که با نوشتن نام، افراد را می‌کشد:", ko: "24. 이름만 적으면 아무도 모르게 사람을 죽이는 노트를 얻었다면:" },
+                options: [
+                    { text: { zh: "立刻烧掉，没人有权剥夺生命。", en: "Burn it instantly. Nobody has that right.", fa: "سوزاندن فوری. هیچکس چنین حقی ندارد.", ko: "당장 태운다. 누구도 생명을 빼앗을 권리는 없다." }, type: "G", tag: "COMPASSION_HIGH" },
+                    { text: { zh: "只处决罪大恶极法律管不了的杀人犯。", en: "Execute only the worst untouchable criminals.", fa: "فقط اعدام بدترین جنایتکاران غیرقابل دسترس.", ko: "법이 심판 못하는 극악무도한 연쇄살인마만 처형." }, type: "L" },
+                    { text: { zh: "谁惹我骂我挡我路，就写谁。", en: "Write down anyone who annoys or crosses me.", fa: "نوشتن نام هر کسی که مرا آزار می‌دهد یا سد راهم می‌شود.", ko: "날 화나게 하거나 거슬리는 놈은 싹 다 적음." }, type: "E", tag: "CRUEL_HIGH" }
+                ]
+            },
+            {
+                text: { zh: "25. 必须选择一种极端世界，你宁愿：", en: "25. Choose an extreme world:", fa: "۲۵. انتخاب یک دنیای افراطی:", ko: "25. 극단적인 세상 중 하나를 고르라면:" },
+                options: [
+                    { text: { zh: "极严苛独裁，无隐私但绝对安全。", en: "Harsh dictatorship, no privacy, zero crime.", fa: "دیکتاتوری سختگیرانه، بدون حریم خصوصی، بدون جرم.", ko: "엄격한 독재. 사생활은 없지만 범죄율 0%로 안전." }, type: "L", tag: "AUTH_RESPECT" },
+                    { text: { zh: "保持现状，好坏参半。", en: "Keep current status quo. Mixed bag.", fa: "حفظ وضعیت فعلی. مخلوطی از خوب و بد.", ko: "현상 유지. 좋은 것도 나쁜 것도 섞임." }, type: "Nx" },
+                    { text: { zh: "无规则丛林废土，极危险但绝对自由。", en: "Lawless wasteland, highly dangerous but pure freedom.", fa: "سرزمین بایر بدون قانون، بسیار خطرناک اما آزادی مطلق.", ko: "무법지대 정글. 존나 위험하지만 100% 자유." }, type: "C", tag: "AUTH_REBEL" }
+                ]
+            },
+            {
+                text: { zh: "26. 为救十万难民，需你捐出全部财产变一贫如洗：", en: "26. To save 100,000 refugees, you must donate ALL your wealth:", fa: "۲۶. برای نجات ۱۰۰۰۰۰ پناهنده، باید تمام ثروت خود را اهدا کنید:", ko: "26. 10만 난민을 위해 전 재산을 기부하고 알거지가 돼야 한다면:" },
+                options: [
+                    { text: { zh: "愿意，大爱无疆生命高于财富。", en: "Willingly. Life > Wealth.", fa: "با کمال میل. زندگی > ثروت.", ko: "기꺼이. 생명이 재산보다 소중하다." }, type: "G", tag: "DONATE_ALL" },
+                    { text: { zh: "捐一部分，但必须保证自身生活质量。", en: "Donate some, must maintain own quality of life.", fa: "بخشی را اهدا می‌کنم، کیفیت زندگی خودم باید حفظ شود.", ko: "일부만 기부. 내 삶의 질은 무조건 보장돼야 함." }, type: "Ny" },
+                    { text: { zh: "关我屁事，一分不捐。", en: "Not my problem. Not giving a cent.", fa: "مشکل من نیست. یک سنت هم نمی‌دهم.", ko: "내 알 바 아님. 십원도 안 줌." }, type: "E" }
+                ]
+            },
+            {
+                text: { zh: "27. 你被冤枉入死牢。越狱会导致换班无辜看守被处死：", en: "27. Framed on death row. Escaping gets an innocent guard executed:", fa: "۲۷. بی‌گناه در صف اعدام. فرار باعث اعدام یک نگهبان بی‌گناه می‌شود:", ko: "27. 억울한 사형수. 당신이 탈옥하면 무고한 교도관이 사형당합니다:" },
+                options: [
+                    { text: { zh: "放弃越狱。宁死不害无辜者。", en: "Give up escape. Better die than kill innocent.", fa: "تسلیم فرار. مرگ بهتر از کشتن بی‌گناه.", ko: "탈옥 포기. 무고한 사람을 죽이느니 내가 죽겠다." }, type: "G" },
+                    { text: { zh: "疯狂犹豫，求生欲可能占上风。", en: "Agonize deeply, but survival instinct might win.", fa: "رنج عمیق، اما غریزه بقا ممکن است پیروز شود.", ko: "미친 듯 갈등하다 결국 생존욕에 굴복할지도." }, type: "Ny" },
+                    { text: { zh: "毫不犹豫越狱。我是冤枉的他倒霉。", en: "Escape instantly. I'm innocent, his bad luck.", fa: "فرار فوری. من بی‌گناهم، بدشانسی اوست.", ko: "망설임 없이 탈옥. 난 억울하고 교도관은 재수가 없는 거." }, type: "E", tag: "UTILITARIAN" }
+                ]
+            },
+            {
+                text: { zh: "28. ‘英雄’这个词你真实定义偏向：", en: "28. Your true definition of 'Hero':", fa: "۲۸. تعریف واقعی شما از 'قهرمان':", ko: "28. '영웅'에 대한 당신의 진짜 정의는:" },
+                options: [
+                    { text: { zh: "为集体利益服从命令自我牺牲的战士。", en: "Soldier sacrificing self for collective good/orders.", fa: "سربازی که خود را فدای خیر جمعی/دستورات می‌کند.", ko: "집단의 이익과 명령에 복종하고 자신을 희생하는 전사." }, type: "L" },
+                    { text: { zh: "做善事藐视权贵的法外游侠。", en: "Vigilante outlaw doing good, defying elites.", fa: "یاغی شورشی که کار خیر می‌کند و نخبگان را به چالش می‌کشد.", ko: "권력자를 경멸하며 선행을 베푸는 무법자 유격대." }, type: "C" },
+                    { text: { zh: "蠢人代名词，笑到最后才是赢家。", en: "Synonym for fool. Survivors are the real winners.", fa: "مترادف احمق. بازماندگان برندگان واقعی هستند.", ko: "바보의 대명사. 끝까지 살아남는 자가 승자다." }, type: "E" }
+                ]
+            },
+            {
+                text: { zh: "29. 帝国繁荣但阶级压迫严重，你是平民领袖会：", en: "29. Empire is prosperous but oppressive. As rebel leader you:", fa: "۲۹. امپراتوری مرفه اما سرکوبگر است. به عنوان رهبر شورشیان:", ko: "29. 제국은 번영하나 계급 탄압이 심각합니다. 당신이 평민 리더라면:" },
+                options: [
+                    { text: { zh: "体制内改革立法，避免流血。", en: "Reform laws from within, avoid bloodshed.", fa: "اصلاح قوانین از درون، جلوگیری از خونریزی.", ko: "체제 내에서 입법 개혁, 유혈 사태 방지." }, type: "L", tag: "TRADITION_LOVE" },
+                    { text: { zh: "带人离开海外寻找新家园。", en: "Lead people overseas to find a new home.", fa: "مردم را برای یافتن خانه جدید به خارج از کشور هدایت کن.", ko: "사람들을 이끌고 해외로 떠나 새 터전을 찾음." }, type: "Nx" },
+                    { text: { zh: "发动暴力革命，哪怕帝国烧成灰。", en: "Violent revolution, even if empire burns to ash.", fa: "انقلاب خشونت‌آمیز، حتی اگر امپراتوری خاکستر شود.", ko: "제국이 잿더미가 되더라도 폭력 혁명을 일으킴." }, type: "C", tag: "TRADITION_DESTROY" }
+                ]
+            },
+            {
+                text: { zh: "30. 制定世界最高准则，你选：", en: "30. Dictate the world's highest rule:", fa: "۳۰. تعیین بالاترین قانون جهان:", ko: "30. 세계 최고 강령을 제정한다면:" },
+                options: [
+                    { text: { zh: "绝对公平与秩序，违规必严惩。", en: "Absolute order/fairness, strict penalty for breaking rules.", fa: "نظم/عدالت مطلق، مجازات سخت برای نقض قوانین.", ko: "절대적 공평과 질서, 위반 시 엄벌." }, type: "L" },
+                    { text: { zh: "顺其自然生态平衡。", en: "Let nature take its course, ecological balance.", fa: "بگذارید طبیعت مسیر خود را طی کند، تعادل اکولوژیک.", ko: "순리에 따르는 생태적 균형." }, type: "Nx" },
+                    { text: { zh: "适者生存，强者统治。", en: "Survival of fittest, strong rule the weak.", fa: "بقا برای شایسته‌ترین، حکومت قوی بر ضعیف.", ko: "적자생존, 강자가 지배한다." }, type: "E" }
+                ]
+            },
+            {
+                text: { zh: "31. 在这场审判最后，你认为你刚才的选择：", en: "31. At the end of this trial, your choices:", fa: "۳۱. در پایان این محاکمه، انتخاب‌های شما:", ko: "31. 심판의 마지막, 당신의 방금 전 선택들은:" },
+                options: [
+                    { text: { zh: "展现了我高尚的品格和对纪律的服从。", en: "Showed my noble character and obedience to discipline.", fa: "شخصیت نجیب و اطاعت من از نظم را نشان داد.", ko: "내 고결한 인격과 규율 복종을 보여줬다." }, type: "G" },
+                    { text: { zh: "是我真实、复杂带点自私的凡人想法。", en: "Were my real, complex, slightly selfish human thoughts.", fa: "افکار واقعی، پیچیده و کمی خودخواهانه انسانی من بودند.", ko: "진솔하고 복잡하며 약간 이기적인 평범한 생각이었다." }, type: "Ny" },
+                    { text: { zh: "别装了，我就是故意选最坏最好玩的选项。", en: "Stop pretending, I just picked the worst/funniest ones.", fa: "تظاهر نکن، من فقط بدترین/خنده‌دارترین‌ها را انتخاب کردم.", ko: "솔직히 꿀잼을 위해 젤 나쁘고 미친것만 골랐다." }, type: "E" }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let playerName = "";
+        let answers = []; 
+        let questionStartTime = 0;
+        let lieScore = 0;
+
+        const counts = { L: 0, Nx: 0, C: 0, G: 0, Ny: 0, E: 0 };
+
+        // DOM Elements
+        const elWelcome = document.getElementById('welcome-screen');
+        const elQuiz = document.getElementById('quiz-screen');
+        const elResult = document.getElementById('result-screen');
+        const inputName = document.getElementById('player-name');
+        const btnStart = document.getElementById('start-btn');
+        const btnPrev = document.getElementById('prev-btn');
+        const textQuestion = document.getElementById('question-text');
+        const containerOptions = document.getElementById('options-container');
+        const barProgress = document.getElementById('progress-bar');
+        const textCounter = document.getElementById('question-counter');
+
+        // 切换语言逻辑
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                currentLang = e.target.getAttribute('data-lang');
+                
+                // 设置 body css 用于切换字体和 RTL 排版
+                document.body.className = `flex flex-col items-center justify-center p-4 sm:p-8 lang-${currentLang}`;
+                document.body.dir = currentLang === 'fa' ? 'rtl' : 'ltr';
+
+                updateUI();
+            });
+        });
+
+        function updateUI() {
+            const t = i18n[currentLang];
+            
+            // Welcome screen
+            document.getElementById('ui-title').textContent = t.title;
+            document.getElementById('ui-subtitle').textContent = t.subtitle;
+            inputName.placeholder = t.placeholder;
+            btnStart.textContent = t.startBtn;
+
+            // Quiz screen
+            document.getElementById('ui-prev').textContent = t.prev;
+            
+            // Result screen
+            document.getElementById('ui-soul-anatomy').textContent = t.soulAnatomy;
+            document.getElementById('ui-comp').textContent = t.comp;
+            document.getElementById('restart-btn').textContent = t.restart;
+            document.getElementById('ui-lie-alert').textContent = t.lieAlert;
+            document.getElementById('ui-lie-conclusion').textContent = t.lieConclusion;
+            
+            document.getElementById('label-lawful').textContent = t.labels.L;
+            document.getElementById('label-neutral-x').textContent = t.labels.Nx;
+            document.getElementById('label-chaotic').textContent = t.labels.C;
+            document.getElementById('label-good').textContent = t.labels.G;
+            document.getElementById('label-neutral-y').textContent = t.labels.Ny;
+            document.getElementById('label-evil').textContent = t.labels.E;
+
+            // Re-render current screen content if needed
+            if (!elQuiz.classList.contains('hidden') && currentQuestionIndex < questionsData.length) {
+                renderQuestion(true); // pass true to avoid resetting start time
+            } else if (!elResult.classList.contains('hidden')) {
+                processResults(); // recalculate text
+            }
+        }
+
+        inputName.addEventListener('input', (e) => {
+            btnStart.disabled = e.target.value.trim().length === 0;
+        });
+
+        btnStart.addEventListener('click', () => {
+            playerName = inputName.value.trim();
+            if(!playerName) return;
+            elWelcome.classList.add('hidden');
+            elQuiz.classList.remove('hidden');
+            elQuiz.classList.add('flex');
+            renderQuestion();
+        });
+
+        btnPrev.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                const lastAnswer = answers.pop();
+                counts[lastAnswer.type]--;
+                
+                // 还原测谎分 (大致还原)
+                if(lastAnswer.speedTrap) lieScore -= 2;
+                if(lastAnswer.tag === "LIE_NEVER") lieScore -= 1;
+                
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        });
+
+        document.getElementById('restart-btn').addEventListener('click', () => location.reload());
+
+        function renderQuestion(isLanguageSwitch = false) {
+            if (currentQuestionIndex >= questionsData.length) {
+                processResults();
+                return;
+            }
+
+            if (!isLanguageSwitch) questionStartTime = Date.now();
+
+            if (currentQuestionIndex === 0) {
+                btnPrev.classList.add('opacity-0', 'pointer-events-none');
+            } else {
+                btnPrev.classList.remove('opacity-0', 'pointer-events-none');
+            }
+
+            const q = questionsData[currentQuestionIndex];
+            
+            textQuestion.textContent = q.text[currentLang];
+            const progressPercent = (currentQuestionIndex / questionsData.length) * 100;
+            barProgress.style.width = `${progressPercent}%`;
+            
+            // Convert to Persian numerals if FA
+            let displayCounter = `${currentQuestionIndex + 1} / ${questionsData.length}`;
+            if(currentLang === 'fa') {
+                const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+                displayCounter = displayCounter.replace(/\d/g, d => faDigits[d]);
+            }
+            textCounter.textContent = displayCounter;
+
+            containerOptions.innerHTML = '';
+            
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                const isRtl = currentLang === 'fa';
+                btn.className = `btn-option option-enter w-full ${isRtl?'text-right':'text-left'} p-5 rounded-xl text-slate-300 text-lg md:text-xl font-medium tracking-wide flex items-center`;
+                btn.style.animationDelay = `${index * 0.15}s`;
+                
+                const icon = `<span class="text-amber-500 font-bold ${isRtl?'ml-3':'mr-3'} opacity-70">✦</span>`;
+                btn.innerHTML = isRtl ? `${opt.text[currentLang]} ${icon}` : `${icon} ${opt.text[currentLang]}`;
+                
+                btn.onclick = () => {
+                    const timeTaken = Date.now() - questionStartTime;
+                    const speedTrap = timeTaken < 800; // <0.8s 视为瞎点瞎测谎
+                    
+                    if(speedTrap) lieScore += 2;
+                    if(opt.tag === "LIE_NEVER") lieScore += 1; // 完美人设陷阱
+
+                    answers.push({
+                        qIndex: currentQuestionIndex,
+                        type: opt.type,
+                        tag: opt.tag || null,
+                        speedTrap: speedTrap
+                    });
+                    
+                    // 加权逻辑：后9题分值放大为 2，拉开差距
+                    const weight = currentQuestionIndex >= 22 ? 2 : 1;
+                    counts[opt.type] += weight;
+                    
+                    currentQuestionIndex++;
+                    renderQuestion();
+                };
+                containerOptions.appendChild(btn);
+            });
+        }
+
+        function processResults() {
+            elQuiz.classList.remove('flex');
+            elQuiz.classList.add('hidden');
+            elResult.classList.remove('hidden');
+            elResult.classList.add('flex');
+
+            document.getElementById('display-name').textContent = playerName;
+            const t = i18n[currentLang];
+
+            const totalX = counts.L + counts.Nx + counts.C;
+            const totalY = counts.G + counts.Ny + counts.E;
+
+            const pctL = Math.round((counts.L / totalX) * 100) || 0;
+            const pctNx = Math.round((counts.Nx / totalX) * 100) || 0;
+            const pctC = Math.round((counts.C / totalX) * 100) || 0;
+
+            const pctG = Math.round((counts.G / totalY) * 100) || 0;
+            const pctNy = Math.round((counts.Ny / totalY) * 100) || 0;
+            const pctE = Math.round((counts.E / totalY) * 100) || 0;
+
+            document.getElementById('bar-lawful').style.width = `${pctL}%`;
+            document.getElementById('bar-neutral-x').style.width = `${pctNx}%`;
+            document.getElementById('bar-chaotic').style.width = `${pctC}%`;
+            
+            document.getElementById('bar-good').style.width = `${pctG}%`;
+            document.getElementById('bar-neutral-y').style.width = `${pctNy}%`;
+            document.getElementById('bar-evil').style.width = `${pctE}%`;
+            
+            let xStr = `${t.labels.L} ${pctL}% | ${t.labels.Nx} ${pctNx}% | ${t.labels.C} ${pctC}%`;
+            let yStr = `${t.labels.G} ${pctG}% | ${t.labels.Ny} ${pctNy}% | ${t.labels.E} ${pctE}%`;
+            
+            if(currentLang === 'fa') {
+                const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+                xStr = xStr.replace(/\d/g, d => faDigits[d]);
+                yStr = yStr.replace(/\d/g, d => faDigits[d]);
+            }
+            
+            document.getElementById('text-x-percent').textContent = xStr;
+            document.getElementById('text-y-percent').textContent = yStr;
+
+            // 测谎机制 (逻辑矛盾检测)
+            const tags = answers.map(a => a.tag).filter(tag => tag);
+            const contradictions = [];
+
+            if (tags.includes("RULES_OBEY") && tags.includes("RULES_DISMISS")) contradictions.push(t.lies.RULES);
+            if (tags.includes("AUTH_RESPECT") && tags.includes("AUTH_REBEL")) contradictions.push(t.lies.AUTH);
+            if (tags.includes("TRADITION_LOVE") && tags.includes("TRADITION_DESTROY")) contradictions.push(t.lies.TRADITION);
+            if (tags.includes("LIE_NEVER") && tags.includes("LIE_OFTEN")) contradictions.push(t.lies.LIE_HYPOCRISY);
+            else if (tags.includes("LIE_NEVER")) contradictions.push(t.lies.LIE_PERFECT);
+            if (tags.includes("FORGIVE_ALL") && tags.includes("REVENGE_CRUEL")) contradictions.push(t.lies.REVENGE);
+            if (tags.includes("COMPASSION_HIGH") && tags.includes("CRUEL_HIGH")) contradictions.push(t.lies.MORAL);
+
+            const totalLieScore = lieScore + contradictions.length;
+
+            let alignXKey = "Nx";
+            if (pctL > pctNx && pctL > pctC) alignXKey = "L";
+            else if (pctC > pctNx && pctC > pctL) alignXKey = "C";
+
+            let alignYKey = "Ny";
+            if (pctG > pctNy && pctG > pctE) alignYKey = "G";
+            else if (pctE > pctNy && pctE > pctG) alignYKey = "E";
+
+            let alignCode = "";
+            if (alignXKey === "Nx" && alignYKey === "Ny") alignCode = "TN";
+            else alignCode = alignXKey.replace('Nx', 'N') + alignYKey.replace('Ny', 'N');
+
+            const finalData = t.alignments[alignCode] || t.alignments["TN"];
+
+            let dynamicText = t.dynamic.header;
+            if (pctL > 0 && pctL < 40 && alignXKey !== "L") dynamicText += t.dynamic.L_trait.replace('{pct}', pctL);
+            if (pctC > 0 && pctC < 40 && alignXKey !== "C") dynamicText += t.dynamic.C_trait.replace('{pct}', pctC);
+            if (pctE >= 20 && pctE <= 40 && alignYKey !== "E") dynamicText += t.dynamic.E_trait.replace('{pct}', pctE);
+            if (pctG >= 20 && pctG <= 40 && alignYKey === "E") dynamicText += t.dynamic.G_trait.replace('{pct}', pctG);
+            if (pctNy >= 50) dynamicText += t.dynamic.Ny_trait.replace('{pct}', pctNy);
+            
+            if(currentLang === 'fa') {
+                const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+                dynamicText = dynamicText.replace(/\d+/g, m => m.split('').map(d => faDigits[d]).join(''));
+            }
+
+            if (totalLieScore >= 2) { 
+                document.getElementById('lie-alert').classList.remove('hidden');
+                let liHTML = contradictions.map(c => `<li>- ${c}</li>`).join('');
+                if(contradictions.length === 0) liHTML = `<li>- Speed/Bot behavior detected.</li>`; // Fallback for speed trap only
+                document.getElementById('lie-details').innerHTML = `<ul class="${currentLang==='fa'?'text-right':'text-left'} list-none">${liHTML}</ul>`;
+                document.getElementById('alignment-title').innerHTML = `<span class="line-through text-slate-700 text-4xl block mb-2">${finalData.name}</span> <span class="text-red-500 glitch-text text-5xl md:text-6xl block">Fake Persona</span>`;
+            } else {
+                document.getElementById('lie-alert').classList.add('hidden');
+                document.getElementById('alignment-title').innerHTML = finalData.name;
+            }
+
+            document.getElementById('alignment-desc').textContent = finalData.desc;
+            document.getElementById('dynamic-analysis').innerHTML = dynamicText;
+        }
+
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.speedX = Math.random() * 0.6 - 0.3;
+                this.speedY = Math.random() * -0.8 - 0.2;
+                const colors = [
+                    `rgba(217, 119, 6, ${Math.random() * 0.5 + 0.1})`, 
+                    `rgba(251, 191, 36, ${Math.random() * 0.4 + 0.1})`, 
+                    `rgba(99, 102, 241, ${Math.random() * 0.3 + 0.1})`  
+                ];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (Math.random() > 0.98) this.size += 0.2;
+                if (Math.random() > 0.98 && this.size > 0.5) this.size -= 0.2;
+                if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) {
+                    this.y = canvas.height + 10;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                if(this.size > 1.2) {
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = this.color;
+                } else {
+                    ctx.shadowBlur = 0;
+                }
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const particleCount = window.innerWidth < 768 ? 40 : 100;
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+    </script>
+</body>
+</html>
