@@ -675,6 +675,20 @@
         let totalTicks = 0;
         let currentView = 'focus'; // 'focus' or 'timeline'
 
+        // 🟢 新增：将进度保存到浏览器本地
+        function saveProgress() {
+            localStorage.setItem('dplan_taskState', JSON.stringify(taskState));
+            localStorage.setItem('dplan_dailyTaskState', JSON.stringify(dailyTaskState));
+        }
+
+        // 🟢 新增：从浏览器本地读取进度
+        function loadProgress() {
+            const savedTask = localStorage.getItem('dplan_taskState');
+            const savedDaily = localStorage.getItem('dplan_dailyTaskState');
+            if (savedTask) taskState = JSON.parse(savedTask);
+            if (savedDaily) dailyTaskState = JSON.parse(savedDaily);
+        }
+
         // Utility to parse daily ranges from text
         function parseTaskDates(text) {
             let isDaily = false;
@@ -720,6 +734,9 @@
                 });
             });
         });
+
+        // 🟢 新增：在初始化计算完成后，覆盖为你之前保存的进度
+        loadProgress();
 
         function toggleTips() {
             const section = document.getElementById('expert-tips-section');
@@ -771,6 +788,9 @@
                 cb.checked = e.target.checked;
             });
             updateMonthBadges();
+            
+            // 🟢 新增：每次点击保存
+            saveProgress();
         }
 
         function handleMasterCheckbox(e, taskId) {
@@ -783,6 +803,9 @@
             if(currentView === 'focus') renderFocusView();
             renderTimeline();
             updateMonthBadges();
+            
+            // 🟢 新增：每次点击保存
+            saveProgress();
         }
 
         function toggleDaily(taskId, day) {
@@ -792,6 +815,9 @@
             renderFocusView();
             renderTimeline(); 
             updateMonthBadges();
+            
+            // 🟢 新增：每次点击保存
+            saveProgress();
         }
 
         function updateMonthBadges() {
