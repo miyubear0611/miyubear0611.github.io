@@ -6,6 +6,7 @@
     <title>Arsan's 7+ Plan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
             theme: {
@@ -99,6 +100,10 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* 云同步状态提示动画 */
+        .syncing-spin { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="antialiased pb-24">
@@ -113,7 +118,13 @@
                 
                 <div class="flex-1 max-w-md w-full">
                     <div class="flex justify-between items-end mb-1">
-                        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Master Progress</span>
+                        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                            Master Progress
+                            <!-- 云同步状态指示器 -->
+                            <span id="cloud-status" class="text-[10px] text-slate-400 font-normal flex items-center gap-1 normal-case">
+                                <i class="fa-solid fa-cloud text-slate-300"></i> Local
+                            </span>
+                        </span>
                         <span id="global-progress-text" class="text-sm font-black text-brand-600">0%</span>
                     </div>
                     <div class="h-3 w-full bg-slate-200 rounded-full overflow-hidden shadow-inner">
@@ -324,8 +335,13 @@
     </main>
 
     <script>
-        // STRICT REQUIREMENT: Absolutely nothing is omitted from the original text provided.
-        // Data Structure maps every single line from the prompt.
+        // ==========================================
+        // 核心配置区
+        // ==========================================
+        const BIN_ID = '6aa7c2a0ac6210605acad219'; 
+        const API_KEY = '$2a$10$6ZiDvoZ2MtegwgWEiyBsceT9vi6.eQZucdAo.3HlDCkf3tCpXDk1m'; 
+        // ==========================================
+
         const studyPlan = [
             {
                 id: 'month-0',
@@ -673,15 +689,89 @@
         let dailyTaskState = {};
         let masterTaskMeta = {};
         let totalTicks = 0;
-        let currentView = 'focus'; // 'focus' or 'timeline'
+        let currentView = 'focus';
 
-        // 🟢 新增：将进度保存到浏览器本地
+        // 🟢 云同步状态提示 UI 更新
+        function setCloudStatus(status) {
+            const statusEl = document.getElementById('cloud-status');
+            if(!statusEl) return;
+            if(status === 'syncing') {
+                statusEl.innerHTML = '<i class="fa-solid fa-arrows-rotate syncing-spin text-blue-400"></i> <span class="text-blue-400">Syncing...</span>';
+            } else if(status === 'synced') {
+                statusEl.innerHTML = '<i class="fa-solid fa-cloud-check text-emerald-400"></i> <span class="text-emerald-400">Cloud Synced</span>';
+                setTimeout(() => setCloudStatus('idle'), 3000);
+            } else if(status === 'error') {
+                statusEl.innerHTML = '<i class="fa-solid fa-cloud-xmark text-rose-400"></i> <span class="text-rose-400">Sync Error</span>';
+            } else {
+                statusEl.innerHTML = '<i class="fa-solid fa-cloud text-emerald-400"></i> <span class="text-emerald-400">Cloud Ready</span>';
+            }
+        }
+
+        // 🟢 从云端获取进度
+        async function fetchFromCloud() {
+            setCloudStatus('syncing');
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': API_KEY }
+                });
+                const data = await response.json();
+                
+                if(data.record && data.record.taskState) {
+                    taskState = data.record.taskState;
+                    dailyTaskState = data.record.dailyTaskState || {};
+                    
+                    // 覆盖本地
+                    localStorage.setItem('dplan_taskState', JSON.stringify(taskState));
+                    localStorage.setItem('dplan_dailyTaskState', JSON.stringify(dailyTaskState));
+                    
+                    // 刷新UI
+                    updateProgress();
+                    if(currentView === 'focus') renderFocusView();
+                    renderTimeline();
+                    updateMonthBadges();
+                    setCloudStatus('synced');
+                }
+            } catch (error) {
+                console.error("Cloud fetch failed:", error);
+                setCloudStatus('error');
+            }
+        }
+
+        // 🟢 防抖动保存到云端
+        let syncTimeout;
+        function saveStateToCloud() {
+            setCloudStatus('syncing');
+            clearTimeout(syncTimeout);
+            
+            syncTimeout = setTimeout(async () => {
+                try {
+                    const payload = {
+                        taskState: taskState,
+                        dailyTaskState: dailyTaskState
+                    };
+                    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': API_KEY
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    setCloudStatus('synced');
+                } catch (error) {
+                    console.error("Cloud save failed:", error);
+                    setCloudStatus('error');
+                }
+            }, 1500);
+        }
+
+        // 🟢 本地与云端同步保存
         function saveProgress() {
             localStorage.setItem('dplan_taskState', JSON.stringify(taskState));
             localStorage.setItem('dplan_dailyTaskState', JSON.stringify(dailyTaskState));
+            saveStateToCloud(); // 触发云端保存
         }
 
-        // 🟢 新增：从浏览器本地读取进度
         function loadProgress() {
             const savedTask = localStorage.getItem('dplan_taskState');
             const savedDaily = localStorage.getItem('dplan_dailyTaskState');
@@ -714,7 +804,6 @@
             return { isDaily, start, end };
         }
 
-        // Initialize state and calculate total progress ticks
         studyPlan.forEach(month => {
             month.sections.forEach(section => {
                 section.tasks.forEach(task => {
@@ -734,9 +823,6 @@
                 });
             });
         });
-
-        // 🟢 新增：在初始化计算完成后，覆盖为你之前保存的进度
-        loadProgress();
 
         function toggleTips() {
             const section = document.getElementById('expert-tips-section');
@@ -788,8 +874,6 @@
                 cb.checked = e.target.checked;
             });
             updateMonthBadges();
-            
-            // 🟢 新增：每次点击保存
             saveProgress();
         }
 
@@ -803,8 +887,6 @@
             if(currentView === 'focus') renderFocusView();
             renderTimeline();
             updateMonthBadges();
-            
-            // 🟢 新增：每次点击保存
             saveProgress();
         }
 
@@ -815,8 +897,6 @@
             renderFocusView();
             renderTimeline(); 
             updateMonthBadges();
-            
-            // 🟢 新增：每次点击保存
             saveProgress();
         }
 
@@ -1086,11 +1166,16 @@
             });
         }
 
-        // Initialize Everything
-        renderTimeline();
-        renderFocusView();
-        updateProgress();
-        updateMonthBadges();
+        // 🟢 网页启动执行逻辑
+        window.onload = () => {
+            loadProgress();
+            renderTimeline();
+            renderFocusView();
+            updateProgress();
+            updateMonthBadges();
+            
+            fetchFromCloud(); // 后台拉取最新云端数据
+        };
 
     </script>
 </body>
