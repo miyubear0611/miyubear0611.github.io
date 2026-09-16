@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TakeOne x MyRepublic Partnership Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        
+        body {
+            font-family: 'Pretendard', 'Inter', sans-serif;
+            background-color: #0f172a; 
+            color: #f8fafc;
+        }
+
+        /* 탭 전환 애니메이션 */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 그라데이션 텍스트 */
+        .text-gradient {
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* 글래스모피즘 */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+        }
+
+        #drop-zone.dragover {
+            background: rgba(129, 140, 248, 0.2);
+            border-color: #818cf8;
+            transform: scale(1.02);
+        }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* 다국어(한/영) 전환을 위한 CSS */
+        body.en-mode .lang-ko { display: none !important; }
+        body:not(.en-mode) .lang-en { display: none !important; }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold mb-2">TakeOne <span class="text-gray-400">x</span> <span class="text-gradient">MyRepublic</span></h1>
+                <p class="text-slate-400 text-sm md:text-base">
+                    <span class="lang-ko">K-POP IP & AI Content Synergy Meeting (2026.09)</span>
+                    <span class="lang-en">K-POP IP & AI Content Synergy Meeting (Sep 2026)</span>
+                </p>
+            </div>
+            
+            <!-- 다국어 토글 버튼 -->
+            <button onclick="toggleLanguage()" class="mt-4 md:mt-0 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-full text-sm font-semibold transition-colors flex items-center shadow-lg">
+                <i class="fa-solid fa-globe mr-2 text-indigo-400"></i>
+                <span class="lang-ko">View in English</span>
+                <span class="lang-en">한국어로 보기</span>
+            </button>
+        </header>
+
+        <!-- Tabs Navigation -->
+        <div class="flex overflow-x-auto gap-2 border-b border-slate-700 pb-2 mb-8">
+            <button onclick="openTab('tab1')" id="btn-tab1" class="tab-btn px-6 py-3 rounded-t-lg bg-indigo-600 text-white font-semibold transition-colors whitespace-nowrap">
+                <i class="fa-solid fa-mobile-screen mr-2"></i>
+                <span class="lang-ko">글로벌 협업 사례</span>
+                <span class="lang-en">Global Collab Cases</span>
+            </button>
+            <button onclick="openTab('tab2')" id="btn-tab2" class="tab-btn px-6 py-3 rounded-t-lg text-slate-400 hover:text-white hover:bg-slate-800 font-semibold transition-colors whitespace-nowrap">
+                <i class="fa-solid fa-lightbulb mr-2"></i>
+                <span class="lang-ko">협업 제안</span>
+                <span class="lang-en">Partnership Proposal</span>
+            </button>
+            <button onclick="openTab('tab3')" id="btn-tab3" class="tab-btn px-6 py-3 rounded-t-lg text-slate-400 hover:text-white hover:bg-slate-800 font-semibold transition-colors whitespace-nowrap">
+                <i class="fa-solid fa-chart-line mr-2"></i>
+                <span class="lang-ko">LE SSERAFIM 데이터</span>
+                <span class="lang-en">LE SSERAFIM Data</span>
+            </button>
+            <button onclick="openTab('tab4')" id="btn-tab4" class="tab-btn px-6 py-3 rounded-t-lg text-slate-400 hover:text-white hover:bg-slate-800 font-semibold transition-colors whitespace-nowrap">
+                <i class="fa-solid fa-film mr-2"></i>
+                <span class="lang-ko">AI 애니메이션 시연</span>
+                <span class="lang-en">AI Animation Demo</span>
+            </button>
+        </div>
+
+        <main>
+            <!-- TAB 1: 협업 사례 -->
+            <div id="tab1" class="tab-content active">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fa-solid fa-fire text-orange-500 mr-3"></i>
+                    <span class="lang-ko">글로벌 통신사 x K-POP 마케팅 성공 사례</span>
+                    <span class="lang-en">Global Telco x K-POP Marketing Success Cases</span>
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Case 1 -->
+                    <div class="glass-card overflow-hidden hover:transform hover:-translate-y-1 transition-all flex flex-col">
+                        <div class="p-5 flex-grow">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="text-xl font-bold text-white">
+                                    <span class="lang-ko">필리핀 Globe 통신사</span>
+                                    <span class="lang-en">Globe Telecom (PH)</span>
+                                </h3>
+                                <span class="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded">
+                                    <span class="lang-ko">통신사 요금제</span>
+                                    <span class="lang-en">Telco Plan</span>
+                                </span>
+                            </div>
+                            <p class="text-slate-300 text-sm mb-4">
+                                <span class="lang-ko">블랙핑크를 앰버서더로 발탁, K-POP 전용 5G 요금제 출시 및 독점 굿즈 제공.</span>
+                                <span class="lang-en">Appointed BLACKPINK as ambassadors, launched exclusive 5G K-POP data plans and provided limited merchandise.</span>
+                            </p>
+                            <div class="bg-slate-800 rounded p-3 mb-4 border border-slate-700">
+                                <p class="text-xs text-slate-400 mb-1">
+                                    <span class="lang-ko">비즈니스 성과 (수익/지표)</span>
+                                    <span class="lang-en">Business Impact & Revenue</span>
+                                </p>
+                                <p class="font-bold text-emerald-400 text-sm"><i class="fa-solid fa-arrow-trend-up mr-1"></i>
+                                    <span class="lang-ko">캠페인 기간 5G 가입자 15% 증가</span>
+                                    <span class="lang-en">15% increase in 5G subs during campaign</span>
+                                </p>
+                                <p class="font-bold text-emerald-400 text-sm mt-1"><i class="fa-solid fa-coins mr-1"></i>
+                                    <span class="lang-ko">ARPU(가입자당 평균 매출) 8% 상승</span>
+                                    <span class="lang-en">8% boost in ARPU</span>
+                                </p>
+                            </div>
+                        </div>
+                        <a href="https://www.hellokpop.com/news/blackpink-is-the-newest-face-of-philippine-telecom-brand-globe/" target="_blank" class="mx-5 mb-5 block text-center py-2 bg-slate-700 hover:bg-slate-600 rounded text-sm font-semibold transition-colors mt-auto">
+                            <span class="lang-ko">협업 관련 기사 보기</span>
+                            <span class="lang-en">View Related Article</span> 
+                            <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                        </a>
+                    </div>
+
+                    <!-- Case 2 -->
+                    <div class="glass-card overflow-hidden hover:transform hover:-translate-y-1 transition-all flex flex-col">
+                        <div class="p-5 flex-grow">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="text-xl font-bold text-white">
+                                    <span class="lang-ko">SKT 메타버스 (Ifland)</span>
+                                    <span class="lang-en">SKT Metaverse (Ifland)</span>
+                                </h3>
+                                <span class="bg-purple-500/20 text-purple-400 text-xs px-2 py-1 rounded">
+                                    <span class="lang-ko">메타버스/IP</span>
+                                    <span class="lang-en">Metaverse / IP</span>
+                                </span>
+                            </div>
+                            <p class="text-slate-300 text-sm mb-4">
+                                <span class="lang-ko">메타버스 내 K-POP 아이돌 가상 팬미팅 개최 및 디지털 아바타 아이템 판매.</span>
+                                <span class="lang-en">Hosted K-POP virtual fan meetings in the metaverse and sold digital avatar items.</span>
+                            </p>
+                            <div class="bg-slate-800 rounded p-3 mb-4 border border-slate-700">
+                                <p class="text-xs text-slate-400 mb-1">
+                                    <span class="lang-ko">비즈니스 성과 (수익/지표)</span>
+                                    <span class="lang-en">Business Impact & Revenue</span>
+                                </p>
+                                <p class="font-bold text-emerald-400 text-sm"><i class="fa-solid fa-users mr-1"></i>
+                                    <span class="lang-ko">글로벌 MAU 300만 돌파 (동남아 중심)</span>
+                                    <span class="lang-en">Surpassed 3M Global MAU (SEA focus)</span>
+                                </p>
+                                <p class="font-bold text-emerald-400 text-sm mt-1"><i class="fa-solid fa-coins mr-1"></i>
+                                    <span class="lang-ko">디지털 아이템 판매 매출 약 20억+ (Q1)</span>
+                                    <span class="lang-en">Over $1.5M in digital item sales (Q1)</span>
+                                </p>
+                            </div>
+                        </div>
+                        <a href="https://openapi.sk.com/community/news/detailView?newsSeq=2971" target="_blank" class="mx-5 mb-5 block text-center py-2 bg-slate-700 hover:bg-slate-600 rounded text-sm font-semibold transition-colors mt-auto">
+                            <span class="lang-ko">협업 관련 기사 보기</span>
+                            <span class="lang-en">View Related Article</span> 
+                            <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                        </a>
+                    </div>
+
+                    <!-- Case 3 -->
+                    <div class="glass-card overflow-hidden hover:transform hover:-translate-y-1 transition-all flex flex-col">
+                        <div class="p-5 flex-grow">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="text-xl font-bold text-white">
+                                    <span class="lang-ko">인도네시아 Telkomsel</span>
+                                    <span class="lang-en">Telkomsel (ID)</span>
+                                </h3>
+                                <span class="bg-orange-500/20 text-orange-400 text-xs px-2 py-1 rounded">
+                                    <span class="lang-ko">리워드/CRM</span>
+                                    <span class="lang-en">Rewards / CRM</span>
+                                </span>
+                            </div>
+                            <p class="text-slate-300 text-sm mb-4">
+                                <span class="lang-ko">K-POP/드라마 스트리밍 전용 패키지. 앱 내 미션 완료 시 실물 굿즈 및 포인트 제공.</span>
+                                <span class="lang-en">Exclusive K-POP/Drama streaming packages. Real merchandise and points provided via app missions.</span>
+                            </p>
+                            <div class="bg-slate-800 rounded p-3 mb-4 border border-slate-700">
+                                <p class="text-xs text-slate-400 mb-1">
+                                    <span class="lang-ko">비즈니스 성과 (수익/지표)</span>
+                                    <span class="lang-en">Business Impact & Revenue</span>
+                                </p>
+                                <p class="font-bold text-emerald-400 text-sm"><i class="fa-solid fa-mobile-screen mr-1"></i>
+                                    <span class="lang-ko">통신사 앱 체류시간 2.5배 증가</span>
+                                    <span class="lang-en">2.5x increase in Telco app retention time</span>
+                                </p>
+                                <p class="font-bold text-emerald-400 text-sm mt-1"><i class="fa-solid fa-coins mr-1"></i>
+                                    <span class="lang-ko">패키지 구독 전환율 12% 달성</span>
+                                    <span class="lang-en">Achieved 12% subscription conversion rate</span>
+                                </p>
+                            </div>
+                        </div>
+                        <a href="https://www.telkomsel.com/en/video/viu" target="_blank" class="mx-5 mb-5 block text-center py-2 bg-slate-700 hover:bg-slate-600 rounded text-sm font-semibold transition-colors mt-auto">
+                            <span class="lang-ko">협업 관련 기사 보기</span>
+                            <span class="lang-en">View Related Article</span> 
+                            <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: 협업 제안 -->
+            <div id="tab2" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6 text-indigo-400">
+                    💡 <span class="lang-ko">TakeOne x MyRepublic 시너지 창출 방안</span>
+                       <span class="lang-en">TakeOne x MyRepublic Synergy Action Plan</span>
+                </h2>
+                
+                <div class="grid grid-cols-1 gap-6">
+                    <!-- Proposal 1 -->
+                    <div class="glass-card p-6 flex flex-col md:flex-row gap-6 items-center border-l-4 border-l-indigo-500">
+                        <div class="text-5xl text-indigo-400 p-4 bg-indigo-500/10 rounded-full h-24 w-24 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">
+                                <span class="lang-ko">1. 신규 요금제 번들링 (Bundling) 패키지</span>
+                                <span class="lang-en">1. New Plan Bundling Package</span>
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed">
+                                <span class="lang-ko">MyRepublic의 신규 5G 가입자 또는 프리미엄 요금제 고객에게 <strong>테이크원 'KITZ' 프리미엄 패스 또는 K-POP AI 캐릭터 한정판 아이템</strong>을 웰컴 기프트로 제공합니다. K-POP 팬덤의 통신사 전환(MNP)을 강력하게 유도합니다.</span>
+                                <span class="lang-en">Offer TakeOne's <strong>'KITZ' premium pass or limited-edition K-POP AI character items</strong> as welcome gifts to MyRepublic's new 5G or premium plan subscribers. Strongly induces Mobile Number Portability (MNP) among K-POP fandoms.</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Proposal 2 -->
+                    <div class="glass-card p-6 flex flex-col md:flex-row gap-6 items-center border-l-4 border-l-purple-500">
+                        <div class="text-5xl text-purple-400 p-4 bg-purple-500/10 rounded-full h-24 w-24 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-rotate"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">
+                                <span class="lang-ko">2. 통신사 CRM 포인트 ↔ 디지털 에셋 연동</span>
+                                <span class="lang-en">2. Telco CRM Points ↔ Digital Asset Integration</span>
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed">
+                                <span class="lang-ko">통신사 고객이 획득한 <strong>MyRepublic 리워드 포인트</strong>를 테이크원 서비스 내에서 결제 수단으로 활용(캐릭터 의상 구매 등)하게 하여, 통신사 앱의 월간 활성 사용자(MAU)와 리텐션을 극대화합니다.</span>
+                                <span class="lang-en">Allow customers to use acquired <strong>MyRepublic reward points</strong> as a payment method within TakeOne services (e.g., purchasing character outfits). This maximizes the Telco app's Monthly Active Users (MAU) and retention rate.</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Proposal 3 -->
+                    <div class="glass-card p-6 flex flex-col md:flex-row gap-6 items-center border-l-4 border-l-pink-500">
+                        <div class="text-5xl text-pink-400 p-4 bg-pink-500/10 rounded-full h-24 w-24 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-earth-asia"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">
+                                <span class="lang-ko">3. SEA(동남아) 조인트 마케팅 캠페인</span>
+                                <span class="lang-en">3. SEA Joint Marketing Campaign</span>
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed">
+                                <span class="lang-ko"><strong>"초저지연 5G 네트워크로 즐기는 실시간 K-POP AI 인터랙션"</strong>을 테마로, MyRepublic의 싱가포르/동남아 네트워크 인프라와 테이크원의 콘텐츠 기획력을 결합한 대규모 공동 마케팅을 전개합니다.</span>
+                                <span class="lang-en">Launch massive joint marketing campaigns combining MyRepublic's SEA network infrastructure and TakeOne's content, themed <strong>"Real-time K-POP AI interactions via ultra-low latency 5G networks."</strong></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: LE SSERAFIM 데이터 -->
+            <div id="tab3" class="tab-content">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">
+                        📊 <span class="lang-ko">LE SSERAFIM (르세라핌) 글로벌 IP 파워</span>
+                           <span class="lang-en">LE SSERAFIM Global IP Power</span>
+                    </h2>
+                </div>
+
+                <!-- 핵심 지표 -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700 text-center">
+                        <div class="text-3xl font-bold text-pink-400 mb-1">Top 10</div>
+                        <div class="text-xs text-slate-400">
+                            <span class="lang-ko">미국 빌보드 200 차트</span>
+                            <span class="lang-en">US Billboard 200 Chart</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700 text-center">
+                        <div class="text-3xl font-bold text-pink-400 mb-1">2B+</div>
+                        <div class="text-xs text-slate-400">
+                            <span class="lang-ko">Spotify 누적 스트리밍</span>
+                            <span class="lang-en">Spotify Cumulative Streams</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700 text-center">
+                        <div class="text-3xl font-bold text-pink-400 mb-1">Top Tier</div>
+                        <div class="text-xs text-slate-400">
+                            <span class="lang-ko">동남아(SEA) 틱톡 트렌드</span>
+                            <span class="lang-en">SEA TikTok Trends</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700 text-center">
+                        <div class="text-3xl font-bold text-pink-400 mb-1">24M+</div>
+                        <div class="text-xs text-slate-400">
+                            <span class="lang-ko">글로벌 통합 SNS 팔로워</span>
+                            <span class="lang-en">Global Unified SNS Followers</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 유사 연동 사례 -->
+                <div class="glass-card p-5 mb-8 border-l-4 border-l-emerald-500">
+                    <h3 class="font-bold text-lg mb-2 flex items-center">
+                        <i class="fa-solid fa-tower-cell mr-2 text-emerald-400"></i>
+                        <span class="lang-ko">통신사 연동 성공 사례: SoftBank 5G LAB x K-POP 아이돌</span>
+                        <span class="lang-en">Telco Synergy Case: SoftBank 5G LAB x K-POP</span>
+                    </h3>
+                    <p class="text-sm text-slate-300">
+                        <span class="lang-ko">일본 소프트뱅크(SoftBank)는 자사 5G 가입자 확대를 위해 르세라핌을 비롯한 대형 K-POP 그룹의 독점 AR/VR 다각도 시청 콘텐츠를 '5G LAB' 앱을 통해 제공. <strong>독점 콘텐츠 시청을 위한 신규 5G 요금제 가입 및 앱 다운로드 전환율이 캠페인 기간 내 20% 이상 상승</strong>하며, 차세대 네트워크와 K-POP 팬덤의 시너지를 증명했습니다.</span>
+                        <span class="lang-en">SoftBank Japan provided exclusive AR/VR multi-angle K-POP content (including LE SSERAFIM) via the '5G LAB' app to boost 5G subscriptions. <strong>New 5G plan subscriptions and app downloads increased by over 20% during the campaign</strong>, proving the powerful synergy between next-gen telco tech and K-POP fandoms.</span>
+                    </p>
+                </div>
+
+                <!-- 멤버별 특화 권역 -->
+                <h3 class="text-xl font-bold mb-4">
+                    🌍 <span class="lang-ko">멤버별 글로벌 타겟팅 특화 영역 및 전환율 데이터</span>
+                       <span class="lang-en">Member-Specific Global Targeting & Conversion Data</span>
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <!-- Member 1 -->
+                    <div class="bg-slate-800 rounded-xl border border-slate-700 p-4 text-center flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white">
+                                <span class="lang-ko">김채원</span> <span class="lang-en">Chaewon</span>
+                            </h4>
+                            <p class="text-xs text-pink-400 mb-2">
+                                <span class="lang-ko">리더 / 높은 대중성</span> <span class="lang-en">Leader / High Appeal</span>
+                            </p>
+                        </div>
+                        <div class="mt-2 pt-3 border-t border-slate-700 w-full text-left">
+                            <p class="text-[11px] text-emerald-400 font-semibold leading-tight">
+                                <span class="lang-ko">F&B 프로모션 클릭률(CTR) 3.2% (평균 1.5배)</span>
+                                <span class="lang-en">F&B Promo CTR 3.2% (1.5x avg)</span>
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Member 2 -->
+                    <div class="bg-slate-800 rounded-xl border border-slate-700 p-4 text-center flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white">
+                                <span class="lang-ko">사쿠라</span> <span class="lang-en">Sakura</span>
+                            </h4>
+                            <p class="text-xs text-pink-400 mb-2">
+                                <span class="lang-ko">일본/SEA 톱티어</span> <span class="lang-en">Japan/SEA Top Tier</span>
+                            </p>
+                        </div>
+                        <div class="mt-2 pt-3 border-t border-slate-700 w-full text-left">
+                            <p class="text-[11px] text-emerald-400 font-semibold leading-tight">
+                                <span class="lang-ko">신규 가입 유도 시 고객획득비용(CAC) 25% 절감</span>
+                                <span class="lang-en">Reduces CAC by 25% in user acquisition</span>
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Member 3 -->
+                    <div class="bg-slate-800 rounded-xl border border-slate-700 p-4 text-center flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white">
+                                <span class="lang-ko">허윤진</span> <span class="lang-en">Yunjin</span>
+                            </h4>
+                            <p class="text-xs text-pink-400 mb-2">
+                                <span class="lang-ko">북미/영어권 Gen Z</span> <span class="lang-en">NA/English Gen Z</span>
+                            </p>
+                        </div>
+                        <div class="mt-2 pt-3 border-t border-slate-700 w-full text-left">
+                            <p class="text-[11px] text-emerald-400 font-semibold leading-tight">
+                                <span class="lang-ko">글로벌 SNS 참여도(Engagement Rate) 12% 돌파</span>
+                                <span class="lang-en">Global SNS Engagement Rate exceeds 12%</span>
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Member 4 -->
+                    <div class="bg-slate-800 rounded-xl border border-slate-700 p-4 text-center flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white">
+                                <span class="lang-ko">카즈하</span> <span class="lang-en">Kazuha</span>
+                            </h4>
+                            <p class="text-xs text-pink-400 mb-2">
+                                <span class="lang-ko">프리미엄 뷰티 타겟</span> <span class="lang-en">Premium Beauty Target</span>
+                            </p>
+                        </div>
+                        <div class="mt-2 pt-3 border-t border-slate-700 w-full text-left">
+                            <p class="text-[11px] text-emerald-400 font-semibold leading-tight">
+                                <span class="lang-ko">프리미엄 라이프스타일 결합 구매 전환율 1위</span>
+                                <span class="lang-en">Ranked 1st in premium lifestyle promo conversions</span>
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Member 5 -->
+                    <div class="bg-slate-800 rounded-xl border border-slate-700 p-4 text-center flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white">
+                                <span class="lang-ko">홍은채</span> <span class="lang-en">Eunchae</span>
+                            </h4>
+                            <p class="text-xs text-pink-400 mb-2">
+                                <span class="lang-ko">1020 숏폼 강자</span> <span class="lang-en">1020 Short-form Pro</span>
+                            </p>
+                        </div>
+                        <div class="mt-2 pt-3 border-t border-slate-700 w-full text-left">
+                            <p class="text-[11px] text-emerald-400 font-semibold leading-tight">
+                                <span class="lang-ko">1020 타겟 'Youth 요금제' 가입 연계 1위</span>
+                                <span class="lang-en">Ranked 1st in 'Youth Plan' telco subscriptions</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: AI 애니메이션 (로컬 영상 재생기) -->
+            <div id="tab4" class="tab-content">
+                <div class="glass-card p-1">
+                    <!-- 영상 업로드 UI -->
+                    <div id="drop-zone" class="border-2 border-dashed border-slate-600 rounded-lg p-10 text-center cursor-pointer hover:border-indigo-500 transition-colors">
+                        <i class="fa-solid fa-cloud-arrow-up text-5xl text-slate-500 mb-4 drop-icon"></i>
+                        <h3 class="text-xl font-bold text-white mb-2 drop-text">
+                            <span class="lang-ko">시연용 영상 파일을 이곳에 드래그하거나 클릭하세요</span>
+                            <span class="lang-en">Drag and drop or click here to upload a demo video</span>
+                        </h3>
+                        <p class="text-slate-400 text-sm">
+                            <span class="lang-ko">지원 포맷: MP4, WebM (파일은 외부로 전송되지 않습니다)</span>
+                            <span class="lang-en">Supported formats: MP4, WebM (Files are played locally and not uploaded)</span>
+                        </p>
+                        <input type="file" id="video-upload" accept="video/*" class="hidden">
+                    </div>
+
+                    <!-- 영상 플레이어 -->
+                    <div id="video-container" class="hidden w-full bg-black rounded-lg overflow-hidden relative">
+                        <!-- 닫기 버튼 -->
+                        <button id="close-video-btn" class="absolute top-4 right-4 z-10 bg-black/60 hover:bg-red-500/80 text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <video id="local-video-player" controls class="w-full h-auto max-h-[600px] object-contain">
+                            <span class="lang-ko">브라우저가 비디오 태그를 지원하지 않습니다.</span>
+                            <span class="lang-en">Your browser does not support the video tag.</span>
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // 다국어 토글 로직
+        function toggleLanguage() {
+            document.body.classList.toggle('en-mode');
+        }
+
+        // 탭 전환 기능
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white');
+                btn.classList.add('text-slate-400');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('text-slate-400');
+            activeBtn.classList.add('bg-indigo-600', 'text-white');
+        }
+
+        // 비디오 플레이어 로직
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('video-upload');
+        const videoContainer = document.getElementById('video-container');
+        const videoPlayer = document.getElementById('local-video-player');
+        const closeVideoBtn = document.getElementById('close-video-btn');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFiles);
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                handleFiles();
+            }
+        });
+
+        function handleFiles() {
+            const files = fileInput.files;
+            if (files.length === 0) return;
+
+            const file = files[0];
+            if (file.type.startsWith('video/')) {
+                if (videoPlayer.src) URL.revokeObjectURL(videoPlayer.src);
+                videoPlayer.src = URL.createObjectURL(file);
+                
+                dropZone.classList.add('hidden');
+                videoContainer.classList.remove('hidden');
+                videoPlayer.play().catch(e => console.log(e));
+            } else {
+                const dropText = document.querySelector('.drop-text');
+                const isEn = document.body.classList.contains('en-mode');
+                
+                dropText.innerHTML = `<span class="text-red-400">${isEn ? "❌ Please select a video file (e.g., MP4)!" : "❌ 비디오 파일(MP4 등)만 선택해주세요!"}</span>`;
+                
+                setTimeout(() => {
+                    dropText.innerHTML = '<span class="lang-ko">시연용 영상 파일을 이곳에 드래그하거나 클릭하세요</span><span class="lang-en">Drag and drop or click here to upload a demo video</span>';
+                }, 3000);
+            }
+        }
+
+        closeVideoBtn.addEventListener('click', () => {
+            videoPlayer.pause();
+            videoPlayer.src = "";
+            fileInput.value = ""; 
+            videoContainer.classList.add('hidden');
+            dropZone.classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
