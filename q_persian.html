@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>گزارش نام‌گذاری Q</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Using Vazirmatn which is a beautiful modern Persian font, along with Cinzel for English Serif -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Vazirmatn:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #F9F8F6; /* کرم ملایم */
+            --text-main: #2C2C2C; /* زغالی تیره */
+            --text-muted: #6B6B6B; /* خاکستری ملایم */
+            --accent-color: #8E7D6A; /* بژ/قهوه‌ای لوکس */
+            --card-bg: #FFFFFF;
+            --border-light: #EAE6DF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4 {
+            font-weight: 600;
+        }
+
+        .serif {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 70px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 1px;
+            background-color: var(--accent-color);
+            margin: 30px auto 0;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            letter-spacing: 1px;
+            color: var(--text-main);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--accent-color);
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .direction-wrap {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 70px;
+        }
+
+        @media (max-width: 768px) {
+            .direction-wrap { flex-direction: column; }
+        }
+
+        .direction-card {
+            background: var(--card-bg);
+            flex: 1;
+            padding: 40px 30px;
+            border-radius: 2px;
+            border: 1px solid var(--border-light);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .direction-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        }
+
+        .direction-card h3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 2px;
+            direction: ltr;
+        }
+
+        .card-cue h3 { color: var(--accent-color); }
+        .card-que h3 { color: #A59C94; }
+
+        .direction-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            word-break: keep-all;
+        }
+
+        .conclusion {
+            background-color: var(--accent-color);
+            color: #fff;
+            padding: 15px 20px;
+            text-align: center;
+            border-radius: 2px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .slogan-list {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 70px;
+        }
+
+        .slogan-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+
+        .slogan-card.best {
+            border: 1px solid var(--accent-color);
+            box-shadow: 0 10px 40px rgba(142, 125, 106, 0.08);
+        }
+
+        .best-badge {
+            position: absolute;
+            top: 0;
+            left: 0; /* Changed from right to left for RTL layout */
+            background: var(--accent-color);
+            color: #fff;
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            font-weight: 600;
+        }
+
+        .additional-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin: 60px 0 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .additional-header::before {
+            content: '';
+            display: block;
+            width: 30px;
+            height: 2px;
+            background-color: var(--text-main);
+        }
+
+        .slogan-card.additional {
+            background-color: #2A2826; 
+            color: #F9F8F6;
+            border: none;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .slogan-card.additional .slogan-title {
+            color: #FFFFFF;
+        }
+
+        .slogan-card.additional .slogan-desc {
+            color: #D3CFC9;
+        }
+
+        .slogan-card.additional .translations {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .slogan-card.additional .trans-text {
+            color: #FFFFFF;
+        }
+
+        .slogan-card.additional .trans-mean {
+            color: #9D968D;
+        }
+
+        .slogan-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text-main);
+            letter-spacing: 1px;
+            text-align: left; /* Keep English left-aligned */
+            direction: ltr; /* Force LTR for English slogans to keep numbering correct */
+        }
+
+        .slogan-desc {
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        .translations {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: 2px;
+        }
+
+        .trans-item {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .trans-item:last-child { margin-bottom: 0; }
+
+        .flag {
+            font-size: 1.1rem;
+            line-height: 1.2;
+        }
+
+        .trans-text {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .trans-mean {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+
+        .others-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .other-card {
+            background: var(--card-bg);
+            padding: 30px 25px;
+            border: 1px solid var(--border-light);
+            border-radius: 2px;
+        }
+
+        .other-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+            text-align: left;
+            direction: ltr;
+        }
+
+        .other-card .desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .other-trans-list {
+            border-top: 1px dashed var(--border-light);
+            padding-top: 15px;
+        }
+
+        .other-trans-item {
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+            display: flex;
+            gap: 8px;
+            direction: ltr; /* Keeping translations left-to-right */
+            justify-content: flex-end; /* Align right for Persian structure */
+        }
+        
+        .other-trans-item:last-child { margin-bottom: 0; }
+
+        .notice-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- Header -->
+    <header class="header">
+        <h1>گزارش نام‌گذاری Q</h1>
+    </header>
+
+    <!-- Section 1 -->
+    <section>
+        <div class="section-title">
+            <span class="serif" dir="ltr">01.</span> جهت‌گیری اصلی نام‌گذاری
+        </div>
+        
+        <div class="conclusion">
+            نتیجه‌گیری: از نظر آرامش بصری و قدرت انتقال معنا، <strong>«CUE»</strong> بسیار مناسب‌تر است.
+        </div>
+
+        <div class="direction-wrap">
+            <div class="direction-card card-cue">
+                <h3 class="serif">CUE</h3>
+                <div class="direction-desc">
+                    <strong>نقاط قوت:</strong> در کشورهای انگلیسی‌زبان، کلمه‌ای بسیار آشناست که به وضوح معنای «سرنخ، نشانه، محرک» را می‌دهد.<br><br>
+                    از نظر بصری، حرف <strong>'C'</strong> گرد و پذیرا است که به خوبی با حال و هوای احساسی برند سازگار است.
+                </div>
+            </div>
+            
+            <div class="direction-card card-que">
+                <h3 class="serif">QUE</h3>
+                <div class="direction-desc">
+                    <strong>نقاط ضعف:</strong> در کشورهای انگلیسی‌زبان به عنوان یک کلمه مستقل استفاده نمی‌شود و در زبان‌هایی مانند فرانسوی یا اسپانیایی به عنوان حرف ربط (What/That) به کار می‌رود که ممکن است شبیه یک «جمله ناتمام» به نظر برسد.<br><br>
+                    نگرانی از مبهم شدن تلفظ وجود دارد و از نظر بصری، دم حرف <strong>'Q'</strong> کمی خشن و تیز به نظر می‌رسد.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="section-title">
+            <span class="serif" dir="ltr">02.</span> نامزدهای برتر شعار (Top Tier)
+        </div>
+        <div class="notice-text">
+            از میان نامزدهای پیشنهادی، شماره‌های ۱۰ و ۴ مناسب ارزیابی می‌شوند. با گسترش آن‌ها، دو نام‌گذاری انگلیسی دیگر نیز پیشنهاد می‌گردد.
+        </div>
+
+        <div class="slogan-list" style="margin-bottom: 40px;">
+            
+            <!-- Slogan 10 (Best) -->
+            <div class="slogan-card best">
+                <div class="best-badge">[پیشنهاد]</div>
+                <div class="slogan-title serif" dir="ltr">10. CAPTURE UNTOLD EMOTION</div>
+                <div class="slogan-desc">
+                    این شعار حس «ثبت احساسات پنهان» را القا می‌کند و برای جایگاه یک عطر نیش (Niche) مدرن و مد روز بسیار مناسب ارزیابی می‌شود.
+                </div>
+                <div class="translations">
+                    <div class="trans-item"><span class="flag">🇨🇳</span> <div><span class="trans-text" dir="ltr">定格无言之绪</span> <span class="trans-mean">(ثبت احساساتی که با کلمات قابل بیان نیستند)</span></div></div>
+                    <div class="trans-item"><span class="flag">🇯🇵</span> <div><span class="trans-text" dir="ltr">語られざる感情を留める</span> <span class="trans-mean">(حفظ احساسات ناگفته)</span></div></div>
+                    <div class="trans-item"><span class="flag">🇫🇷</span> <div><span class="trans-text" dir="ltr">Capturer l'Émotion Indicible</span> <span class="trans-mean">(به معنای ادبی، ثبت «احساسات والای غیرقابل توصیف»)</span></div></div>
+                    <div class="trans-item"><span class="flag">🇮🇹</span> <div><span class="trans-text" dir="ltr">Catturare l'Emozione Inespressa</span> <span class="trans-mean">(بیان احساسات عمیق، سنگین و کنترل‌شده، مانند اپرای ایتالیایی)</span></div></div>
+                </div>
+            </div>
+
+            <!-- Slogan 4 -->
+            <div class="slogan-card">
+                <div class="slogan-title serif" dir="ltr">4. CARRY US ELSEWHERE</div>
+                <div class="slogan-desc">
+                    جمله‌ای که با بوییدن عطر، «تخیل بصری» سفر به زمان و مکانی دیگر را تحریک می‌کند. این شعار برای کمپین‌های بصری با محوریت در (Door) یا مسیر مناسب است.<br>
+                    با این حال، به دلیل وجود کلمه «US (ما)»، حس کاملاً شخصی و خاص عطر در مقایسه با شماره ۱۰ کمی کمتر است.
+                </div>
+                <div class="translations">
+                    <div class="trans-item"><span class="flag">🇨🇳</span> <div><span class="trans-text" dir="ltr">香引异境</span> <span class="trans-mean">(رایحه شما را به فضایی ناشناخته هدایت می‌کند)</span></div></div>
+                    <div class="trans-item"><span class="flag">🇯🇵</span> <div><span class="trans-text" dir="ltr">まだ見ぬ場所へ</span> <span class="trans-mean">(به مکانی هنوز دیده نشده)</span></div></div>
+                    <div class="trans-item"><span class="flag">🇫🇷</span> <div><span class="trans-text" dir="ltr">Emmenez-nous Ailleurs</span> <span class="trans-mean">(اشتیاق خاص فرانسوی به دنیایی عاشقانه و ناشناخته)</span></div></div>
+                    <div class="trans-item"><span class="flag">🇮🇹</span> <div><span class="trans-text" dir="ltr">Portaci Altrove</span> <span class="trans-mean">(حساسیت ایتالیایی ساده اما پر از عشق عمیق)</span></div></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="additional-header">
+            <span class="serif" dir="ltr">NEW.</span> پیشنهادهای افزودنی و گسترده برای نام‌گذاری
+        </div>
+        <div class="slogan-list">
+            
+            <!-- Additional 1 -->
+            <div class="slogan-card additional">
+                <div class="slogan-title serif" dir="ltr">CHANCE UNTOLD ENCOUNTERS</div>
+                <div class="slogan-desc">
+                    با ترکیب «تصادف سرنوشت‌ساز (Chance)» و «رویارویی با خود پنهان درون (Encounters)»، عمقی بسیار شاعرانه و شخصی ایجاد می‌کند.
+                </div>
+                <div class="translations">
+                    <div class="trans-item"><span class="flag">🇨🇳</span> <div><span class="trans-text" dir="ltr">邂逅未知真我</span> <span class="trans-mean">(رویارویی اتفاقی با خود واقعی و ناشناخته)</span></div></div>
+                    <div class="trans-item"><span class="flag">🇯🇵</span> <div><span class="trans-text" dir="ltr">知られざる自分との出逢い</span> <span class="trans-mean">(ملاقات با خود درونی ناشناخته)</span></div></div>
+                    <div class="trans-item"><span class="flag">🇫🇷</span> <div><span class="trans-text" dir="ltr">La Rencontre Inattendue avec Soi-même</span> <span class="trans-mean">(ملاقات غیرمنتظره با خود، جذابیت اگزیستانسیالیستی)</span></div></div>
+                    <div class="trans-item"><span class="flag">🇮🇹</span> <div><span class="trans-text" dir="ltr">Incontri Fortuiti e Celati</span> <span class="trans-mean">(رویارویی تصادفی و پنهانی)</span></div></div>
+                </div>
+            </div>
+
+            <!-- Additional 2 -->
+            <div class="slogan-card additional">
+                <div class="slogan-title serif" dir="ltr">CHANCE UNTOLD ECHOES</div>
+                <div class="slogan-desc">
+                    به معنای تأثیر عمیقی است که رایحه ماندگار عطر در قلب به جا می‌گذارد.<br>
+                    تأثیری گذرا اما ناخواسته و قوی (Impressive) به جا می‌گذارد که حس مبهم <strong>«دوباره می‌خواهم تو را ببینم» و «مدام به تو فکر می‌کنم»</strong> را به زیبایی با استعاره «پژواک (Echo)» بیان می‌کند.
+                </div>
+                <div class="translations">
+                    <div class="trans-item"><span class="flag">🇨🇳</span> <div><span class="trans-text" dir="ltr">秘于心底的回响</span> <span class="trans-mean">(رایحه/پژواک پنهان در اعماق قلب)</span></div></div>
+                    <div class="trans-item"><span class="flag">🇯🇵</span> <div><span class="trans-text" dir="ltr">心に秘めた響き</span> <span class="trans-mean">(پژواکی که بی‌صدا در دل نگه داشته شده)</span></div></div>
+                    <div class="trans-item"><span class="flag">🇫🇷</span> <div><span class="trans-text" dir="ltr">Les Résonances Secrètes</span> <span class="trans-mean">(تشدید پنهانی، پیوند بین عطر و خاطره)</span></div></div>
+                    <div class="trans-item"><span class="flag">🇮🇹</span> <div><span class="trans-text" dir="ltr">Echi Segreti e Inaspettati</span> <span class="trans-mean">(تأثیر پنهانی و غیرمنتظره)</span></div></div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section>
+        <div class="section-title">
+            <span class="serif" dir="ltr">03.</span> سایر نامزدها
+        </div>
+        <div class="notice-text">
+            ایده‌های دیگر نیز جذابیت‌های خاص خود را دارند، اما این موارد بیشتر برای نسخه‌های محدود (Limited Edition) یا خطوط فرعی مناسب هستند تا شعار اصلی.
+        </div>
+
+        <div class="others-grid">
+            
+            <div class="other-card">
+                <h4 class="serif">1. QUEST UNKNOWN EDITION</h4>
+                <div class="desc">حس فعال و اسپرت. لحنی تجاری مناسب برای نسخه‌های محدود با همکاری برندهای دیگر. کلمه «Quest» ممکن است کمی خشک به نظر برسد.</div>
+                <div class="other-trans-list">
+                    <div class="other-trans-item"><span class="trans-text">无界寻踪</span> <span class="flag">🇨🇳</span></div>
+                    <div class="other-trans-item"><span class="trans-text">未知なる探求</span> <span class="flag">🇯🇵</span></div>
+                    <div class="other-trans-item"><span class="trans-text">Édition Quête Inconnue</span> <span class="flag">🇫🇷</span></div>
+                    <div class="other-trans-item"><span class="trans-text">Ricerca dell'Ignoto</span> <span class="flag">🇮🇹</span></div>
+                </div>
+            </div>
+
+            <div class="other-card">
+                <h4 class="serif">2. CULT UNCUT EDITION</h4>
+                <div class="desc">لحنی جذاب و سرکش بر پایه فرهنگ خیابانی و خرده‌فرهنگ‌ها. از آنجا که ممکن است «Uncut» به عنوان اصطلاح عامیانه تفسیر شود، برای لاین‌های نیش آوانگارد مناسب است.</div>
+                <div class="other-trans-list">
+                    <div class="other-trans-item"><span class="trans-text">纯粹真我</span> <span class="flag">🇨🇳</span></div>
+                    <div class="other-trans-item"><span class="trans-text">飾らない私</span> <span class="flag">🇯🇵</span></div>
+                    <div class="other-trans-item"><span class="trans-text">L'Essence Brute</span> <span class="flag">🇫🇷</span></div>
+                    <div class="other-trans-item"><span class="trans-text">L'Anima Senza Filtri</span> <span class="flag">🇮🇹</span></div>
+                </div>
+            </div>
+
+            <div class="other-card">
+                <h4 class="serif">3 & 8. CUE(S) UNLOCK(S) EMOTION</h4>
+                <div class="desc">حس منطقی و آرام. ممکن است بیشتر شبیه شعار محصولات کاربردی یا برنامه‌های سلامتی (Wellness) به نظر برسد تا یک عطر.</div>
+                <div class="other-trans-list">
+                    <div class="other-trans-item"><span class="trans-text">一息启心</span> <span class="flag">🇨🇳</span></div>
+                    <div class="other-trans-item"><span class="trans-text">感情の鍵を開けるシグナル</span> <span class="flag">🇯🇵</span></div>
+                    <div class="other-trans-item"><span class="trans-text">La Clé des Sens</span> <span class="flag">🇫🇷</span></div>
+                    <div class="other-trans-item"><span class="trans-text">Il Risveglio Segreto</span> <span class="flag">🇮🇹</span></div>
+                </div>
+            </div>
+
+            <div class="other-card">
+                <h4 class="serif">5. CURRENT UNKNOWN ERA</h4>
+                <div class="desc">با ترکیبی از کلمات کلان، حسی شبیه به سایبرپانک یا برندهای تکنولوژی القا می‌کند.</div>
+                <div class="other-trans-list">
+                    <div class="other-trans-item"><span class="trans-text">无定之纪</span> <span class="flag">🇨🇳</span></div>
+                    <div class="other-trans-item"><span class="trans-text">無形有形</span> <span class="flag">🇯🇵</span></div>
+                    <div class="other-trans-item"><span class="trans-text">Le Temps Suspendu</span> <span class="flag">🇫🇷</span></div>
+                    <div class="other-trans-item"><span class="trans-text">L'Era dell'Ignoto</span> <span class="flag">🇮🇹</span></div>
+                </div>
+            </div>
+
+            <div class="other-card">
+                <h4 class="serif">7. CANVAS UNDER EBONY</h4>
+                <div class="desc">شاعرانه و زیباست، اما «Ebony» یادآور نت‌های چوبی خاصی است که اگر لاین اصلی عطرهای شما چوبی نباشد، می‌تواند باعث سردرگمی شود.</div>
+                <div class="other-trans-list">
+                    <div class="other-trans-item"><span class="trans-text">墨底留白</span> <span class="flag">🇨🇳</span></div>
+                    <div class="other-trans-item"><span class="trans-text">闇夜のカンバス</span> <span class="flag">🇯🇵</span></div>
+                    <div class="other-trans-item"><span class="trans-text">La Toile dans l'Obscurité</span> <span class="flag">🇫🇷</span></div>
+                    <div class="other-trans-item"><span class="trans-text">La Tela nell'Oscurità</span> <span class="flag">🇮🇹</span></div>
+                </div>
+            </div>
+
+            <div class="other-card">
+                <h4 class="serif">9. CUE UNVEILS EMOTION</h4>
+                <div class="desc">ظریف و ساده است. کلمه «Unveils» یادآور حرکتی نرم و روان است.</div>
+                <div class="other-trans-list">
+                    <div class="other-trans-item"><span class="trans-text">幽香轻解</span> <span class="flag">🇨🇳</span></div>
+                    <div class="other-trans-item"><span class="trans-text">想いを紐解く</span> <span class="flag">🇯🇵</span></div>
+                    <div class="other-trans-item"><span class="trans-text">Dévoiler l'Émotion</span> <span class="flag">🇫🇷</span></div>
+                    <div class="other-trans-item"><span class="trans-text">Svelare l'Emozione</span> <span class="flag">🇮🇹</span></div>
+                </div>
+            </div>
+
+            <div class="other-card" style="grid-column: 1 / -1; background: transparent; border: 1px dashed var(--accent-color);">
+                <h4 class="serif" style="color: var(--accent-color);">6. COPY USE ERA</h4>
+                <div class="desc">از آنجا که کلمه «COPY» ممکن است به مصرف‌کننده حس «محصول کپی‌شده» را القا کند، پیشنهاد نمی‌شود.</div>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+
+</body>
+</html>
