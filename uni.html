@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bioinformatics Lab Analysis Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f8fafc; }
+        html[lang="zh-CN"] body { font-family: 'Noto Sans SC', sans-serif; }
+        html[lang="fa"] body { font-family: 'Vazirmatn', Tahoma, sans-serif; }
+        
+        .custom-scrollbar::-webkit-scrollbar { height: 8px; width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        html { scroll-behavior: smooth; }
+        
+        /* 다국어 전환 애니메이션 페이드 인 */
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-blue-200 selection:text-blue-900 transition-all duration-300">
+
+<!-- 언어 선택 드롭다운 -->
+<div class="fixed top-4 end-4 z-50 flex items-center gap-2 bg-white/95 backdrop-blur px-3 py-2 rounded-full shadow-lg border border-slate-200">
+    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <select id="lang-selector" onchange="changeLanguage(this.value)" class="bg-transparent text-sm font-bold text-slate-700 outline-none cursor-pointer appearance-none pe-4 focus:ring-0">
+        <option value="ko">🇰🇷 한국어</option>
+        <option value="en">🇺🇸 English</option>
+        <option value="zh">🇨🇳 中文</option>
+        <option value="fa">🇮🇷 فارسی</option>
+    </select>
+    <div class="absolute end-3 pointer-events-none text-slate-400">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+    </div>
+</div>
+
+<!-- 헤더 -->
+<header class="relative bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white pt-24 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden shadow-xl">
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-40"></div>
+    <div class="relative max-w-6xl mx-auto text-center z-10 fade-in" id="ui-hero">
+        <!-- JS Rendering -->
+    </div>
+</header>
+
+<main class="max-w-6xl mx-auto bg-white shadow-2xl overflow-hidden min-h-screen relative z-20 -mt-6 rounded-t-2xl">
+    
+    <!-- 서론 -->
+    <section class="px-6 md:px-12 py-12 bg-white fade-in" id="ui-intro">
+        <!-- JS Rendering -->
+    </section>
+
+    <!-- 제1장 -->
+    <section class="px-6 md:px-12 py-12 bg-slate-50 border-t border-slate-200 fade-in" id="ui-ch1">
+        <!-- JS Rendering -->
+    </section>
+
+    <!-- 제2장: 구조생물학 -->
+    <section class="px-6 md:px-12 py-12 bg-white border-t border-slate-200 fade-in">
+        <div id="ui-ch2-header" class="mb-10"></div>
+        <div id="container-ch2" class="space-y-8"></div>
+    </section>
+
+    <!-- 제3장: 신항원 -->
+    <section class="px-6 md:px-12 py-12 bg-slate-50 border-t border-slate-200 fade-in">
+        <div id="ui-ch3-header" class="mb-10"></div>
+        <div id="container-ch3" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+    </section>
+
+    <!-- 제4장: 시스템 면역학 -->
+    <section class="px-6 md:px-12 py-12 bg-white border-t border-slate-200 fade-in">
+        <div id="ui-ch4-header" class="mb-6"></div>
+        
+        <!-- 5-Step Pipeline UI -->
+        <div class="my-10 bg-slate-900 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+            <p id="ui-pipeline-desc" class="text-slate-300 leading-relaxed text-sm md:text-base max-w-4xl mx-auto text-center font-medium mb-12 relative z-10"></p>
+            <div id="ui-pipeline-steps" class="flex flex-col lg:flex-row items-stretch justify-between gap-4 relative z-10 mt-8">
+                <!-- JS Rendering -->
+            </div>
+        </div>
+
+        <div id="container-ch4" class="space-y-6"></div>
+    </section>
+
+    <!-- 제5장: 유전체학 -->
+    <section class="px-6 md:px-12 py-12 bg-slate-50 border-t border-slate-200 fade-in">
+        <div id="ui-ch5-header" class="mb-10"></div>
+        <div id="container-ch5" class="grid grid-cols-1 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- 제6장: 테이블 -->
+    <section class="px-4 md:px-8 py-12 bg-white border-t border-slate-200 overflow-hidden relative fade-in">
+        <div id="ui-ch6-header" class="mb-8"></div>
+        
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden relative">
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="min-w-full divide-y divide-slate-200 text-sm whitespace-nowrap lg:whitespace-normal text-start">
+                    <thead id="ui-table-head" class="bg-gradient-to-r from-slate-900 to-slate-800 text-white">
+                        <!-- JS Rendering -->
+                    </thead>
+                    <tbody id="ui-table-body" class="bg-white divide-y divide-slate-100">
+                        <!-- JS Rendering -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- 결론 -->
+    <section class="px-6 md:px-12 py-16 bg-slate-900 text-white rounded-b-2xl fade-in" id="ui-conclusion">
+        <!-- JS Rendering -->
+    </section>
+
+</main>
+
+<script>
+const THEMES = {
+    snu: { border: 'border-s-blue-500', bg: 'bg-blue-50', text: 'text-blue-700', hover: 'hover:text-blue-600', badge: 'bg-blue-100 text-blue-800 border-blue-200' },
+    yonsei: { border: 'border-s-indigo-500', bg: 'bg-indigo-50', text: 'text-indigo-700', hover: 'hover:text-indigo-600', badge: 'bg-indigo-100 text-indigo-800 border-indigo-200' },
+    korea: { border: 'border-s-rose-500', bg: 'bg-rose-50', text: 'text-rose-700', hover: 'hover:text-rose-600', badge: 'bg-rose-100 text-rose-800 border-rose-200' },
+    skku: { border: 'border-s-emerald-500', bg: 'bg-emerald-50', text: 'text-emerald-700', hover: 'hover:text-emerald-600', badge: 'bg-emerald-100 text-emerald-800 border-emerald-200' }
+};
+
+const FIT_COLORS = {
+    perfect: { dot: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50' },
+    good: { dot: 'bg-blue-500', text: 'text-blue-700', bg: '' },
+    indirect: { dot: 'bg-amber-500', text: 'text-amber-700', bg: '' },
+    caution: { dot: 'bg-red-500', text: 'text-red-700', bg: 'bg-red-50' }
+};
+
+const i18n = {
+    ko: {
+        heroBadge: "면역학 및 백신 설계 특화 트랙",
+        heroTitle: "대한민국 주요 대학 계산생물학 및<br><span class='text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-cyan-300 to-teal-300'>생명정보학 연구실 심층 분석</span>",
+        heroDesc: "AI, 머신러닝, 다중오믹스 기반의 선도적 연구진 및 학술 생태계 심층 지표",
+        introTitle: "서론: 계산생물학 기반 백신 연구의 패러다임 전환",
+        introP1: "현대 생명과학 및 의학 연구에서 인공지능(AI), 머신러닝(ML), 그리고 대규모 다중오믹스(Multi-omics) 데이터 분석을 활용하는 계산생물학(Computational Biology)과 생명정보학(Bioinformatics)은 학문적 보조 수단을 넘어 핵심적인 발견의 주체로 자리 잡았습니다. 특히 글로벌 팬데믹을 거치며 백신 설계, 신항원(Neoantigen) 발굴, 그리고 면역 시스템의 시스템적 이해(Systems Immunology) 분야는 철저하게 대규모 데이터를 다루는 <span class='font-bold text-blue-700 bg-blue-50 px-1 rounded'>순수 계산(Pure Dry) 연구</span> 중심으로 재편되는 양상을 보이고 있습니다.",
+        introP2: "본 보고서는 대한민국 최상위권 대학인 서울대학교, 연세대학교, 고려대학교, 성균관대학교에 포진한 주요 계산생물학, 면역정보학 연구실들의 구체적인 연구 주제와 인프라를 극도로 심층적으로 분석합니다. 교수진의 학술적 배경, 연구실 웹사이트를 통해 검증된 핵심 연구 내용, 연구비 규모를 철저히 규명하여 면역학 및 백신 설계 분야 예비 연구자들에게 진로 설계의 객관적인 인사이트를 제공합니다.",
+        ch1Tag: "Chapter 01", ch1Title: "연구비 인프라 및 전액 장학금 지원 체계",
+        ch1Sub: "계산생물학 연구는 고성능 컴퓨팅 자원과 긴 몰입 시간을 요구하므로, 안정적인 재정 지원은 필수적입니다.",
+        ch1Box1Title: "정부초청외국인장학생 (GKS)", ch1Box1Desc: "항공료, 정착금, 매월 생활비, 전액 등록금 지원 등 유학의 재정 장벽을 완벽히 제거하는 파격적 제도입니다. (GPA 80% 이상 조건)",
+        ch1Box2Title: "BK21 4단계 사업 중심 연구지원금", ch1Box2Desc: "선발된 참여 인원에게 매월 안정적인 생활비(석사 100만 원, 박사 160만 원)와 글로벌 학회 참석 비용을 국가 차원에서 지원합니다.",
+        ch2Tag: "Chapter 02", ch2Title: "인공지능 기반 단백질 구조 예측 및 설계", ch2Sub: "(Structural Bioinformatics & AI)",
+        ch3Tag: "Chapter 03", ch3Title: "신항원 예측 및 유전체 머신러닝 분석", ch3Sub: "(Genomics & Neoantigen ML)",
+        ch4Tag: "Chapter 04", ch4Title: "시스템 면역학 및 단일세포 다중오믹스 분석", ch4Sub: "(Systems Immunology)",
+        ch5Tag: "Chapter 05", ch5Title: "바이러스 유전체학 및 보건정보학", ch5Sub: "(Viral Genomics & Public Health)",
+        ch6Tag: "Chapter 06", ch6Title: "통합 요약 지표 (연구실 가치 분석)",
+        pipelineDesc: "전통적인 면역학이 특정 면역 세포나 단백질 하나를 분리하여 관찰하는 환원주의적 접근에 머물렀다면, 현대의 계산 시스템 면역학은 <span class='text-white font-bold border-b border-teal-400'>수만 개의 단일 세포에서 쏟아지는 전사체(scRNA-seq)와 단백질 마커(CyTOF) 데이터</span>를 클라우드에서 동시에 분석하여 인체 면역 네트워크 전체의 시공간적 상호작용 지도를 그리는 분야입니다.",
+        pipelineSteps: [
+            { t: "조직/혈액 샘플", d: "환자 유래 생물학적 표본 확보" }, { t: "단일세포 분리", d: "마이크로플루이딕스 (scRNA-seq)" },
+            { t: "데이터 생성", d: "매시브 리드 시퀀싱 데이터 출력" }, { t: "드라이랩 분석", d: "생명정보학적 QC 및 서열 정렬" },
+            { t: "클러스터 분석", d: "면역 프로파일링 AI 정밀 추적" }
+        ],
+        tableCols: ["교수진 (소속 / 학과 / 전공)", "형태", "핵심 패러다임 / 기술", "석사 학습 적합도 (백신 연관)", "연구실 가치 및 경쟁력", "펀딩 및 인프라 현황", "신청 난이도 (상세)", "전략적 인사이트"],
+        conclusionTitle: "결론 및 진출을 위한 전략적 제언",
+        conclusionP1: "이 보고서에 정리된 최고 수준의 교수진 랩에 합류하여 파이썬(Python), R, 최신 딥러닝 프레임워크 기반의 수학적 기초를 다진다면, 이는 감염병 백신 디자인, 맞춤형 항암제 등 어떠한 산업적 수요에도 매끄럽게 이식될 수 있는 본인만의 절대적인 무기가 될 것입니다.",
+        profs: [
+            {
+                id: "jung", univId: "korea", ch: 2,
+                name: "정원영", univ: "고려대", dept: "바이오시스템의과학부", major: "계산 및 시스템 면역학", type: "순수 Dry",
+                link: "https://sites.google.com/korea.ac.kr/kimlab?pli=1",
+                paradigm: "계산 시스템 면역학, In silico 항체 디자인, 면역 탈진 모델링",
+                fitLabel: "완벽히 부합", fitStatus: "perfect",
+                fitDesc: "In silico 백신-항체 계산 파이프라인. 방향 전환 불필요.",
+                value: "퍼듀/Ragon(하버드-MIT) 핵심 연구원 출신의 초유망 신임 랩", funding: "신임 PI Start-up 펀드 운영",
+                difficulty: "신규 구축 단계로 적극적 모집 수요 존재", insight: "공학에서 면역학으로의 융합 지원자에게 극도로 우호적",
+                noticeType: "highlight", noticeTitle: "강력 추천: 백신 설계 궤적과의 완벽한 일치", noticeDesc: "연구 방향이 in silico 항체 디자인 및 백신 궤적과 100% 부합합니다.",
+                descHTML: "<strong>학술적 배경:</strong> Purdue 박사 후 세계 최고 권위의 <strong>미국 Ragon Institute (MGH, MIT, Harvard)</strong>에서 계산면역학 핵심 연구원으로 활약한 신진 PI입니다.<br><strong>전략:</strong> 항원-항체 상호작용의 물리화학적 에너지를 계산하여 최적의 백신 후보를 도출해내는 완벽한 방법론을 제공합니다."
+            },
+            {
+                id: "baek", univId: "snu", ch: 2,
+                name: "백민경", univ: "서울대", dept: "생명과학부", major: "계산생물학 및 구조생물정보학", type: "순수 Dry",
+                link: "https://biosci.snu.ac.kr/cssb", paradigm: "AI 단백질 구조 예측, RoseTTAFold, 단백질-핵산 복합체 설계",
+                fitLabel: "부합", fitStatus: "good", fitDesc: "백신 상류 근원적 3D 모델링 기술 습득.",
+                value: "세계 최고 수준. 노벨상 랩 계보의 AI 원천 설계자.", funding: "LG AI 연구원 등 대규모 공동연구 (슈퍼컴퓨터 확보)",
+                difficulty: "극도로 높음 (글로벌 최상위 인재 집중)", insight: "단백질 예측 근원 아키텍처 역량 확보. 응용 폭 가장 넓음.",
+                descHTML: "<strong>학술적 특수성:</strong> 2024년 노벨화학상 수상자(David Baker) 랩에서 <strong>RoseTTAFold를 공동 개발(제1저자)</strong>한 원천 설계자입니다.<br><strong>전략:</strong> mRNA 서열과 리피드 나노입자 상호작용 모델링, De novo 항체 디자인 등 백신 설계 최전방 기술을 학습합니다."
+            },
+            {
+                id: "shin", univId: "yonsei", ch: 2,
+                name: "신종식", univ: "연세대", dept: "생명공학과", major: "합성생명공학연구", type: "Dry+Wet",
+                link: "https://jsshinlab.yonsei.ac.kr/", paradigm: "RNA 합성생물학, 스마트 약물 전달 소재 개발",
+                fitLabel: "간접 (산업)", fitStatus: "indirect", fitDesc: "체외 전달체(LNP 등) 검증 강점.",
+                value: "산업계 연계성 및 취업 실무 지표 우수.", funding: "산학 협력 R&D 펀딩 안정적.",
+                difficulty: "중견 랩으로 상시 모집 추정.", insight: "백신 제조 등 산업체 실무형 인재 성장에 유리.",
+                descHTML: "계산 시뮬레이션과 <strong>실험실(Wet-lab) 검증이 긴밀하게 병행</strong>되는 랩입니다. 생물학적 기전을 직접 검증하며 높은 산업적 연계성을 가집니다."
+            },
+            {
+                id: "kim", univId: "yonsei", ch: 3,
+                name: "김상우", univ: "연세대", dept: "의생명과학부", major: "중개 유전정보학", type: "순수 Dry",
+                link: "http://www.tgilab.org", paradigm: "신항원 표위 예측(Neopepsee), 체세포 돌연변이 해독",
+                fitLabel: "완벽히 부합", fitStatus: "perfect", fitDesc: "신항원 표위 예측 알고리즘 원천 보유.",
+                value: "생명정보학 분야 톱 티어. 학계 진출 탁월.", funding: "HFF 연구장학금 및 다학제 임상 인프라 구축.",
+                difficulty: "승진 및 인지도로 경쟁 치열. 조기 컨택 권장.", insight: "종양 백신 분야 데이터 분석 기초 체력 확립 최적.",
+                descHTML: "<strong>Neopepsee 선구자:</strong> 암 환자 특이적 신항원을 판별하는 독자적 머신러닝 알고리즘을 개발했습니다. 표위 백신 예측 그 자체를 다루는 핵심 파이프라인입니다."
+            },
+            {
+                id: "bala", univId: "skku", ch: 3,
+                name: "B. Manavalan", univ: "성균관대", dept: "융합생명공학과", major: "계산생물학 및 생명정보학", type: "순수 Dry",
+                link: "https://balalab-skku.org/", paradigm: "ML/DL 범용 서열 예측, 펩타이드 독성 모델",
+                fitLabel: "부합", fitStatus: "good", fitDesc: "독성 예측 모델을 항원 예측으로 즉각 전환 가능.",
+                value: "단일 논문 고피인용 등 라이징 펠로우.", funding: "학내 핵심 유망 펀딩 및 지원 체계.",
+                difficulty: "웹사이트 명시적 적극 모집(Actively seeking).", insight: "질병 특화보다 수학적 모델 구축 메커니즘 순수 습득에 유리.",
+                descHTML: "<strong>범용 예측 모델:</strong> 단백질 언어 모델(PLM)을 기반으로 한 펩타이드 독성 예측 시스템(HyPepTox-Fuse) 등을 개발합니다. 훈련 데이터만 백신으로 교체하면 표위 예측 도구가 됩니다."
+            },
+            {
+                id: "hong", univId: "yonsei", ch: 4,
+                name: "홍승희", univ: "연세대", dept: "생화학과", major: "면역정보학", type: "순수 Dry",
+                link: "https://imil.yshonglab.com/", paradigm: "단일세포/공간전사체 기반 전신 면역 프로파일링, 에피토프 규명",
+                fitLabel: "부합", fitStatus: "good", fitDesc: "에피토프 규명 및 면역 동태 알고리즘 이식 가능.",
+                value: "단일세포 분석 및 임상 면역학 리더십 탁월.", funding: "공간전사체 인프라(2.9억) 등 막대한 정부 재원.",
+                difficulty: "대형 과제 운용으로 상시 모집 수요 추정.", insight: "초고가 장비 데이터를 클라우드에서 스케일업 처리하는 경험.",
+                descHTML: "고해상도 면역 프로파일링 파이프라인(CyTOF, scRNA-seq)을 통해 전신 면역 교란을 해독합니다. 백신 투여 후 면역 동태 분석에 완벽히 호환되는 기술을 다룹니다."
+            },
+            {
+                id: "ahn", univId: "korea", ch: 4,
+                name: "안준용", univ: "고려대", dept: "바이오시스템의과학부", major: "유전체학", type: "순수 Dry",
+                link: "https://joonanlab.github.io/", paradigm: "비전사 유전체 LLM 분석, 가상 세포 모델링",
+                fitLabel: "주의 (낮음)", fitStatus: "caution", fitDesc: "분석 타겟이 백신이 아닌 뇌신경 장애.",
+                value: "AI/유전체학 트렌드 선도하는 청년 대가.", funding: "AI 기반 신약 개발 인프라 및 단일세포 데이터.",
+                difficulty: "인턴 모집 등 수용적이고 개방적 분위기.", insight: "백신 타겟을 양보하고 순수 AI 유전체 기법 습득 시 대안.",
+                noticeType: "caution", noticeTitle: "연구 타겟 주의: 뇌신경발달장애 중심", noticeDesc: "AI 파이프라인 훈련은 훌륭하나 핵심 타겟이 자폐증(Autism)으로 면역/백신 도메인과 다릅니다.",
+                descHTML: "비전사 유전체 변이를 거대언어모델(LLM)과 딥러닝으로 해독합니다. 생물학적 베이스가 없는 학생에게도 진입 장벽을 낮춰주는 유연함을 보입니다."
+            },
+            {
+                id: "chang", univId: "snu", ch: 5,
+                name: "장혜식", univ: "서울대", dept: "생명과학부", major: "RNA 유전체학", type: "순수 Dry",
+                link: "https://qbio.io/r", paradigm: "바이러스 유전체학, 대규모 서열 데이터 기전 해독",
+                fitLabel: "간접 (기초)", fitStatus: "indirect", fitDesc: "백신 설계 상류 필수 기전인 RNA 전사 해독 훈련.",
+                value: "국내 최고 석학 랩(IBS) 협력. Cell 톱저널 실적.", funding: "IBS 소속으로 막강한 기초과학 펀딩 인프라 공유.",
+                difficulty: "높은 노출도로 진입 경쟁 매우 치열.", insight: "대규모 시퀀싱 데이터 처리 기본기 확립을 위한 완벽한 학술 환경.",
+                descHTML: "RNA 전사 후 조절 메커니즘을 분석합니다. 바이러스 유전체 서열 스케일링의 하드코어 파이프라인 훈련을 제공합니다."
+            },
+            {
+                id: "choi", univId: "korea", ch: 5,
+                name: "최인걸", univ: "고려대", dept: "생명공학과", major: "생명정보학", type: "순수 Dry",
+                link: "https://choilab.github.io/", paradigm: "NGS 미생물 유전체 해독, 대사 경로 탐색 모델",
+                fitLabel: "주의 (낮음)", fitStatus: "caution", fitDesc: "인간 면역이 아닌 미생물/환경 대사경로 중심.",
+                value: "오랜 연륜의 중견 랩. 툴 개발력 탁월.", funding: "시스템생물학 도구 개발 체계적 펀딩.",
+                difficulty: "모집 정보 다소 제한적.", insight: "인류 표위 백신 궤적과는 방향이 다름.",
+                noticeType: "caution", noticeTitle: "연구 타겟 주의: 미생물/환경 중심", noticeDesc: "알고리즘 및 NGS 베이스는 강력하지만 주 연구 대상이 미생물 및 발효균입니다.",
+                descHTML: "미생물 유전체 기반 자연어 처리 모델(GPT, BERT) 응용 서열 분석으로 방법론을 확장하고 있습니다. 서열 가공의 밑바닥 능력을 함양합니다."
+            },
+            {
+                id: "son", univId: "snu", ch: 5,
+                name: "손현석", univ: "서울대", dept: "보건학과", major: "보건인공지능 및 생명정보학", type: "순수 Dry",
+                link: "https://app.rndcircle.io/lab/fb440769-149e-472a-a0f6-fc54c9ab325d", paradigm: "Viroinformatics, 감염병 모니터링, 진화 역학",
+                fitLabel: "간접 (역학)", fitStatus: "indirect", fitDesc: "분자 설계보다는 보건학적 거시 역학 관점.",
+                value: "건강재난 교육단장 역임. 안정적 학술 배경.", funding: "신종 바이러스 감시 정부 과제 수행(22-25년).",
+                difficulty: "비교적 모집 유연, 공고 확인 가능.", insight: "집단 감염병 통제 및 역학 빅데이터 시각에 적합.",
+                descHTML: "호흡기 감염 시계열 기계학습 모니터링 및 진화 역학을 다룹니다. 미시적 설계보다 거시적 감염병 모델링에 강점이 있습니다."
+            }
+        ]
+    },
+    en: {
+        heroBadge: "Specialized Track in Immunology & Vaccine Design",
+        heroTitle: "In-depth Analysis Report on Computational Biology &<br><span class='text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-cyan-300 to-teal-300'>Bioinformatics Labs at Top Korean Universities</span>",
+        heroDesc: "Deep indicators of leading research teams and academic ecosystems based on AI, ML, and Multi-omics.",
+        introTitle: "Introduction: Paradigm Shift in Computational Vaccine Research",
+        introP1: "In modern life sciences, Computational Biology and Bioinformatics leveraging AI, ML, and large-scale multi-omics have become central engines of discovery. Driven by the global pandemic, fields like vaccine design, neoantigen discovery, and Systems Immunology have heavily shifted towards <span class='font-bold text-blue-700 bg-blue-50 px-1 rounded'>Pure Dry-lab computations</span> processing massive datasets.",
+        introP2: "This report meticulously analyzes the research topics, funding, and infrastructure of leading bioinformatics labs at Seoul National Univ, Yonsei Univ, Korea Univ, and Sungkyunkwan Univ. By examining the PI's academic background and verified publications, we provide objective insights for prospective researchers aiming to enter the vaccine design field.",
+        ch1Tag: "Chapter 01", ch1Title: "Funding Infrastructure & Fellowship Systems",
+        ch1Sub: "Computational biology demands immense computing power and deep immersion, making stable financial support crucial.",
+        ch1Box1Title: "Global Korea Scholarship (GKS)", ch1Box1Desc: "An exceptional program that eliminates financial barriers, covering flights, living expenses, and full tuition. (Requires GPA > 80%)",
+        ch1Box2Title: "BK21 Phase 4 Funding", ch1Box2Desc: "Provides stable monthly stipends (1M KRW for Master's, 1.6M KRW for Ph.D.) and global conference travel expenses for selected participants.",
+        ch2Tag: "Chapter 02", ch2Title: "AI-based Protein Structure Prediction & Design", ch2Sub: "(Structural Bioinformatics & AI)",
+        ch3Tag: "Chapter 03", ch3Title: "Neoantigen Prediction & Genomics Machine Learning", ch3Sub: "(Genomics & Neoantigen ML)",
+        ch4Tag: "Chapter 04", ch4Title: "Systems Immunology & Single-cell Multi-omics", ch4Sub: "(Systems Immunology)",
+        ch5Tag: "Chapter 05", ch5Title: "Viral Genomics & Public Health Informatics", ch5Sub: "(Viral Genomics & Public Health)",
+        ch6Tag: "Chapter 06", ch6Title: "Comprehensive Summary Matrix (Lab Value Analysis)",
+        pipelineDesc: "While traditional immunology relied on a reductionist approach to isolate single cells, modern Computational Systems Immunology analyzes <span class='text-white font-bold border-b border-teal-400'>scRNA-seq and CyTOF data from tens of thousands of single cells simultaneously via cloud computing</span>, mapping the entire spatiotemporal network of the human immune system.",
+        pipelineSteps: [
+            { t: "Tissue/Blood Sample", d: "Obtain patient-derived specimens" }, { t: "Single-cell Isolation", d: "Microfluidics (scRNA-seq)" },
+            { t: "Data Generation", d: "Massive read sequencing output" }, { t: "Dry-lab Analysis", d: "Bioinformatic QC & Alignment" },
+            { t: "Cluster Analysis", d: "AI-driven Immune Profiling" }
+        ],
+        tableCols: ["Professor (Univ/Dept/Major)", "Type", "Core Paradigm / Tech", "Master's Fit (Vaccine Relevance)", "Lab Value & Competitiveness", "Funding & Infrastructure", "Application Difficulty", "Strategic Insight"],
+        conclusionTitle: "Conclusion & Strategic Recommendations",
+        conclusionP1: "By joining these top-tier labs and mastering Python, R, and modern deep learning frameworks, you will build an absolute arsenal of skills seamlessly transferable to any industry demand, from infectious disease vaccine design to personalized cancer immunotherapies.",
+        profs: [
+            {
+                id: "jung", univId: "korea", ch: 2, name: "Wonyoung Jung", univ: "Korea Univ", dept: "Biomedical Systems Eng", major: "Computational & Systems Immunology", type: "Pure Dry", link: "https://sites.google.com/korea.ac.kr/kimlab?pli=1",
+                paradigm: "Computational Systems Immunology, In silico Antibody Design", fitLabel: "Perfect Match", fitStatus: "perfect", fitDesc: "In silico vaccine-antibody pipeline. No pivoting needed.",
+                value: "Highly promising new PI; formerly core researcher at Ragon Institute (MGH, MIT, Harvard).", funding: "Stable resources via new PI Start-up funds.", difficulty: "Active recruitment demand for new lab setup.", insight: "Extremely welcoming to applicants with engineering-to-immunology cross-disciplinary backgrounds.",
+                noticeType: "highlight", noticeTitle: "Highly Recommended: Perfect Match for Vaccines", noticeDesc: "The research direction perfectly aligns 100% with in silico antibody design and vaccine trajectory.",
+                descHTML: "<strong>Academic Background:</strong> Ph.D. from Purdue, served as a core researcher in computational immunology at the world-renowned <strong>Ragon Institute of MGH, MIT and Harvard</strong>.<br><strong>Strategy:</strong> Provides a flawless methodology to derive optimal vaccine candidates by calculating the physicochemical energy of antigen-antibody interactions."
+            },
+            {
+                id: "baek", univId: "snu", ch: 2, name: "Minkyung Baek", univ: "Seoul Nat'l Univ", dept: "Biological Sciences", major: "Computational Biology", type: "Pure Dry", link: "https://biosci.snu.ac.kr/cssb",
+                paradigm: "AI Protein Structure Prediction, RoseTTAFold, Protein-Nucleic Acid Design", fitLabel: "Good Fit", fitStatus: "good", fitDesc: "Master foundational 3D modeling for upstream vaccines.",
+                value: "World-class. Original architect of AI from a Nobel Laureate lineage.", funding: "Massive corporate partnerships (LG AI) securing Supercomputers.", difficulty: "Extremely high (Top global talents gather here).", insight: "Secures ultimate foundational architecture skills in protein prediction.",
+                descHTML: "<strong>Distinction:</strong> The original developer who co-created <strong>RoseTTAFold (First Author)</strong> in the lab of 2024 Nobel Laureate David Baker.<br><strong>Strategy:</strong> Learn frontline vaccine design tech, modeling mRNA-LNP interactions and de novo antibody design."
+            },
+            {
+                id: "shin", univId: "yonsei", ch: 2, name: "Jong-Shik Shin", univ: "Yonsei Univ", dept: "Biotechnology", major: "Synthetic Biotechnology", type: "Dry+Wet", link: "https://jsshinlab.yonsei.ac.kr/",
+                paradigm: "RNA Synthetic Biology, Smart Drug Delivery Materials", fitLabel: "Indirect (Industry)", fitStatus: "indirect", fitDesc: "Strong in in vitro delivery vehicle (LNP) validation.",
+                value: "Excellent industry connections and employment track record.", funding: "Stable R&D funding via industry collaborations.", difficulty: "Estimated steady recruitment as a senior lab.", insight: "Advantageous for becoming a practical talent in the vaccine manufacturing industry.",
+                descHTML: "A hybrid lab where computational simulations are <strong>tightly coupled with Wet-lab experimental validation</strong>. Offers high industry relevance."
+            },
+            {
+                id: "kim", univId: "yonsei", ch: 3, name: "Sangwoo Kim", univ: "Yonsei Univ", dept: "Biomedical Science", major: "Translational Genomic Informatics", type: "Pure Dry", link: "http://www.tgilab.org",
+                paradigm: "Neoantigen Epitope Prediction (Neopepsee), Somatic Mutation Decoding", fitLabel: "Perfect Match", fitStatus: "perfect", fitDesc: "Originator of neoantigen epitope prediction algorithms.",
+                value: "Top-tier in bioinformatics with outstanding academic placement.", funding: "HFF fellowships and vast multidisciplinary clinical infrastructure.", difficulty: "Fierce competition due to high recognition. Early contact advised.", insight: "Optimal for building foundational data analysis stamina in tumor vaccines.",
+                descHTML: "<strong>Neopepsee Pioneer:</strong> Developed a proprietary ML algorithm to identify tumor-specific neoantigens. The core pipeline dealing with epitope vaccine prediction itself."
+            },
+            {
+                id: "bala", univId: "skku", ch: 3, name: "B. Manavalan", univ: "Sungkyunkwan Univ", dept: "Integrative Biotechnology", major: "Computational Biology & Bioinformatics", type: "Pure Dry", link: "https://balalab-skku.org/",
+                paradigm: "ML/DL Sequence Prediction, Peptide Toxicity Models", fitLabel: "Good Fit", fitStatus: "good", fitDesc: "Toxicity models easily convert to antigen prediction.",
+                value: "Rising fellow with highly-cited single papers.", funding: "Supported by core promising university funding systems.", difficulty: "Website explicitly states 'Actively Seeking' students.", insight: "Favorable for mastering pure mathematical model architectures over disease specifics.",
+                descHTML: "<strong>Universal Models:</strong> Develops Protein Language Model (PLM)-based peptide toxicity prediction (HyPepTox-Fuse). Swapping the training data transforms it into a vaccine epitope prediction tool."
+            },
+            {
+                id: "hong", univId: "yonsei", ch: 4, name: "Seunghee Hong", univ: "Yonsei Univ", dept: "Biochemistry", major: "Immuno-Informatics", type: "Pure Dry", link: "https://imil.yshonglab.com/",
+                paradigm: "Systemic Immune Profiling via scRNA-seq/Spatial Transcriptomics", fitLabel: "Good Fit", fitStatus: "good", fitDesc: "Epitope identification algorithms are highly transferable.",
+                value: "Exceptional leadership in single-cell analysis and clinical immunology.", funding: "Massive government grants (~290M KRW for Spatial Transcriptomics).", difficulty: "Estimated steady demand due to large-scale projects.", insight: "Gain experience scaling and processing data from ultra-expensive clinical equipment.",
+                descHTML: "Decodes systemic immune disruptions via high-resolution profiling pipelines (CyTOF, scRNA-seq). Deals with technologies fully compatible with analyzing immune dynamics post-vaccination."
+            },
+            {
+                id: "ahn", univId: "korea", ch: 4, name: "June-Yong An", univ: "Korea Univ", dept: "Biomedical Systems Eng", major: "Genomics", type: "Pure Dry", link: "https://joonanlab.github.io/",
+                paradigm: "LLM Analysis of Noncoding Genomes, Virtual Cell Modeling", fitLabel: "Caution (Low)", fitStatus: "caution", fitDesc: "Research target is neurodevelopment, not vaccines.",
+                value: "Leading young master in AI/Genomics trends.", funding: "AI drug discovery infrastructure and single-cell data.", difficulty: "Open and welcoming atmosphere; accepts interns.", insight: "Alternative option if prioritizing pure AI genomics techniques over vaccine targets.",
+                noticeType: "caution", noticeTitle: "Caution: Research Target", noticeDesc: "Excellent AI pipeline training, but the core target is Autism, distant from immunology/vaccines.",
+                descHTML: "Decodes noncoding genome variations using LLMs and deep learning. Shows flexibility by lowering barriers to entry for students without a biological background."
+            },
+            {
+                id: "chang", univId: "snu", ch: 5, name: "Hyeshik Chang", univ: "Seoul Nat'l Univ", dept: "Biological Sciences", major: "RNA Genomics", type: "Pure Dry", link: "https://qbio.io/r",
+                paradigm: "Viral Genomics, Decoding Mechanisms of Large-scale Sequence Data", fitLabel: "Indirect (Basic)", fitStatus: "indirect", fitDesc: "Trains in RNA decoding, essential upstream for vaccines.",
+                value: "Collaborates with Korea's top scholar (IBS). Publications in Cell.", funding: "Shares immense basic science infrastructure via IBS.", difficulty: "Intensely competitive due to high visibility.", insight: "Perfect academic environment to establish fundamentals in massive sequencing data processing.",
+                descHTML: "Analyzes post-transcriptional RNA regulatory mechanisms. Provides hardcore pipeline training for scaling viral genome sequences."
+            },
+            {
+                id: "choi", univId: "korea", ch: 5, name: "In-Geol Choi", univ: "Korea Univ", dept: "Biotechnology", major: "Bioinformatics", type: "Pure Dry", link: "https://choilab.github.io/",
+                paradigm: "NGS Microbial Genomics, Metabolic Pathway Search Models", fitLabel: "Caution (Low)", fitStatus: "caution", fitDesc: "Focuses on microbial/environmental pathways, not human immunity.",
+                value: "Senior lab with deep history. Excellent tool development capability.", funding: "Systematic funding for systems biology tool development.", difficulty: "Recruitment information somewhat restricted.", insight: "Diverges from the human epitope vaccine trajectory.",
+                noticeType: "caution", noticeTitle: "Caution: Microbes/Environment Target", noticeDesc: "Strong algorithms and NGS base, but primary subjects are microbes and fermentation bacteria.",
+                descHTML: "Expanding methodologies via NLP models (GPT, BERT) based on microbial genomes. Cultivates deep foundational skills in sequence processing."
+            },
+            {
+                id: "son", univId: "snu", ch: 5, name: "Hyun-Seok Son", univ: "Seoul Nat'l Univ", dept: "Public Health", major: "Health AI & Bioinformatics", type: "Pure Dry", link: "https://app.rndcircle.io/lab/fb440769-149e-472a-a0f6-fc54c9ab325d",
+                paradigm: "Viroinformatics, Infectious Disease Monitoring, Evolutionary Dynamics", fitLabel: "Indirect (Epi)", fitStatus: "indirect", fitDesc: "Macro-epidemiological perspective rather than molecular design.",
+                value: "Solid academic background. Former director of Health Disaster Education.", funding: "Executes government projects for novel virus surveillance (22-25).", difficulty: "Relatively flexible recruitment, open announcements.", insight: "Suitable for population infectious disease control and epidemiological big data perspectives.",
+                descHTML: "Deals with time-series ML monitoring and evolutionary dynamics of respiratory infections. Stronger in macroscopic disease modeling than microscopic design."
+            }
+        ]
+    },
+    zh: {
+        heroBadge: "免疫学与疫苗设计特色追踪",
+        heroTitle: "韩国主要大学计算生物学及<br><span class='text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-cyan-300 to-teal-300'>生物信息学实验室深度分析报告</span>",
+        heroDesc: "基于AI、机器学习和多组学的顶尖研究团队及学术生态深度指标",
+        introTitle: "引言：基于计算生物学的疫苗研究范式转变",
+        introP1: "在现代生命科学和医学研究中，利用人工智能(AI)、机器学习(ML)和大规模多组学(Multi-omics)数据分析的计算生物学和生物信息学已经超越了辅助手段，成为核心发现的主体。特别是在全球大流行之后，疫苗设计、新抗原(Neoantigen)发现以及系统免疫学领域已严重向处理海量数据的<span class='font-bold text-blue-700 bg-blue-50 px-1 rounded'>纯计算(Pure Dry)研究</span>倾斜。",
+        introP2: "本报告深入分析了首尔大学、延世大学、高丽大学和成均馆大学的计算生物学和免疫信息学主要实验室的研究主题与基础设施。通过核实教授学术背景和核心研究内容，为希望进入疫苗设计领域的准研究人员提供客观的职业规划见解。",
+        ch1Tag: "第一章", ch1Title: "科研经费基础设施与全额奖学金支持体系",
+        ch1Sub: "计算生物学研究需要高性能计算资源和深度投入时间，因此稳定的资金支持至关重要。",
+        ch1Box1Title: "全球韩国奖学金 (GKS)", ch1Box1Desc: "提供机票、安家费、每月生活费和全额学费，彻底消除留学财务障碍的破格制度。(条件：GPA 80%以上)",
+        ch1Box2Title: "BK21 第四阶段科研补助", ch1Box2Desc: "为入选参与者提供国家级的每月稳定生活费(硕士100万韩元，博士160万韩元)及全球学术会议参会费用。",
+        ch2Tag: "第二章", ch2Title: "基于AI的蛋白质结构预测与设计", ch2Sub: "(结构生物信息学与人工智能)",
+        ch3Tag: "第三章", ch3Title: "新抗原预测与基因组机器学习分析", ch3Sub: "(基因组学与新抗原ML)",
+        ch4Tag: "第四章", ch4Title: "系统免疫学与单细胞多组学分析", ch4Sub: "(系统免疫学)",
+        ch5Tag: "第五章", ch5Title: "病毒基因组学与公共卫生信息学", ch5Sub: "(病毒基因组学与公共卫生)",
+        ch6Tag: "第六章", ch6Title: "综合摘要指标 (实验室含金量分析)",
+        pipelineDesc: "如果说传统免疫学停留在分离观察单一免疫细胞的还原论方法上，那么现代计算系统免疫学则是在云端同时分析<span class='text-white font-bold border-b border-teal-400'>来自数万个单细胞的转录组(scRNA-seq)和蛋白质标记物(CyTOF)数据</span>，从而绘制出整个人体免疫网络的时空交互图谱。",
+        pipelineSteps: [
+            { t: "组织/血液样本", d: "获取患者源生物样本" }, { t: "单细胞分离", d: "微流控技术 (scRNA-seq)" },
+            { t: "数据生成", d: "海量读取测序数据输出" }, { t: "Dry-lab计算分析", d: "生物信息学质控与比对" },
+            { t: "聚类分析", d: "AI精准追踪免疫图谱" }
+        ],
+        tableCols: ["教授阵容 (所属大学/学科/专业)", "类型", "核心范式 / 技术", "硕士学习适配度 (疫苗关联)", "实验室价值与竞争力", "经费及基础设施现状", "申请难度 (详细)", "战略见解"],
+        conclusionTitle: "结论与战略建议",
+        conclusionP1: "通过加入本报告汇总的顶级教授实验室，并掌握Python、R和最新深度学习框架的数学基础，您将打造出无缝衔接传染病疫苗设计、个性化抗癌药物等任何行业需求的绝对个人武器。",
+        profs: [
+            {
+                id: "jung", univId: "korea", ch: 2, name: "정원영 (Jung Wonyoung)", univ: "高丽大学", dept: "生物系统医科学部", major: "计算与系统免疫学", type: "纯 Dry", link: "https://sites.google.com/korea.ac.kr/kimlab?pli=1",
+                paradigm: "计算系统免疫学, In silico 抗体设计", fitLabel: "完美契合", fitStatus: "perfect", fitDesc: "In silico 疫苗-抗体计算管线，无需转换方向。",
+                value: "极具潜力的初创PI；前 Ragon Institute (哈佛-MIT) 核心研究员。", funding: "拥有新PI启动基金，资金稳定。", difficulty: "正处于新建阶段，招募需求积极。", insight: "对从工程学跨界到免疫学的申请者极为友好。",
+                noticeType: "highlight", noticeTitle: "强烈推荐：与疫苗设计轨迹完美契合", noticeDesc: "研究方向与 in silico 抗体设计和疫苗轨迹 100% 吻合。",
+                descHTML: "<strong>学术背景：</strong> 普渡大学博士，曾在全球最权威的免疫学研究所 <strong>Ragon Institute of MGH, MIT and Harvard</strong> 担任计算免疫学核心研究员。<br><strong>策略：</strong> 通过计算抗原-抗体相互作用的物理化学能量来得出最佳疫苗候选物，提供完美的计算方法论。"
+            },
+            {
+                id: "baek", univId: "snu", ch: 2, name: "백민경 (Baek Minkyung)", univ: "首尔大学", dept: "生命科学部", major: "计算生物学", type: "纯 Dry", link: "https://biosci.snu.ac.kr/cssb",
+                paradigm: "AI蛋白质结构预测, RoseTTAFold, 蛋白质-核酸复合体设计", fitLabel: "契合", fitStatus: "good", fitDesc: "掌握疫苗上游根本的3D建模技术。",
+                value: "世界顶尖。诺奖实验室谱系的AI源头设计者。", funding: "与LG AI等企业进行大规模联合研究(拥有超级计算机)。", difficulty: "极高（全球顶尖人才扎堆）。", insight: "获取蛋白质预测源头架构能力，应用范围最广。",
+                descHTML: "<strong>学术特殊性：</strong> 在2024年诺贝尔化学奖得主(David Baker)实验室中<strong>共同开发RoseTTAFold(第一作者)</strong>的源头设计者。<br><strong>策略：</strong> 学习mRNA序列与脂质纳米颗粒相互作用建模、De novo抗体设计等疫苗设计最前沿技术。"
+            },
+            {
+                id: "shin", univId: "yonsei", ch: 2, name: "신종식 (Shin Jong-Shik)", univ: "延世大学", dept: "生命工程学", major: "合成生物工程", type: "Dry+Wet", link: "https://jsshinlab.yonsei.ac.kr/",
+                paradigm: "RNA合成生物学, 智能药物递送材料", fitLabel: "间接 (产业)", fitStatus: "indirect", fitDesc: "在体外递送载体(LNP)验证方面具有优势。",
+                value: "产业联系紧密，就业实务指标优异。", funding: "产学合作研发资金稳定。", difficulty: "作为资深实验室，推测有常态化招募。", insight: "有利于成长为疫苗制造等产业界的实务型人才。",
+                descHTML: "这是一个<strong>计算模拟与实验室(Wet-lab)验证紧密结合</strong>的实验室。可直接验证生物学机制，产业联系度极高。"
+            },
+            {
+                id: "kim", univId: "yonsei", ch: 3, name: "김상우 (Kim Sangwoo)", univ: "延世大学", dept: "医生命科学部", major: "转化基因组信息学", type: "纯 Dry", link: "http://www.tgilab.org",
+                paradigm: "新抗原表位预测(Neopepsee), 体细胞突变解码", fitLabel: "完美契合", fitStatus: "perfect", fitDesc: "掌握新抗原表位预测算法源头。",
+                value: "生物信息学领域顶流。学术界输出卓越。", funding: "获HFF研究奖学金，建立强大的多学科临床基础设施。", difficulty: "因晋升和高知名度竞争激烈，建议尽早联系。", insight: "确立肿瘤疫苗领域数据分析基础体力的最佳选择。",
+                descHTML: "<strong>Neopepsee先驱：</strong> 开发了鉴别癌症患者特异性新抗原的独家机器学习算法。这是直接处理表位疫苗预测核心的管线。"
+            },
+            {
+                id: "bala", univId: "skku", ch: 3, name: "B. Manavalan", univ: "成均馆大学", dept: "融合生命工程学", major: "计算生物学与生物信息学", type: "纯 Dry", link: "https://balalab-skku.org/",
+                paradigm: "基于ML/DL的通用序列预测, 肽毒性预测模型", fitLabel: "契合", fitStatus: "good", fitDesc: "毒性预测模型可立即转为抗原预测。",
+                value: "单篇高被引的新星(Rising fellow)。", funding: "校内核心潜力资金支持体系。", difficulty: "网站明确标明积极招募(Actively seeking)。", insight: "比起特定疾病，更有利于纯粹掌握数学模型构建机制。",
+                descHTML: "<strong>通用预测模型：</strong> 开发基于蛋白质语言模型(PLM)的肽毒性预测系统(HyPepTox-Fuse)。只需将训练数据替换为疫苗数据，即可成为表位预测工具。"
+            },
+            {
+                id: "hong", univId: "yonsei", ch: 4, name: "홍승희 (Hong Seunghee)", univ: "延世大学", dept: "生物化学", major: "免疫信息学", type: "纯 Dry", link: "https://imil.yshonglab.com/",
+                paradigm: "基于单细胞/空间转录组的全身免疫分析, 表位鉴定", fitLabel: "契合", fitStatus: "good", fitDesc: "表位鉴定及免疫动态算法可直接移植。",
+                value: "在单细胞分析和临床免疫学方面领导力卓越。", funding: "拥有巨额政府资金（2.9亿韩元用于空间转录组）。", difficulty: "运营大型项目，推测有常态化招募需求。", insight: "积累在云端扩展处理超高价设备数据的经验。",
+                descHTML: "通过高分辨率免疫分析管线(CyTOF, scRNA-seq)解码全身免疫紊乱。处理的技术完全兼容疫苗接种后的免疫动态分析。"
+            },
+            {
+                id: "ahn", univId: "korea", ch: 4, name: "안준용 (An June-Yong)", univ: "高丽大学", dept: "生物系统医科学部", major: "基因组学", type: "纯 Dry", link: "https://joonanlab.github.io/",
+                paradigm: "非编码基因组LLM分析, 虚拟细胞建模", fitLabel: "注意 (低)", fitStatus: "caution", fitDesc: "分析目标是脑神经障碍而非疫苗。",
+                value: "引领AI/基因组学趋势的青年大牛。", funding: "基于AI的新药开发基础设施和单细胞数据。", difficulty: "招募实习生，氛围包容开放。", insight: "如果放弃疫苗目标而纯粹学习AI基因组学技术，则是绝佳备选。",
+                noticeType: "caution", noticeTitle: "研究目标注意：以脑神经发育障碍为中心", noticeDesc: "AI管线训练极其出色，但核心目标是自闭症(Autism)，与免疫/疫苗领域不同。",
+                descHTML: "使用大语言模型(LLM)和深度学习解码非编码基因组变异。对没有生物学基础的学生也表现出降低准入门槛的灵活性。"
+            },
+            {
+                id: "chang", univId: "snu", ch: 5, name: "장혜식 (Chang Hyeshik)", univ: "首尔大学", dept: "生命科学部", major: "RNA基因组学", type: "纯 Dry", link: "https://qbio.io/r",
+                paradigm: "病毒基因组学, 大规模序列数据机制解码", fitLabel: "间接 (基础)", fitStatus: "indirect", fitDesc: "提供疫苗设计上游必修的RNA转录解码训练。",
+                value: "与国内顶级学者(IBS)合作，Cell顶刊业绩。", funding: "隶属IBS，共享强大的基础科学科研资金基础设施。", difficulty: "曝光度高，进入竞争极其激烈。", insight: "确立大规模测序数据处理基本功的完美学术环境。",
+                descHTML: "分析RNA转录后调节机制。提供扩展病毒基因组序列的硬核管线训练。"
+            },
+            {
+                id: "choi", univId: "korea", ch: 5, name: "최인걸 (Choi In-Geol)", univ: "高丽大学", dept: "生命工程学", major: "生物信息学", type: "纯 Dry", link: "https://choilab.github.io/",
+                paradigm: "NGS微生物基因组解码, 代谢途径探索模型", fitLabel: "注意 (低)", fitStatus: "caution", fitDesc: "以微生物/环境代谢途径为中心，而非人类免疫。",
+                value: "资历深厚的老牌实验室，工具开发能力卓越。", funding: "系统生物学工具开发的系统化资金支持。", difficulty: "招募信息略受限。", insight: "与人类表位疫苗的轨迹方向不同。",
+                noticeType: "caution", noticeTitle: "研究目标注意：以微生物/环境为中心", noticeDesc: "算法和NGS基础强大，但主要研究对象是微生物和发酵菌。",
+                descHTML: "应用基于微生物基因组的自然语言处理模型(GPT, BERT)来扩展序列分析方法论。培养最底层的序列加工能力。"
+            },
+            {
+                id: "son", univId: "snu", ch: 5, name: "손현석 (Son Hyun-Seok)", univ: "首尔大学", dept: "保健学", major: "保健AI与生物信息学", type: "纯 Dry", link: "https://app.rndcircle.io/lab/fb440769-149e-472a-a0f6-fc54c9ab325d",
+                paradigm: "Viroinformatics, 传染病监测, 进化流行病学", fitLabel: "间接 (流行病)", fitStatus: "indirect", fitDesc: "侧重于宏观公共卫生流行病学，而非分子设计。",
+                value: "曾任健康灾难教育团长，学术背景稳定。", funding: "执行新型病毒监测政府课题(22-25年)。", difficulty: "招募相对灵活，可查看公告。", insight: "适合群体传染病控制和流行病学大数据视角。",
+                descHTML: "处理呼吸道感染时间序列机器学习监测和进化流行病学。比起微观设计，在宏观传染病建模方面更具优势。"
+            }
+        ]
+    },
+    fa: {
+        heroBadge: "مسیر تخصصی در ایمونولوژی و طراحی واکسن",
+        heroTitle: "گزارش تحلیل عمیق آزمایشگاه‌های بیولوژی محاسباتی و<br><span class='text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-cyan-300 to-teal-300'>بیوانفورماتیک در دانشگاه‌های برتر کره جنوبی</span>",
+        heroDesc: "شاخص‌های عمیق تیم‌های تحقیقاتی پیشرو مبتنی بر هوش مصنوعی، یادگیری ماشین و مولتی‌اومیکس.",
+        introTitle: "مقدمه: تغییر پارادایم در تحقیقات واکسن بر اساس بیولوژی محاسباتی",
+        introP1: "در علوم زیستی مدرن، بیولوژی محاسباتی و بیوانفورماتیک با بهره‌گیری از هوش مصنوعی، یادگیری ماشین و تحلیل داده‌های کلان مولتی‌اومیکس، به موتورهای اصلی اکتشاف تبدیل شده‌اند. به‌ویژه پس از پاندمی جهانی، زمینه‌های طراحی واکسن و کشف نئوآنتی‌ژن‌ها به شدت به سمت <span class='font-bold text-blue-700 bg-blue-50 px-1 rounded'>تحقیقات محاسباتی خالص (Pure Dry)</span> و پردازش داده‌های عظیم سوق یافته‌اند.",
+        introP2: "این گزارش به طور دقیق موضوعات تحقیقاتی و زیرساخت‌های آزمایشگاه‌های پیشرو در دانشگاه‌های ملی سئول، یانسه، کره و سونگ‌کیون‌کوان را تحلیل می‌کند. این اطلاعات بینش‌های عینی برای محققان آینده‌نگر جهت ورود به طراحی واکسن ارائه می‌دهد.",
+        ch1Tag: "فصل ۰۱", ch1Title: "زیرساخت‌های مالی و سیستم‌های بورسیه تحصیلی",
+        ch1Sub: "تحقیقات محاسباتی نیازمند منابع محاسباتی عظیم و تمرکز طولانی است، لذا پشتیبانی مالی پایدار حیاتی است.",
+        ch1Box1Title: "بورسیه دولتی کره (GKS)", ch1Box1Desc: "یک برنامه استثنایی که موانع مالی را حذف کرده و پرواز، هزینه‌های زندگی و شهریه کامل را پوشش می‌دهد. (شرط معدل بالای ۸۰٪)",
+        ch1Box2Title: "بودجه فاز ۴ پروژه BK21", ch1Box2Desc: "تأمین هزینه‌های زندگی پایدار (۱ میلیون وون برای ارشد، ۱.۶ میلیون وون برای دکترا) و هزینه‌های کنفرانس‌های جهانی.",
+        ch2Tag: "فصل ۰۲", ch2Title: "پیش‌بینی و طراحی ساختار پروتئین با هوش مصنوعی", ch2Sub: "(بیوانفورماتیک ساختاری و هوش مصنوعی)",
+        ch3Tag: "فصل ۰۳", ch3Title: "پیش‌بینی نئوآنتی‌ژن و یادگیری ماشین ژنومیک", ch3Sub: "(ژنومیک و یادگیری ماشین نئوآنتی‌ژن)",
+        ch4Tag: "فصل ۰۴", ch4Title: "ایمونولوژی سیستمی و تحلیل مولتی‌اومیکس تک‌سلولی", ch4Sub: "(ایمونولوژی سیستمی)",
+        ch5Tag: "فصل ۰۵", ch5Title: "ژنومیک ویروسی و انفورماتیک بهداشت عمومی", ch5Sub: "(ژنومیک ویروسی و بهداشت عمومی)",
+        ch6Tag: "فصل ۰۶", ch6Title: "ماتریس خلاصه جامع (ارزش‌گذاری آزمایشگاه‌ها)",
+        pipelineDesc: "در حالی که ایمونولوژی سنتی بر جداسازی تک‌سلول‌ها متمرکز بود، ایمونولوژی سیستمی محاسباتی مدرن <span class='text-white font-bold border-b border-teal-400'>داده‌های scRNA-seq و CyTOF ده‌ها هزار تک‌سلول را همزمان در رایانش ابری تحلیل می‌کند</span> و شبکه کامل ایمنی بدن را نقشه‌برداری می‌کند.",
+        pipelineSteps: [
+            { t: "نمونه بافت/خون", d: "دریافت نمونه بیولوژیک از بیمار" }, { t: "جداسازی تک‌سلولی", d: "میکروفلوییدیک (scRNA-seq)" },
+            { t: "تولید داده", d: "خروجی توالی‌یابی در مقیاس وسیع" }, { t: "تحلیل محاسباتی (Dry-lab)", d: "کنترل کیفیت بیوانفورماتیکی" },
+            { t: "تحلیل خوشه‌ای", d: "ردیابی دقیق با هوش مصنوعی" }
+        ],
+        tableCols: ["استاد (دانشگاه/دانشکده/رشته)", "نوع", "پارادایم کلیدی / فناوری", "تناسب با ارشد (ارتباط با واکسن)", "ارزش و رقابت‌پذیری آزمایشگاه", "وضعیت بودجه و زیرساخت", "سختی پذیرش (جزئیات)", "بینش استراتژیک"],
+        conclusionTitle: "نتیجه‌گیری و توصیه‌های استراتژیک",
+        conclusionP1: "با پیوستن به این آزمایشگاه‌های برتر و تسلط بر پایتون، R و چارچوب‌های یادگیری عمیق، شما مجموعه‌ای از مهارت‌های قدرتمند را خواهید ساخت که در هر نیاز صنعتی از طراحی واکسن تا درمان‌های شخصی‌سازی شده سرطان، قابل پیاده‌سازی است.",
+        profs: [
+            {
+                id: "jung", univId: "korea", ch: 2, name: "جونگ وون‌یونگ (Wonyoung Jung)", univ: "دانشگاه کره", dept: "سیستم‌های بیومدیکال", major: "ایمونولوژی سیستمی محاسباتی", type: "Pure Dry", link: "https://sites.google.com/korea.ac.kr/kimlab?pli=1",
+                paradigm: "ایمونولوژی سیستمی، طراحی آنتی‌بادی In silico", fitLabel: "تطابق کامل", fitStatus: "perfect", fitDesc: "پایپ‌لاین واکسن-آنتی‌بادی in silico. بدون نیاز به تغییر مسیر.",
+                value: "محقق اصلی جدید بسیار آینده‌دار؛ محقق ارشد سابق در موسسه Ragon.", funding: "منابع پایدار از طریق بودجه استارت‌آپ PI جدید.", difficulty: "تقاضای جذب فعال برای راه‌اندازی آزمایشگاه جدید.", insight: "بسیار پذیرای متقاضیان با پیش‌زمینه مهندسی به ایمونولوژی.",
+                noticeType: "highlight", noticeTitle: "توصیه اکید: تطابق کامل با مسیر واکسن", noticeDesc: "جهت‌گیری تحقیق ۱۰۰٪ با طراحی آنتی‌بادی in silico و مسیر واکسن مطابقت دارد.",
+                descHTML: "<strong>سوابق علمی:</strong> دکترا از دانشگاه پردو، فعالیت به عنوان محقق کلیدی در موسسه معتبر <strong>Ragon Institute of MGH, MIT and Harvard</strong>.<br><strong>استراتژی:</strong> روش‌شناسی بی‌نقصی برای استخراج بهترین کاندیداهای واکسن از طریق محاسبه انرژی فیزیکوشیمیایی تعاملات آنتی‌ژن-آنتی‌بادی ارائه می‌دهد."
+            },
+            {
+                id: "baek", univId: "snu", ch: 2, name: "بک مین‌کیونگ (Minkyung Baek)", univ: "دانشگاه ملی سئول", dept: "علوم زیستی", major: "بیولوژی محاسباتی", type: "Pure Dry", link: "https://biosci.snu.ac.kr/cssb",
+                paradigm: "پیش‌بینی ساختار پروتئین AI، RoseTTAFold", fitLabel: "مناسب", fitStatus: "good", fitDesc: "تسلط بر مدل‌سازی سه‌بعدی برای واکسن‌های بالادستی.",
+                value: "سطح جهانی. معمار اصلی هوش مصنوعی از تبار برنده جایزه نوبل.", funding: "مشارکت شرکتی عظیم (LG AI) و تأمین ابررایانه.", difficulty: "بسیار بالا (تجمع استعدادهای برتر جهانی).", insight: "کسب مهارت‌های پایه معماری در پیش‌بینی پروتئین.",
+                descHTML: "<strong>تمایز:</strong> توسعه‌دهنده اصلی که <strong>RoseTTAFold (نویسنده اول)</strong> را در آزمایشگاه برنده نوبل ۲۰۲۴ (دیوید بیکر) ایجاد کرد.<br><strong>استراتژی:</strong> یادگیری فناوری خط مقدم واکسن شامل مدل‌سازی mRNA و طراحی آنتی‌بادی de novo."
+            },
+            {
+                id: "shin", univId: "yonsei", ch: 2, name: "شین جونگ‌شیک (Jong-Shik Shin)", univ: "دانشگاه یانسه", dept: "بیوتکنولوژی", major: "بیوتکنولوژی مصنوعی", type: "Dry+Wet", link: "https://jsshinlab.yonsei.ac.kr/",
+                paradigm: "بیولوژی مصنوعی RNA، مواد دارورسانی هوشمند", fitLabel: "غیرمستقیم (صنعت)", fitStatus: "indirect", fitDesc: "قدرتمند در اعتبارسنجی ناقل‌های in vitro (مثل LNP).",
+                value: "ارتباطات عالی با صنعت و سابقه اشتغال فارغ‌التحصیلان.", funding: "بودجه تحقیق و توسعه پایدار از طریق همکاری صنعتی.", difficulty: "تخمین استخدام مداوم به عنوان یک آزمایشگاه باسابقه.", insight: "سودمند برای تبدیل شدن به یک متخصص عملی در صنعت ساخت واکسن.",
+                descHTML: "یک آزمایشگاه ترکیبی که در آن شبیه‌سازی‌های محاسباتی <strong>به شدت با اعتبارسنجی تجربی Wet-lab پیوند خورده است</strong>. ارتباط صنعتی بالایی دارد."
+            },
+            {
+                id: "kim", univId: "yonsei", ch: 3, name: "کیم سانگ‌وو (Sangwoo Kim)", univ: "دانشگاه یانسه", dept: "علوم بیومدیکال", major: "انفورماتیک ژنومیک", type: "Pure Dry", link: "http://www.tgilab.org",
+                paradigm: "پیش‌بینی اپی‌توپ نئوآنتی‌ژن (Neopepsee)", fitLabel: "تطابق کامل", fitStatus: "perfect", fitDesc: "خالق الگوریتم‌های پیش‌بینی اپی‌توپ نئوآنتی‌ژن.",
+                value: "رده برتر در بیوانفورماتیک با جایگاه علمی برجسته.", funding: "فلوشیپ HFF و زیرساخت بالینی چندرشته‌ای عظیم.", difficulty: "رقابت شدید به دلیل شهرت بالا. تماس زودهنگام توصیه می‌شود.", insight: "بهترین انتخاب برای ایجاد پایه تحلیل داده در واکسن‌های تومور.",
+                descHTML: "<strong>پیشگام Neopepsee:</strong> الگوریتم اختصاصی ML برای شناسایی نئوآنتی‌ژن‌های تومور را توسعه داد. پایپ‌لاین اصلی که مستقیماً با پیش‌بینی واکسن اپی‌توپ سروکار دارد."
+            },
+            {
+                id: "bala", univId: "skku", ch: 3, name: "بی. ماناوالان (B. Manavalan)", univ: "دانشگاه سونگ‌کیون‌کوان", dept: "بیوتکنولوژی تلفیقی", major: "بیولوژی محاسباتی", type: "Pure Dry", link: "https://balalab-skku.org/",
+                paradigm: "پیش‌بینی توالی ML/DL، مدل‌های سمیت پپتید", fitLabel: "مناسب", fitStatus: "good", fitDesc: "مدل‌های سمیت به راحتی به پیش‌بینی آنتی‌ژن تبدیل می‌شوند.",
+                value: "محقق ستاره با مقالات پر استناد.", funding: "پشتیبانی شده توسط سیستم‌های بودجه‌دهی اصلی دانشگاه.", difficulty: "وب‌سایت صریحاً می‌گوید 'به شدت در حال جذب'.", insight: "مطلوب برای تسلط بر معماری مدل‌های ریاضی خالص.",
+                descHTML: "<strong>مدل‌های جهانی:</strong> توسعه پیش‌بینی سمیت پپتیدی مبتنی بر مدل زبانی پروتئین (PLM). با تغییر داده‌های آموزشی به ابزار پیش‌بینی اپی‌توپ واکسن تبدیل می‌شود."
+            },
+            {
+                id: "hong", univId: "yonsei", ch: 4, name: "هونگ سونگ‌هی (Seunghee Hong)", univ: "دانشگاه یانسه", dept: "بیوشیمی", major: "ایمونو-انفورماتیک", type: "Pure Dry", link: "https://imil.yshonglab.com/",
+                paradigm: "پروفایلینگ ایمنی سیستمی، شناسایی اپی‌توپ", fitLabel: "مناسب", fitStatus: "good", fitDesc: "الگوریتم‌های شناسایی اپی‌توپ قابل انتقال هستند.",
+                value: "رهبری استثنایی در تحلیل تک‌سلولی و ایمونولوژی بالینی.", funding: "کمک‌هزینه‌های دولتی کلان (برای ترانسکریپتومیک فضایی).", difficulty: "تقاضای جذب مداوم به دلیل پروژه‌های مقیاس بزرگ.", insight: "کسب تجربه در پردازش داده‌های ابری از تجهیزات بالینی بسیار گران‌قیمت.",
+                descHTML: "رمزگشایی اختلالات ایمنی سیستمی از طریق پایپ‌لاین‌های پروفایلینگ با وضوح بالا (CyTOF, scRNA-seq). فناوری‌های کاملاً سازگار با تحلیل پویایی ایمنی پس از واکسیناسیون."
+            },
+            {
+                id: "ahn", univId: "korea", ch: 4, name: "آن جون‌یونگ (June-Yong An)", univ: "دانشگاه کره", dept: "سیستم‌های بیومدیکال", major: "ژنومیک", type: "Pure Dry", link: "https://joonanlab.github.io/",
+                paradigm: "تحلیل LLM ژنوم‌های غیرکدکننده، مدل‌سازی سلول مجازی", fitLabel: "احتیاط (کم)", fitStatus: "caution", fitDesc: "هدف تحقیق توسعه عصبی است، نه واکسن.",
+                value: "استاد جوان و پیشرو در روندهای AI/ژنومیک.", funding: "زیرساخت کشف داروی AI و داده‌های تک‌سلولی.", difficulty: "فضای باز و پذیرا؛ کارآموز می‌پذیرد.", insight: "گزینه‌ای جایگزین اگر تکنیک‌های ژنومیک AI بر واکسن ترجیح داده شود.",
+                noticeType: "caution", noticeTitle: "احتیاط: هدف تحقیق", noticeDesc: "آموزش پایپ‌لاین AI عالی است، اما هدف اصلی اوتیسم است که از ایمونولوژی/واکسن دور است.",
+                descHTML: "تغییرات ژنوم غیرکدکننده را با استفاده از LLM و یادگیری عمیق رمزگشایی می‌کند. با کاهش موانع ورود برای دانشجویان بدون پیش‌زمینه بیولوژی، انعطاف‌پذیری نشان می‌دهد."
+            },
+            {
+                id: "chang", univId: "snu", ch: 5, name: "جانگ هه‌شیک (Hyeshik Chang)", univ: "دانشگاه ملی سئول", dept: "علوم زیستی", major: "ژنومیک RNA", type: "Pure Dry", link: "https://qbio.io/r",
+                paradigm: "ژنومیک ویروسی، رمزگشایی داده‌های توالی‌یابی وسیع", fitLabel: "غیرمستقیم (پایه)", fitStatus: "indirect", fitDesc: "آموزش رمزگشایی RNA، ضروری برای بالادست واکسن.",
+                value: "همکاری با برترین دانشمند کره (IBS). مقالات در Cell.", funding: "اشتراک زیرساخت‌های عظیم علوم پایه از طریق IBS.", difficulty: "رقابت شدید به دلیل دیده شدن بالا.", insight: "محیط دانشگاهی کامل برای ایجاد پایه‌ها در پردازش داده‌های عظیم توالی‌یابی.",
+                descHTML: "مکانیسم‌های تنظیم RNA پس از رونویسی را تحلیل می‌کند. آموزش‌های سخت و عمیق برای مقیاس‌پذیری توالی‌های ژنوم ویروسی ارائه می‌دهد."
+            },
+            {
+                id: "choi", univId: "korea", ch: 5, name: "چوی این‌گول (In-Geol Choi)", univ: "دانشگاه کره", dept: "بیوتکنولوژی", major: "بیوانفورماتیک", type: "Pure Dry", link: "https://choilab.github.io/",
+                paradigm: "ژنومیک میکروبی NGS، مدل‌های جستجوی مسیر متابولیک", fitLabel: "احتیاط (کم)", fitStatus: "caution", fitDesc: "تمرکز بر مسیرهای میکروبی/محیطی است، نه ایمنی انسانی.",
+                value: "آزمایشگاه باسابقه. توانایی عالی در توسعه ابزار.", funding: "بودجه سیستماتیک برای توسعه ابزارهای بیولوژی سیستمی.", difficulty: "اطلاعات استخدام تا حدودی محدود است.", insight: "از مسیر واکسن اپی‌توپ انسانی فاصله دارد.",
+                noticeType: "caution", noticeTitle: "احتیاط: هدف میکروب/محیط زیست", noticeDesc: "پایه قوی الگوریتم و NGS، اما موضوعات اصلی میکروب‌ها و باکتری‌های تخمیری هستند.",
+                descHTML: "گسترش روش‌شناسی از طریق مدل‌های NLP مبتنی بر ژنوم‌های میکروبی. مهارت‌های پایه عمیق در پردازش توالی را پرورش می‌دهد."
+            },
+            {
+                id: "son", univId: "snu", ch: 5, name: "سون هیون‌سوک (Hyun-Seok Son)", univ: "دانشگاه ملی سئول", dept: "بهداشت عمومی", major: "هوش مصنوعی سلامت", type: "Pure Dry", link: "https://app.rndcircle.io/lab/fb440769-149e-472a-a0f6-fc54c9ab325d",
+                paradigm: "انفورماتیک ویروسی، پایش بیماری‌های عفونی", fitLabel: "غیرمستقیم (اپی)", fitStatus: "indirect", fitDesc: "دیدگاه اپیدمیولوژیک کلان به جای طراحی مولکولی.",
+                value: "سابقه علمی قوی. مدیر سابق آموزش بلایای سلامت.", funding: "اجرای پروژه‌های دولتی برای نظارت بر ویروس‌های جدید.", difficulty: "جذب نسبتاً انعطاف‌پذیر، اطلاعیه‌های باز.", insight: "مناسب برای کنترل بیماری‌های عفونی جمعیت و دیدگاه‌های کلان داده‌های اپیدمیولوژی.",
+                descHTML: "پایش یادگیری ماشین سری زمانی و پویایی تکاملی عفونت‌های تنفسی را بررسی می‌کند. در مدل‌سازی کلان بیماری‌ها قوی‌تر از طراحی خرد است."
+            }
+        ]
+    }
+};
+
+function changeLanguage(lang) {
+    const data = i18n[lang];
+    if(!data) return;
+    
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
+    
+    // Static UI Render
+    document.getElementById('ui-hero').innerHTML = `
+        <span class="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-blue-500/30 text-blue-100 text-sm font-bold tracking-widest mb-6 border border-blue-400/30 shadow-inner backdrop-blur-md">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path></svg>
+            ${data.heroBadge}
+        </span>
+        <h1 class="text-3xl md:text-5xl lg:text-6xl font-black leading-tight mb-6 tracking-tight drop-shadow-lg">${data.heroTitle}</h1>
+        <p class="text-slate-300 text-lg md:text-xl max-w-3xl mx-auto font-light leading-relaxed">${data.heroDesc}</p>
+    `;
+    
+    document.getElementById('ui-intro').innerHTML = `
+        <div class="prose prose-slate prose-lg max-w-none text-start">
+            <h2 class="text-3xl font-bold text-slate-900 border-b-4 border-blue-500 pb-3 mb-8 inline-block">${data.introTitle}</h2>
+            <p class="text-slate-700 leading-relaxed">${data.introP1}</p>
+            <p class="text-slate-700 leading-relaxed">${data.introP2}</p>
+        </div>
+    `;
+
+    document.getElementById('ui-ch1').innerHTML = `
+        <div class="mb-8 text-start">
+            <span class="inline-block py-1 px-3 rounded-full bg-slate-200 text-slate-700 font-bold tracking-wide text-xs mb-3">${data.ch1Tag}</span>
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-900">${data.ch1Title}</h2>
+            <p class="mt-4 text-slate-600">${data.ch1Sub}</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-start">
+            <div class="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300">
+                <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6 text-blue-600"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                <h3 class="text-xl font-bold text-slate-900 mb-4">${data.ch1Box1Title}</h3>
+                <p class="text-sm text-slate-600 leading-relaxed">${data.ch1Box1Desc}</p>
+            </div>
+            <div class="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300">
+                <div class="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center mb-6 text-indigo-600"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div>
+                <h3 class="text-xl font-bold text-slate-900 mb-4">${data.ch1Box2Title}</h3>
+                <p class="text-sm text-slate-600 leading-relaxed">${data.ch1Box2Desc}</p>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('ui-ch2-header').innerHTML = `<span class="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-700 font-bold tracking-wide text-xs mb-3 border border-blue-200">${data.ch2Tag}</span><h2 class="text-2xl md:text-3xl font-bold text-slate-900">${data.ch2Title} <span class="block mt-2 text-xl font-normal text-slate-500">${data.ch2Sub}</span></h2>`;
+    document.getElementById('ui-ch3-header').innerHTML = `<span class="inline-block py-1 px-3 rounded-full bg-pink-100 text-pink-700 font-bold tracking-wide text-xs mb-3 border border-pink-200">${data.ch3Tag}</span><h2 class="text-2xl md:text-3xl font-bold text-slate-900">${data.ch3Title} <span class="block mt-2 text-xl font-normal text-slate-500">${data.ch3Sub}</span></h2>`;
+    document.getElementById('ui-ch4-header').innerHTML = `<span class="inline-block py-1 px-3 rounded-full bg-teal-100 text-teal-700 font-bold tracking-wide text-xs mb-3 border border-teal-200">${data.ch4Tag}</span><h2 class="text-2xl md:text-3xl font-bold text-slate-900">${data.ch4Title} <span class="block mt-2 text-xl font-normal text-slate-500">${data.ch4Sub}</span></h2>`;
+    document.getElementById('ui-ch5-header').innerHTML = `<span class="inline-block py-1 px-3 rounded-full bg-indigo-100 text-indigo-700 font-bold tracking-wide text-xs mb-3 border border-indigo-200">${data.ch5Tag}</span><h2 class="text-2xl md:text-3xl font-bold text-slate-900">${data.ch5Title} <span class="block mt-2 text-xl font-normal text-slate-500">${data.ch5Sub}</span></h2>`;
+    document.getElementById('ui-ch6-header').innerHTML = `<span class="inline-block py-1 px-3 rounded-full bg-slate-800 text-white font-bold tracking-wide text-xs mb-3 shadow-md">${data.ch6Tag}</span><h2 class="text-2xl md:text-3xl font-bold text-slate-900">${data.ch6Title}</h2>`;
+
+    document.getElementById('ui-pipeline-desc').innerHTML = data.pipelineDesc;
+    const colors = ['bg-slate-900 text-teal-400', 'bg-slate-900 text-teal-400', 'bg-slate-900 text-teal-400', 'bg-teal-500 text-white', 'bg-blue-500 text-white'];
+    const pSteps = data.pipelineSteps.map((s, i) => `
+        <div class="relative z-10 flex flex-col items-center bg-slate-800 p-5 rounded-2xl border ${i>2 ? 'border-teal-500/50 bg-gradient-to-b from-slate-800 to-teal-900/30' : 'border-slate-700'} w-full lg:flex-1 shadow-lg">
+            <div class="w-12 h-12 ${colors[i]} rounded-full flex items-center justify-center font-black text-xl mb-4 border ${i>2?'border-transparent':'border-slate-700'}">${i+1}</div>
+            <h5 class="font-bold text-white text-center text-sm md:text-base mb-2">${s.t}</h5>
+            <p class="text-[11px] ${i>2?'text-teal-200':'text-slate-400'} text-center leading-tight">${s.d}</p>
+        </div>
+        ${i < 4 ? `<div class="flex lg:hidden justify-center text-slate-600 py-1"><svg class="w-5 h-5 ltr:rotate-0 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg></div>` : ''}
+    `).join('');
+    document.getElementById('ui-pipeline-steps').innerHTML = `
+        <div class="hidden lg:block absolute top-[45%] start-8 end-8 w-auto h-0.5 bg-slate-700 -translate-y-1/2 z-0"></div>
+        ${pSteps}
+    `;
+
+    const renderCard = (p) => {
+        const t = THEMES[p.univId];
+        let noticeHtml = '';
+        if(p.noticeType === 'highlight') {
+            noticeHtml = `<div class="mx-6 mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex gap-3 shadow-sm text-start"><div class="mt-0.5 bg-emerald-100 p-1.5 rounded-lg text-emerald-600 h-fit"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div><div><h4 class="text-emerald-800 font-bold mb-1 text-[15px]">${p.noticeTitle}</h4><p class="text-emerald-700 text-sm m-0 leading-relaxed">${p.noticeDesc}</p></div></div>`;
+        } else if(p.noticeType === 'caution') {
+            noticeHtml = `<div class="mx-6 mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl flex gap-3 shadow-sm text-start"><div class="mt-0.5 bg-amber-100 p-1.5 rounded-lg text-amber-600 h-fit"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div><div><h4 class="text-amber-800 font-bold mb-1 text-[15px]">${p.noticeTitle}</h4><p class="text-amber-700 text-sm m-0 leading-relaxed">${p.noticeDesc}</p></div></div>`;
+        }
+        
+        let typeColor = p.type.includes('Wet') ? 'bg-purple-100 text-purple-800 border-purple-200' : 'bg-cyan-100 text-cyan-800 border-cyan-200';
+        let dotColor = p.type.includes('Wet') ? 'bg-purple-500' : 'bg-cyan-500';
+
+        return `
+        <div class="bg-white rounded-2xl border-s-4 ${t.border} border-y border-e border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow text-start">
+            <div class="${t.bg} border-b border-slate-200 px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full ${typeColor} border font-semibold text-xs shadow-sm"><span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span> ${p.type}</span>
+                        <span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full ${t.badge} font-semibold text-xs shadow-sm border">${p.univ}</span>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-900 m-0 group">
+                        <a href="${p.link}" target="_blank" class="flex items-center gap-2 ${t.hover} transition-colors">
+                            ${p.name} 
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 group-hover:bg-white/50 transition-colors">
+                                <svg class="w-3.5 h-3.5 text-slate-500 group-hover:text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </span>
+                        </a>
+                    </h3>
+                    <p class="text-sm text-slate-600 mt-1.5 font-medium">${p.dept} / ${p.major}</p>
+                </div>
+            </div>
+            ${noticeHtml}
+            <div class="p-6 prose prose-slate max-w-none text-sm md:text-base prose-p:leading-relaxed">${p.descHTML}</div>
+        </div>`;
+    };
+
+    document.getElementById('container-ch2').innerHTML = data.profs.filter(p=>p.ch===2).map(renderCard).join('');
+    document.getElementById('container-ch3').innerHTML = data.profs.filter(p=>p.ch===3).map(renderCard).join('');
+    document.getElementById('container-ch4').innerHTML = data.profs.filter(p=>p.ch===4).map(renderCard).join('');
+    document.getElementById('container-ch5').innerHTML = data.profs.filter(p=>p.ch===5).map(renderCard).join('');
+
+    // Render Table
+    document.getElementById('ui-table-head').innerHTML = `<tr>${data.tableCols.map((c,i)=>`<th class="${i===0?'sticky start-0 bg-slate-900 z-30 shadow-[1px_0_0_rgba(51,65,85,1)] rtl:shadow-[-1px_0_0_rgba(51,65,85,1)]':''} px-5 py-4 text-xs font-bold tracking-wider align-top">${c}</th>`).join('')}</tr>`;
+    
+    document.getElementById('ui-table-body').innerHTML = data.profs.map(p => {
+        const t = THEMES[p.univId];
+        const f = FIT_COLORS[p.fitStatus];
+        return `
+        <tr class="hover:bg-slate-50 transition-colors border-s-4 ${t.border} ${f.bg ? f.bg+'/20' : ''}">
+            <td class="sticky start-0 bg-white group-hover:bg-slate-50 z-10 px-5 py-5 border-e border-slate-100 shadow-[1px_0_0_rgba(241,245,249,1)] rtl:shadow-[-1px_0_0_rgba(241,245,249,1)]">
+                <a href="${p.link}" target="_blank" class="font-bold text-[14px] text-slate-900 ${t.hover} flex items-center gap-1">${p.name} <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a>
+                <div class="mt-1 text-xs font-bold ${t.text}">${p.univ}</div>
+                <div class="mt-0.5 text-[11px] text-slate-500">${p.dept}<br>${p.major}</div>
+            </td>
+            <td class="px-5 py-5 align-top"><span class="inline-flex py-1 px-2.5 rounded text-[11px] font-bold bg-slate-100 text-slate-700 whitespace-nowrap">${p.type}</span></td>
+            <td class="px-5 py-5 align-top text-[13px] text-slate-700 min-w-[180px] font-medium leading-relaxed">${p.paradigm}</td>
+            <td class="px-5 py-5 align-top min-w-[200px] ${f.bg ? f.bg+'/50' : ''}">
+                <div class="flex items-center gap-1.5 mb-1.5"><span class="w-2 h-2 rounded-full ${f.dot}"></span><span class="font-bold text-[13px] ${f.text}">${p.fitLabel}</span></div>
+                <p class="text-[12px] text-slate-500 leading-relaxed">${p.fitDesc}</p>
+            </td>
+            <td class="px-5 py-5 align-top text-[13px] text-slate-700 min-w-[180px] leading-relaxed">${p.value}</td>
+            <td class="px-5 py-5 align-top text-[13px] text-slate-700 min-w-[180px] leading-relaxed">${p.funding}</td>
+            <td class="px-5 py-5 align-top text-[13px] text-slate-700 min-w-[160px] leading-relaxed">${p.difficulty}</td>
+            <td class="px-5 py-5 align-top text-[13px] text-slate-700 min-w-[200px] leading-relaxed">${p.insight}</td>
+        </tr>`;
+    }).join('');
+
+    document.getElementById('ui-conclusion').innerHTML = `
+        <h2 class="text-2xl font-bold mb-6 text-cyan-400 text-start">${data.conclusionTitle}</h2>
+        <div class="bg-gradient-to-r from-blue-900/50 to-indigo-900/50 border border-blue-800/50 p-6 rounded-xl text-start">
+            <p class="m-0 text-slate-200 font-light leading-relaxed">${data.conclusionP1}</p>
+        </div>
+    `;
+    
+    // Add fade-in animation triggers by removing/re-adding class
+    document.querySelectorAll('.fade-in').forEach(el => {
+        el.classList.remove('fade-in');
+        void el.offsetWidth; // trigger reflow
+        el.classList.add('fade-in');
+    });
+}
+
+window.onload = () => changeLanguage('ko');
+</script>
+
+</body>
+</html>
