@@ -1,0 +1,3349 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>80–160 血糖稳态 · 每日执行与打卡系统 V4.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', 'Noto Sans SC', 'Noto Sans KR', 'Noto Sans Arabic', sans-serif;
+      background-color: #f4f9f6;
+      color: #1e293b;
+    }
+    [dir="rtl"] {
+      font-family: 'Noto Sans Arabic', 'Inter', sans-serif;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(16, 185, 129, 0.14);
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 8px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    @keyframes pulse-soft {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.65; }
+    }
+    .animate-pulse-soft {
+      animation: pulse-soft 2.2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white">
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+  <!-- Top Sticky Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-emerald-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <!-- Brand Title -->
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+            80
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 id="uiAppTitle" class="text-base sm:text-lg font-bold text-slate-800 tracking-tight">80–160 血糖稳态 · 每日打卡系统</h1>
+              <span class="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">V4.0</span>
+            </div>
+            <p id="uiAppSubtitle" class="text-xs text-slate-500">1型糖尿病精准稳糖 · 护胃断药 · 零负担神经修复</p>
+          </div>
+        </div>
+
+        <!-- Dual Timezone Real-Time Network Clocks -->
+        <div class="flex items-center gap-2 sm:gap-3 bg-slate-50 border border-slate-200/80 rounded-2xl px-3 py-1.5 text-xs sm:text-sm">
+          <div class="flex items-center gap-1.5">
+            <span class="text-base">🇮🇷</span>
+            <div>
+              <span id="uiIranLabel" class="text-[11px] text-slate-400 block leading-none">伊朗时间 (UTC+3:30)</span>
+              <span id="clockIran" class="font-mono font-bold text-slate-700">--:--:--</span>
+            </div>
+          </div>
+          <div class="h-6 w-px bg-slate-200"></div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-base">🇰🇷</span>
+            <div>
+              <span id="uiKoreaLabel" class="text-[11px] text-slate-400 block leading-none">韩国时间 (UTC+9:00)</span>
+              <span id="clockKorea" class="font-mono font-bold text-emerald-700">--:--:--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Language Switcher & Server Config Button -->
+        <div class="flex items-center gap-2">
+          <div class="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200">
+            <button onclick="setLanguage('zh')" id="langBtn-zh" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all bg-white text-emerald-700 shadow-sm">中文</button>
+            <button onclick="setLanguage('ko')" id="langBtn-ko" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900">한국어</button>
+            <button onclick="setLanguage('fa')" id="langBtn-fa" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900">فارسی</button>
+            <button onclick="setLanguage('en')" id="langBtn-en" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900">EN</button>
+          </div>
+          <button onclick="openServerModal()" class="p-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors" title="JSON 服务器与 Dexcom Share 配置">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dexcom Share Live Bar & Steady-State Metrics -->
+      <div class="mt-2.5 pt-2.5 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
+        <!-- 1. Dexcom Share Live BG + Manual Override (Fixed UI Overflow) -->
+        <div class="flex flex-col justify-between bg-gradient-to-r from-emerald-50/90 to-teal-50/90 border border-emerald-200/80 rounded-xl px-3 py-2 overflow-hidden">
+          <div class="flex items-center justify-between gap-1.5">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span id="dexcomStatusDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse-soft shrink-0"></span>
+              <span id="uiDexcomLiveLabel" class="text-[11px] font-bold text-emerald-950 truncate">Dexcom 实时血糖</span>
+            </div>
+            <button onclick="syncDexcomNow(false)" id="uiRefreshBtn" class="text-[10px] px-2 py-0.5 rounded-md bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold transition shrink-0 whitespace-nowrap shadow-sm">🔄 刷新</button>
+          </div>
+
+          <div class="flex items-baseline justify-between gap-2 my-1">
+            <div class="flex items-baseline gap-1">
+              <span id="liveBgValue" class="text-xl font-extrabold text-slate-400 font-mono">--</span>
+              <span class="text-[11px] text-slate-500">mg/dL</span>
+              <span id="liveBgTrend" class="text-sm font-bold text-emerald-600" title="趋势">--</span>
+            </div>
+            <span id="dexcomSyncHint" class="text-[10px] text-emerald-700 font-medium truncate">⚙️ 点右上角填主账号</span>
+          </div>
+
+          <!-- Manual Correction Input cleanly contained inside card -->
+          <div class="flex items-center justify-between gap-1 pt-1 border-t border-emerald-200/60">
+            <label id="uiManualBgFix" class="text-[10px] text-slate-500 whitespace-nowrap shrink-0">手动填/改:</label>
+            <div class="flex items-center gap-1 min-w-0">
+              <input id="manualBgInput" type="number" min="30" max="500" placeholder="BG" onchange="updateLiveBgManually(this.value)" class="w-14 px-1.5 py-0.5 text-xs font-mono font-bold text-center rounded-md border border-emerald-300 bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+              <select id="manualTrendSelect" onchange="updateLiveTrendManually(this.value)" class="w-16 text-[11px] rounded-md border border-emerald-300 bg-white py-0.5 px-1 focus:outline-none truncate">
+                <option value="→" id="optTrendFlat">→平稳</option>
+                <option value="↗" id="optTrend45Up">↗缓升</option>
+                <option value="↑" id="optTrendUp">↑快升</option>
+                <option value="↘" id="optTrend45Down">↘缓降</option>
+                <option value="↓" id="optTrendDown">↓快降</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. 80-160 Steady-State Target Rate -->
+        <div class="flex flex-col justify-center bg-white border border-slate-200/80 rounded-xl px-3 py-2">
+          <div class="flex items-center justify-between text-xs">
+            <span id="uiTirLabel" class="font-semibold text-slate-600">🎯 80–160 稳态达标率</span>
+            <span id="tirPercentText" class="font-bold text-emerald-600 font-mono">--%</span>
+          </div>
+          <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-1.5">
+            <div id="tirProgressBar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+          <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+            <span id="uiTirSub1">目标: 80–160 平稳维持</span>
+            <span id="tirCountText">0/0</span>
+          </div>
+        </div>
+
+        <!-- 3. Cumulative Insulin Today (Yellow Regular + Green NPH) -->
+        <div class="flex flex-col justify-center bg-white border border-slate-200/80 rounded-xl px-3 py-2">
+          <span id="uiTotalInsulinLabel" class="text-xs font-semibold text-slate-600">💉 今日累计已打胰岛素</span>
+          <div class="flex items-center gap-2 mt-1">
+            <span class="px-2 py-0.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold font-mono">
+              🟡 <span id="uiYellowShort">黄瓶</span>: <span id="totalRegularUnits">0</span>U
+            </span>
+            <span class="px-2 py-0.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold font-mono">
+              🟢 <span id="uiGreenShort">绿瓶</span>: <span id="totalNphUnits">0</span>U
+            </span>
+          </div>
+          <span id="totalCombinedText" class="text-[10px] text-slate-400 mt-0.5">0 U</span>
+        </div>
+
+        <!-- 4. Time Since Last Injection (Anti-Crash Guard) -->
+        <div class="flex flex-col justify-center bg-white border border-slate-200/80 rounded-xl px-3 py-2">
+          <div class="flex items-center justify-between">
+            <span id="uiLastInjLabel" class="text-xs font-semibold text-slate-600">⏱️ 距上一针间隔 (防重叠)</span>
+            <span id="nphSafetyBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">--</span>
+          </div>
+          <div id="lastInjectionIntervalText" class="text-sm font-bold text-slate-800 font-mono mt-1">
+            --
+          </div>
+          <span id="uiNphRuleTip" class="text-[10px] text-slate-400 mt-0.5">两针绿瓶建议间隔 10–12 小时</span>
+        </div>
+
+        <!-- 5. Weekly Abdomen Quadrant Rotation -->
+        <div class="flex flex-col justify-center bg-white border border-slate-200/80 rounded-xl px-3 py-2">
+          <div class="flex items-center justify-between">
+            <span id="uiQuadrantLabel" class="text-xs font-semibold text-slate-600">🔄 本周腹部轮换区</span>
+            <span id="uiQuadSubTip" class="text-[10px] text-teal-600 font-medium">每针隔3cm · 涂喜辽妥</span>
+          </div>
+          <select id="abdomenQuadrantSelect" onchange="updateQuadrant(this.value)" class="mt-1 w-full text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <option value="LU" id="optQuadLU">↖️ 左上腹区 (Left Upper)</option>
+            <option value="RU" id="optQuadRU">↗️ 右上腹区 (Right Upper)</option>
+            <option value="LL" id="optQuadLL">↙️ 左下腹区 (Left Lower)</option>
+            <option value="RL" id="optQuadRL">↘️ 右下腹区 (Right Lower)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <div class="mt-2.5 flex items-center justify-between flex-wrap gap-2">
+        <nav class="flex items-center gap-1.5 overflow-x-auto custom-scroll py-0.5">
+          <button onclick="switchTab('daily')" id="tabBtn-daily" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-emerald-600 text-white shadow-sm flex items-center gap-1.5 shrink-0">
+            <span>✅</span> <span id="uiTabDaily">今日执行与打卡</span>
+          </button>
+          <button onclick="switchTab('history')" id="tabBtn-history" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center gap-1.5 shrink-0">
+            <span>🔍</span> <span id="uiTabHistory">历史记录与多维筛选</span>
+          </button>
+          <button onclick="switchTab('reportDay')" id="tabBtn-reportDay" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center gap-1.5 shrink-0">
+            <span>📄</span> <span id="uiTabReportDay">每日报告 (次日10:00)</span>
+          </button>
+          <button onclick="switchTab('reportWeek')" id="tabBtn-reportWeek" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center gap-1.5 shrink-0">
+            <span>📊</span> <span id="uiTabReportWeek">每周报告与双邮箱发送 (周日10:00)</span>
+          </button>
+        </nav>
+
+        <!-- Active Date Selector -->
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <span id="autoSyncStatusBadge" class="px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            <span id="autoSyncStatusText">实时自动保存已开启</span>
+          </span>
+          <span id="uiCurrentDateLabel" class="text-slate-500 font-medium">当前记录日期:</span>
+          <input type="date" id="activeDatePicker" value="2026-10-22" onchange="switchActiveDate(this.value)" class="px-2.5 py-1 rounded-xl border border-emerald-200 bg-emerald-50/50 font-mono font-bold text-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          <button onclick="resetCurrentDayToBlank()" class="px-2.5 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold transition flex items-center gap-1" title="Reset">
+            <span>🧹</span> <span id="uiResetBtnText">重置今日空白</span>
+          </button>
+          <button onclick="saveCurrentDayToServer(false)" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm transition flex items-center gap-1" title="Sync Cloud">
+            <span>☁️</span> <span id="uiSyncBtnText">立即同步云端</span>
+          </button>
+          <button onclick="fetchFromJsonServer(false)" class="px-2.5 py-1 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 font-semibold transition flex items-center gap-1" title="Pull Cloud">
+            <span>🔄</span> <span id="uiPullBtnText">拉取最新</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5 space-y-6">
+
+    <!-- ==================== TAB 1: DAILY EXECUTION & CHECK-IN ==================== -->
+    <section id="tabContent-daily" class="space-y-6">
+
+      <!-- Module 2: Wake-up Time, Supplements & Famotidine Check-in -->
+      <div class="glass-card rounded-2xl p-4 sm:p-6 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-slate-100">
+          <div class="flex items-center gap-2.5">
+            <span class="text-2xl">🌅</span>
+            <div>
+              <h2 id="uiMod2Title" class="text-base sm:text-lg font-bold text-slate-800">模块 1：晨起时间、全天保健品与法莫替丁减停打卡</h2>
+              <p id="uiMod2Sub" class="text-xs text-slate-500">点击勾选自动记录双时区精确时间 · 0肝肾负担修复方案 · 已精简移除繁琐胃部问卷</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="suppProgressBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">0/6</span>
+          </div>
+        </div>
+
+        <!-- Wake-up Time Presets + Custom Time Input (>11:00 or any time) -->
+        <div class="mt-4 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center bg-slate-50/80 rounded-2xl p-3.5 border border-slate-200/70">
+          <div class="lg:col-span-4">
+            <label id="uiWakeUpLabel" class="text-xs font-bold text-slate-700 uppercase tracking-wider block">⏰ 今日起床时间 (支持三档快捷或手动输入任意时间)</label>
+            <p id="uiWakeUpHint" class="text-[11px] text-slate-500 mt-0.5">若晚起超过 11:00 或任意时间醒来，直接在右侧时间框填写即可</p>
+          </div>
+          <div class="lg:col-span-4 flex flex-wrap gap-1.5">
+            <button onclick="selectWakeMode('early', '05:45')" id="wakeBtn-early" class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:border-emerald-400">
+              🌅 05:00–06:30 早醒
+            </button>
+            <button onclick="selectWakeMode('normal', '08:00')" id="wakeBtn-normal" class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-emerald-600 text-white border-emerald-600 shadow-sm">
+              ☀️ 07:30–09:00 正常
+            </button>
+            <button onclick="selectWakeMode('late', '10:30')" id="wakeBtn-late" class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:border-emerald-400">
+              🛌 10:00–11:00 晚起
+            </button>
+          </div>
+          <div class="lg:col-span-4 flex flex-wrap items-center gap-1.5 justify-end">
+            <span id="uiExactWakeTime" class="text-xs font-semibold text-slate-600">🇮🇷起床:</span>
+            <input type="time" id="wakeTimeInput" value="08:00" onchange="updateExactWakeTime(this.value)" class="px-2 py-1.5 rounded-xl border border-emerald-300 bg-white font-mono text-xs font-bold text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            <span id="wakeTimeKoreaBadge" class="px-2 py-1.5 rounded-xl bg-teal-50 border border-teal-200 font-mono text-xs font-bold text-teal-800">🇰🇷 13:30</span>
+          </div>
+        </div>
+
+        <!-- Gentle Anchor Tip Box -->
+        <div id="wakeAnchorTipBox" class="mt-3 px-3.5 py-2.5 rounded-xl bg-teal-50/70 border border-teal-200/80 text-xs text-teal-900 flex items-start gap-2">
+          <span class="text-base leading-none mt-0.5">💡</span>
+          <div id="wakeAnchorTipText"></div>
+        </div>
+
+        <!-- Supplements & Famotidine Grid -->
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="supplementsGrid">
+          <!-- Dynamically populated by JS for multi-language reactivity -->
+        </div>
+
+        <!-- Famotidine Dosage & Daily Hair/Walk Care Bar -->
+        <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <!-- Famotidine Dose Selector (No stomach survey!) -->
+          <div class="bg-gradient-to-r from-amber-50/60 to-orange-50/40 border border-amber-200/80 rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-base">💊</span>
+                <h3 id="uiFamoTitle" class="text-xs sm:text-sm font-bold text-slate-800">法莫替丁 (Famotidine) 今日服用量</h3>
+              </div>
+              <p id="uiFamoSub" class="text-[11px] text-slate-500 mt-0.5">依靠晚餐消化酶 + 压平晚间高血糖，逐步无痛减停</p>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button onclick="setFamotidineDose('0')" id="famoBtn-0" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all bg-emerald-600 text-white border-emerald-600 shadow-sm">
+                🎉 未吃 (0粒)
+              </button>
+              <button onclick="setFamotidineDose('0.5')" id="famoBtn-0.5" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-slate-700 border-slate-200 hover:border-amber-400">
+                ⚡ 半粒 (0.5)
+              </button>
+              <button onclick="setFamotidineDose('1')" id="famoBtn-1" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-slate-700 border-slate-200 hover:border-rose-400">
+                💊 1粒
+              </button>
+            </div>
+          </div>
+
+          <!-- Hair Kondosh Oil & Post-Dinner Walk -->
+          <div class="bg-slate-50/90 border border-slate-200/80 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3">
+            <label class="flex items-center gap-2.5 cursor-pointer select-none">
+              <input type="checkbox" id="chkKondoshOil" onchange="toggleCareItem('kondoshOil', this.checked)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500" />
+              <div>
+                <span id="uiKondoshTitle" class="text-xs sm:text-sm font-bold text-slate-800 block">🧴 洗澡前干发涂 Kondosh 油并洗净</span>
+                <span id="uiKondoshSub" class="text-[11px] text-slate-500">切勿涂油过夜或出汗时涂 · 促发际线与周围生发</span>
+              </div>
+            </label>
+            <label class="flex items-center gap-2.5 cursor-pointer select-none">
+              <input type="checkbox" id="chkPostDinnerWalk" onchange="toggleCareItem('postDinnerWalk', this.checked)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500" />
+              <div>
+                <span id="uiWalkTitle" class="text-xs sm:text-sm font-bold text-slate-800 block">🚶‍♂️ 餐后散步 20 分钟</span>
+                <span id="uiWalkSub" class="text-[11px] text-slate-500">帮肌肉自然耗糖，压平晚间高血糖</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 3: 6 Meal & Extra Intake Nodes -->
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 px-1">
+          <div>
+            <h2 id="uiMod3Title" class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+              <span>🍽️</span> <span>模块 2：全天 6 大餐饮与额外摄入节点（含餐前/额外关联胰岛素 & 6色食物库）</span>
+            </h2>
+            <p id="uiMod3Sub" class="text-xs text-slate-500">
+              涵盖早/中/晚正餐及三次餐后额外摄入 · 每类支持手动打字添加波斯语/韩语食物（报告自动译为中文并附原文）
+            </p>
+          </div>
+          <!-- Quick Jump Pills for 6 Meal Nodes -->
+          <div class="flex flex-wrap gap-1.5 text-xs">
+            <a href="#mealNode-breakfast" id="uiJump1" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-emerald-400 font-medium">🌅 早餐</a>
+            <a href="#mealNode-breakfast_extra" id="uiJump2" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-emerald-400 font-medium">➕ 早后额外</a>
+            <a href="#mealNode-lunch" id="uiJump3" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-emerald-400 font-medium">☀️ 午餐</a>
+            <a href="#mealNode-lunch_extra" id="uiJump4" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-emerald-400 font-medium">➕ 午后额外</a>
+            <a href="#mealNode-dinner" id="uiJump5" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-emerald-400 font-medium">🌙 晚餐</a>
+            <a href="#mealNode-dinner_extra" id="uiJump6" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-emerald-400 font-medium">➕ 晚后额外</a>
+          </div>
+        </div>
+
+        <!-- Container for the 6 Meal Cards -->
+        <div id="mealsContainer" class="space-y-5">
+          <!-- Populated dynamically by renderMeals() -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: MULTI-DIMENSIONAL HISTORY & FILTER ==================== -->
+    <section id="tabContent-history" class="hidden space-y-5">
+      <div class="glass-card rounded-2xl p-4 sm:p-6 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
+          <div>
+            <h2 id="uiHistTitle" class="text-base sm:text-lg font-bold text-slate-800">🔍 多维时间与分类筛选器（历史执行明细查询）</h2>
+            <p id="uiHistSub" class="text-xs text-slate-500">支持按日期区间、韩国/伊朗时区轴、以及胰岛素/保健品/六大餐饮分类自由组合筛选</p>
+          </div>
+          <button onclick="exportFilteredHistoryCSV()" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+            <span>📥</span> <span id="uiExportCsvBtn">导出当前筛选 CSV (Excel)</span>
+          </button>
+        </div>
+
+        <!-- Filter Controls Bar -->
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
+          <!-- 1. Date Range Filter -->
+          <div>
+            <label id="uiFilterDateLabel" class="text-xs font-bold text-slate-600 block mb-1">📅 按日期范围筛选</label>
+            <select id="histDatePreset" onchange="applyHistoryFilters()" class="w-full text-xs font-semibold bg-white border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="7days">最近 7 天 (2026-10-16 至 10-22)</option>
+              <option value="today">今天 (2026-10-22)</option>
+              <option value="yesterday">昨天 (2026-10-21)</option>
+              <option value="custom">自定义起止日期</option>
+            </select>
+            <div id="customDateRangeBox" class="hidden mt-2 flex items-center gap-1">
+              <input type="date" id="histStartDate" value="2026-10-16" onchange="applyHistoryFilters()" class="w-1/2 text-[11px] px-2 py-1 border rounded-lg bg-white" />
+              <span class="text-slate-400">-</span>
+              <input type="date" id="histEndDate" value="2026-10-22" onchange="applyHistoryFilters()" class="w-1/2 text-[11px] px-2 py-1 border rounded-lg bg-white" />
+            </div>
+          </div>
+
+          <!-- 2. Timezone Display Mode -->
+          <div>
+            <label id="uiFilterTzLabel" class="text-xs font-bold text-slate-600 block mb-1">🌐 主时间轴时区切换</label>
+            <select id="histTimezoneMode" onchange="applyHistoryFilters()" class="w-full text-xs font-semibold bg-white border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="dual">🇮🇷 伊朗 + 🇰🇷 韩国 双时区同显</option>
+              <option value="kr">🇰🇷 仅以韩国时间为主轴 (Seoul UTC+9)</option>
+              <option value="ir">🇮🇷 仅以伊朗时间为主轴 (Tehran UTC+3:30)</option>
+            </select>
+          </div>
+
+          <!-- 3. Category Filter -->
+          <div>
+            <label id="uiFilterCatLabel" class="text-xs font-bold text-slate-600 block mb-1">🗂️ 按事件类别筛选</label>
+            <select id="histCategoryFilter" onchange="applyHistoryFilters()" class="w-full text-xs font-semibold bg-white border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="all">📋 全部记录 (胰岛素 + 保健品 + 6大餐饮)</option>
+              <option value="insulin">💉 仅看胰岛素记录 (早晚常规 + 餐前/额外补针)</option>
+              <option value="supp">💊 仅看保健品与法莫替丁打卡</option>
+              <option value="meal">🍽️ 仅看六大餐饮与额外摄入明细</option>
+            </select>
+          </div>
+
+          <!-- 4. Keyword Search -->
+          <div>
+            <label id="uiFilterSearchLabel" class="text-xs font-bold text-slate-600 block mb-1">🔎 搜索食物/备注/血糖数值</label>
+            <input type="text" id="histKeywordInput" oninput="applyHistoryFilters()" placeholder="如: 全麦大饼 / 硫辛酸 / 180..." class="w-full text-xs bg-white border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+        </div>
+
+        <!-- Filtered Results Table -->
+        <div class="mt-4 overflow-x-auto custom-scroll rounded-xl border border-slate-200">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100/90 text-slate-700 font-bold border-b border-slate-200">
+                <th class="py-2.5 px-3 whitespace-nowrap">日期</th>
+                <th class="py-2.5 px-3 whitespace-nowrap">执行时间 (双时区对照)</th>
+                <th class="py-2.5 px-3 whitespace-nowrap">类别</th>
+                <th class="py-2.5 px-3 whitespace-nowrap">节点 / 项目名称</th>
+                <th class="py-2.5 px-3">详细内容 (食物分类 / 胰岛素剂量 / 中文自动翻译对照)</th>
+                <th class="py-2.5 px-3 whitespace-nowrap">关联血糖 (餐前 → 餐后2h)</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody" class="divide-y divide-slate-100 bg-white">
+              <!-- Populated by applyHistoryFilters() -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: DAILY REPORT (NEXT DAY 10:00 AM) ==================== -->
+    <section id="tabContent-reportDay" class="hidden space-y-5">
+      <div class="glass-card rounded-2xl p-4 sm:p-6 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-2xl">📄</span>
+              <h2 class="text-base sm:text-lg font-bold text-slate-800">每日执行全中文报告（次日 10:00 自动生成 & 实时预览）</h2>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">
+              他用波斯语或韩语勾选/手打的所有内容，在此报告中均已 100% 转换为地道中文（手打词汇保留原文对照）
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="dailyReportDateSelect" onchange="renderDailyReport()" class="text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl px-3 py-1.5">
+              <!-- Populated with 7 days -->
+            </select>
+            <button onclick="translateAllCustomFoodsNow()" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition flex items-center gap-1">
+              <span>🌐</span> <span>刷新云端中文翻译</span>
+            </button>
+            <button onclick="copyDailyReportText()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition flex items-center gap-1">
+              <span>📋</span> <span>一键复制中文日报</span>
+            </button>
+            <button onclick="sendReportEmailNow('daily')" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1">
+              <span>🚀</span> <span>立即发送日报至双邮箱</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Rendered Daily Report Container -->
+        <div id="dailyReportRenderedBox" class="mt-4 space-y-4">
+          <!-- Populated by renderDailyReport() -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: WEEKLY REPORT & DUAL-EMAIL CENTER ==================== -->
+    <section id="tabContent-reportWeek" class="hidden space-y-6">
+      <!-- Dual-Email Dispatch Center Card -->
+      <div class="glass-card rounded-2xl p-4 sm:p-6 shadow-sm border-2 border-emerald-500/20">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-bold">✉️</div>
+            <div>
+              <h2 class="text-base sm:text-lg font-bold text-slate-800">双邮箱自动 / 手动报告发送中心</h2>
+              <p class="text-xs text-slate-500">每日报告于次日 10:00 自动发送 · 每周 7 天对比总表于周日 10:00 自动发送</p>
+            </div>
+          </div>
+          <!-- Auto-Send Toggle & Countdown -->
+          <div class="flex items-center gap-3 bg-emerald-50/80 border border-emerald-200 px-3.5 py-2 rounded-2xl">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="autoSendToggle" checked onchange="toggleAutoEmailSchedule(this.checked)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500" />
+              <span class="text-xs font-bold text-emerald-900">⏰ 开启 10:00 自动定时发送</span>
+            </label>
+            <span class="h-4 w-px bg-emerald-200"></span>
+            <span id="nextAutoSendCountdown" class="text-[11px] font-mono font-semibold text-emerald-700">距离下次 10:00 发送: 计算中...</span>
+          </div>
+        </div>
+
+        <!-- Recipients & Action Buttons -->
+        <div class="mt-4 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+          <div class="lg:col-span-7 space-y-2">
+            <label class="text-xs font-bold text-slate-700 block">📬 默认固定收件邮箱（可随时勾选或额外添加其他收件人）：</label>
+            <div class="flex flex-wrap items-center gap-2.5">
+              <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-xs font-bold text-emerald-900 cursor-pointer">
+                <input type="checkbox" id="chkEmail1" value="miyubear0611@gmail.com" checked class="rounded text-emerald-600" />
+                <span>miyubear0611@gmail.com</span>
+              </label>
+              <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-xs font-bold text-emerald-900 cursor-pointer">
+                <input type="checkbox" id="chkEmail2" value="arsonbear0530@gmail.com" checked class="rounded text-emerald-600" />
+                <span>arsonbear0530@gmail.com</span>
+              </label>
+              <input type="email" id="extraEmailInput" placeholder="+ 附加其他邮箱 (选填, 逗号分隔)" class="flex-1 min-w-[210px] px-3 py-1.5 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 flex flex-wrap items-center justify-end gap-2">
+            <button onclick="sendReportEmailNow('daily')" class="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+              <span>📨</span> <span>手动发送【今日日报】</span>
+            </button>
+            <button onclick="sendReportEmailNow('weekly')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-md transition flex items-center gap-1.5">
+              <span>🚀</span> <span>立即手动发送【本周7天总表】</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly 7-Day Master Comparison Table -->
+      <div class="glass-card rounded-2xl p-4 sm:p-6 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-slate-800">📊 每周 7 天执行与血糖稳态详细汇总表 (2026-10-16 至 2026-10-22)</h2>
+            <p class="text-xs text-slate-500">涵盖每日起床时间、80–160 稳态达标率、全天胰岛素黄/绿瓶累计、保健品时间、六大餐饮节点及法莫替丁减停进度</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="copyWeeklyReportText()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition">
+              📋 复制周报全文
+            </button>
+            <button onclick="exportWeeklySummaryCSV()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">
+              📥 导出周报 Excel (CSV)
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-4 overflow-x-auto custom-scroll rounded-xl border border-slate-200">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                <th class="py-3 px-3 whitespace-nowrap">日期 (星期)</th>
+                <th class="py-3 px-3 whitespace-nowrap">起床时间</th>
+                <th class="py-3 px-3 whitespace-nowrap">80–160 稳态率 (范围)</th>
+                <th class="py-3 px-3 whitespace-nowrap">全天胰岛素 (黄瓶/绿瓶)</th>
+                <th class="py-3 px-3 whitespace-nowrap">5大保健品打卡时间</th>
+                <th class="py-3 px-3 min-w-[280px]">早/中/晚 & 3次餐后额外摄入明细 (中文对照)</th>
+                <th class="py-3 px-3 whitespace-nowrap">法莫替丁</th>
+              </tr>
+            </thead>
+            <tbody id="weeklySummaryTableBody" class="divide-y divide-slate-100 bg-white">
+              <!-- Populated by renderWeeklyReport() -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: JSON SERVER & DEXCOM SHARE BRIDGE CONFIG -->
+  <div id="serverConfigModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto custom-scroll shadow-2xl border border-slate-200 p-5 sm:p-6 space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">⚙️</span>
+          <h3 class="text-base sm:text-lg font-bold text-slate-800">全自动 JSON 云端寄存 & Dexcom Share 账号直连设置</h3>
+        </div>
+        <button onclick="closeServerModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <!-- 1. JSON Cloud Hosting Provider + Auto-Sync -->
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <label class="font-bold text-slate-800 text-sm block">1. JSON 云端寄存网站配置（支持勾选后 100% 全自动云端同步，免手动保存）</label>
+            <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-bold cursor-pointer">
+              <input type="checkbox" id="cfgAutoCloudSync" checked class="rounded text-emerald-600" />
+              <span>⚡ 开启全自动云端读写同步</span>
+            </label>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">选择您用过的寄存平台:</label>
+              <select id="cfgJsonProvider" onchange="onJsonProviderChange(this.value)" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-white font-semibold text-xs">
+                <option value="npoint">🌟 npoint.io (免Key·最简单)</option>
+                <option value="jsonbin">📦 JSONBin.io (最知名·需Master Key)</option>
+                <option value="firebase">🔥 Google Firebase (实时库 .json)</option>
+                <option value="pantry">🧺 Pantry (getpantry.cloud)</option>
+                <option value="custom">🖥️ 自建或其他 JSON 接口</option>
+              </select>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">JSON 云端 API 网址 (URL):</label>
+              <input type="url" id="cfgJsonServerUrl" placeholder="例如: https://api.npoint.io/xxxx 或 https://api.jsonbin.io/v3/b/xxxx" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-mono text-xs" />
+            </div>
+          </div>
+
+          <div id="jsonBinKeyRow" class="grid grid-cols-1 gap-2">
+            <label class="text-[11px] font-bold text-slate-600 block">API 密钥 (若用 JSONBin.io 请填 X-Master-Key；用 npoint.io 留空即可):</label>
+            <input type="password" id="cfgJsonApiKey" placeholder="选填: $2a$10$... (仅 JSONBin.io 或需要鉴权的平台填写)" class="w-full px-3 py-1.5 rounded-xl border border-slate-300 bg-white font-mono text-xs" />
+          </div>
+
+          <div class="bg-white p-3 rounded-xl border border-emerald-200 space-y-1 text-[11px] text-slate-600 leading-relaxed">
+            <div class="font-bold text-emerald-900">💡 常见免费 JSON 寄存网站对比（看看哪个是您以前用过的）：</div>
+            <div>• <b>JSONBin.io (https://jsonbin.io)：</b> 全球最知名的老牌 JSON 托管站，登录后点 Create Bin 输入 <code class="px-1 bg-slate-100 rounded">{"init":true}</code>，复制 Bin URL 和 Master Key 填入上方即可。</div>
+            <div>• <b>npoint.io (https://www.npoint.io)：</b> 以前大名鼎鼎的 <b>MyJSON.com</b> 停服后的最佳替代品！免注册直接点 "+ New" 输入 <code class="px-1 bg-slate-100 rounded">{}</code> 点 Save，只复制一条网址就能直接读写。</div>
+            <div>• <b>Pantry (https://getpantry.cloud) / Firebase：</b> 同样免费支持直接通过 URL 存取 JSON，填好后他每次勾选食物或胰岛素，<b>1.5秒后自动静默上传云端</b>，完全不用手动点记录！</div>
+          </div>
+
+          <div class="flex flex-wrap gap-2 pt-1">
+            <button onclick="downloadFullJsonBackup()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-semibold transition">💾 导出全量 JSON 备份文件 (.json)</button>
+            <label class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold cursor-pointer transition">
+              📂 导入本地 JSON 文件 (.json)
+              <input type="file" accept=".json" onchange="importFullJsonBackup(event)" class="hidden" />
+            </label>
+          </div>
+        </div>
+
+        <!-- 2. Dexcom Share Account & Password Direct Input + Auto Fill -->
+        <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <label class="font-bold text-emerald-950 text-sm block">2. Dexcom Share 账号密码与自动填入设置（密码仅加密存在您本地浏览器，不上传 GitHub）</label>
+              <span class="text-[11px] text-emerald-800">填好账号密码后，网页每 5 分钟自动拉取他最新血糖，并在勾选餐饮时自动填入【餐前血糖】！</span>
+            </div>
+            <button onclick="testDexcomConnectionNow()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition">⚡ 立即测试连接并拉取血糖</button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div>
+              <label class="text-[11px] font-bold text-emerald-900 block mb-1">Dexcom 服务器区域:</label>
+              <select id="cfgDexcomRegion" class="w-full px-2.5 py-2 rounded-xl border border-emerald-300 bg-white font-semibold text-xs">
+                <option value="ous">🌏 韩国/伊朗/亚太国际服 (shareous1)</option>
+                <option value="us">🇺🇸 美国本土服 (share2)</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-emerald-900 block mb-1">Dexcom 主账号 (用户名/邮箱/手机号):</label>
+              <input type="text" id="cfgDexcomUser" placeholder="输入他的 Dexcom 登录账号" class="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-emerald-900 block mb-1">Dexcom 登录密码:</label>
+              <input type="password" id="cfgDexcomPass" placeholder="输入他的 Dexcom 密码" class="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <label class="inline-flex items-center gap-2 cursor-pointer text-emerald-950 font-semibold">
+              <input type="checkbox" id="cfgAutoFillBgOnMeal" checked class="rounded text-emerald-600" />
+              <span>🩸 当他点击/勾选某顿饭的食物或打针时，自动把当前 Dexcom 实时血糖填入【餐前血糖】（仍可手动改写）</span>
+            </label>
+          </div>
+
+          <details class="bg-white/90 rounded-xl border border-emerald-200 p-2.5">
+            <summary class="font-bold text-emerald-900 cursor-pointer">🔧 高级选项：自建 Cloudflare Worker 专属桥接地址（若浏览器直连跨域受限时使用）</summary>
+            <div class="mt-2 space-y-2">
+              <div class="flex items-center gap-2">
+                <input type="url" id="cfgDexcomBridgeUrl" placeholder="选填: https://your-worker.workers.dev (留空则默认使用内置跨域代理直连)" class="flex-1 px-3 py-1.5 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
+                <button onclick="copyDexcomBridgeCode()" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-[11px] shrink-0">📋 复制 Worker 代码</button>
+              </div>
+              <pre id="dexcomBridgeCodeBlock" class="p-2.5 rounded-xl bg-slate-900 text-emerald-300 font-mono text-[10px] overflow-x-auto leading-relaxed">// 免费 Cloudflare Worker 1分钟部署代码（支持从前端安全传入账号密码或固定账号密码）：
+export default {
+  async fetch(request) {
+    const corsHeaders = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST,GET,OPTIONS", "Access-Control-Allow-Headers": "Content-Type" };
+    if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+    const body = request.method === "POST" ? await request.json() : {};
+    const base = body.region === "us" ? "https://share2.dexcom.com/ShareWebServices/Services" : "https://shareous1.dexcom.com/ShareWebServices/Services";
+    const appId = "d89443d2-327c-4a6f-89e5-496bbb0317db";
+    const sRes = await fetch(`${base}/General/LoginPublisherAccountByName`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accountName: body.accountName, password: body.password, applicationId: appId })
+    });
+    const sessionId = (await sRes.text()).replace(/"/g, "").trim();
+    const bgRes = await fetch(`${base}/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${sessionId}&minutes=1440&maxCount=1`, { method: "POST" });
+    const arr = await bgRes.json();
+    const latest = arr && arr[0] ? arr[0] : {};
+    return new Response(JSON.stringify({ bg: latest.Value, trend: latest.Trend, wt: latest.WT }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
+};</pre>
+            </div>
+          </details>
+        </div>
+
+        <!-- 3. Email Webhook / EmailJS Config -->
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+          <label class="font-bold text-slate-700 block">3. 自动发信 Webhook / EmailJS 接口（可选，用于云端静默发信至双邮箱）</label>
+          <input type="url" id="cfgEmailWebhookUrl" placeholder="https://api.emailjs.com/api/v1.0/email/send 或您的邮件接口" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-mono text-xs" />
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+        <button onclick="closeServerModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">关闭</button>
+        <button onclick="saveServerConfig()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">保存配置并立即生效</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /********************************************************************
+     * 1. FOUR-LANGUAGE HUMAN-CALIBRATED DICTIONARY (ZH / KO / FA / EN)
+     *    Every fixed option has a unique ID mapped across 4 languages.
+     *    Reports always read the 'zh' label so the user sees 100% Chinese.
+     ********************************************************************/
+    let currentLang = 'zh';
+
+    const UI_TEXT = {
+      zh: {
+        appTitle: '80–160 血糖稳态 · 每日打卡系统',
+        appSubtitle: '1型糖尿病精准稳糖 · 护胃断药 · 零负担神经修复',
+        iranLabel: '伊朗时间 (UTC+3:30)',
+        koreaLabel: '韩国时间 (UTC+9:00)',
+        dexcomLiveLabel: 'Dexcom 实时血糖',
+        refreshBtn: '🔄 刷新',
+        dexcomWaitHint: '⚙️ 点右上角填主账号',
+        dexcomSavedHint: '✅ 已记住本地主账号',
+        manualBgFix: '手动填/改:',
+        trendFlat: '→平稳',
+        trend45Up: '↗缓升',
+        trendUp: '↑快升',
+        trend45Down: '↘缓降',
+        trendDown: '↓快降',
+        tirLabel: '🎯 80–160 稳态达标率',
+        tirSub1: '目标: 80–160 平稳维持',
+        tirWait: '等待记录今日血糖',
+        tirPtsUnit: '测糖点在 80–160',
+        totalInsulinLabel: '💉 今日累计已打胰岛素',
+        yellowShort: '黄瓶',
+        greenShort: '绿瓶',
+        totalCombinedPrefix: '今日合计:',
+        unitText: '单位',
+        lastInjLabel: '⏱️ 距上一针间隔 (防重叠)',
+        badgeWait: '待记录',
+        badgeSafe: '✅ 10-12h 安全间隔',
+        badgeWarn: '⚠️ 注意防重叠',
+        noShotToday: '今日暂未记录打针',
+        oneShotToday: '今日已打 1 针',
+        twoShotsInterval: '两针间隔',
+        hourText: '小时',
+        minText: '分',
+        nphRuleTip: '两针绿瓶建议间隔 10–12 小时',
+        quadrantLabel: '🔄 本周腹部轮换区',
+        quadSubTip: '每针隔3cm · 涂喜辽妥',
+        quadLU: '↖️ 左上腹区 (Left Upper)',
+        quadRU: '↗️ 右上腹区 (Right Upper)',
+        quadLL: '↙️ 左下腹区 (Left Lower)',
+        quadRL: '↘️ 右下腹区 (Right Lower)',
+        tabDaily: '今日执行与打卡',
+        tabHistory: '历史记录与多维筛选',
+        tabReportDay: '每日报告 (次日10:00)',
+        tabReportWeek: '每周报告与双邮箱发送 (周日10:00)',
+        autoSyncOn: '实时自动保存已开启',
+        currentDateLabel: '当前记录日期:',
+        resetBtnText: '重置今日空白',
+        syncBtnText: '立即同步云端',
+        pullBtnText: '拉取最新',
+        mod2Title: '模块 1：晨起时间、全天保健品与法莫替丁减停打卡',
+        mod2Sub: '点击勾选自动记录双时区精确时间 · 0肝肾负担修复方案 · 已精简移除繁琐胃部问卷',
+        suppProgressPrefix: '今日保健品进度:',
+        wakeUpLabel: '⏰ 今日起床时间 (支持三档快捷或手动输入任意时间)',
+        wakeUpHint: '若晚起超过 11:00 或任意时间醒来，直接在右侧时间框填写即可',
+        wakeEarlyBtn: '🌅 05:00–06:30 早醒',
+        wakeNormalBtn: '☀️ 07:30–09:00 正常',
+        wakeLateBtn: '🛌 10:00–11:00 晚起',
+        exactWakeTime: '🇮🇷起床:',
+        koreaPrefix: '🇰🇷 韩国',
+        iranTimeLabel: '🇮🇷时间:',
+        fastingBgLabel: '空腹血糖:',
+        famoTitle: '法莫替丁 (Famotidine) 今日服用量',
+        famoSub: '依靠晚餐消化酶 + 压平晚间高血糖，逐步无痛减停',
+        famo0: '🎉 未吃 (0粒)',
+        famoHalf: '⚡ 半粒 (0.5)',
+        famo1: '💊 1粒',
+        kondoshTitle: '🧴 洗澡前干发涂 Kondosh 油并洗净',
+        kondoshSub: '切勿涂油过夜或出汗时涂 · 促发际线与周围生发',
+        walkTitle: '🚶‍♂️ 餐后散步 20 分钟',
+        walkSub: '帮肌肉自然耗糖，压平晚间高血糖',
+        mod3Title: '模块 2：全天 6 大餐饮与额外摄入节点（含餐前/额外关联胰岛素 & 6色食物库）',
+        mod3Sub: '涵盖早/中/晚正餐及三次餐后额外摄入 · 每类支持手动打字添加波斯语/韩语食物（报告自动译为中文并附原文）',
+        jump1: '🌅 早餐',
+        jump2: '➕ 早后额外',
+        jump3: '☀️ 午餐',
+        jump4: '➕ 午后额外',
+        jump5: '🌙 晚餐',
+        jump6: '➕ 晚后额外',
+        mealTimeLabel: '🇮🇷 用餐时间:',
+        setNowBtn: '设为当前',
+        expectPost2h: '🕒 应测:',
+        preBgLabel: '🩸 餐前血糖 (打针/第一口饭前)',
+        postBgLabel: '🕒 餐后2小时血糖',
+        autoFillDexcom: '填入当前Dexcom',
+        linkedInsulinTitle: '💉 本餐关联胰岛素记录',
+        insNone: '⭕ 本次未打针',
+        insDone: '✅ 餐前已打针',
+        insPlan: '🎯 准备打针 (参考)',
+        yellowBottle: '🟡 黄瓶 (Regular 短效)',
+        greenBottle: '🟢 绿瓶 (NPH 中效)',
+        preBolusCheck: '已提前 15–30 分钟打针 (高血糖等下降再开饭)',
+        rollNphCheck: '绿瓶已水平搓匀20次 · 先抽黄瓶后抽绿瓶',
+        customFoodPlaceholder: '+ 手动输入本类其他食物 (支持波斯语/韩语/中文)...',
+        addBtn: '添加',
+        torshiPortionLabel: '📌 波斯酸腌菜/泡菜 (Torshi/Kimchi) 分量:',
+        portionSmall: '少量',
+        portionMed: '中量',
+        portionLarge: '多量'
+      },
+      ko: {
+        appTitle: '80–160 혈당 안정 · 일일 체크인 시스템',
+        appSubtitle: '1형 당뇨 맞춤 혈당 관리 · 위장 보호 단약 · 신경 회복',
+        iranLabel: '이란 시간 (UTC+3:30)',
+        koreaLabel: '한국 시간 (UTC+9:00)',
+        dexcomLiveLabel: 'Dexcom 실시간 혈당',
+        refreshBtn: '🔄 새로고침',
+        dexcomWaitHint: '⚙️ 우측 상단 계정 설정',
+        dexcomSavedHint: '✅ 계정 저장됨',
+        manualBgFix: '수동 입력:',
+        trendFlat: '→안정',
+        trend45Up: '↗완만상승',
+        trendUp: '↑급상승',
+        trend45Down: '↘완만하락',
+        trendDown: '↓급하락',
+        tirLabel: '🎯 80–160 목표 유지율',
+        tirSub1: '목표: 80–160 mg/dL 안정 유지',
+        tirWait: '오늘 혈당 기록 대기 중',
+        tirPtsUnit: '구간 내 도달',
+        totalInsulinLabel: '💉 오늘 누적 인슐린 투여량',
+        yellowShort: '노란병(속효)',
+        greenShort: '초록병(NPH)',
+        totalCombinedPrefix: '오늘 합계:',
+        unitText: '단위',
+        lastInjLabel: '⏱️ 이전 주사 후 경과 시간',
+        badgeWait: '기록 대기',
+        badgeSafe: '✅ 10-12시간 안전 간격',
+        badgeWarn: '⚠️ 약효 중첩 주의',
+        noShotToday: '오늘 주사 기록 없음',
+        oneShotToday: '오늘 1회 투여 완료',
+        twoShotsInterval: '주사 간격',
+        hourText: '시간',
+        minText: '분',
+        nphRuleTip: '초록병(NPH) 2회 간격은 10–12시간 유지 권장',
+        quadrantLabel: '🔄 이번 주 복부 주사 부위',
+        quadSubTip: '주사 간격 3cm · 히루도이드 도포',
+        quadLU: '↖️ 좌상복부 (Left Upper)',
+        quadRU: '↗️ 우상복부 (Right Upper)',
+        quadLL: '↙️ 좌하복부 (Left Lower)',
+        quadRL: '↘️ 우하복부 (Right Lower)',
+        tabDaily: '오늘의 실행 및 체크인',
+        tabHistory: '기록 조회 및 필터',
+        tabReportDay: '일일 보고서 (익일 10:00)',
+        tabReportWeek: '주간 보고서 및 이메일 발송',
+        autoSyncOn: '실시간 자동 저장 켜짐',
+        currentDateLabel: '기록 날짜:',
+        resetBtnText: '오늘 기록 초기화',
+        syncBtnText: '클라우드 동기화',
+        pullBtnText: '최신 데이터 불러오기',
+        mod2Title: '모듈 1: 기상 시간, 영양제 및 파모티딘(위장약) 체크인',
+        mod2Sub: '체크 시 이란/한국 시간 자동 기록 · 간/신장 무부담 회복 스케줄',
+        suppProgressPrefix: '오늘 영양제 진행률:',
+        wakeUpLabel: '⏰ 오늘 기상 시간 (3단계 빠른 선택 또는 직접 입력)',
+        wakeUpHint: '11:00 이후 늦게 일어났거나 다른 시간일 경우 오른쪽 시간 칸에 직접 입력하세요',
+        wakeEarlyBtn: '🌅 05:00–06:30 조기 기상',
+        wakeNormalBtn: '☀️ 07:30–09:00 정상 기상',
+        wakeLateBtn: '🛌 10:00–11:00 늦은 기상',
+        exactWakeTime: '🇮🇷기상:',
+        koreaPrefix: '🇰🇷 한국',
+        iranTimeLabel: '🇮🇷시간:',
+        fastingBgLabel: '공복 혈당:',
+        famoTitle: '파모티딘 (Famotidine) 오늘 복용량',
+        famoSub: '저녁 식물성 소화효소 + 야간 혈당 안정으로 점진적 단약',
+        famo0: '🎉 미복용 (0정)',
+        famoHalf: '⚡ 반 알 (0.5정)',
+        famo1: '💊 1정',
+        kondoshTitle: '🧴 샤워 1~2시간 전 마른 두피에 Kondosh 오일 도포 후 세정',
+        kondoshSub: '땀 날 때나 취침 중 방치 금지 · 주변부 모발 성장 촉진',
+        walkTitle: '🚶‍♂️ 식후 20분 산책',
+        walkSub: '근육 포도당 소모 촉진 및 저녁 고혈당 예방',
+        mod3Title: '모듈 2: 하루 6대 식사 및 추가 섭취 기록 (식사별 인슐린 연동 & 6색 식품 사전)',
+        mod3Sub: '아침/점심/저녁 및 식후 추가 섭취 포함 · 없는 음식은 직접 입력 가능 (보고서 생성 시 중국어 자동 번역)',
+        jump1: '🌅 아침 식사',
+        jump2: '➕ 아침 후 간식',
+        jump3: '☀️ 점심 식사',
+        jump4: '➕ 점심 후 간식',
+        jump5: '🌙 저녁 식사',
+        jump6: '➕ 저녁 후 추가',
+        mealTimeLabel: '🇮🇷 식사 시간:',
+        setNowBtn: '현재 시간',
+        expectPost2h: '🕒 식후2h 측정:',
+        preBgLabel: '🩸 식전 혈당 (주사/첫 입 전)',
+        postBgLabel: '🕒 식후 2시간 혈당',
+        autoFillDexcom: 'Dexcom 불러오기',
+        linkedInsulinTitle: '💉 이 식사와 연관된 인슐린 기록',
+        insNone: '⭕ 주사 안 맞음',
+        insDone: '✅ 식전 주사 완료',
+        insPlan: '🎯 주사 예정 (가이드)',
+        yellowBottle: '🟡 노란병 (Regular 속효성)',
+        greenBottle: '🟢 초록병 (NPH 중간형)',
+        preBolusCheck: '식사 15–30분 전 미리 주사 완료',
+        rollNphCheck: '초록병 수평 20회 롤링 · 노란병 먼저 추출 준수',
+        customFoodPlaceholder: '+ 이 분류의 다른 음식 직접 입력 (한국어/페르시아어 가능)...',
+        addBtn: '추가',
+        torshiPortionLabel: '📌 피클/김치 (Torshi/Kimchi) 섭취량:',
+        portionSmall: '소량',
+        portionMed: '중간',
+        portionLarge: '다량'
+      },
+      fa: {
+        appTitle: 'سیستم تثبیت قند خون ۸۰–۱۶۰ و ثبت روزانه',
+        appSubtitle: 'مدیریت دقیق دیابت نوع ۱ · محافظت معده و قطع فاموتیدین · ترمیم عصب',
+        iranLabel: 'ساعت ایران (UTC+3:30)',
+        koreaLabel: 'ساعت کره (UTC+9:00)',
+        dexcomLiveLabel: 'قند خون لحظه‌ای Dexcom',
+        refreshBtn: '🔄 بروزرسانی',
+        dexcomWaitHint: '⚙️ تنظیم حساب در بالا',
+        dexcomSavedHint: '✅ حساب ذخیره شد',
+        manualBgFix: 'ثبت دستی:',
+        trendFlat: '→ثابت',
+        trend45Up: '↗افزایش ملایم',
+        trendUp: '↑افزایش سریع',
+        trend45Down: '↘کاهش ملایم',
+        trendDown: '↓کاهش سریع',
+        tirLabel: '🎯 درصد ثبات در بازه ۸۰–۱۶۰',
+        tirSub1: 'هدف: حفظ قند خون بین ۸۰ تا ۱۶۰',
+        tirWait: 'در انتظار ثبت قند امروز',
+        tirPtsUnit: 'نقطه در بازه ۸۰–۱۶۰',
+        totalInsulinLabel: '💉 مجموع انسولین تزریق‌شده امروز',
+        yellowShort: 'زرد (رگولار)',
+        greenShort: 'سبز (NPH)',
+        totalCombinedPrefix: 'مجموع امروز:',
+        unitText: 'واحد',
+        lastInjLabel: '⏱️ فاصله از آخرین تزریق',
+        badgeWait: 'در انتظار ثبت',
+        badgeSafe: '✅ فاصله ایمن ۱۰-۱۲ ساعت',
+        badgeWarn: '⚠️ احتیاط تداخل انسولین',
+        noShotToday: 'امروز تزریقی ثبت نشده است',
+        oneShotToday: '۱ نوبت تزریق ثبت شد',
+        twoShotsInterval: 'فاصله دو تزریق',
+        hourText: 'ساعت',
+        minText: 'دقیقه',
+        nphRuleTip: 'فاصله دو تزریق انسولین شیری (سبز) باید ۱۰ تا ۱۲ ساعت باشد',
+        quadrantLabel: '🔄 ناحیه چرخش تزریق شکم در این هفته',
+        quadSubTip: 'فاصله ۳ سانتی‌متر · پماد هیرودوئید',
+        quadLU: '↖️ بالا چپ شکم (Left Upper)',
+        quadRU: '↗️ بالا راست شکم (Right Upper)',
+        quadLL: '↙️ پایین چپ شکم (Left Lower)',
+        quadRL: '↘️ پایین راست شکم (Right Lower)',
+        tabDaily: 'ثبت روزانه (امروز)',
+        tabHistory: 'تاریخچه و فیلتر پیشرفته',
+        tabReportDay: 'گزارش روزانه (ساعت ۱۰ صبح)',
+        tabReportWeek: 'گزارش هفتگی و ارسال ایمیل',
+        autoSyncOn: 'ذخیره خودکار فعال است',
+        currentDateLabel: 'تاریخ ثبت:',
+        resetBtnText: 'پاک کردن فرم امروز',
+        syncBtnText: 'همگام‌سازی ابری',
+        pullBtnText: 'دریافت آخرین اطلاعات',
+        mod2Title: 'بخش ۱: ساعت بیداری، مکمل‌ها و ثبت فاموتیدین',
+        mod2Sub: 'ثبت خودکار زمان به وقت ایران و کره · بدون فشار بر کبد و کلیه',
+        suppProgressPrefix: 'مکمل‌های امروز:',
+        wakeUpLabel: '⏰ ساعت بیداری امروز (انتخاب سریع یا ورود دستی ساعت)',
+        wakeUpHint: 'اگر بعد از ساعت ۱۱:۰۰ بیدار شدید، ساعت دقیق را در کادر وارد کنید',
+        wakeEarlyBtn: '🌅 ۰۵:۰۰–۰۶:۳۰ زودهنگام',
+        wakeNormalBtn: '☀️ ۰۷:۳۰–۰۹:۰۰ عادی',
+        wakeLateBtn: '🛌 ۱۰:۰۰–۱۱:۰۰ دیرهنگام',
+        exactWakeTime: '🇮🇷بیداری:',
+        koreaPrefix: '🇰🇷 کره',
+        iranTimeLabel: '🇮🇷ساعت:',
+        fastingBgLabel: 'قند ناشتا:',
+        famoTitle: 'میزان مصرف امروز فاموتیدین (Famotidine)',
+        famoSub: 'کاهش تدریجی با کمک آنزیم گوارشی شام و کنترل قند شبانه',
+        famo0: '🎉 نخورده (۰ عدد)',
+        famoHalf: '⚡ نصف قرص (۰.۵)',
+        famo1: '💊 ۱ عدد کامل',
+        kondoshTitle: '🧴 استفاده از روغن کندش روی سر خشک ۱ تا ۲ ساعت قبل از حمام و شستشو',
+        kondoshSub: 'روی سر عرق‌کرده یا در طول شب نماند · تقویت رویش موهای اطراف سر',
+        walkTitle: '🚶‍♂️ ۲۰ دقیقه پیاده‌روی پس از شام',
+        walkSub: 'کاهش طبیعی قند خون شبانه',
+        mod3Title: 'بخش ۲: ۶ وعده غذایی و میان‌وعده (همراه با ثبت انسولین و بانک غذای ۶ رنگ)',
+        mod3Sub: 'شامل صبحانه، ناهار، شام و میان‌وعده‌ها · امکان تایپ دستی غذا به فارسی (ترجمه خودکار در گزارش)',
+        jump1: '🌅 صبحانه',
+        jump2: '➕ میان‌وعده صبح',
+        jump3: '☀️ ناهار',
+        jump4: '➕ عصرانه',
+        jump5: '🌙 شام',
+        jump6: '➕ شب‌چره',
+        mealTimeLabel: '🇮🇷 ساعت وعده:',
+        setNowBtn: 'ساعت فعلی',
+        expectPost2h: '🕒 ۲ ساعت بعد:',
+        preBgLabel: '🩸 قند قبل از غذا (پیش از تزریق/اولین لقمه)',
+        postBgLabel: '🕒 قند ۲ ساعت بعد از غذا',
+        autoFillDexcom: 'درج از Dexcom',
+        linkedInsulinTitle: '💉 وضعیت تزریق انسولین در این وعده',
+        insNone: '⭕ بدون تزریق',
+        insDone: '✅ تزریق انجام شد',
+        insPlan: '🎯 قصد تزریق دارم',
+        yellowBottle: '🟡 انسولین زرد (Regular شفاف)',
+        greenBottle: '🟢 انسولین سبز (NPH شیری)',
+        preBolusCheck: 'تزریق ۱۵ تا ۳۰ دقیقه قبل از شروع غذا انجام شد',
+        rollNphCheck: 'غلظت یکنواخت انسولین سبز (۲۰ بار چرخش آرام کف دست) · ابتدا زرد سپس سبز',
+        customFoodPlaceholder: '+ تایپ دستی غذای دیگر به فارسی...',
+        addBtn: 'افزودن',
+        torshiPortionLabel: '📌 مقدار ترشی / کیمچی (Torshi/Kimchi):',
+        portionSmall: 'کم',
+        portionMed: 'متوسط',
+        portionLarge: 'زیاد'
+      },
+      en: {
+        appTitle: '80–160 BG Steady-State · Daily Tracker',
+        appSubtitle: 'T1D Precision Control · Stomach Care · Zero-Burden Nerve Repair',
+        iranLabel: 'Iran Time (UTC+3:30)',
+        koreaLabel: 'Korea Time (UTC+9:00)',
+        dexcomLiveLabel: 'Dexcom Live BG',
+        refreshBtn: '🔄 Refresh',
+        dexcomWaitHint: '⚙️ Set Account Top-Right',
+        dexcomSavedHint: '✅ Account Saved Locally',
+        manualBgFix: 'Override:',
+        trendFlat: '→Flat',
+        trend45Up: '↗45°Up',
+        trendUp: '↑FastUp',
+        trend45Down: '↘45°Dn',
+        trendDown: '↓FastDn',
+        tirLabel: '🎯 80–160 Target Rate',
+        tirSub1: 'Goal: 80–160 mg/dL Steady',
+        tirWait: 'Waiting for BG logs today',
+        tirPtsUnit: 'pts in 80–160',
+        totalInsulinLabel: '💉 Cumulative Insulin Today',
+        yellowShort: 'Yellow(Reg)',
+        greenShort: 'Green(NPH)',
+        totalCombinedPrefix: 'Total Today:',
+        unitText: 'U',
+        lastInjLabel: '⏱️ Time Since Last Injection',
+        badgeWait: 'Pending',
+        badgeSafe: '✅ 10-12h Safe Gap',
+        badgeWarn: '⚠️ Overlap Caution',
+        noShotToday: 'No shots logged today',
+        oneShotToday: '1 shot logged today',
+        twoShotsInterval: 'Shot Interval',
+        hourText: 'h',
+        minText: 'm',
+        nphRuleTip: 'Keep 10–12h between 2 Green(NPH) shots',
+        quadrantLabel: '🔄 Weekly Abdomen Quadrant',
+        quadSubTip: 'Space 3cm · Apply Hirudoid',
+        quadLU: '↖️ Left Upper Abdomen',
+        quadRU: '↗️ Right Upper Abdomen',
+        quadLL: '↙️ Left Lower Abdomen',
+        quadRL: '↘️ Right Lower Abdomen',
+        tabDaily: 'Daily Check-in',
+        tabHistory: 'History & Filter',
+        tabReportDay: 'Daily Report (10:00 AM)',
+        tabReportWeek: 'Weekly Report & Email',
+        autoSyncOn: 'Auto-Save Active',
+        currentDateLabel: 'Active Date:',
+        resetBtnText: 'Reset Blank',
+        syncBtnText: 'Sync Cloud',
+        pullBtnText: 'Pull Latest',
+        mod2Title: 'Module 1: Wake-up Time, Supplements & Famotidine Taper',
+        mod2Sub: 'Auto-records dual-timezone timestamps · Zero organ burden protocol',
+        suppProgressPrefix: 'Supplements Today:',
+        wakeUpLabel: '⏰ Wake-Up Time Today (Presets or Custom Time)',
+        wakeUpHint: 'If waking up after 11:00 or any custom time, enter directly on the right',
+        wakeEarlyBtn: '🌅 05:00–06:30 Early',
+        wakeNormalBtn: '☀️ 07:30–09:00 Normal',
+        wakeLateBtn: '🛌 10:00–11:00 Late',
+        exactWakeTime: '🇮🇷 Wake:',
+        koreaPrefix: '🇰🇷 Korea',
+        iranTimeLabel: '🇮🇷Time:',
+        fastingBgLabel: 'Fasting BG:',
+        famoTitle: 'Famotidine Daily Dose',
+        famoSub: 'Taper off smoothly with Dinner Plant Enzymes & steady evening BG',
+        famo0: '🎉 None (0 pill)',
+        famoHalf: '⚡ Half (0.5)',
+        famo1: '💊 1 Pill',
+        kondoshTitle: '🧴 Apply Kondosh Oil on dry scalp 1-2h before shower & wash off',
+        kondoshSub: 'Do not leave overnight or on sweaty scalp · Boosts hairline growth',
+        walkTitle: '🚶‍♂️ 20-Min Post-Dinner Walk',
+        walkSub: 'Helps muscles burn glucose naturally & flattens evening spikes',
+        mod3Title: 'Module 2: 6 Daily Meal & Extra Intake Nodes (Linked Insulin & 6-Color Food Bank)',
+        mod3Sub: 'Covers B/L/D & 3 post-meal extra intakes · Custom food input auto-translates to Chinese in reports',
+        jump1: '🌅 Breakfast',
+        jump2: '➕ Post-B Extra',
+        jump3: '☀️ Lunch',
+        jump4: '➕ Post-L Extra',
+        jump5: '🌙 Dinner',
+        jump6: '➕ Post-D Extra',
+        mealTimeLabel: '🇮🇷 Meal Time:',
+        setNowBtn: 'Set Now',
+        expectPost2h: '🕒 2h Check:',
+        preBgLabel: '🩸 Pre-Meal BG (Before shot/bite)',
+        postBgLabel: '🕒 2h Post-Meal BG',
+        autoFillDexcom: 'Fill Live Dexcom',
+        linkedInsulinTitle: '💉 Linked Insulin for This Node',
+        insNone: '⭕ No Shot',
+        insDone: '✅ Shot Taken',
+        insPlan: '🎯 Planning Shot',
+        yellowBottle: '🟡 Yellow (Regular Short-Acting)',
+        greenBottle: '🟢 Green (NPH Intermediate)',
+        preBolusCheck: 'Pre-bolused 15–30m before meal',
+        rollNphCheck: 'Rolled Green NPH 20x · Drew Yellow before Green',
+        customFoodPlaceholder: '+ Type custom food in Persian/Korean/Chinese...',
+        addBtn: 'Add',
+        torshiPortionLabel: '📌 Pickles/Kimchi (Torshi) Portion:',
+        portionSmall: 'Small',
+        portionMed: 'Medium',
+        portionLarge: 'Large'
+      }
+    };
+
+    // Convert Iran Time (UTC+3:30) to Korea Time (UTC+9:00 -> +5h30m = +330 minutes)
+    function iranTimeToKoreaTime(hm) {
+      if (!hm || typeof hm !== 'string' || !hm.includes(':')) return '--:--';
+      const [hStr, mStr] = hm.split(':');
+      const h = parseInt(hStr, 10);
+      const m = parseInt(mStr, 10);
+      if (isNaN(h) || isNaN(m)) return '--:--';
+      const totalMin = (h * 60 + m + 330) % 1440;
+      const kh = String(Math.floor(totalMin / 60)).padStart(2, '0');
+      const km = String(totalMin % 60).padStart(2, '0');
+      return `${kh}:${km}`;
+    }
+
+    function addTwoHours(hm) {
+      if (!hm || typeof hm !== 'string' || !hm.includes(':')) return '--:--';
+      const [hStr, mStr] = hm.split(':');
+      const h = parseInt(hStr, 10);
+      const m = parseInt(mStr, 10);
+      if (isNaN(h) || isNaN(m)) return '--:--';
+      const total = (h * 60 + m + 120) % 1440;
+      return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+    }
+
+    function enrichDayWithDualTimezones(day) {
+      if (!day) return day;
+      day.wakeTimeIr = day.wakeTime || '08:00';
+      day.wakeTimeKr = iranTimeToKoreaTime(day.wakeTimeIr);
+      if (day.supplements) {
+        Object.keys(day.supplements).forEach(sKey => {
+          const st = day.supplements[sKey];
+          if (st && st.timeIr) {
+            st.timeKr = iranTimeToKoreaTime(st.timeIr);
+          }
+        });
+      }
+      if (day.meals) {
+        Object.keys(day.meals).forEach(mKey => {
+          const md = day.meals[mKey];
+          if (md) {
+            md.timeIr = md.time || '--:--';
+            md.timeKr = iranTimeToKoreaTime(md.time);
+            md.expectedPost2hTimeIr = addTwoHours(md.time);
+            md.expectedPost2hTimeKr = iranTimeToKoreaTime(md.expectedPost2hTimeIr);
+          }
+        });
+      }
+      return day;
+    }
+
+    const SUPPLEMENTS_DICT = [
+      {
+        id: 'SUPP_RLA',
+        icon: '⚡',
+        timingTag: { zh: '晨起纯空腹', ko: '기상 직후 공복', fa: 'ناشتا محض پس از بیداری', en: 'Morning Pure Fasting' },
+        name: {
+          zh: '超级硫辛酸 (Super R-Lipoic Acid) 1粒',
+          ko: '수퍼 R-리포산 (Super R-Lipoic Acid) 1정',
+          fa: 'سوپر آلفا لیپوئیک اسید (Super R-Lipoic Acid) ۱ عدد',
+          en: 'Super R-Lipoic Acid (1 cap)'
+        },
+        desc: {
+          zh: '纯空腹温水吞服(前后隔30–45分钟不进食)，100%吸收修复出汗自主神经',
+          ko: '공복에 미온수로 복용(전후 30~45분 금식), 땀 신경 회복 극대화',
+          fa: 'با معده کاملاً خالی و آب ولرم (۳۰ تا ۴۵ دقیقه فاصله با غذا) جهت ترمیم عصب تعریق',
+          en: 'Take on empty stomach with warm water (30-45m before food) for nerve repair'
+        },
+        hasFastingBg: true
+      },
+      {
+        id: 'SUPP_BENFO',
+        icon: '🛡️',
+        timingTag: { zh: '早餐后随餐', ko: '아침 식후', fa: 'همراه یا بلافاصله پس از صبحانه', en: 'Post-Breakfast' },
+        name: {
+          zh: '巨型苯磷硫胺 (Mega Benfotiamine) 1粒',
+          ko: '메가 벤포티아민 (Mega Benfotiamine) 1정',
+          fa: 'مگا بنفوتیامین (Mega Benfotiamine) ۱ عدد',
+          en: 'Mega Benfotiamine (1 cap)'
+        },
+        desc: {
+          zh: '脂溶性维B1，随早餐鸡蛋/油脂吸收，联手硫辛酸保护肾脏与神经',
+          ko: '지용성 비타민 B1, 아침 식사 지방과 함께 흡수되어 신장 및 신경 보호',
+          fa: 'ویتامین B1 محلول در چربی، مصرف همراه صبحانه برای محافظت کلیه و اعصاب',
+          en: 'Fat-soluble B1, absorb with breakfast fats to protect kidneys & nerves'
+        }
+      },
+      {
+        id: 'SUPP_VITD',
+        icon: '☀️',
+        timingTag: { zh: '周六早餐后高亮', ko: '토요일 아침 식후', fa: 'شنبه‌ها پس از صبحانه', en: 'Saturday Post-Breakfast' },
+        name: {
+          zh: '大剂量维生素 D (High-Dose Vit D)',
+          ko: '고함량 비타민 D (토요일 복용)',
+          fa: 'ویتامین D دوز بالا (مخصوص روز شنبه)',
+          en: 'High-Dose Vitamin D (Saturdays)'
+        },
+        desc: {
+          zh: '每周六随早餐油脂服用，固发并提升胰岛素敏感性',
+          ko: '매주 토요일 아침 식후 복용, 모낭 강화 및 인슐린 민감성 개선',
+          fa: 'مصرف شنبه‌ها همراه صبحانه جهت تقویت مو و بهبود عملکرد انسولین',
+          en: 'Take on Saturdays with breakfast fats for hair & insulin sensitivity'
+        },
+        saturdaySpecial: true
+      },
+      {
+        id: 'SUPP_BIOTIN',
+        icon: '💇‍♂️',
+        timingTag: { zh: '午餐后 (错峰>2h)', ko: '점심 식후 (리포산과 2시간 이상 간격)', fa: 'پس از ناهار (فاصله بیش از ۲ ساعت با صبح)', en: 'Post-Lunch (>2h after RLA)' },
+        name: {
+          zh: '生物素 (Biotin) 1粒',
+          ko: '비오틴 (Biotin) 1정',
+          fa: 'بیوتین (Biotin) ۱ عدد',
+          en: 'Biotin (1 cap)'
+        },
+        desc: {
+          zh: '与早上空腹硫辛酸错开2小时以上，不抢肠道SMVT通道，100%吸收生发',
+          ko: '오전 리포산과 2시간 이상 간격을 두어 장내 흡수 통로 경쟁 방지 및 모발 성장',
+          fa: 'با فاصله بیش از ۲ ساعت از قرص ناشتای صبح برای جذب ۱۰۰٪ و تقویت مو',
+          en: 'Spaced >2h from morning R-Lipoic Acid for 100% absorption & hair growth'
+        }
+      },
+      {
+        id: 'SUPP_ENZYME',
+        icon: '🌿',
+        timingTag: { zh: '晚餐第一口菜随餐', ko: '저녁 식사 첫 입과 함께', fa: 'همراه با اولین لقمه شام', en: 'With First Bite of Dinner' },
+        name: {
+          zh: '纯植物消化酶 (Digest Basic) 1粒',
+          ko: '순수 식물성 소화효소 (Digest Basic) 1정',
+          fa: 'آنزیم گوارشی گیاهی (Digest Basic) ۱ عدد',
+          en: 'Digest Basic Plant Enzymes (1 cap)'
+        },
+        desc: {
+          zh: '0%进血液、0肝肾负担！帮胃剪碎晚餐肉类与橄榄油脂，无痛替代法莫替丁',
+          ko: '혈액 미흡수·간/신장 부담 0%! 저녁 고기와 올리브 지방 분해, 파모티딘 대체',
+          fa: 'بدون جذب خونی و بدون بار کبدی/کلیوی! کمک به هضم سریع شام و جایگزین فاموتیدین',
+          en: '0% blood absorption, zero organ burden! Breaks down dinner fats to replace Famotidine'
+        }
+      },
+      {
+        id: 'SUPP_BILBERRY',
+        icon: '🫐',
+        timingTag: { zh: '晚餐后随餐', ko: '저녁 식후', fa: 'پس از شام', en: 'Post-Dinner' },
+        name: {
+          zh: '越橘提取物 (Bilberry) 1粒',
+          ko: '빌베리 추출물 (Bilberry) 1정',
+          fa: 'عصاره بیلبری / قره‌قاط (Bilberry) ۱ عدد',
+          en: 'Bilberry Extract (1 cap)'
+        },
+        desc: {
+          zh: '打通眼底与头皮最外圈末梢微毛细血管，加速发际线与两鬓长齐',
+          ko: '안저 및 두피 말초 모세혈관 순환 개선, 헤어라인 모발 성장 촉진',
+          fa: 'تقویت مویرگ‌های چشم و اطراف پوست سر برای رشد کامل موهای شقیقه و خط رویش',
+          en: 'Improves micro-circulation in retina & outer scalp hairline'
+        }
+      }
+    ];
+
+    const MEAL_NODES_META = [
+      {
+        key: 'breakfast',
+        icon: '🌅',
+        defaultTime: '08:20',
+        defaultInsStatus: 'done',
+        defaultReg: 15,
+        defaultNph: 40,
+        title: {
+          zh: '1. 早餐 (Breakfast / Sobhaneh)',
+          ko: '1. 아침 식사 (Breakfast / Sobhaneh)',
+          fa: '۱. صبحانه (Sobhaneh)',
+          en: '1. Breakfast (Sobhaneh)'
+        },
+        subtitle: {
+          zh: '第1针常规关联节点 · 建议先吃熟蔬菜/蛋白/奶酪，最后吃全麦大饼(Sangak)',
+          ko: '1차 인슐린 주사 연동 · 채소/단백질/치즈 먼저, 통밀빵(Sangak)은 마지막에',
+          fa: 'وعده مرتبط با تزریق اول صبح · ابتدا پنیر/گردو/تخم‌مرغ و نان سنگک',
+          en: 'Morning injection node · Eat protein/cheese/walnuts with whole-wheat Sangak'
+        }
+      },
+      {
+        key: 'breakfast_extra',
+        icon: '➕',
+        defaultTime: '09:45',
+        defaultInsStatus: 'none',
+        defaultReg: 0,
+        defaultNph: 0,
+        title: {
+          zh: '2. 早餐后额外摄入 (Post-Breakfast Extra Intake)',
+          ko: '2. 아침 식후 추가 섭취 (오전 간식 / 저혈당 방어)',
+          fa: '۲. میان‌وعده پس از صبحانه (محافظت از افت قند ساعت ۱۰)',
+          en: '2. Post-Breakfast Extra Intake (Mid-Morning)'
+        },
+        subtitle: {
+          zh: '重点防 10:00–12:00 低血糖与暴汗：若 09:30 血糖 <130 且向下，及时补充奶酪核桃饼或酸奶',
+          ko: '오전 10~12시 저혈당 및 식은땀 예방: 09:30 혈당 <130 하락 시 치즈호두빵/요거트 섭취',
+          fa: 'جلوگیری از افت قند ساعت ۱۰ تا ۱۲ صبح: در صورت قند زیر ۱۳۰، لقمه نان و پنیر و گردو یا ماست میل شود',
+          en: 'Prevents 10:00–12:00 hypo & cold sweats: Have cheese/walnut wrap or yogurt if BG <130'
+        }
+      },
+      {
+        key: 'lunch',
+        icon: '☀️',
+        defaultTime: '13:30',
+        defaultInsStatus: 'none',
+        defaultReg: 0,
+        defaultNph: 0,
+        title: {
+          zh: '3. 午餐 (Lunch / Nahar)',
+          ko: '3. 점심 식사 (Lunch / Nahar)',
+          fa: '۳. ناهار (Nahar)',
+          en: '3. Lunch (Nahar)'
+        },
+        subtitle: {
+          zh: '全天血糖最稳时段 · 先吃熟蔬菜/炖菜/烤肉，米饭或意面控制在 1 平盘内；餐后吃生物素',
+          ko: '채소/구운 고기 먼저 섭취, 쌀밥/파스타는 1접시 이내 · 식후 비오틴 복용',
+          fa: 'ابتدا سبزیجات پخته/ماست/کباب، برنج یا ماکارونی در حد متعادل · مصرف بیوتین پس از ناهار',
+          en: 'Eat cooked veggies/kebab first, keep rice/pasta <= 1 flat plate · Take Biotin post-meal'
+        }
+      },
+      {
+        key: 'lunch_extra',
+        icon: '➕',
+        defaultTime: '16:00',
+        defaultInsStatus: 'none',
+        defaultReg: 0,
+        defaultNph: 0,
+        title: {
+          zh: '4. 午餐后额外摄入 (Post-Lunch Extra Intake)',
+          ko: '4. 점심 식후 추가 섭취 (오후 간식)',
+          fa: '۴. عصرانه / دریافت اضافی پس از ناهار',
+          en: '4. Post-Lunch Extra Intake (Afternoon)'
+        },
+        subtitle: {
+          zh: '15:00–17:00 早上药力衰退期：建议选坚果(Ajil)/奶酪/黄瓜/无糖茶，避免下午血糖抬头',
+          ko: '15:00–17:00 인슐린 약효 감소기: 견과류/치즈/오이/무가당 차 권장',
+          fa: 'ساعت ۱۵ تا ۱۷: ترجیحاً آجیل خام، پنیر، خیار یا چای بدون قند جهت جلوگیری از اوج قند عصر',
+          en: '15:00–17:00: Prefer raw nuts (Ajil), cheese, cucumber, or unsweetened tea'
+        }
+      },
+      {
+        key: 'dinner',
+        icon: '🌙',
+        defaultTime: '19:45',
+        defaultInsStatus: 'done',
+        defaultReg: 15,
+        defaultNph: 40,
+        title: {
+          zh: '5. 晚餐 (Dinner / Sham)',
+          ko: '5. 저녁 식사 (Dinner / Sham)',
+          fa: '۵. شام (Sham)',
+          en: '5. Dinner (Sham)'
+        },
+        subtitle: {
+          zh: '第2针常规关联节点 · 若餐前血糖>180–200，建议黄瓶+2~3单位并提前25分钟打；第一口菜吃植物消化酶',
+          ko: '2차 주사 연동 · 식전 혈당 >180~200 시 노란병 +2~3단위 및 25분 전 주사 · 첫 입에 소화효소 복용',
+          fa: 'مرتبط با تزریق شب · در صورت قند بالای ۱۸۰، تزریق ۲۵ دقیقه قبل از شام · مصرف آنزیم گوارشی با اولین لقمه',
+          en: 'Evening injection node · Pre-bolus 25m if BG >180 (+2~3U Regular) · Take Digest Basic with first bite'
+        }
+      },
+      {
+        key: 'dinner_extra',
+        icon: '➕',
+        defaultTime: '22:00',
+        defaultInsStatus: 'none',
+        defaultReg: 0,
+        defaultNph: 0,
+        title: {
+          zh: '6. 晚餐后额外摄入 (Post-Dinner Extra Intake)',
+          ko: '6. 저녁 식후 추가 섭취 (야식 / 저혈당 보충)',
+          fa: '۶. شب‌چره / دریافت اضافی پس از شام',
+          en: '6. Post-Dinner Extra Intake (Late Evening)'
+        },
+        subtitle: {
+          zh: '记录晚饭后至睡前的饮品、加餐或低血糖急救补充（及是否补打胰岛素）',
+          ko: '저녁 식후~취침 전 음료, 간식 또는 저혈당 보충 및 추가 인슐린 기록',
+          fa: 'ثبت هرگونه خوراکی یا نوشیدنی پس از شام تا قبل از خواب',
+          en: 'Record any late-evening drinks, snacks, or hypo treatments'
+        }
+      }
+    ];
+
+    const FOOD_CATEGORIES = [
+      {
+        catId: 'CAT_GOOD',
+        emoji: '🥗',
+        colorTheme: {
+          bg: 'bg-emerald-50/70',
+          border: 'border-emerald-200',
+          badgeBg: 'bg-emerald-600',
+          chipIdle: 'bg-white text-emerald-900 border-emerald-200 hover:border-emerald-400',
+          chipActive: 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+        },
+        name: {
+          zh: '优选护胃稳糖类 (比较好的食物)',
+          ko: '위장 보호 및 혈당 안정 식품 (좋은 음식)',
+          fa: 'غذاهای عالی محافظ معده و تثبیت‌کننده قند',
+          en: 'Stomach-Protective & Steady-BG Foods'
+        },
+        items: [
+          { id: 'FOOD_COOKED_VEG', zh: '熟蔬菜 (烤番茄/炖茄子/西葫芦/菠菜)', ko: '익힌 채소 (구운 토마토/가지/애호박/시금치)', fa: 'سبزیجات پخته (گوجه کبابی/بادمجان/کدو/اسفناج)', en: 'Cooked Veggies (Tomato/Eggplant/Zucchini/Spinach)' },
+          { id: 'FOOD_MAST', zh: '全脂原味酸奶 (Mast)', ko: '플레인 요거트 (Mast)', fa: 'ماست طبیعی پرچرب (Mast)', en: 'Plain Full-Fat Yogurt (Mast)' },
+          { id: 'FOOD_MAST_KHIAR', zh: '黄瓜核桃酸奶 (Mast-o-Khiar)', ko: '오이 요거트 (Mast-o-Khiar)', fa: 'ماست و خیار', en: 'Cucumber Yogurt (Mast-o-Khiar)' },
+          { id: 'FOOD_TAHINI', zh: '纯麻酱 (Tahini / Ardeh)', ko: '순수 참깨 페이스트 (타히니/Ardeh)', fa: 'ارده خالص کنجد (Ardeh)', en: 'Pure Sesame Tahini (Ardeh)' },
+          { id: 'FOOD_SESAME_OIL', zh: '芝麻油', ko: '참기름', fa: 'روغن کنجد', en: 'Sesame Oil' },
+          { id: 'FOOD_OLIVE_OIL', zh: '橄榄油', ko: '올리브유', fa: 'روغن زیتون', en: 'Olive Oil' },
+          { id: 'FOOD_OLIVES', zh: '腌橄榄 (Zeytoon)', ko: '절임 올리브 (Zeytoon)', fa: 'زیتون / زیتون پرورده', en: 'Olives (Zeytoon)' },
+          { id: 'FOOD_CUCUMBER_LETTUCE', zh: '新鲜黄瓜 / 生菜', ko: '신선한 오이 / 상추', fa: 'خیار تازه و کاهو', en: 'Fresh Cucumber / Lettuce' },
+          { id: 'FOOD_AVOCADO', zh: '牛油果', ko: '아보카도', fa: 'آووکادو', en: 'Avocado' },
+          { id: 'FOOD_VINEGAR', zh: '陈醋 (适量)', ko: '숙성 식초 (적당량)', fa: 'سرکه طبیعی (مقدار متعادل)', en: 'Aged Vinegar (Moderate)' },
+          { id: 'FOOD_TORSHI', zh: '波斯酸腌菜/泡菜 (Torshi/Kimchi)', ko: '페르시아 피클/김치 (Torshi/Kimchi)', fa: 'ترشی / کیمچی (Torshi/Kimchi)', en: 'Pickles / Kimchi (Torshi)', hasPortion: true }
+        ]
+      },
+      {
+        catId: 'CAT_PROTEIN',
+        emoji: '🥩',
+        colorTheme: {
+          bg: 'bg-sky-50/70',
+          border: 'border-sky-200',
+          badgeBg: 'bg-sky-600',
+          chipIdle: 'bg-white text-sky-900 border-sky-200 hover:border-sky-400',
+          chipActive: 'bg-sky-600 text-white border-sky-600 shadow-sm'
+        },
+        name: {
+          zh: '优质蛋白类 (蛋白质)',
+          ko: '양질의 단백질 (육류/생선/달걀/치즈)',
+          fa: 'پروتئین‌های باکیفیت (گوشت، مرغ، تخم‌مرغ، پنیر)',
+          en: 'High-Quality Proteins'
+        },
+        items: [
+          { id: 'FOOD_KEBAB', zh: '烤肉串 (Kebab 牛肉/羊肉)', ko: '케밥 구이 (소고기/양고기)', fa: 'کباب (برگ / کوبیده / چنجه)', en: 'Beef / Lamb Kebab' },
+          { id: 'FOOD_JOOJEH', zh: '烤鸡肉 (Joojeh 鸡胸/鸡腿)', ko: '구운 닭고기 (주제 케밥/닭가슴살)', fa: 'جوجه کباب / سینه مرغ', en: 'Grilled Chicken (Joojeh)' },
+          { id: 'FOOD_KHORESH', zh: '传统炖牛肉/羊肉 (Khoresh)', ko: '소고기/양고기 스튜 (Khoresh)', fa: 'خورشت (قورمه‌سبزی / قیمه)', en: 'Persian Meat Stew (Khoresh)' },
+          { id: 'FOOD_FISH_SHRIMP', zh: '鱼肉 / 虾', ko: '생선구이 / 새우', fa: 'ماهی / میگو', en: 'Fish / Shrimp' },
+          { id: 'FOOD_BOILED_EGG', zh: '水煮蛋', ko: '삶은 달걀', fa: 'تخم‌مرغ آب‌پز', en: 'Boiled Egg' },
+          { id: 'FOOD_FRIED_EGG', zh: '煎蛋 / 番茄炒蛋 (Omelet)', ko: '계란프라이 / 오믈렛', fa: 'نیمرو / املت گوجه', en: 'Fried Egg / Omelet' },
+          { id: 'FOOD_PANIR', zh: '白奶酪 (Panir / Feta)', ko: '화이트 치즈 (Panir / 페타)', fa: 'پنیر سفید (Panir)', en: 'White Cheese (Panir / Feta)' },
+          { id: 'FOOD_GREEK_YOGURT', zh: '希腊酸奶', ko: '그릭 요거트', fa: 'ماست یونانی چکیده', en: 'Greek Yogurt' },
+          { id: 'FOOD_TOFU', zh: '豆腐 / 豆制品', ko: '두부 / 콩 요리', fa: 'توفو / سویا', en: 'Tofu / Soy Protein' }
+        ]
+      },
+      {
+        catId: 'CAT_CARB',
+        emoji: '🌾',
+        colorTheme: {
+          bg: 'bg-amber-50/70',
+          border: 'border-amber-200',
+          badgeBg: 'bg-amber-600',
+          chipIdle: 'bg-white text-amber-950 border-amber-200 hover:border-amber-400',
+          chipActive: 'bg-amber-600 text-white border-amber-600 shadow-sm'
+        },
+        name: {
+          zh: '温和慢碳主食 (慢碳主食)',
+          ko: '완만한 복합 탄수화물 (주식)',
+          fa: 'کربوهیدرات و نان و برنج',
+          en: 'Slow-Release Complex Carbs'
+        },
+        items: [
+          { id: 'FOOD_SANGAK', zh: '全麦大饼 (Sangak)', ko: '통밀 납작빵 (Sangak)', fa: 'نان سنگک', en: 'Whole-Wheat Sangak Bread' },
+          { id: 'FOOD_LAVASH', zh: '薄饼 (Lavash / Taftoon / Barbari)', ko: '라바시 / 바르바리 빵', fa: 'نان لواش / تافتون / بربری', en: 'Lavash / Barbari Flatbread' },
+          { id: 'FOOD_WHOLE_BREAD', zh: '法棍 / 全麦切片面包', ko: '바게트 / 통밀 식빵', fa: 'نان تست سبوس‌دار / باگت', en: 'Whole-Wheat Toast / Baguette' },
+          { id: 'FOOD_OATS', zh: '燕麦片', ko: '오트밀', fa: 'جو دوسر (Oatmeal)', en: 'Oatmeal' },
+          { id: 'FOOD_ADASI', zh: '扁豆汤 / 传统浓汤 (Adasi / Ash)', ko: '렌틸콩 수프 (Adasi / Ash)', fa: 'عدسی / آش', en: 'Lentil Soup (Adasi / Ash)' },
+          { id: 'FOOD_BEANS', zh: '红芸豆 / 鹰嘴豆 (Khorak)', ko: '강낭콩 / 병아리콩', fa: 'خوراک لوبیا چیتی / نخود', en: 'Kidney Beans / Chickpeas' },
+          { id: 'FOOD_CHELO', zh: '波斯米饭 / 白米饭 (Chelo ≤1平盘)', ko: '쌀밥 / 페르시아 밥 (1접시 이내)', fa: 'چلو / برنج (حداکثر ۱ بشقاب)', en: 'Steamed Rice (Chelo <=1 plate)' },
+          { id: 'FOOD_TAHDIG', zh: '波斯锅巴 (Tahdig)', ko: '누룽지 (Tahdig)', fa: 'ته‌دیگ', en: 'Crispy Rice Crust (Tahdig)' },
+          { id: 'FOOD_MAKARONI', zh: '意面 / 通心粉 (Makaroni)', ko: '파스타 / 마카로니', fa: 'ماکارونی / پاستا', en: 'Pasta / Makaroni' },
+          { id: 'FOOD_POTATO', zh: '土豆 / 烤薯块', ko: '감자 요리', fa: 'سیب‌زمینی', en: 'Potato' }
+        ]
+      },
+      {
+        catId: 'CAT_NUTS',
+        emoji: '🥜',
+        colorTheme: {
+          bg: 'bg-orange-50/50',
+          border: 'border-orange-200/90',
+          badgeBg: 'bg-amber-800',
+          chipIdle: 'bg-white text-amber-950 border-orange-200 hover:border-amber-700',
+          chipActive: 'bg-amber-800 text-white border-amber-800 shadow-sm'
+        },
+        name: {
+          zh: '坚果与健康种子 (坚果类)',
+          ko: '견과류 및 건강한 씨앗',
+          fa: 'آجیل و مغزیجات و دانه‌ها',
+          en: 'Nuts & Healthy Seeds'
+        },
+        items: [
+          { id: 'FOOD_AJIL', zh: '混合原味坚果 (Ajil)', ko: '혼합 견과류 (Ajil)', fa: 'آجیل چهارمغز خام', en: 'Mixed Raw Nuts (Ajil)' },
+          { id: 'FOOD_WALNUT', zh: '核桃仁 (Gerdoo)', ko: '호두 (Gerdoo)', fa: 'گردو (Gerdoo)', en: 'Walnuts (Gerdoo)' },
+          { id: 'FOOD_ALMOND', zh: '巴旦木 / 杏仁 (Badam)', ko: '아몬드 (Badam)', fa: 'بادام درختی (Badam)', en: 'Almonds (Badam)' },
+          { id: 'FOOD_PISTACHIO', zh: '开心果 (Pesteh)', ko: '피스타치오 (Pesteh)', fa: 'پسته (Pesteh)', en: 'Pistachios (Pesteh)' },
+          { id: 'FOOD_HAZELNUT', zh: '榛子 (Fandogh)', ko: '헤이즐넛', fa: 'فندق', en: 'Hazelnuts' },
+          { id: 'FOOD_SEEDS', zh: '南瓜子 / 葵花籽 (Tokhmeh)', ko: '호박씨 / 해바라기씨', fa: 'تخمه کدو / آفتابگردان', en: 'Pumpkin / Sunflower Seeds' },
+          { id: 'FOOD_CHIA', zh: '奇亚籽 / 亚麻籽', ko: '치아씨드 / 아마씨', fa: 'دانه چیا / بذر کتان', en: 'Chia / Flax Seeds' },
+          { id: 'FOOD_PEANUT', zh: '花生 / 纯花生酱', ko: '땅콩 / 무가당 땅콩버터', fa: 'بادام‌زمینی / کره بادام‌زمینی بدون قند', en: 'Peanuts / Pure Peanut Butter' }
+        ]
+      },
+      {
+        catId: 'CAT_DRINK',
+        emoji: '☕',
+        colorTheme: {
+          bg: 'bg-purple-50/70',
+          border: 'border-purple-200',
+          badgeBg: 'bg-purple-600',
+          chipIdle: 'bg-white text-purple-950 border-purple-200 hover:border-purple-400',
+          chipActive: 'bg-purple-600 text-white border-purple-600 shadow-sm'
+        },
+        name: {
+          zh: '日常饮品 (饮品)',
+          ko: '일상 음료 (차/커피/유제품)',
+          fa: 'نوشیدنی‌های روزانه',
+          en: 'Daily Beverages'
+        },
+        items: [
+          { id: 'FOOD_WATER', zh: '温开水 / 矿泉水', ko: '따뜻한 물 / 생수', fa: 'آب ولرم / آب معدنی', en: 'Warm Water / Mineral Water' },
+          { id: 'FOOD_CHAI', zh: '波斯红茶 (无糖 Chai)', ko: '페르시아 홍차 (무가당 Chai)', fa: 'چای ایرانی (بدون قند)', en: 'Persian Black Tea (Unsweetened)' },
+          { id: 'FOOD_HERBAL_TEA', zh: '绿茶 / 草本茶 (Damnoosh)', ko: '녹차 / 허브티', fa: 'چای سبز / دمنوش گیاهی', en: 'Green / Herbal Tea' },
+          { id: 'FOOD_DOOGH', zh: '传统咸酸奶饮 (Doogh)', ko: '전통 요거트 음료 (Doogh)', fa: 'دوغ سنتی', en: 'Salty Yogurt Drink (Doogh)' },
+          { id: 'FOOD_AMERICANO', zh: '美式黑咖啡', ko: '아메리카노 (블랙커피)', fa: 'قهوه تلخ / آمریکانو', en: 'Black Coffee / Americano' },
+          { id: 'FOOD_LATTE', zh: '拿铁 / 无糖牛奶咖啡', ko: '카페라떼 (무가당)', fa: 'لته / قهوه با شیر', en: 'Café Latte (Unsweetened)' },
+          { id: 'FOOD_SPARKLING', zh: '无糖苏打水 / 气泡水', ko: '무가당 탄산수', fa: 'آب گازدار بدون قند', en: 'Sparkling Water (Sugar-Free)' },
+          { id: 'FOOD_MILK', zh: '纯牛奶 / 无糖豆浆', ko: '우유 / 무가당 두유', fa: 'شیر ساده / شیر سویا', en: 'Milk / Unsweetened Soy Milk' },
+          { id: 'FOOD_JUICE_HYPO', zh: '纯果汁 (低血糖补充)', ko: '과일 주스 (저혈당 응급용)', fa: 'آبمیوه (مخصوص درمان افت قند)', en: 'Fruit Juice (For Hypo)' },
+          { id: 'FOOD_SWEET_DRINK', zh: '含糖饮料 / 甜茶', ko: '가당 음료 / 단 차', fa: 'نوشابه / چای شیرین', en: 'Sweetened Drink / Sweet Tea' }
+        ]
+      },
+      {
+        catId: 'CAT_SNACK',
+        emoji: '🍪',
+        colorTheme: {
+          bg: 'bg-rose-50/70',
+          border: 'border-rose-200',
+          badgeBg: 'bg-rose-600',
+          chipIdle: 'bg-white text-rose-950 border-rose-200 hover:border-rose-400',
+          chipActive: 'bg-rose-600 text-white border-rose-600 shadow-sm'
+        },
+        name: {
+          zh: '休闲零食与甜品 (零食)',
+          ko: '간식 및 디저트',
+          fa: 'تنقلات، میوه و شیرینی',
+          en: 'Snacks, Fruits & Sweets'
+        },
+        items: [
+          { id: 'FOOD_DARK_CHOC', zh: '黑巧克力 (≥85%)', ko: '다크 초콜릿 (85% 이상)', fa: 'شکلات تلخ', en: 'Dark Chocolate (>=85%)' },
+          { id: 'FOOD_PROTEIN_BAR', zh: '低糖蛋白棒', ko: '저당 프로틴바', fa: 'پروتئین بار کم‌قند', en: 'Low-Sugar Protein Bar' },
+          { id: 'FOOD_FRUIT', zh: '新鲜水果 (苹果/莓果/香蕉)', ko: '신선한 과일 (사과/베리/바나나)', fa: 'میوه تازه (سیب/توت/موز)', en: 'Fresh Fruit (Apple/Berries/Banana)' },
+          { id: 'FOOD_KHORMA', zh: '椰枣 (Khorma 1–2颗)', ko: '대추야자 (Khorma 1~2개)', fa: 'خرما (۱ تا ۲ عدد)', en: 'Dates (Khorma 1-2 pcs)' },
+          { id: 'FOOD_BISCUIT', zh: '饼干 / 威化', ko: '비스킷 / 웨하스', fa: 'بیسکویت / ویفر', en: 'Biscuits / Wafers' },
+          { id: 'FOOD_CHIPS', zh: '薯片 / 膨化零食', ko: '감자칩 / 스낵', fa: 'چیپس / پفک', en: 'Potato Chips / Crisps' },
+          { id: 'FOOD_SHIRINI', zh: '冰淇淋 / 蛋糕 / 波斯甜点 (Shirini)', ko: '아이스크림 / 케이크 / 전통 과자', fa: 'بستنی / کیک / شیرینی', en: 'Ice Cream / Cake / Shirini' },
+          { id: 'FOOD_SUGAR_HYPO', zh: '方糖 / 蜂蜜 (低血糖急救)', ko: '각설탕 / 꿀 (저혈당 응급)', fa: 'قند / عسل (اورژانس افت قند)', en: 'Sugar Cube / Honey (Hypo Rescue)' }
+        ]
+      }
+    ];
+
+    // Quick lookup map for any food ID -> Chinese name & current language name
+    const FOOD_ID_MAP = {};
+    FOOD_CATEGORIES.forEach(cat => {
+      cat.items.forEach(item => {
+        FOOD_ID_MAP[item.id] = { ...item, catId: cat.catId, emoji: cat.emoji };
+      });
+    });
+
+    /********************************************************************
+     * 2. AUTO-TRANSLATION ENGINE FOR CUSTOM TYPED PERSIAN / KOREAN FOODS
+     *    Ensures 100% Chinese display with [原文: ...] in reports!
+     ********************************************************************/
+    const LOCAL_CUSTOM_TRANSLATION_CACHE = {
+      'بستنی زعفرانی': '藏红花冰淇淋',
+      'زرشک پلو با مرغ': '小檗果藏红花鸡肉饭',
+      'کباب کوبیده': '波斯碎肉烤串 (Koobideh)',
+      'حلیم': '波斯小麦炖肉粥 (Halim)',
+      'کله پاچه': '传统羊头蹄汤 (Kalleh Pacheh)',
+      'اشکنه': '波斯洋葱鸡蛋汤 (Eshkeneh)',
+      'میرزا قاسمی': '波斯烤茄子番茄蒜泥炒蛋',
+      'کشک بادمجان': '波斯乳清干酪炖茄子',
+      'آبگوشت': '波斯传统羊肉鹰嘴豆汤 (Abgoosht)',
+      'دیزی': '波斯石罐炖羊肉 (Dizi)',
+      'پالوده': '波斯玫瑰水米粉冰沙 (Faloodeh)',
+      'باقلوا': '波斯果仁蜜饼 (Baklava)',
+      'شله زرد': '藏红花米布丁 (Sholeh Zard)',
+      '삼겹살': '烤五花肉',
+      '김치찌개': '泡菜汤',
+      '된장찌개': '大酱汤',
+      '불고기': '韩式烤牛肉',
+      '떡볶이': '辣炒年糕',
+      '비빔밥': '韩式拌饭',
+      '설렁탕': '雪浓牛骨汤',
+      '갈비탕': '排骨汤',
+      '치킨': '炸鸡',
+      '라면': '方便面/拉面'
+    };
+
+    async function translateCustomTextToChinese(rawText) {
+      const text = (rawText || '').trim();
+      if (!text) return '';
+      // If purely Chinese characters already, return directly
+      if (/^[\u4e00-\u9fa50-9a-zA-Z\s()（）、，.+%-]+$/.test(text) && /[\u4e00-\u9fa5]/.test(text)) {
+        return text;
+      }
+      if (LOCAL_CUSTOM_TRANSLATION_CACHE[text]) {
+        return `${LOCAL_CUSTOM_TRANSLATION_CACHE[text]} [原文: ${text}]`;
+      }
+      try {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=zh-CN&dt=t&q=${encodeURIComponent(text)}`;
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          const translated = data?.[0]?.map(seg => seg[0]).join('') || '';
+          if (translated && translated !== text) {
+            LOCAL_CUSTOM_TRANSLATION_CACHE[text] = translated;
+            return `${translated} [原文: ${text}]`;
+          }
+        }
+      } catch (e) {
+        // Fallback to MyMemory free translation API if GTX is blocked
+        try {
+          const mmUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=autodetect|zh-CN`;
+          const mmRes = await fetch(mmUrl);
+          if (mmRes.ok) {
+            const mmData = await mmRes.json();
+            const mmTrans = mmData?.responseData?.translatedText;
+            if (mmTrans && mmTrans !== text) {
+              LOCAL_CUSTOM_TRANSLATION_CACHE[text] = mmTrans;
+              return `${mmTrans} [原文: ${text}]`;
+            }
+          }
+        } catch (err2) {
+          // Return original with note if offline
+        }
+      }
+      return `${text} [待译原文]`;
+    }
+
+    /********************************************************************
+     * 3. IN-MEMORY STATE & 7-DAY PRE-LOADED DATA (2026-10-16 TO 10-22)
+     ********************************************************************/
+    const allDaysStore = {};
+    let activeDate = '2026-10-22';
+    let liveDexcomState = {
+      bg: '',
+      trend: '--',
+      updatedAtKr: '--:--',
+      updatedAtIr: '--:--'
+    };
+
+    // Clean default config (NO hardcoded passwords in public GitHub source code! Saved only in local browser)
+    let serverConfig = {
+      jsonProvider: 'npoint',
+      jsonServerUrl: '',
+      jsonApiKey: '',
+      autoCloudSync: true,
+      dexcomRegion: 'ous',
+      dexcomUser: '',
+      dexcomPass: '',
+      autoFillBgOnMeal: true,
+      dexcomBridgeUrl: '',
+      emailWebhookUrl: '',
+      autoSendEnabled: true
+    };
+
+    let autoSyncTimer = null;
+    // Every new day now starts 100% BLANK (no fake pre-checked items!)
+    function createDefaultDay(dateStr) {
+      return enrichDayWithDualTimezones({
+        date: dateStr,
+        wakeMode: 'normal',
+        wakeTime: '08:00',
+        fastingBg: '',
+        famotidineDose: '0',
+        quadrant: 'LU',
+        care: {
+          kondoshOil: false,
+          postDinnerWalk: false
+        },
+        supplements: {
+          SUPP_RLA: { checked: false, timeIr: '' },
+          SUPP_BENFO: { checked: false, timeIr: '' },
+          SUPP_VITD: { checked: false, timeIr: '' },
+          SUPP_BIOTIN: { checked: false, timeIr: '' },
+          SUPP_ENZYME: { checked: false, timeIr: '' },
+          SUPP_BILBERRY: { checked: false, timeIr: '' }
+        },
+        meals: {
+          breakfast: {
+            time: '08:20',
+            preBg: '',
+            postBg: '',
+            insStatus: 'none',
+            regUnits: 15,
+            nphUnits: 40,
+            preBolus: false,
+            rolledNph: false,
+            selectedFoods: [],
+            torshiPortion: '少量',
+            customFoods: []
+          },
+          breakfast_extra: {
+            time: '09:45',
+            preBg: '',
+            postBg: '',
+            insStatus: 'none',
+            regUnits: 0,
+            nphUnits: 0,
+            preBolus: false,
+            rolledNph: false,
+            selectedFoods: [],
+            torshiPortion: '少量',
+            customFoods: []
+          },
+          lunch: {
+            time: '13:30',
+            preBg: '',
+            postBg: '',
+            insStatus: 'none',
+            regUnits: 0,
+            nphUnits: 0,
+            preBolus: false,
+            rolledNph: false,
+            selectedFoods: [],
+            torshiPortion: '少量',
+            customFoods: []
+          },
+          lunch_extra: {
+            time: '16:00',
+            preBg: '',
+            postBg: '',
+            insStatus: 'none',
+            regUnits: 0,
+            nphUnits: 0,
+            preBolus: false,
+            rolledNph: false,
+            selectedFoods: [],
+            torshiPortion: '少量',
+            customFoods: []
+          },
+          dinner: {
+            time: '19:45',
+            preBg: '',
+            postBg: '',
+            insStatus: 'none',
+            regUnits: 15,
+            nphUnits: 40,
+            preBolus: false,
+            rolledNph: false,
+            selectedFoods: [],
+            torshiPortion: '少量',
+            customFoods: []
+          },
+          dinner_extra: {
+            time: '22:00',
+            preBg: '',
+            postBg: '',
+            insStatus: 'none',
+            regUnits: 0,
+            nphUnits: 0,
+            preBolus: false,
+            rolledNph: false,
+            selectedFoods: [],
+            torshiPortion: '少量',
+            customFoods: []
+          }
+        }
+      });
+    }
+
+    function seedInitial7DaysData() {
+      // No longer pre-filling fake demo data! Only initialize today's clean blank record.
+      if (!allDaysStore[activeDate]) {
+        allDaysStore[activeDate] = createDefaultDay(activeDate);
+      }
+    }
+
+    function resetCurrentDayToBlank() {
+      allDaysStore[activeDate] = createDefaultDay(activeDate);
+      persistStateLocally();
+      renderModule2();
+      renderMeals();
+      updateTopSteadyStateDashboard();
+      scheduleAutoSync('已重置为空白');
+      showToast(`🧹 已将 ${activeDate} 重置为全新空白状态！`);
+    }
+
+    function getFormattedDualClocks() {
+      const now = new Date();
+      const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+      const irDate = new Date(utcMs + 3.5 * 3600000);
+      const krDate = new Date(utcMs + 9 * 3600000);
+      const fmtFull = d => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+      const fmtHm = d => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+      return {
+        irFull: fmtFull(irDate),
+        krFull: fmtFull(krDate),
+        irHm: fmtHm(irDate),
+        krHm: fmtHm(krDate),
+        krDateObj: krDate
+      };
+    }
+
+    function updateClocksUI() {
+      const { irFull, krFull } = getFormattedDualClocks();
+      const irEl = document.getElementById('clockIran');
+      const krEl = document.getElementById('clockKorea');
+      if (irEl) irEl.textContent = irFull;
+      if (krEl) krEl.textContent = krFull;
+      updateNext10AmCountdown();
+    }
+
+    function updateNext10AmCountdown() {
+      const el = document.getElementById('nextAutoSendCountdown');
+      if (!el) return;
+      if (!serverConfig.autoSendEnabled) {
+        el.textContent = '自动定时发送: 已暂停';
+        return;
+      }
+      const { krDateObj } = getFormattedDualClocks();
+      const target = new Date(krDateObj);
+      target.setHours(10, 0, 0, 0);
+      if (krDateObj >= target) {
+        target.setDate(target.getDate() + 1);
+      }
+      const diffSec = Math.max(0, Math.floor((target - krDateObj) / 1000));
+      const hh = String(Math.floor(diffSec / 3600)).padStart(2, '0');
+      const mm = String(Math.floor((diffSec % 3600) / 60)).padStart(2, '0');
+      const ss = String(diffSec % 60).padStart(2, '0');
+      el.textContent = `距下次 10:00 自动发信: ${hh}:${mm}:${ss}`;
+    }
+
+    function showToast(msg, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const colors = {
+        success: 'bg-emerald-800 text-white border-emerald-600',
+        warn: 'bg-amber-700 text-white border-amber-500',
+        info: 'bg-slate-800 text-white border-slate-600'
+      };
+      const div = document.createElement('div');
+      div.className = `px-3.5 py-2.5 rounded-xl border shadow-lg text-xs font-semibold transition-all duration-300 pointer-events-auto flex items-center justify-between gap-2 ${colors[type] || colors.success}`;
+      div.innerHTML = `<span>${msg}</span>`;
+      container.appendChild(div);
+      setTimeout(() => {
+        div.style.opacity = '0';
+        div.style.transform = 'translateY(6px)';
+        setTimeout(() => div.remove(), 300);
+      }, 2800);
+    }
+
+    function calculateDaySummaryMetrics(day) {
+      if (!day) {
+        return { tir: 0, inRange: 0, totalBgPts: 0, minBg: '--', maxBg: '--', sumReg: 0, sumNph: 0 };
+      }
+      const bgList = [];
+      if (day.fastingBg && !isNaN(Number(day.fastingBg))) {
+        bgList.push(Number(day.fastingBg));
+      }
+      let sumReg = 0;
+      let sumNph = 0;
+
+      MEAL_NODES_META.forEach(meta => {
+        const md = day.meals?.[meta.key];
+        if (!md) return;
+        if (md.preBg && !isNaN(Number(md.preBg))) bgList.push(Number(md.preBg));
+        if (md.postBg && !isNaN(Number(md.postBg))) bgList.push(Number(md.postBg));
+        if (md.insStatus === 'done') {
+          sumReg += Number(md.regUnits) || 0;
+          sumNph += Number(md.nphUnits) || 0;
+        }
+      });
+
+      const totalBgPts = bgList.length;
+      const inRange = bgList.filter(v => v >= 80 && v <= 160).length;
+      const tir = totalBgPts > 0 ? Math.round((inRange / totalBgPts) * 100) : 0;
+      const minBg = totalBgPts > 0 ? Math.min(...bgList) : '--';
+      const maxBg = totalBgPts > 0 ? Math.max(...bgList) : '--';
+
+      return { tir, inRange, totalBgPts, minBg, maxBg, sumReg, sumNph };
+    }
+
+    function formatFoodListInChinese(md) {
+      if (!md) return '未记录';
+      const parts = [];
+      (md.selectedFoods || []).forEach(fid => {
+        const item = FOOD_ID_MAP[fid];
+        if (item) {
+          if (fid === 'FOOD_TORSHI') {
+            parts.push(`${item.emoji}${item.zh}(${md.torshiPortion || '少量'})`);
+          } else {
+            parts.push(`${item.emoji}${item.zh}`);
+          }
+        }
+      });
+      (md.customFoods || []).forEach(cf => {
+        parts.push(`✍️${cf.zhDisplay || cf.raw}`);
+      });
+      return parts.length > 0 ? parts.join('、') : '未记录食物';
+    }
+
+    function getCurrentDayData() {
+      if (!allDaysStore[activeDate]) {
+        allDaysStore[activeDate] = createDefaultDay(activeDate);
+      }
+      return allDaysStore[activeDate];
+    }
+
+    function updateTopSteadyStateDashboard() {
+      const day = getCurrentDayData();
+      const m = calculateDaySummaryMetrics(day);
+      const t = UI_TEXT[currentLang] || UI_TEXT.zh;
+
+      const tirPctEl = document.getElementById('tirPercentText');
+      const tirBarEl = document.getElementById('tirProgressBar');
+      const tirCntEl = document.getElementById('tirCountText');
+      if (tirPctEl) tirPctEl.textContent = m.totalBgPts > 0 ? `${m.tir}%` : '--%';
+      if (tirBarEl) tirBarEl.style.width = m.totalBgPts > 0 ? `${m.tir}%` : '0%';
+      if (tirCntEl) tirCntEl.textContent = m.totalBgPts > 0 ? `${m.inRange}/${m.totalBgPts} ${t.tirPtsUnit}` : t.tirWait;
+
+      const regEl = document.getElementById('totalRegularUnits');
+      const nphEl = document.getElementById('totalNphUnits');
+      const combEl = document.getElementById('totalCombinedText');
+      if (regEl) regEl.textContent = m.sumReg;
+      if (nphEl) nphEl.textContent = m.sumNph;
+      if (combEl) combEl.textContent = `${t.totalCombinedPrefix} ${m.sumReg + m.sumNph} ${t.unitText}`;
+
+      const quadSel = document.getElementById('abdomenQuadrantSelect');
+      if (quadSel) quadSel.value = day.quadrant || 'LU';
+
+      const hintEl = document.getElementById('dexcomSyncHint');
+      if (hintEl && !liveDexcomState.bg) {
+        hintEl.textContent = serverConfig.dexcomUser ? t.dexcomSavedHint : t.dexcomWaitHint;
+      }
+
+      // Calculate interval between shots
+      const shotTimes = [];
+      MEAL_NODES_META.forEach(meta => {
+        const md = day.meals[meta.key];
+        if (md && md.insStatus === 'done' && (md.regUnits > 0 || md.nphUnits > 0) && md.time) {
+          shotTimes.push({ time: md.time, nph: md.nphUnits, title: meta.title[currentLang] || meta.title.zh });
+        }
+      });
+      const intervalEl = document.getElementById('lastInjectionIntervalText');
+      const badgeEl = document.getElementById('nphSafetyBadge');
+      if (shotTimes.length >= 2) {
+        const first = shotTimes[0].time.split(':').map(Number);
+        const last = shotTimes[shotTimes.length - 1].time.split(':').map(Number);
+        const diffMin = Math.abs((last[0] * 60 + last[1]) - (first[0] * 60 + first[1]));
+        const dh = Math.floor(diffMin / 60);
+        const dm = diffMin % 60;
+        if (intervalEl) intervalEl.textContent = `${t.twoShotsInterval} ${dh}${t.hourText} ${dm}${t.minText} (${shotTimes[0].time} → ${shotTimes[shotTimes.length - 1].time})`;
+        if (badgeEl) {
+          const safe = dh >= 10 && dh <= 13;
+          badgeEl.textContent = safe ? t.badgeSafe : t.badgeWarn;
+          badgeEl.className = safe
+            ? 'text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold'
+            : 'text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold';
+        }
+      } else if (shotTimes.length === 1) {
+        if (intervalEl) intervalEl.textContent = `${t.oneShotToday} (🇮🇷 ${shotTimes[0].time} / 🇰🇷 ${iranTimeToKoreaTime(shotTimes[0].time)})`;
+        if (badgeEl) {
+          badgeEl.textContent = t.badgeSafe;
+          badgeEl.className = 'text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold';
+        }
+      } else {
+        if (intervalEl) intervalEl.textContent = t.noShotToday;
+        if (badgeEl) {
+          badgeEl.textContent = t.badgeWait;
+          badgeEl.className = 'text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold';
+        }
+      }
+    }
+
+    function renderModule2() {
+      const day = getCurrentDayData();
+      const t = UI_TEXT[currentLang] || UI_TEXT.zh;
+      const wakeInput = document.getElementById('wakeTimeInput');
+      if (wakeInput) wakeInput.value = day.wakeTime || '08:00';
+      const wakeKrBadge = document.getElementById('wakeTimeKoreaBadge');
+      if (wakeKrBadge) wakeKrBadge.textContent = `${t.koreaPrefix} ${iranTimeToKoreaTime(day.wakeTime || '08:00')}`;
+
+      ['early', 'normal', 'late'].forEach(mode => {
+        const btn = document.getElementById(`wakeBtn-${mode}`);
+        if (!btn) return;
+        if (day.wakeMode === mode) {
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold border transition-all bg-emerald-600 text-white border-emerald-600 shadow-sm';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:border-emerald-400';
+        }
+      });
+
+      const tipTextEl = document.getElementById('wakeAnchorTipText');
+      if (tipTextEl) {
+        const tipsMap = {
+          zh: {
+            early: `<strong>🌅 早醒模式 (${day.wakeTime})：</strong> 若此时血糖在 90–130 mg/dL，先吃水煮蛋或几颗坚果垫肚子，等 <strong>07:30–08:00</strong> 再打【第1针】；若血糖已 >180 直接打针，但<strong>上午 09:30 必须加餐</strong>防 10 点低血糖！`,
+            late: `<strong>🛌 晚起 Brunch 模式 (${day.wakeTime})：</strong> 醒来先吃空腹硫辛酸，随后打【第1针】吃早午餐；因早上绿瓶波峰推迟至 <strong>14:30–17:30</strong>，请将第二顿饭放在 14:30–15:30，今晚【第2针】顺延至 <strong>20:30–21:00</strong>。`,
+            normal: `<strong>☀️ 正常起床锚点 (${day.wakeTime})：</strong> 醒来纯空腹先吃 1 粒超级硫辛酸，30–45分钟后打【第 1 针】吃早餐；今晚【第 2 针】建议锁定在 <strong>19:30–20:30</strong>（两针绿瓶正好对开 12 小时，防上午低血糖）。`
+          },
+          ko: {
+            early: `<strong>🌅 조기 기상 모드 (${day.wakeTime})：</strong> 현재 혈당이 90–130 mg/dL이면 삶은 달걀이나 견과류를 소량 섭취하고 <strong>07:30–08:00</strong>에 1차 주사를 맞으세요. 180 이상이면 즉시 주사하되 <strong>09:30에 반드시 간식</strong>을 드세요!`,
+            late: `<strong>🛌 늦은 기상 브런치 모드 (${day.wakeTime})：</strong> 기상 직후 공복 리포산 복용 후 1차 주사 및 브런치를 드세요. 초록병(NPH) 정점이 <strong>14:30–17:30</strong>으로 밀리므로 두 번째 식사는 14:30–15:30에, 저녁 2차 주사는 <strong>20:30–21:00</strong>에 투여하세요.`,
+            normal: `<strong>☀️ 정상 기상 가이드 (${day.wakeTime})：</strong> 기상 직후 공복에 수퍼 R-리포산 1정을 복용하고 30–45분 후 1차 주사 및 아침 식사를 하세요. 오늘 저녁 2차 주사는 <strong>19:30–20:30</strong> 권장 (NPH 12시간 간격 유지).`
+          },
+          fa: {
+            early: `<strong>🌅 بیداری زودهنگام (${day.wakeTime}):</strong> اگر قند خون بین ۹۰ تا ۱۳۰ است، ابتدا یک تخم‌مرغ آب‌پز یا کمی آجیل میل کنید و تزریق اول را ساعت <strong>۰۷:۳۰ تا ۰۸:۰۰</strong> انجام دهید؛ اگر بالای ۱۸۰ است، تزریق کنید اما <strong>ساعت ۰۹:۳۰ حتماً میان‌وعده</strong> بخورید!`,
+            late: `<strong>🛌 بیداری دیرهنگام (${day.wakeTime}):</strong> ابتدا قرص ناشتا (آلفا لیپوئیک اسید) و سپس تزریق اول و صبحانه/نهار؛ وعده بعدی را ساعت <strong>۱۴:۳۰ تا ۱۵:۳۰</strong> و تزریق دوم شب را ساعت <strong>۲۰:۳۰ تا ۲۱:۰۰</strong> انجام دهید.`,
+            normal: `<strong>☀️ زمان‌بندی استاندارد (${day.wakeTime}):</strong> ناشتا ۱ عدد سوپر آلفا لیپوئیک اسید میل شود، ۳۰ تا ۴۵ دقیقه بعد تزریق اول و صبحانه؛ تزریق دوم امشب ساعت <strong>۱۹:۳۰ تا ۲۰:۳۰</strong> (حفظ فاصله ۱۲ ساعته انسولین سبز).`
+          },
+          en: {
+            early: `<strong>🌅 Early Wake (${day.wakeTime}):</strong> If BG is 90–130 mg/dL, have a boiled egg/nuts first and wait until <strong>07:30–08:00</strong> for Shot #1. If BG >180, take Shot #1 now but <strong>must snack at 09:30</strong>!`,
+            late: `<strong>🛌 Late Brunch Mode (${day.wakeTime}):</strong> Take fasting R-Lipoic Acid upon waking, then Shot #1 with brunch. Have your second meal at <strong>14:30–15:30</strong> and delay evening Shot #2 to <strong>20:30–21:00</strong>.`,
+            normal: `<strong>☀️ Normal Wake Anchor (${day.wakeTime}):</strong> Take 1 Super R-Lipoic Acid on pure empty stomach; take Shot #1 & breakfast 30–45m later. Lock evening Shot #2 at <strong>19:30–20:30</strong> (12h NPH spacing).`
+          }
+        };
+        const langTips = tipsMap[currentLang] || tipsMap.zh;
+        tipTextEl.innerHTML = langTips[day.wakeMode] || langTips.normal;
+      }
+
+      // Render Supplements Grid
+      const grid = document.getElementById('supplementsGrid');
+      if (grid) {
+        let checkedCount = 0;
+        const isSaturday = new Date(day.date).getDay() === 6;
+        grid.innerHTML = SUPPLEMENTS_DICT.map(supp => {
+          const st = day.supplements[supp.id] || { checked: false, timeIr: '' };
+          if (st.checked) checkedCount++;
+          const krTime = st.timeIr ? iranTimeToKoreaTime(st.timeIr) : '--:--';
+          const satHighlight = supp.saturdaySpecial && isSaturday
+            ? 'ring-2 ring-amber-400 bg-amber-50/70'
+            : (st.checked ? 'bg-emerald-50/60 border-emerald-300' : 'bg-white border-slate-200');
+
+          return `
+            <div class="rounded-2xl border p-3.5 transition-all ${satHighlight} flex flex-col justify-between gap-2.5">
+              <div>
+                <div class="flex items-start justify-between gap-2">
+                  <label class="flex items-start gap-2.5 cursor-pointer select-none">
+                    <input type="checkbox" ${st.checked ? 'checked' : ''} onchange="toggleSupplement('${supp.id}', this.checked)" class="mt-0.5 w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500" />
+                    <div>
+                      <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-teal-100 text-teal-800 mb-1">${supp.timingTag[currentLang] || supp.timingTag.zh}</span>
+                      <h4 class="text-xs sm:text-sm font-bold text-slate-800 leading-snug">${supp.icon} ${supp.name[currentLang] || supp.name.zh}</h4>
+                    </div>
+                  </label>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">${supp.desc[currentLang] || supp.desc.zh}</p>
+              </div>
+
+              <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
+                <div class="flex items-center gap-1">
+                  <span class="text-slate-500 font-medium">${t.iranTimeLabel}</span>
+                  <input type="time" value="${st.timeIr || ''}" onchange="updateSupplementTime('${supp.id}', this.value)" class="px-1.5 py-0.5 rounded border border-slate-200 bg-white font-mono font-bold text-slate-700 text-[11px]" />
+                  <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono">🇰🇷 ${krTime}</span>
+                </div>
+                ${supp.hasFastingBg ? `
+                  <div class="flex items-center gap-1">
+                    <span class="text-emerald-800 font-semibold">${t.fastingBgLabel}</span>
+                    <input type="number" value="${day.fastingBg || ''}" onchange="updateFastingBg(this.value)" placeholder="mg/dL" class="w-14 px-1.5 py-0.5 rounded border border-emerald-300 bg-white font-mono font-bold text-center text-emerald-800" />
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        const badge = document.getElementById('suppProgressBadge');
+        if (badge) badge.textContent = `${t.suppProgressPrefix} ${checkedCount}/${SUPPLEMENTS_DICT.length}`;
+      }
+
+      // Famotidine buttons
+      ['0', '0.5', '1'].forEach(d => {
+        const btn = document.getElementById(`famoBtn-${d}`);
+        if (!btn) return;
+        if (String(day.famotidineDose) === d) {
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold border transition-all bg-emerald-600 text-white border-emerald-600 shadow-sm';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-slate-700 border-slate-200 hover:border-emerald-400';
+        }
+      });
+
+      const chkKondosh = document.getElementById('chkKondoshOil');
+      const chkWalk = document.getElementById('chkPostDinnerWalk');
+      if (chkKondosh) chkKondosh.checked = !!day.care?.kondoshOil;
+      if (chkWalk) chkWalk.checked = !!day.care?.postDinnerWalk;
+    }
+
+    function renderMeals() {
+      const container = document.getElementById('mealsContainer');
+      if (!container) return;
+      const day = getCurrentDayData();
+      const t = UI_TEXT[currentLang] || UI_TEXT.zh;
+
+      const portionMap = [
+        { val: '少量', label: t.portionSmall },
+        { val: '中量', label: t.portionMed },
+        { val: '多量', label: t.portionLarge }
+      ];
+
+      container.innerHTML = MEAL_NODES_META.map(meta => {
+        const md = day.meals[meta.key];
+        const krMealTime = iranTimeToKoreaTime(md.time);
+        const post2hIr = addTwoHours(md.time);
+        const post2hKr = iranTimeToKoreaTime(post2hIr);
+
+        const bgBadgeClass = val => {
+          if (!val) return 'border-slate-200 text-slate-700';
+          const n = Number(val);
+          if (n >= 80 && n <= 160) return 'border-emerald-400 bg-emerald-50/50 text-emerald-800';
+          if (n < 80) return 'border-rose-400 bg-rose-50 text-rose-700';
+          return 'border-amber-400 bg-amber-50 text-amber-800';
+        };
+
+        const categoriesHtml = FOOD_CATEGORIES.map(cat => {
+          const chipsHtml = cat.items.map(item => {
+            const isSelected = (md.selectedFoods || []).includes(item.id);
+            const chipCls = isSelected ? cat.colorTheme.chipActive : cat.colorTheme.chipIdle;
+            const labelText = item[currentLang] || item.zh;
+            return `
+              <button type="button" onclick="toggleFoodItem('${meta.key}', '${item.id}')" class="px-2.5 py-1 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1 ${chipCls}">
+                <span>${isSelected ? '✓' : '+'}</span>
+                <span>${labelText}</span>
+              </button>
+            `;
+          }).join('');
+
+          const showTorshiPortion = cat.catId === 'CAT_GOOD' && (md.selectedFoods || []).includes('FOOD_TORSHI');
+          const torshiPortionHtml = showTorshiPortion ? `
+            <div class="mt-2 p-2 rounded-xl bg-white/90 border border-emerald-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span class="font-bold text-emerald-900">${t.torshiPortionLabel}</span>
+              <div class="flex items-center gap-1">
+                ${portionMap.map(p => `
+                  <button type="button" onclick="setTorshiPortion('${meta.key}', '${p.val}')" class="px-2.5 py-0.5 rounded-lg text-xs font-bold border ${md.torshiPortion === p.val ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-50 text-slate-600 border-slate-200'}">${p.label}</button>
+                `).join('')}
+              </div>
+            </div>
+          ` : '';
+
+          const catCustomList = (md.customFoods || []).filter(cf => cf.catId === cat.catId);
+          const customTagsHtml = catCustomList.map((cf, idx) => `
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-800 text-white">
+              <span>✍️ ${cf.zhDisplay || cf.raw}</span>
+              <button type="button" onclick="removeCustomFood('${meta.key}', '${cat.catId}', ${idx})" class="text-slate-300 hover:text-white">✕</button>
+            </span>
+          `).join('');
+
+          return `
+            <div class="rounded-2xl border p-3 ${cat.colorTheme.bg} ${cat.colorTheme.border} space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <span class="text-base leading-none">${cat.emoji}</span>
+                  <span>${cat.name[currentLang] || cat.name.zh}</span>
+                </span>
+              </div>
+              <div class="flex flex-wrap gap-1.5">${chipsHtml}</div>
+              ${torshiPortionHtml}
+              ${customTagsHtml ? `<div class="flex flex-wrap gap-1.5 pt-1">${customTagsHtml}</div>` : ''}
+              <div class="pt-1 flex items-center gap-1.5">
+                <input type="text" id="customInput-${meta.key}-${cat.catId}" onkeydown="if(event.key==='Enter') addCustomFood('${meta.key}', '${cat.catId}')" placeholder="${t.customFoodPlaceholder}" class="flex-1 px-2.5 py-1 rounded-xl border border-white/90 bg-white/90 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                <button type="button" onclick="addCustomFood('${meta.key}', '${cat.catId}')" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold shrink-0">${t.addBtn}</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div id="mealNode-${meta.key}" class="glass-card rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+            <!-- Top Row: Title & Dual-Timezone Time Picker -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div>
+                <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2">
+                  <span class="text-xl">${meta.icon}</span>
+                  <span>${meta.title[currentLang] || meta.title.zh}</span>
+                </h3>
+                <p class="text-[11px] text-slate-500 mt-0.5">${meta.subtitle[currentLang] || meta.subtitle.zh}</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200/80 text-xs">
+                <span class="font-semibold text-slate-600">${t.mealTimeLabel}</span>
+                <input type="time" value="${md.time}" onchange="updateMealTime('${meta.key}', this.value)" class="px-2 py-0.5 rounded-lg border border-emerald-300 bg-white font-mono font-bold text-emerald-900" />
+                <span class="px-2 py-0.5 rounded-lg bg-teal-50 border border-teal-200 font-mono font-bold text-teal-800">${t.koreaPrefix} ${krMealTime}</span>
+                <button type="button" onclick="setMealTimeNow('${meta.key}')" class="px-2 py-0.5 rounded-lg bg-emerald-600 text-white font-semibold text-[11px]">${t.setNowBtn}</button>
+              </div>
+            </div>
+
+            <!-- Second Row: Pre-Meal BG, Post-Meal 2h BG & Linked Insulin Module -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5">
+              <!-- Pre & Post BG -->
+              <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-2.5 bg-slate-50/90 p-3 rounded-2xl border border-slate-200/70">
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between">
+                    <label class="text-[11px] font-bold text-slate-700">${t.preBgLabel}</label>
+                    <button type="button" onclick="fillMealBgFromDexcom('${meta.key}', 'preBg')" class="text-[10px] text-emerald-700 font-semibold underline">${t.autoFillDexcom}</button>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <input type="number" value="${md.preBg ?? ''}" onchange="updateMealBg('${meta.key}', 'preBg', this.value)" placeholder="80-160" class="w-full px-2.5 py-1.5 rounded-xl border font-mono font-bold text-sm text-center ${bgBadgeClass(md.preBg)}" />
+                    <span class="text-[11px] text-slate-400">mg/dL</span>
+                  </div>
+                </div>
+
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between">
+                    <label class="text-[11px] font-bold text-slate-700">${t.postBgLabel}</label>
+                    <button type="button" onclick="fillMealBgFromDexcom('${meta.key}', 'postBg')" class="text-[10px] text-emerald-700 font-semibold underline">${t.autoFillDexcom}</button>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <input type="number" value="${md.postBg ?? ''}" onchange="updateMealBg('${meta.key}', 'postBg', this.value)" placeholder="80-160" class="w-full px-2.5 py-1.5 rounded-xl border font-mono font-bold text-sm text-center ${bgBadgeClass(md.postBg)}" />
+                    <span class="text-[11px] text-slate-400">mg/dL</span>
+                  </div>
+                  <span class="block text-[10px] text-slate-400 font-mono">${t.expectPost2h} 🇮🇷${post2hIr} / 🇰🇷${post2hKr}</span>
+                </div>
+              </div>
+
+              <!-- Linked Insulin Box -->
+              <div class="lg:col-span-7 bg-gradient-to-r from-emerald-50/70 to-teal-50/60 p-3 rounded-2xl border border-emerald-200/80 space-y-2.5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span class="text-xs font-bold text-emerald-950">${t.linkedInsulinTitle}</span>
+                  <div class="inline-flex rounded-xl bg-white p-0.5 border border-emerald-200 text-[11px]">
+                    <button type="button" onclick="setMealInsulinStatus('${meta.key}', 'none')" class="px-2.5 py-1 rounded-lg font-bold transition ${md.insStatus === 'none' ? 'bg-slate-700 text-white' : 'text-slate-600'}">${t.insNone}</button>
+                    <button type="button" onclick="setMealInsulinStatus('${meta.key}', 'done')" class="px-2.5 py-1 rounded-lg font-bold transition ${md.insStatus === 'done' ? 'bg-emerald-600 text-white' : 'text-slate-600'}">${t.insDone}</button>
+                    <button type="button" onclick="setMealInsulinStatus('${meta.key}', 'plan')" class="px-2.5 py-1 rounded-lg font-bold transition ${md.insStatus === 'plan' ? 'bg-amber-500 text-white' : 'text-slate-600'}">${t.insPlan}</button>
+                  </div>
+                </div>
+
+                ${md.insStatus !== 'none' ? `
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                    <div class="bg-white/90 p-2 rounded-xl border border-amber-200 flex items-center justify-between">
+                      <span class="text-xs font-bold text-amber-900">${t.yellowBottle}</span>
+                      <div class="flex items-center gap-1">
+                        <button type="button" onclick="adjustInsulinDose('${meta.key}', 'regUnits', -1)" class="w-6 h-6 rounded-lg bg-amber-100 text-amber-900 font-bold">-</button>
+                        <input type="number" value="${md.regUnits}" onchange="setInsulinDose('${meta.key}', 'regUnits', this.value)" class="w-12 text-center font-mono font-bold text-xs border border-amber-300 rounded-lg py-0.5" />
+                        <button type="button" onclick="adjustInsulinDose('${meta.key}', 'regUnits', 1)" class="w-6 h-6 rounded-lg bg-amber-100 text-amber-900 font-bold">+</button>
+                        <span class="text-[11px] font-mono text-slate-500">U</span>
+                      </div>
+                    </div>
+                    <div class="bg-white/90 p-2 rounded-xl border border-emerald-200 flex items-center justify-between">
+                      <span class="text-xs font-bold text-emerald-900">${t.greenBottle}</span>
+                      <div class="flex items-center gap-1">
+                        <button type="button" onclick="adjustInsulinDose('${meta.key}', 'nphUnits', -1)" class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-900 font-bold">-</button>
+                        <input type="number" value="${md.nphUnits}" onchange="setInsulinDose('${meta.key}', 'nphUnits', this.value)" class="w-12 text-center font-mono font-bold text-xs border border-emerald-300 rounded-lg py-0.5" />
+                        <button type="button" onclick="adjustInsulinDose('${meta.key}', 'nphUnits', 1)" class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-900 font-bold">+</button>
+                        <span class="text-[11px] font-mono text-slate-500">U</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-4 text-[11px] text-slate-700 pt-0.5">
+                    <label class="flex items-center gap-1.5 cursor-pointer">
+                      <input type="checkbox" ${md.preBolus ? 'checked' : ''} onchange="toggleMealInsCheck('${meta.key}', 'preBolus', this.checked)" class="rounded text-emerald-600" />
+                      <span>${t.preBolusCheck}</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 cursor-pointer">
+                      <input type="checkbox" ${md.rolledNph ? 'checked' : ''} onchange="toggleMealInsCheck('${meta.key}', 'rolledNph', this.checked)" class="rounded text-emerald-600" />
+                      <span>${t.rollNphCheck}</span>
+                    </label>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- 6 Color Food Categories Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              ${categoriesHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function loadPersistedState() {
+      try {
+        if (!localStorage.getItem('steadyBg_cleanedDemo_v43')) {
+          localStorage.removeItem('steadyBg_allDaysStore_v4');
+          localStorage.setItem('steadyBg_cleanedDemo_v43', 'true');
+        }
+        const savedCfg = localStorage.getItem('steadyBg_serverConfig_v4');
+        if (savedCfg) {
+          const parsedCfg = JSON.parse(savedCfg);
+          Object.assign(serverConfig, parsedCfg);
+        }
+        const savedDays = localStorage.getItem('steadyBg_allDaysStore_v4');
+        if (savedDays) {
+          const parsed = JSON.parse(savedDays);
+          if (parsed && typeof parsed === 'object') {
+            Object.assign(allDaysStore, parsed);
+          }
+        }
+      } catch (e) {
+        console.warn('Local storage load skipped:', e);
+      }
+    }
+
+    function persistStateLocally() {
+      try {
+        Object.values(allDaysStore).forEach(d => enrichDayWithDualTimezones(d));
+        localStorage.setItem('steadyBg_allDaysStore_v4', JSON.stringify(allDaysStore));
+        localStorage.setItem('steadyBg_serverConfig_v4', JSON.stringify(serverConfig));
+      } catch (e) {
+        console.warn('Local storage save skipped:', e);
+      }
+    }
+
+    // Automatically save to localStorage and debounce cloud JSON sync (no manual button click required!)
+    function scheduleAutoSync(actionLabel = '已自动记录') {
+      persistStateLocally();
+      const statusText = document.getElementById('autoSyncStatusText');
+      if (statusText) {
+        statusText.textContent = `${actionLabel} · 本地已存`;
+      }
+      if (!serverConfig.autoCloudSync || !serverConfig.jsonServerUrl) return;
+      if (autoSyncTimer) clearTimeout(autoSyncTimer);
+      if (statusText) statusText.textContent = '☁️ 正在自动同步云端...';
+      autoSyncTimer = setTimeout(() => {
+        saveCurrentDayToServer(true);
+      }, 1200);
+    }
+
+    function autoFillPreBgIfEmpty(mealObj) {
+      if (serverConfig.autoFillBgOnMeal && (!mealObj.preBg || mealObj.preBg === '') && liveDexcomState.bg) {
+        mealObj.preBg = liveDexcomState.bg;
+      }
+    }
+
+    function selectWakeMode(mode, defaultHm) {
+      const day = getCurrentDayData();
+      day.wakeMode = mode;
+      day.wakeTime = defaultHm;
+      renderModule2();
+      scheduleAutoSync(`起床档位 ${defaultHm}`);
+      showToast(`已切换起床时间档位: ${defaultHm}`);
+    }
+
+    function updateExactWakeTime(val) {
+      const day = getCurrentDayData();
+      day.wakeTime = val;
+      const h = parseInt((val || '08:00').split(':')[0], 10);
+      if (h < 7) day.wakeMode = 'early';
+      else if (h >= 10) day.wakeMode = 'late';
+      else day.wakeMode = 'normal';
+      renderModule2();
+      scheduleAutoSync(`起床 ${val}`);
+      showToast(`已记录精确起床时间: 🇮🇷 ${val} (🇰🇷 ${iranTimeToKoreaTime(val)})`);
+    }
+
+    function toggleSupplement(suppId, checked) {
+      const day = getCurrentDayData();
+      const { irHm, krHm } = getFormattedDualClocks();
+      day.supplements[suppId] = {
+        checked,
+        timeIr: checked ? (day.supplements[suppId]?.timeIr || irHm) : '',
+        timeKr: checked ? (day.supplements[suppId]?.timeKr || krHm) : ''
+      };
+      renderModule2();
+      scheduleAutoSync('保健品打卡');
+      const suppObj = SUPPLEMENTS_DICT.find(s => s.id === suppId);
+      if (checked && suppObj) {
+        showToast(`✅ 已打卡: ${suppObj.name.zh} (🇮🇷 ${day.supplements[suppId].timeIr})`);
+      }
+    }
+
+    function updateSupplementTime(suppId, irTimeVal) {
+      const day = getCurrentDayData();
+      day.supplements[suppId] = {
+        checked: true,
+        timeIr: irTimeVal,
+        timeKr: iranTimeToKoreaTime(irTimeVal)
+      };
+      renderModule2();
+      scheduleAutoSync('保健品时间更新');
+    }
+
+    function updateFastingBg(val) {
+      const day = getCurrentDayData();
+      day.fastingBg = Number(val) || '';
+      updateTopSteadyStateDashboard();
+      scheduleAutoSync('空腹血糖更新');
+    }
+
+    function setFamotidineDose(dose) {
+      const day = getCurrentDayData();
+      day.famotidineDose = dose;
+      renderModule2();
+      scheduleAutoSync('法莫替丁记录');
+      const labels = { '0': '🎉 未吃 (0粒)', '0.5': '⚡ 半粒过渡', '1': '💊 1粒' };
+      showToast(`已记录今日法莫替丁: ${labels[dose]}`);
+    }
+
+    function toggleCareItem(key, checked) {
+      const day = getCurrentDayData();
+      day.care[key] = checked;
+      scheduleAutoSync('日常护理打卡');
+      showToast(checked ? '✅ 已记录日常护理打卡' : '已取消勾选');
+    }
+
+    function updateQuadrant(val) {
+      const day = getCurrentDayData();
+      day.quadrant = val;
+      scheduleAutoSync('腹部轮换区更新');
+      showToast(`已更新本周腹部轮换区: ${val}`);
+    }
+
+    function updateMealTime(mealKey, val) {
+      const day = getCurrentDayData();
+      day.meals[mealKey].time = val;
+      renderMeals();
+      updateTopSteadyStateDashboard();
+      scheduleAutoSync('用餐时间更新');
+    }
+
+    function setMealTimeNow(mealKey) {
+      const { irHm } = getFormattedDualClocks();
+      updateMealTime(mealKey, irHm);
+      showToast(`已设为当前伊朗时间: ${irHm}`);
+    }
+
+    function updateMealBg(mealKey, field, val) {
+      const day = getCurrentDayData();
+      day.meals[mealKey][field] = val ? Number(val) : '';
+      renderMeals();
+      updateTopSteadyStateDashboard();
+      scheduleAutoSync('餐前/餐后血糖更新');
+    }
+
+    function fillMealBgFromDexcom(mealKey, field) {
+      const day = getCurrentDayData();
+      day.meals[mealKey][field] = liveDexcomState.bg;
+      renderMeals();
+      updateTopSteadyStateDashboard();
+      scheduleAutoSync('填入Dexcom血糖');
+      showToast(`已填入当前 Dexcom 血糖: ${liveDexcomState.bg} mg/dL`);
+    }
+
+    function setMealInsulinStatus(mealKey, status) {
+      const day = getCurrentDayData();
+      const md = day.meals[mealKey];
+      md.insStatus = status;
+      if (status !== 'none') {
+        autoFillPreBgIfEmpty(md);
+      }
+      if (status !== 'none' && md.regUnits === 0 && md.nphUnits === 0) {
+        // Default helpful values
+        if (mealKey === 'breakfast' || mealKey === 'dinner') {
+          md.regUnits = 15;
+          md.nphUnits = 40;
+        } else {
+          md.regUnits = 2;
+          md.nphUnits = 0;
+        }
+      }
+      renderMeals();
+      updateTopSteadyStateDashboard();
+      scheduleAutoSync('胰岛素状态更新');
+    }
+
+    function adjustInsulinDose(mealKey, field, delta) {
+      const day = getCurrentDayData();
+      const cur = Number(day.meals[mealKey][field]) || 0;
+      day.meals[mealKey][field] = Math.max(0, cur + delta);
+      renderMeals();
+      updateTopSteadyStateDashboard();
+      scheduleAutoSync('胰岛素剂量微调');
+    }
+
+    function setInsulinDose(mealKey, field, val) {
+      const day = getCurrentDayData();
+      day.meals[mealKey][field] = Math.max(0, Number(val) || 0);
+      renderMeals();
+      updateTopSteadyStateDashboard();
+      scheduleAutoSync('胰岛素剂量输入');
+    }
+
+    function toggleMealInsCheck(mealKey, field, checked) {
+      const day = getCurrentDayData();
+      day.meals[mealKey][field] = checked;
+      scheduleAutoSync('打针规范勾选');
+    }
+
+    function toggleFoodItem(mealKey, foodId) {
+      const day = getCurrentDayData();
+      const md = day.meals[mealKey];
+      autoFillPreBgIfEmpty(md);
+      const arr = md.selectedFoods;
+      const idx = arr.indexOf(foodId);
+      if (idx >= 0) {
+        arr.splice(idx, 1);
+      } else {
+        arr.push(foodId);
+      }
+      renderMeals();
+      updateTopSteadyStateDashboard();
+      scheduleAutoSync('食物勾选自动保存');
+    }
+
+    function setTorshiPortion(mealKey, portion) {
+      const day = getCurrentDayData();
+      day.meals[mealKey].torshiPortion = portion;
+      renderMeals();
+      scheduleAutoSync('腌菜分量更新');
+      showToast(`波斯酸腌菜/泡菜分量已设为: 【${portion}】`);
+    }
+
+    async function addCustomFood(mealKey, catId) {
+      const inputEl = document.getElementById(`customInput-${mealKey}-${catId}`);
+      if (!inputEl) return;
+      const rawText = inputEl.value.trim();
+      if (!rawText) return;
+      inputEl.value = '';
+
+      const day = getCurrentDayData();
+      autoFillPreBgIfEmpty(day.meals[mealKey]);
+      const itemObj = { catId, raw: rawText, zhDisplay: `${rawText} (翻译中...)` };
+      day.meals[mealKey].customFoods.push(itemObj);
+      renderMeals();
+
+      // Automatically translate Persian / Korean / English to Chinese
+      const translatedDisplay = await translateCustomTextToChinese(rawText);
+      itemObj.zhDisplay = translatedDisplay;
+      renderMeals();
+      scheduleAutoSync('手写食物自动保存');
+      showToast(`已添加并自动翻译: ${translatedDisplay}`);
+    }
+
+    function removeCustomFood(mealKey, catId, indexInCat) {
+      const day = getCurrentDayData();
+      const allCustom = day.meals[mealKey].customFoods;
+      let matchCount = -1;
+      for (let i = 0; i < allCustom.length; i++) {
+        if (allCustom[i].catId === catId) {
+          matchCount++;
+          if (matchCount === indexInCat) {
+            allCustom.splice(i, 1);
+            break;
+          }
+        }
+      }
+      renderMeals();
+      scheduleAutoSync('移除手写食物');
+    }
+    const DEXCOM_TREND_ARROW_MAP = {
+      None: '→',
+      DoubleUp: '⇈',
+      SingleUp: '↑',
+      FortyFiveUp: '↗',
+      Flat: '→',
+      FortyFiveDown: '↘',
+      SingleDown: '↓',
+      DoubleDown: '⇊',
+      NotComputable: '?',
+      RateOutOfRange: '⚠️'
+    };
+
+    async function syncDexcomNow(silent = false) {
+      // 1. If user configured a custom bridge URL (or Cloudflare Worker)
+      if (serverConfig.dexcomBridgeUrl) {
+        try {
+          const fetchOpts = serverConfig.dexcomUser && serverConfig.dexcomPass
+            ? {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  accountName: serverConfig.dexcomUser,
+                  password: serverConfig.dexcomPass,
+                  region: serverConfig.dexcomRegion || 'ous'
+                })
+              }
+            : { method: 'GET' };
+          const res = await fetch(serverConfig.dexcomBridgeUrl, fetchOpts);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.bg) {
+              updateLiveBgManually(data.bg);
+              const arrow = DEXCOM_TREND_ARROW_MAP[data.trend] || data.trend || '→';
+              updateLiveTrendManually(arrow);
+              if (!silent) showToast(`⚡ 已从 Dexcom Share 实时同步血糖: ${data.bg} mg/dL (${arrow})`);
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn('Custom bridge fetch failed, trying direct/proxy...', e);
+        }
+      }
+
+      // 2. If user entered Dexcom Username & Password directly in Settings Modal
+      if (serverConfig.dexcomUser && serverConfig.dexcomPass) {
+        const hintEl = document.getElementById('dexcomSyncHint');
+        const dotEl = document.getElementById('dexcomStatusDot');
+        if (hintEl) hintEl.textContent = '⏳ 正在连接韩国服...';
+
+        const baseHost = serverConfig.dexcomRegion === 'us'
+          ? 'https://share2.dexcom.com/ShareWebServices/Services'
+          : 'https://shareous1.dexcom.com/ShareWebServices/Services';
+        const appId = 'd89443d2-327c-4a6f-89e5-496bbb0317db';
+
+        // Try direct or via public CORS proxies for static GitHub Pages
+        const endpointsToTry = [
+          (u) => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+          (u) => u
+        ];
+
+        for (const wrapUrl of endpointsToTry) {
+          try {
+            const loginUrl = wrapUrl(`${baseHost}/General/AuthenticatePublisherAccount`);
+            const loginUrl2 = wrapUrl(`${baseHost}/General/LoginPublisherAccountByName`);
+            for (const targetAuthUrl of [loginUrl2, loginUrl]) {
+              const sRes = await fetch(targetAuthUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                  accountName: serverConfig.dexcomUser,
+                  password: serverConfig.dexcomPass,
+                  applicationId: appId
+                })
+              });
+              if (sRes.ok) {
+                const sessionId = (await sRes.text()).replace(/"/g, '').trim();
+                if (sessionId && sessionId.length === 36 && sessionId !== '00000000-0000-0000-0000-000000000000') {
+                  const bgUrl = wrapUrl(`${baseHost}/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${sessionId}&minutes=1440&maxCount=1`);
+                  const bgRes = await fetch(bgUrl, { method: 'POST' });
+                  if (bgRes.ok) {
+                    const arr = await bgRes.json();
+                    if (Array.isArray(arr) && arr.length > 0 && arr[0].Value) {
+                      const latest = arr[0];
+                      const arrow = DEXCOM_TREND_ARROW_MAP[latest.Trend] || '→';
+                      updateLiveBgManually(latest.Value, true);
+                      updateLiveTrendManually(arrow);
+                      const { krHm } = getFormattedDualClocks();
+                      if (hintEl) hintEl.textContent = `✅ 已同步 (${krHm})`;
+                      if (dotEl) dotEl.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse-soft shrink-0';
+                      if (!silent) showToast(`🩸 Dexcom 实时血糖同步成功: ${latest.Value} mg/dL (${arrow})`);
+                      return;
+                    }
+                  }
+                }
+              }
+            }
+          } catch (err) {
+            // Continue to next proxy
+          }
+        }
+        if (hintEl) hintEl.textContent = '🇰🇷 账号已保存 (需主账号开启Share)';
+        if (!silent) {
+          showToast('已保存账号！若未拉取到数值，请确认填写的是“他手机Dexcom G7主软件账号”且已开启Share功能', 'info');
+        }
+        return;
+      }
+
+      if (!silent) {
+        showToast('请点击右上角 ⚙️ 检查 Dexcom 账号设置', 'info');
+      }
+    }
+
+    async function testDexcomConnectionNow() {
+      saveServerConfig(true);
+      await syncDexcomNow(false);
+    }
+    async function saveCurrentDayToServer(silent = false) {
+      const day = enrichDayWithDualTimezones(getCurrentDayData());
+      Object.values(allDaysStore).forEach(d => enrichDayWithDualTimezones(d));
+      persistStateLocally();
+
+      const statusText = document.getElementById('autoSyncStatusText');
+
+      if (serverConfig.jsonServerUrl) {
+        try {
+          const url = serverConfig.jsonServerUrl.trim();
+          const isJsonBin = serverConfig.jsonProvider === 'jsonbin' || url.includes('jsonbin.io');
+          const isFirebase = serverConfig.jsonProvider === 'firebase' || url.includes('firebaseio.com') || url.endsWith('.json');
+          const isNpoint = serverConfig.jsonProvider === 'npoint' || url.includes('npoint.io');
+          const isPantry = serverConfig.jsonProvider === 'pantry' || url.includes('getpantry.cloud');
+
+          const headers = { 'Content-Type': 'application/json' };
+          if (serverConfig.jsonApiKey) {
+            headers['X-Master-Key'] = serverConfig.jsonApiKey;
+            headers['X-Access-Key'] = serverConfig.jsonApiKey;
+          }
+
+          let method = 'POST';
+          if (isJsonBin || isFirebase) method = 'PUT';
+
+          const payload = (isJsonBin || isFirebase || isNpoint || isPantry) ? allDaysStore : day;
+
+          const res = await fetch(url, {
+            method,
+            headers,
+            body: JSON.stringify(payload)
+          });
+
+          if (res.ok) {
+            const { krHm } = getFormattedDualClocks();
+            if (statusText) statusText.textContent = `☁️ 云端已自动同步 (${krHm})`;
+            if (!silent) showToast(`☁️ 已成功同步双时区数据至云端 (${serverConfig.jsonProvider})！`);
+            return;
+          }
+        } catch (e) {
+          if (statusText) statusText.textContent = '⚠️ 云端未响应 · 已存本地';
+        }
+      }
+      if (!silent) {
+        showToast(`✅ 已自动保存 ${day.date} 双时区记录 (如需异地同步请点右上角 ⚙️ 填入 JSON 寄存网址)`);
+      }
+    }
+
+    async function fetchFromJsonServer(silent = false) {
+      if (!serverConfig.jsonServerUrl) {
+        if (!silent) showToast('请先点击右上角 ⚙️ 填入您的 JSON 云端寄存网址 (如 npoint.io 或 JSONBin.io)', 'warn');
+        return;
+      }
+      try {
+        const headers = { 'Accept': 'application/json' };
+        if (serverConfig.jsonApiKey) {
+          headers['X-Master-Key'] = serverConfig.jsonApiKey;
+          headers['X-Access-Key'] = serverConfig.jsonApiKey;
+        }
+        const res = await fetch(serverConfig.jsonServerUrl.trim(), { headers });
+        if (res.ok) {
+          let data = await res.json();
+          // JSONBin v3 wraps payload inside { record: { ... } }
+          if (data && data.record && typeof data.record === 'object') {
+            data = data.record;
+          }
+          if (data && typeof data === 'object') {
+            if (data.date && data.meals) {
+              allDaysStore[data.date] = enrichDayWithDualTimezones(data);
+            } else if (Object.keys(data).some(k => /^\d{4}-\d{2}-\d{2}$/.test(k))) {
+              Object.assign(allDaysStore, data);
+            }
+            persistStateLocally();
+            renderModule2();
+            renderMeals();
+            updateTopSteadyStateDashboard();
+            populateDailyReportSelector();
+            const statusText = document.getElementById('autoSyncStatusText');
+            const { krHm } = getFormattedDualClocks();
+            if (statusText) statusText.textContent = `☁️ 已拉取云端最新 (${krHm})`;
+            if (!silent) showToast('🔄 已成功从云端拉取最新打卡记录！');
+            return;
+          }
+        }
+        if (!silent) showToast('云端连接成功（当前云端盒子为空，您勾选任一选项后将自动写入）', 'info');
+      } catch (err) {
+        if (!silent) showToast('暂时无法连接该 JSON 地址，请检查网址或 Master Key 是否正确', 'warn');
+      }
+    }
+
+    function onJsonProviderChange(provider) {
+      const urlInput = document.getElementById('cfgJsonServerUrl');
+      if (!urlInput) return;
+      const placeholders = {
+        npoint: 'https://api.npoint.io/您的专属ID',
+        jsonbin: 'https://api.jsonbin.io/v3/b/您的Bin_ID',
+        firebase: 'https://您的项目名-default-rtdb.firebaseio.com/dailyLogs.json',
+        pantry: 'https://getpantry.cloud/apiv1/pantry/您的ID/basket/dailyLogs',
+        custom: 'https://您的自定义服务器地址/dailyLogs'
+      };
+      urlInput.placeholder = placeholders[provider] || placeholders.npoint;
+    }
+
+    function openServerModal() {
+      // Populate modal inputs with current saved config
+      const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+      const setChk = (id, v) => { const el = document.getElementById(id); if (el) el.checked = !!v; };
+      setVal('cfgJsonProvider', serverConfig.jsonProvider || 'npoint');
+      setVal('cfgJsonServerUrl', serverConfig.jsonServerUrl);
+      setVal('cfgJsonApiKey', serverConfig.jsonApiKey);
+      setChk('cfgAutoCloudSync', serverConfig.autoCloudSync !== false);
+      setVal('cfgDexcomRegion', serverConfig.dexcomRegion || 'ous');
+      setVal('cfgDexcomUser', serverConfig.dexcomUser);
+      setVal('cfgDexcomPass', serverConfig.dexcomPass);
+      setChk('cfgAutoFillBgOnMeal', serverConfig.autoFillBgOnMeal !== false);
+      setVal('cfgDexcomBridgeUrl', serverConfig.dexcomBridgeUrl);
+      setVal('cfgEmailWebhookUrl', serverConfig.emailWebhookUrl);
+      document.getElementById('serverConfigModal')?.classList.remove('hidden');
+    }
+
+    function closeServerModal() {
+      document.getElementById('serverConfigModal')?.classList.add('hidden');
+    }
+
+    function saveServerConfig(keepOpen = false) {
+      serverConfig.jsonProvider = document.getElementById('cfgJsonProvider')?.value || 'npoint';
+      serverConfig.jsonServerUrl = document.getElementById('cfgJsonServerUrl')?.value.trim() || '';
+      serverConfig.jsonApiKey = document.getElementById('cfgJsonApiKey')?.value.trim() || '';
+      serverConfig.autoCloudSync = !!document.getElementById('cfgAutoCloudSync')?.checked;
+      serverConfig.dexcomRegion = document.getElementById('cfgDexcomRegion')?.value || 'ous';
+      serverConfig.dexcomUser = document.getElementById('cfgDexcomUser')?.value.trim() || '';
+      serverConfig.dexcomPass = document.getElementById('cfgDexcomPass')?.value || '';
+      serverConfig.autoFillBgOnMeal = !!document.getElementById('cfgAutoFillBgOnMeal')?.checked;
+      serverConfig.dexcomBridgeUrl = document.getElementById('cfgDexcomBridgeUrl')?.value.trim() || '';
+      serverConfig.emailWebhookUrl = document.getElementById('cfgEmailWebhookUrl')?.value.trim() || '';
+      persistStateLocally();
+      if (!keepOpen) {
+        closeServerModal();
+        showToast('⚙️ 配置已永久保存在本地浏览器，并开启全自动云端同步！');
+      }
+      if (serverConfig.jsonServerUrl) {
+        saveCurrentDayToServer(true);
+      }
+    }
+
+    /********************************************************************
+     * 8. DEXCOM SHARE LIVE SYNC & FOUR-LANGUAGE SWITCHER
+     ********************************************************************/
+    function updateLiveBgManually(val, fromAutoSync = false) {
+      const num = Number(val);
+      if (!num || num < 20 || num > 600) return;
+      liveDexcomState.bg = num;
+      const inputEl = document.getElementById('manualBgInput');
+      if (inputEl) inputEl.value = num;
+      const el = document.getElementById('liveBgValue');
+      if (el) {
+        el.textContent = num;
+        el.className = num >= 80 && num <= 160
+          ? 'text-xl font-extrabold text-emerald-700 font-mono'
+          : (num < 80 ? 'text-xl font-extrabold text-rose-600 font-mono' : 'text-xl font-extrabold text-amber-600 font-mono');
+      }
+      if (!fromAutoSync) {
+        showToast(`实时血糖已更新为: ${num} mg/dL`);
+      }
+    }
+
+    function updateLiveTrendManually(arrow) {
+      liveDexcomState.trend = arrow || '→';
+      const selEl = document.getElementById('manualTrendSelect');
+      if (selEl && ['→', '↗', '↑', '↘', '↓'].includes(arrow)) {
+        selEl.value = arrow;
+      }
+      const trEl = document.getElementById('liveBgTrend');
+      if (trEl) trEl.textContent = liveDexcomState.trend;
+    }
+
+    function setLanguage(lang) {
+      currentLang = UI_TEXT[lang] ? lang : 'zh';
+      document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : currentLang;
+      document.documentElement.dir = currentLang === 'fa' ? 'rtl' : 'ltr';
+
+      ['zh', 'ko', 'fa', 'en'].forEach(l => {
+        const btn = document.getElementById(`langBtn-${l}`);
+        if (!btn) return;
+        if (l === currentLang) {
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold transition-all bg-white text-emerald-700 shadow-sm';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900';
+        }
+      });
+
+      const t = UI_TEXT[currentLang];
+      const mapIds = {
+        uiAppTitle: t.appTitle,
+        uiAppSubtitle: t.appSubtitle,
+        uiIranLabel: t.iranLabel,
+        uiKoreaLabel: t.koreaLabel,
+        uiDexcomLiveLabel: t.dexcomLiveLabel,
+        uiRefreshBtn: t.refreshBtn,
+        uiManualBgFix: t.manualBgFix,
+        optTrendFlat: t.trendFlat,
+        optTrend45Up: t.trend45Up,
+        optTrendUp: t.trendUp,
+        optTrend45Down: t.trend45Down,
+        optTrendDown: t.trendDown,
+        uiTirLabel: t.tirLabel,
+        uiTirSub1: t.tirSub1,
+        uiTotalInsulinLabel: t.totalInsulinLabel,
+        uiYellowShort: t.yellowShort,
+        uiGreenShort: t.greenShort,
+        uiLastInjLabel: t.lastInjLabel,
+        uiNphRuleTip: t.nphRuleTip,
+        uiQuadrantLabel: t.quadrantLabel,
+        uiQuadSubTip: t.quadSubTip,
+        optQuadLU: t.quadLU,
+        optQuadRU: t.quadRU,
+        optQuadLL: t.quadLL,
+        optQuadRL: t.quadRL,
+        uiTabDaily: t.tabDaily,
+        uiTabHistory: t.tabHistory,
+        uiTabReportDay: t.tabReportDay,
+        uiTabReportWeek: t.tabReportWeek,
+        autoSyncStatusText: t.autoSyncOn,
+        uiCurrentDateLabel: t.currentDateLabel,
+        uiResetBtnText: t.resetBtnText,
+        uiSyncBtnText: t.syncBtnText,
+        uiPullBtnText: t.pullBtnText,
+        uiMod2Title: t.mod2Title,
+        uiMod2Sub: t.mod2Sub,
+        uiWakeUpLabel: t.wakeUpLabel,
+        uiWakeUpHint: t.wakeUpHint,
+        'wakeBtn-early': t.wakeEarlyBtn,
+        'wakeBtn-normal': t.wakeNormalBtn,
+        'wakeBtn-late': t.wakeLateBtn,
+        uiExactWakeTime: t.exactWakeTime,
+        uiFamoTitle: t.famoTitle,
+        uiFamoSub: t.famoSub,
+        'famoBtn-0': t.famo0,
+        'famoBtn-0.5': t.famoHalf,
+        'famoBtn-1': t.famo1,
+        uiKondoshTitle: t.kondoshTitle,
+        uiKondoshSub: t.kondoshSub,
+        uiWalkTitle: t.walkTitle,
+        uiWalkSub: t.walkSub,
+        uiMod3Title: t.mod3Title,
+        uiMod3Sub: t.mod3Sub,
+        uiJump1: t.jump1,
+        uiJump2: t.jump2,
+        uiJump3: t.jump3,
+        uiJump4: t.jump4,
+        uiJump5: t.jump5,
+        uiJump6: t.jump6
+      };
+      Object.entries(mapIds).forEach(([id, txt]) => {
+        const el = document.getElementById(id);
+        if (el && txt) el.textContent = txt;
+      });
+
+      renderModule2();
+      renderMeals();
+      updateTopSteadyStateDashboard();
+    }
+
+    function applyHistoryFilters() {
+      const tbody = document.getElementById('historyTableBody');
+      if (!tbody) return;
+      const preset = document.getElementById('histDatePreset')?.value || '7days';
+      const customBox = document.getElementById('customDateRangeBox');
+      if (customBox) customBox.classList.toggle('hidden', preset !== 'custom');
+
+      const tzMode = document.getElementById('histTimezoneMode')?.value || 'dual';
+      const catFilter = document.getElementById('histCategoryFilter')?.value || 'all';
+      const keyword = (document.getElementById('histKeywordInput')?.value || '').trim().toLowerCase();
+
+      const formatTz = (irHm) => {
+        if (!irHm) return '--:--';
+        const krHm = iranTimeToKoreaTime(irHm);
+        if (tzMode === 'kr') return `🇰🇷 ${krHm}`;
+        if (tzMode === 'ir') return `🇮🇷 ${irHm}`;
+        return `🇮🇷 ${irHm} / 🇰🇷 ${krHm}`;
+      };
+
+      const rowsHtml = [];
+      const sortedDates = Object.keys(allDaysStore).sort().reverse();
+
+      sortedDates.forEach(dStr => {
+        if (preset === 'today' && dStr !== activeDate) return;
+        const day = allDaysStore[dStr];
+        if (!day) return;
+
+        // Supplements rows
+        if (catFilter === 'all' || catFilter === 'supp') {
+          SUPPLEMENTS_DICT.forEach(supp => {
+            const st = day.supplements?.[supp.id];
+            if (st && st.checked) {
+              const detail = `${supp.name.zh} (法莫替丁今日: ${day.famotidineDose}粒)`;
+              if (keyword && !detail.toLowerCase().includes(keyword)) return;
+              rowsHtml.push(`
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-mono font-bold text-slate-700">${dStr}</td>
+                  <td class="py-2.5 px-3 font-mono text-slate-600">${formatTz(st.timeIr || day.wakeTime)}</td>
+                  <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-teal-100 text-teal-800 font-bold">💊 保健品</span></td>
+                  <td class="py-2.5 px-3 font-bold text-slate-800">${supp.timingTag.zh}</td>
+                  <td class="py-2.5 px-3 text-slate-700">${detail}</td>
+                  <td class="py-2.5 px-3 font-mono text-emerald-700">${supp.hasFastingBg && day.fastingBg ? `空腹: ${day.fastingBg} mg/dL` : '-'}</td>
+                </tr>
+              `);
+            }
+          });
+        }
+
+        // Meal & Insulin rows
+        MEAL_NODES_META.forEach(meta => {
+          const md = day.meals?.[meta.key];
+          if (!md) return;
+          const hasFood = (md.selectedFoods && md.selectedFoods.length > 0) || (md.customFoods && md.customFoods.length > 0);
+          const hasIns = md.insStatus && md.insStatus !== 'none';
+          const hasBg = md.preBg || md.postBg;
+
+          if (!hasFood && !hasIns && !hasBg) return;
+          if (catFilter === 'insulin' && !hasIns) return;
+          if (catFilter === 'meal' && !hasFood && !hasBg) return;
+          if (catFilter === 'supp') return;
+
+          const foodZh = formatFoodListInChinese(md);
+          const insText = hasIns ? `💉 黄瓶 ${md.regUnits}U + 绿瓶 ${md.nphUnits}U (${md.insStatus === 'done' ? '已打' : '计划'})` : '未打针';
+          const combinedDetail = `${insText} ｜ 🍽️ ${foodZh}`;
+          const bgText = `${md.preBg || '--'} → ${md.postBg || '--'} mg/dL`;
+
+          if (keyword && !combinedDetail.toLowerCase().includes(keyword) && !bgText.toLowerCase().includes(keyword)) return;
+
+          rowsHtml.push(`
+            <tr class="hover:bg-slate-50">
+              <td class="py-2.5 px-3 font-mono font-bold text-slate-700">${dStr}</td>
+              <td class="py-2.5 px-3 font-mono text-slate-600">${formatTz(md.time)}</td>
+              <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">${hasIns ? '💉+🍽️ 餐&针' : '🍽️ 餐饮'}</span></td>
+              <td class="py-2.5 px-3 font-bold text-slate-800">${meta.icon} ${meta.title.zh}</td>
+              <td class="py-2.5 px-3 text-slate-700">${combinedDetail}</td>
+              <td class="py-2.5 px-3 font-mono font-bold text-slate-800">${bgText}</td>
+            </tr>
+          `);
+        });
+      });
+
+      tbody.innerHTML = rowsHtml.length > 0
+        ? rowsHtml.join('')
+        : `<tr><td colspan="6" class="py-8 text-center text-slate-400">当前筛选条件下暂无已打卡记录（在【今日执行与打卡】勾选后将自动展示）</td></tr>`;
+    }
+
+    function populateDailyReportSelector() {
+      const sel = document.getElementById('dailyReportDateSelect');
+      if (!sel) return;
+      const dates = Object.keys(allDaysStore).sort().reverse();
+      if (!dates.includes(activeDate)) dates.unshift(activeDate);
+      sel.innerHTML = dates.map(d => `<option value="${d}" ${d === activeDate ? 'selected' : ''}>📅 ${d} 日报</option>`).join('');
+    }
+
+    function renderDailyReport() {
+      const box = document.getElementById('dailyReportRenderedBox');
+      if (!box) return;
+      const selDate = document.getElementById('dailyReportDateSelect')?.value || activeDate;
+      const day = allDaysStore[selDate] || createDefaultDay(selDate);
+      const m = calculateDaySummaryMetrics(day);
+
+      const suppListHtml = SUPPLEMENTS_DICT.map(s => {
+        const st = day.supplements?.[s.id];
+        return st && st.checked
+          ? `<span class="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">✅ ${s.name.zh} (🇮🇷${st.timeIr} / 🇰🇷${iranTimeToKoreaTime(st.timeIr)})</span>`
+          : `<span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-400 text-xs">⬜ ${s.name.zh} (未打卡)</span>`;
+      }).join('');
+
+      const mealsReportHtml = MEAL_NODES_META.map(meta => {
+        const md = day.meals?.[meta.key] || {};
+        const insBadge = md.insStatus === 'done'
+          ? `<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-bold text-xs">💉 已打: 黄瓶 ${md.regUnits}U + 绿瓶 ${md.nphUnits}U</span>`
+          : `<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-500 text-xs">⭕ 未打针</span>`;
+        return `
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="font-bold text-slate-800 text-xs sm:text-sm">${meta.icon} ${meta.title.zh} <span class="font-mono text-xs text-slate-500">(🇮🇷 ${md.time} / 🇰🇷 ${iranTimeToKoreaTime(md.time)})</span></span>
+              <div class="flex items-center gap-2">
+                ${insBadge}
+                <span class="px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 font-mono text-xs font-bold text-emerald-800">🩸 餐前 ${md.preBg || '--'} → 餐后2h ${md.postBg || '--'} mg/dL</span>
+              </div>
+            </div>
+            <div class="text-xs text-slate-700 pt-1"><strong>🍽️ 摄入明细 (中文对照)：</strong>${formatFoodListInChinese(md)}</div>
+          </div>
+        `;
+      }).join('');
+
+      box.innerHTML = `
+        <div class="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <div><span class="text-slate-500 block">📅 报告日期 & 起床</span><strong class="text-slate-800 font-mono">${selDate} (🇮🇷${day.wakeTime} / 🇰🇷${iranTimeToKoreaTime(day.wakeTime)})</strong></div>
+          <div><span class="text-slate-500 block">🎯 80–160 稳态达标率</span><strong class="text-emerald-700 font-mono text-sm">${m.totalBgPts > 0 ? `${m.tir}% (${m.inRange}/${m.totalBgPts})` : '暂无血糖记录'}</strong></div>
+          <div><span class="text-slate-500 block">💉 全天胰岛素累计</span><strong class="text-amber-800 font-mono">黄瓶 ${m.sumReg}U + 绿瓶 ${m.sumNph}U</strong></div>
+          <div><span class="text-slate-500 block">💊 法莫替丁 & 轮换区</span><strong class="text-slate-800">法莫替丁 ${day.famotidineDose}粒 · 腹部 ${day.quadrant}区</strong></div>
+        </div>
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-slate-700">🌅 保健品与护胃打卡明细：</h4>
+          <div class="flex flex-wrap gap-1.5">${suppListHtml}</div>
+        </div>
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-slate-700">🍽️ 全天 6 大餐饮与额外摄入节点全中文汇总：</h4>
+          <div class="space-y-2">${mealsReportHtml}</div>
+        </div>
+      `;
+    }
+
+    function renderWeeklyReport() {
+      const tbody = document.getElementById('weeklySummaryTableBody');
+      if (!tbody) return;
+      const dates = Object.keys(allDaysStore).sort().reverse();
+      tbody.innerHTML = dates.map(dStr => {
+        const day = allDaysStore[dStr];
+        const m = calculateDaySummaryMetrics(day);
+        const suppDone = SUPPLEMENTS_DICT.filter(s => day.supplements?.[s.id]?.checked).map(s => `${s.icon}${s.name.zh.split(' ')[0]}(${day.supplements[s.id].timeIr})`).join('、') || '暂未打卡';
+        const mealsSummary = MEAL_NODES_META.map(meta => {
+          const md = day.meals?.[meta.key];
+          if (!md) return '';
+          const foodStr = formatFoodListInChinese(md);
+          if (foodStr === '未记录食物' && !md.preBg && !md.postBg && md.insStatus === 'none') return '';
+          return `<div><b>${meta.title.zh.split(' ')[1]}(${md.time})</b>: [${md.preBg || '-'}→${md.postBg || '-'}] ${foodStr}</div>`;
+        }).filter(Boolean).join('') || '<span class="text-slate-400">当日暂未录入餐食</span>';
+
+        return `
+          <tr class="hover:bg-slate-50 align-top">
+            <td class="py-3 px-3 font-mono font-bold text-slate-800 whitespace-nowrap">${dStr}</td>
+            <td class="py-3 px-3 font-mono text-slate-700 whitespace-nowrap">🇮🇷 ${day.wakeTime}<br><span class="text-teal-700">🇰🇷 ${iranTimeToKoreaTime(day.wakeTime)}</span></td>
+            <td class="py-3 px-3 font-mono whitespace-nowrap"><span class="font-bold text-emerald-700">${m.totalBgPts > 0 ? `${m.tir}%` : '--'}</span><br><span class="text-[11px] text-slate-500">范围: ${m.minBg}–${m.maxBg}</span></td>
+            <td class="py-3 px-3 font-mono whitespace-nowrap">🟡 黄: <b>${m.sumReg}U</b><br>🟢 绿: <b>${m.sumNph}U</b></td>
+            <td class="py-3 px-3 text-slate-700">${suppDone}</td>
+            <td class="py-3 px-3 text-slate-700 space-y-1">${mealsSummary}</td>
+            <td class="py-3 px-3 font-bold whitespace-nowrap">${day.famotidineDose === '0' ? '<span class="text-emerald-700">🎉 0粒</span>' : `${day.famotidineDose}粒`}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function buildPlainTextReport(reportType = 'daily') {
+      if (reportType === 'daily') {
+        const selDate = document.getElementById('dailyReportDateSelect')?.value || activeDate;
+        const day = allDaysStore[selDate] || createDefaultDay(selDate);
+        const m = calculateDaySummaryMetrics(day);
+        const lines = [
+          `【80–160 血糖稳态 · 每日全中文执行报告】`,
+          `📅 日期: ${selDate} | ⏰ 起床时间: 伊朗 ${day.wakeTime} (韩国 ${iranTimeToKoreaTime(day.wakeTime)})`,
+          `🎯 80-160 稳态达标率: ${m.tir}% (最低 ${m.minBg} / 最高 ${m.maxBg} mg/dL)`,
+          `💉 全天累计胰岛素: 黄瓶(Regular) ${m.sumReg}U + 绿瓶(NPH) ${m.sumNph}U | 腹部轮换: ${day.quadrant}区`,
+          `💊 法莫替丁今日用量: ${day.famotidineDose} 粒`,
+          `----------------------------------------`,
+          `【全天 6 大餐饮与额外摄入明细】`
+        ];
+        MEAL_NODES_META.forEach(meta => {
+          const md = day.meals?.[meta.key] || {};
+          lines.push(`• ${meta.title.zh} (伊朗 ${md.time} / 韩国 ${iranTimeToKoreaTime(md.time)}) | 血糖: ${md.preBg || '--'} → ${md.postBg || '--'} mg/dL | 胰岛素: ${md.insStatus === 'done' ? `黄${md.regUnits}U+绿${md.nphUnits}U` : '未打'} | 食物: ${formatFoodListInChinese(md)}`);
+        });
+        return lines.join('\n');
+      } else {
+        const lines = [`【80–160 血糖稳态 · 本周汇总报告】`];
+        Object.keys(allDaysStore).sort().reverse().forEach(dStr => {
+          const day = allDaysStore[dStr];
+          const m = calculateDaySummaryMetrics(day);
+          lines.push(`📅 ${dStr}: 起床 🇮🇷${day.wakeTime}(🇰🇷${iranTimeToKoreaTime(day.wakeTime)}) | 稳态率 ${m.tir}% | 黄瓶${m.sumReg}U+绿瓶${m.sumNph}U | 法莫替丁 ${day.famotidineDose}粒`);
+        });
+        return lines.join('\n');
+      }
+    }
+
+    function copyTextToClipboard(text, successMsg) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(successMsg);
+      } catch (e) {
+        showToast('复制失败，请手动选择复制', 'warn');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function copyDailyReportText() {
+      copyTextToClipboard(buildPlainTextReport('daily'), '📋 已复制全中文每日报告到剪贴板！');
+    }
+
+    function copyWeeklyReportText() {
+      copyTextToClipboard(buildPlainTextReport('weekly'), '📋 已复制本周 7 天汇总周报到剪贴板！');
+    }
+
+    async function translateAllCustomFoodsNow() {
+      const dates = Object.keys(allDaysStore);
+      for (const d of dates) {
+        const day = allDaysStore[d];
+        for (const meta of MEAL_NODES_META) {
+          const customArr = day.meals[meta.key].customFoods || [];
+          for (const cf of customArr) {
+            cf.zhDisplay = await translateCustomTextToChinese(cf.raw);
+          }
+        }
+      }
+      renderDailyReport();
+      renderWeeklyReport();
+      showToast('🌐 所有手写波斯语/韩语食物均已完成中文翻译校准！');
+    }
+
+    function getSelectedRecipientEmails() {
+      const list = [];
+      const e1 = document.getElementById('chkEmail1');
+      const e2 = document.getElementById('chkEmail2');
+      const extra = document.getElementById('extraEmailInput');
+      if (e1 && e1.checked) list.push(e1.value);
+      if (e2 && e2.checked) list.push(e2.value);
+      if (extra && extra.value.trim()) {
+        extra.value.split(',').map(s => s.trim()).filter(Boolean).forEach(em => list.push(em));
+      }
+      return list;
+    }
+
+    async function sendReportEmailNow(reportType = 'daily') {
+      await translateAllCustomFoodsNow();
+      const recipients = getSelectedRecipientEmails();
+      if (recipients.length === 0) {
+        showToast('请至少勾选一个收件邮箱！', 'warn');
+        return;
+      }
+      const subject = reportType === 'daily'
+        ? `[80-160血糖稳态日报] ${activeDate} 每日执行全中文报告`
+        : `[80-160血糖稳态周报] 本周7天执行与血糖对比总表`;
+      const bodyText = buildPlainTextReport(reportType);
+
+      // 1. Copy to clipboard automatically as safety backup
+      copyTextToClipboard(bodyText, `📨 已生成全中文报告并准备发送至: ${recipients.join(', ')}`);
+
+      // 2. If webhook / JSON server email endpoint is configured, POST it
+      if (serverConfig.emailWebhookUrl) {
+        try {
+          await fetch(serverConfig.emailWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ to: recipients, subject, text: bodyText, reportType, timestamp: new Date().toISOString() })
+          });
+          showToast(`🚀 已通过云端接口成功推送至 ${recipients.join(' & ')}！`);
+          return;
+        } catch (err) {
+          // Fallback to mailto client
+        }
+      }
+
+      // 3. Trigger mailto link with pre-filled dual recipients, subject, and Chinese report body
+      const mailtoUrl = `mailto:${encodeURIComponent(recipients.join(','))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+      window.open(mailtoUrl, '_blank');
+    }
+
+    function toggleAutoEmailSchedule(enabled) {
+      serverConfig.autoSendEnabled = enabled;
+      updateNext10AmCountdown();
+      showToast(enabled ? '⏰ 已开启每日 10:00 / 周日 10:00 自动报告推送' : '已暂停自动定时发送', 'info');
+    }
+
+    function downloadCSVFile(filename, rows) {
+      const bom = '\uFEFF';
+      const csvContent = bom + rows.map(r => r.map(cell => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function exportWeeklySummaryCSV() {
+      const headers = ['日期', '起床时间(伊朗)', '起床时间(韩国)', '80-160稳态达标率(%)', '最低血糖', '最高血糖', '黄瓶Regular累计(U)', '绿瓶NPH累计(U)', '法莫替丁(粒)', '腹部轮换区', '全天六大餐饮与额外摄入明细(中文)'];
+      const rows = [headers];
+      Object.keys(allDaysStore).sort().reverse().forEach(d => {
+        const day = allDaysStore[d];
+        const m = calculateDaySummaryMetrics(day);
+        const mealStr = MEAL_NODES_META.map(meta => {
+          const md = day.meals[meta.key];
+          return `${meta.title.zh.split(' ')[1]}(${md.time}): 血糖${md.preBg || '-'}→${md.postBg || '-'} | ${formatFoodListInChinese(md)}`;
+        }).join(' ； ');
+        rows.push([d, day.wakeTime, iranTimeToKoreaTime(day.wakeTime), m.tir, m.minBg, m.maxBg, m.sumReg, m.sumNph, day.famotidineDose, day.quadrant, mealStr]);
+      });
+      downloadCSVFile(`80-160血糖稳态周报_${activeDate}.csv`, rows);
+      showToast('📥 周报 CSV (Excel) 导出成功！');
+    }
+
+    function exportFilteredHistoryCSV() {
+      exportWeeklySummaryCSV();
+    }
+
+    function switchTab(tabKey) {
+      ['daily', 'history', 'reportDay', 'reportWeek'].forEach(k => {
+        const sec = document.getElementById(`tabContent-${k}`);
+        const btn = document.getElementById(`tabBtn-${k}`);
+        if (sec) sec.classList.toggle('hidden', k !== tabKey);
+        if (btn) {
+          if (k === tabKey) {
+            btn.className = 'px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-emerald-600 text-white shadow-sm flex items-center gap-1.5 shrink-0';
+          } else {
+            btn.className = 'px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center gap-1.5 shrink-0';
+          }
+        }
+      });
+
+      if (tabKey === 'history') applyHistoryFilters();
+      if (tabKey === 'reportDay') {
+        populateDailyReportSelector();
+        renderDailyReport();
+      }
+      if (tabKey === 'reportWeek') renderWeeklyReport();
+    }
+
+    function switchActiveDate(newDate) {
+      if (!newDate) return;
+      activeDate = newDate;
+      renderModule2();
+      renderMeals();
+      updateTopSteadyStateDashboard();
+      showToast(`已切换至日期: ${newDate}`);
+    }
+
+    function copyDexcomBridgeCode() {
+      const code = document.getElementById('dexcomBridgeCodeBlock')?.textContent || '';
+      copyTextToClipboard(code, '📋 20 行 Dexcom Share 桥接代码已复制！');
+    }
+
+    function downloadFullJsonBackup() {
+      Object.values(allDaysStore).forEach(d => enrichDayWithDualTimezones(d));
+      const blob = new Blob([JSON.stringify(allDaysStore, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `steady_bg_80_160_backup_${activeDate}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('💾 含双时区时间戳的全量 JSON 备份文件已下载！');
+    }
+
+    function importFullJsonBackup(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          Object.assign(allDaysStore, parsed);
+          renderModule2();
+          renderMeals();
+          updateTopSteadyStateDashboard();
+          closeServerModal();
+          showToast('📂 JSON 数据文件导入成功！');
+        } catch (err) {
+          showToast('JSON 文件格式有误，请检查后重试', 'warn');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    window.onload = function () {
+      seedInitial7DaysData();
+      loadPersistedState();
+      updateClocksUI();
+      setInterval(updateClocksUI, 1000);
+      renderModule2();
+      renderMeals();
+      updateTopSteadyStateDashboard();
+      populateDailyReportSelector();
+      // Auto pull latest cloud JSON & Dexcom live BG on startup
+      if (serverConfig.jsonServerUrl) {
+        fetchFromJsonServer(true);
+      }
+      if (serverConfig.dexcomUser || serverConfig.dexcomBridgeUrl) {
+        syncDexcomNow(true);
+        setInterval(() => syncDexcomNow(true), 300000); // Auto sync Dexcom every 5 mins
+      }
+    };
+  </script>
+</body>
+</html>
