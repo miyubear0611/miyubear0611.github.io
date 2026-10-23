@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="zh-CN" id="htmlRoot" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>饮食参考菜谱</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', 'Vazirmatn', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    [dir="rtl"] body {
+      font-family: 'Vazirmatn', 'Inter', Tahoma, sans-serif;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-16">
+
+  <!-- Top Header & Language Switcher -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-3.5 flex flex-col gap-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h1 id="appTitle" class="text-xl sm:text-2xl font-bold text-slate-900">🍽️ 饮食参考菜谱</h1>
+
+        <!-- 4-Language Selector -->
+        <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <button onclick="setLang('zh')" data-lang="zh" class="lang-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-900 text-white transition">中文</button>
+          <button onclick="setLang('en')" data-lang="en" class="lang-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">EN</button>
+          <button onclick="setLang('fa')" data-lang="fa" class="lang-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">فارسی</button>
+          <button onclick="setLang('ko')" data-lang="ko" class="lang-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">한국어</button>
+        </div>
+      </div>
+
+      <!-- Core Insulin Rule Banner -->
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-emerald-950 font-medium leading-relaxed" id="coreRuleBanner">
+        铁律：【绿瓶 NPH】刻度永远锁死不动（早绿 NPH 建议 36–38，晚绿 NPH 40），只调【黄瓶 Reg】！
+      </div>
+
+      <!-- Main Navigation Tabs (3 Separate Pages) -->
+      <nav class="flex overflow-x-auto no-scrollbar gap-2 pt-1" id="mainNavTabs">
+        <button onclick="switchPage('planner')" data-page="planner" class="nav-tab px-4 py-2 rounded-xl text-sm font-bold bg-slate-900 text-white shadow-sm shrink-0 transition" id="tabPlanner">
+          🎯 按餐次与血糖生成菜单
+        </button>
+        <button onclick="switchPage('allMenus')" data-page="allMenus" class="nav-tab px-4 py-2 rounded-xl text-sm font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shrink-0 transition" id="tabAllMenus">
+          📖 查看全部菜单
+        </button>
+        <button onclick="switchPage('seasonings')" data-page="seasonings" class="nav-tab px-4 py-2 rounded-xl text-sm font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shrink-0 transition" id="tabSeasonings">
+          🧂 调料用法
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 pt-5">
+
+    <!-- ==================== PAGE 1: STEP-BY-STEP PLANNER ==================== -->
+    <div id="pagePlanner" class="space-y-6">
+
+      <!-- Step 1: Select Meal -->
+      <section class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+        <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1" id="step1Label">第一步 · Step 1</div>
+        <h2 class="text-base sm:text-lg font-bold text-slate-900 mb-3" id="step1Title">请选择现在要吃哪一餐：</h2>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="plannerMealBtns">
+          <button onclick="selectPlannerMeal('breakfast')" data-meal="breakfast" class="p-meal-btn p-3.5 rounded-xl border-2 text-start transition flex flex-col justify-between bg-slate-50 border-slate-200 hover:border-slate-300">
+            <span class="text-xl">🌅</span>
+            <div class="font-bold text-sm sm:text-base text-slate-900 mt-1.5" id="btnMealBreakfast">早餐</div>
+            <div class="text-xs text-slate-500 mt-0.5" id="btnMealBreakfastSub">第一针 (Reg + NPH)</div>
+          </button>
+
+          <button onclick="selectPlannerMeal('lunch')" data-meal="lunch" class="p-meal-btn p-3.5 rounded-xl border-2 text-start transition flex flex-col justify-between bg-slate-50 border-slate-200 hover:border-slate-300">
+            <span class="text-xl">🍱</span>
+            <div class="font-bold text-sm sm:text-base text-slate-900 mt-1.5" id="btnMealLunch">午餐</div>
+            <div class="text-xs text-slate-500 mt-0.5" id="btnMealLunchSub">默认不打针</div>
+          </button>
+
+          <button onclick="selectPlannerMeal('dinner')" data-meal="dinner" class="p-meal-btn p-3.5 rounded-xl border-2 text-start transition flex flex-col justify-between bg-slate-50 border-slate-200 hover:border-slate-300">
+            <span class="text-xl">🍲</span>
+            <div class="font-bold text-sm sm:text-base text-slate-900 mt-1.5" id="btnMealDinner">晚餐</div>
+            <div class="text-xs text-slate-500 mt-0.5" id="btnMealDinnerSub">第二针 (Reg + NPH)</div>
+          </button>
+
+          <button onclick="selectPlannerMeal('snack')" data-meal="snack" class="p-meal-btn p-3.5 rounded-xl border-2 text-start transition flex flex-col justify-between bg-slate-50 border-slate-200 hover:border-slate-300">
+            <span class="text-xl">🥨</span>
+            <div class="font-bold text-sm sm:text-base text-slate-900 mt-1.5" id="btnMealSnack">零食 / 加餐</div>
+            <div class="text-xs text-slate-500 mt-0.5" id="btnMealSnackSub">按进食时段选择</div>
+          </button>
+        </div>
+
+        <!-- Step 1.5: Conditional Snack Timing Selector -->
+        <div id="snackTimingBox" class="hidden mt-4 pt-4 border-t border-slate-200">
+          <h3 class="text-sm font-bold text-slate-800 mb-2.5" id="snackTimingTitle">请选择吃零食的时间段：</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2" id="snackTimingBtns">
+            <button onclick="selectSnackTiming('before_breakfast')" data-timing="before_breakfast" class="s-timing-btn px-3 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold text-start transition bg-slate-50 border-slate-200 text-slate-700">
+              <div id="timing1Title">1. 早餐前</div>
+              <div class="text-[11px] font-normal text-slate-500 mt-0.5" id="timing1Sub">早起空腹时段</div>
+            </button>
+            <button onclick="selectSnackTiming('between_bl')" data-timing="between_bl" class="s-timing-btn px-3 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold text-start transition bg-slate-50 border-slate-200 text-slate-700">
+              <div id="timing2Title">2. 早餐 ~ 午餐之间</div>
+              <div class="text-[11px] font-normal text-slate-500 mt-0.5" id="timing2Sub">上午容易低血糖时段</div>
+            </button>
+            <button onclick="selectSnackTiming('between_ld')" data-timing="between_ld" class="s-timing-btn px-3 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold text-start transition bg-slate-50 border-slate-200 text-slate-700">
+              <div id="timing3Title">3. 午餐 ~ 晚餐之间</div>
+              <div class="text-[11px] font-normal text-slate-500 mt-0.5" id="timing3Sub">下午血糖容易爬升时段</div>
+            </button>
+            <button onclick="selectSnackTiming('after_dinner')" data-timing="after_dinner" class="s-timing-btn px-3 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold text-start transition bg-slate-50 border-slate-200 text-slate-700">
+              <div id="timing4Title">4. 晚餐后 / 睡前</div>
+              <div class="text-[11px] font-normal text-slate-500 mt-0.5" id="timing4Sub">夜间与睡前时段</div>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 2: Select Current Blood Sugar -->
+      <section id="step2Section" class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+        <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1" id="step2Label">第二步 · Step 2</div>
+        <h2 class="text-base sm:text-lg font-bold text-slate-900 mb-3" id="step2Title">请选择目前的血糖数值 (mg/dL)：</h2>
+
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="plannerBgBtns">
+          <button onclick="selectPlannerBG('low')" data-bg="low" class="p-bg-btn p-3 rounded-xl border-2 text-center transition bg-slate-50 border-slate-200 hover:border-slate-300">
+            <div class="text-base font-bold text-sky-600">&lt; 90</div>
+            <div class="text-xs font-medium text-slate-600 mt-0.5" id="bgLabelLow">偏低</div>
+          </button>
+          <button onclick="selectPlannerBG('normal')" data-bg="normal" class="p-bg-btn p-3 rounded-xl border-2 text-center transition bg-slate-50 border-slate-200 hover:border-slate-300">
+            <div class="text-base font-bold text-emerald-600">90–150</div>
+            <div class="text-xs font-medium text-slate-600 mt-0.5" id="bgLabelNormal">正常范围</div>
+          </button>
+          <button onclick="selectPlannerBG('mid')" data-bg="mid" class="p-bg-btn p-3 rounded-xl border-2 text-center transition bg-slate-50 border-slate-200 hover:border-slate-300">
+            <div class="text-base font-bold text-amber-600">150–180</div>
+            <div class="text-xs font-medium text-slate-600 mt-0.5" id="bgLabelMid">略高</div>
+          </button>
+          <button onclick="selectPlannerBG('high')" data-bg="high" class="p-bg-btn p-3 rounded-xl border-2 text-center transition bg-slate-50 border-slate-200 hover:border-slate-300">
+            <div class="text-base font-bold text-orange-600">180–240</div>
+            <div class="text-xs font-medium text-slate-600 mt-0.5" id="bgLabelHigh">偏高</div>
+          </button>
+          <button onclick="selectPlannerBG('veryhigh')" data-bg="veryhigh" class="p-bg-btn p-3 rounded-xl border-2 text-center transition bg-slate-50 border-slate-200 hover:border-slate-300 col-span-2 sm:col-span-1">
+            <div class="text-base font-bold text-rose-600">250+</div>
+            <div class="text-xs font-medium text-slate-600 mt-0.5" id="bgLabelVeryHigh">很高</div>
+          </button>
+        </div>
+      </section>
+
+      <!-- Step 3: Generated Plan & Filtered Menu Results -->
+      <section id="plannerResultSection" class="space-y-4">
+        <!-- Dynamic Action Plan Box -->
+        <div id="generatedPlanBox" class="bg-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-md">
+          <!-- Injected by JS -->
+        </div>
+
+        <!-- Menu Section Header -->
+        <div class="flex items-center justify-between pt-2">
+          <h3 id="recommendedMenuHeading" class="text-base sm:text-lg font-bold text-slate-900">当前餐次推荐菜单：</h3>
+          <span id="recommendedMenuCount" class="text-xs font-semibold text-slate-500"></span>
+        </div>
+
+        <!-- Generated Menu Cards Grid -->
+        <div id="plannerRecipeGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Injected by JS -->
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== PAGE 2: ALL MENUS ==================== -->
+    <div id="pageAllMenus" class="hidden space-y-4">
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <!-- Category Filter -->
+        <div class="flex overflow-x-auto no-scrollbar gap-1.5" id="allMenusFilterBtns">
+          <button onclick="setAllMenuFilter('all')" data-filter="all" class="am-filter-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white shrink-0 transition" id="amBtnAll">全部</button>
+          <button onclick="setAllMenuFilter('breakfast')" data-filter="breakfast" class="am-filter-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition" id="amBtnBreakfast">🌅 早餐</button>
+          <button onclick="setAllMenuFilter('lunch')" data-filter="lunch" class="am-filter-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition" id="amBtnLunch">🍱 午餐</button>
+          <button onclick="setAllMenuFilter('dinner')" data-filter="dinner" class="am-filter-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition" id="amBtnDinner">🍲 晚餐</button>
+          <button onclick="setAllMenuFilter('snack')" data-filter="snack" class="am-filter-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition" id="amBtnSnack">🥨 零食与配菜</button>
+        </div>
+
+        <!-- Search Input -->
+        <div class="relative w-full sm:w-64">
+          <input
+            id="allMenuSearch"
+            type="text"
+            oninput="renderAllMenus()"
+            placeholder="搜索菜名或食材..."
+            class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-100 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition"
+          />
+        </div>
+      </div>
+
+      <div id="allMenusGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+
+    <!-- ==================== PAGE 3: SEASONINGS GUIDE ==================== -->
+    <div id="pageSeasonings" class="hidden space-y-4">
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+        <h2 id="seasoningPageTitle" class="text-lg font-bold text-slate-900">🧂 7款亚洲调料与本地食材用法</h2>
+        <p id="seasoningPageDesc" class="text-xs sm:text-sm text-slate-600 mt-1">
+          做伊朗家常菜或（中国）、（日本）、（韩国）料理时都可以直接搭配使用。除韩国辣椒酱含糖外，其余调料均不含糖，不会升高血糖。
+        </p>
+
+        <div id="seasoningGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3.5 mt-4">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // ==================== STATE ====================
+    let currentLang = "zh";
+    let currentPage = "planner";
+    let plannerMeal = "breakfast";
+    let plannerSnackTiming = "between_bl";
+    let plannerBG = "normal";
+    let allMenuFilter = "all";
+
+    // ==================== UI TRANSLATIONS (zh / en / fa / ko) ====================
+    const i18n = {
+      zh: {
+        dir: "ltr",
+        appTitle: "🍽️ 饮食参考菜谱",
+        coreRule: "铁律：【绿瓶 NPH】刻度永远锁死不动（早绿 NPH 建议 36–38，晚绿 NPH 40），只调【黄瓶 Reg】！",
+        tabPlanner: "🎯 按餐次与血糖生成菜单",
+        tabAllMenus: "📖 查看全部菜单",
+        tabSeasonings: "🧂 调料用法",
+        step1Label: "第一步",
+        step1Title: "请选择现在要吃哪一餐：",
+        btnMealBreakfast: "🌅 早餐",
+        btnMealBreakfastSub: "第一针 (黄瓶 Reg + 绿瓶 NPH)",
+        btnMealLunch: "🍱 午餐",
+        btnMealLunchSub: "默认不打针 (靠早绿 NPH)",
+        btnMealDinner: "🍲 晚餐",
+        btnMealDinnerSub: "第二针 (黄瓶 Reg + 绿瓶 NPH)",
+        btnMealSnack: "🥨 零食 / 加餐",
+        btnMealSnackSub: "需选择进食时间段",
+        snackTimingTitle: "请选择吃零食的时间段：",
+        timing1Title: "1. 早餐前",
+        timing1Sub: "早起空腹时段",
+        timing2Title: "2. 早餐 ~ 午餐之间",
+        timing2Sub: "上午 09:30–11:30 易低血糖期",
+        timing3Title: "3. 午餐 ~ 晚餐之间",
+        timing3Sub: "下午 15:00–18:00 血糖易爬升期",
+        timing4Title: "4. 晚餐后 / 睡前",
+        timing4Sub: "夜间防低血糖时段",
+        step2Label: "第二步",
+        step2Title: "请选择目前的血糖数值 (mg/dL)：",
+        bgLabelLow: "偏低 (<90)",
+        bgLabelNormal: "正常 (90–150)",
+        bgLabelMid: "略高 (150–180)",
+        bgLabelHigh: "偏高 (180–240)",
+        bgLabelVeryHigh: "很高 (250+)",
+        recommendedMenuHeading: "为您匹配的推荐菜单：",
+        amBtnAll: "全部菜单",
+        amBtnBreakfast: "🌅 早餐",
+        amBtnLunch: "🍱 午餐",
+        amBtnDinner: "🍲 晚餐",
+        amBtnSnack: "🥨 零食与配菜",
+        searchPlaceholder: "搜索菜名或食材...",
+        seasoningPageTitle: "🧂 带来的 7 款调料大概用法",
+        seasoningPageDesc: "做伊朗日常菜或（中国）、（日本）、（韩国）料理时都可以使用。除了韩国辣椒酱自带甜味需要注意用量外，其余调料基本不含糖。",
+        howToEatLabel: "🍽️ 进食与制作建议：",
+        currentMealDoseLabel: "💉 本餐注射与吃法建议：",
+        giGreen: "🟢 升糖平稳",
+        giYellow: "🟡 中度升糖",
+        giRed: "🔴 升糖较快",
+        highBgWarn: "⚠️ 当前血糖偏高，建议优先选择上方【🟢 升糖平稳】的菜品；如果吃这道菜，请务必按上方提示增加黄瓶 (Reg) 并提前等待。",
+        lowBgWarn: "💡 当前血糖偏低，请先吃几口主食（大饼或米饭）再打针。",
+        mealLabels: { breakfast: "🌅 早餐", lunch: "🍱 午餐", dinner: "🍲 晚餐", snack: "🥨 零食/配菜" }
+      },
+      en: {
+        dir: "ltr",
+        appTitle: "🍽️ Dietary Reference Recipes",
+        coreRule: "Core Rule: Keep [Green Bottle NPH] fixed (Morning NPH 36–38U, Evening NPH 40U). Only adjust [Yellow Bottle Reg]!",
+        tabPlanner: "🎯 Meal & Blood Sugar Planner",
+        tabAllMenus: "📖 View All Menus",
+        tabSeasonings: "🧂 Seasoning Guide",
+        step1Label: "Step 1",
+        step1Title: "Select what you are eating now:",
+        btnMealBreakfast: "🌅 Breakfast",
+        btnMealBreakfastSub: "1st Shot (Yellow Reg + Green NPH)",
+        btnMealLunch: "🍱 Lunch",
+        btnMealLunchSub: "No shot by default (Morning NPH peak)",
+        btnMealDinner: "🍲 Dinner",
+        btnMealDinnerSub: "2nd Shot (Yellow Reg + Green NPH)",
+        btnMealSnack: "🥨 Snacks",
+        btnMealSnackSub: "Select snack time period",
+        snackTimingTitle: "Select when you are having the snack:",
+        timing1Title: "1. Before Breakfast",
+        timing1Sub: "Early morning fasting",
+        timing2Title: "2. Between Breakfast & Lunch",
+        timing2Sub: "09:30–11:30 AM (Low BG risk window)",
+        timing3Title: "3. Between Lunch & Dinner",
+        timing3Sub: "15:00–18:00 PM (Afternoon rise window)",
+        timing4Title: "4. After Dinner / Bedtime",
+        timing4Sub: "Overnight protection window",
+        step2Label: "Step 2",
+        step2Title: "Select current blood sugar (mg/dL):",
+        bgLabelLow: "Low (<90)",
+        bgLabelNormal: "Normal (90–150)",
+        bgLabelMid: "Slightly High (150–180)",
+        bgLabelHigh: "High (180–240)",
+        bgLabelVeryHigh: "Very High (250+)",
+        recommendedMenuHeading: "Recommended Menu for Your Selection:",
+        amBtnAll: "All Menus",
+        amBtnBreakfast: "🌅 Breakfast",
+        amBtnLunch: "🍱 Lunch",
+        amBtnDinner: "🍲 Dinner",
+        amBtnSnack: "🥨 Snacks & Sides",
+        searchPlaceholder: "Search dish or ingredient...",
+        seasoningPageTitle: "🧂 How to Use the 7 Asian Seasonings",
+        seasoningPageDesc: "Great for both Persian dishes and Chinese, Japanese, or Korean cooking. Except for Korean chili paste (which contains sugar), all other seasonings are sugar-free.",
+        howToEatLabel: "🍽️ Eating & Cooking Tips:",
+        currentMealDoseLabel: "💉 Insulin & Action for This Meal:",
+        giGreen: "🟢 Low Glycemic (Steady)",
+        giYellow: "🟡 Medium Glycemic",
+        giRed: "🔴 High Glycemic (Fast)",
+        highBgWarn: "⚠️ Blood sugar is currently high. Prefer [🟢 Low Glycemic] dishes above. If eating this dish, add the extra Yellow (Reg) units and wait before eating.",
+        lowBgWarn: "💡 Blood sugar is low. Eat a few bites of bread or rice first before injecting.",
+        mealLabels: { breakfast: "🌅 Breakfast", lunch: "🍱 Lunch", dinner: "🍲 Dinner", snack: "🥨 Snack/Side" }
+      },
+      fa: {
+        dir: "rtl",
+        appTitle: "🍽️ راهنمای برنامه غذایی و دستور پخت",
+        coreRule: "قانون اصلی: دوز انسولین [شیشه سبز NPH] همیشه ثابت بماند (صبح ۳۶ تا ۳۸ واحد، شب ۴۰ واحد)؛ فقط دوز [شیشه زرد Reg] را تنظیم کنید!",
+        tabPlanner: "🎯 انتخاب وعده و قند خون",
+        tabAllMenus: "📖 مشاهده همه غذاها",
+        tabSeasonings: "🧂 راهنمای ادویه‌ها و سس‌ها",
+        step1Label: "مرحله اول",
+        step1Title: "وعده غذایی فعلی خود را انتخاب کنید:",
+        btnMealBreakfast: "🌅 صبحانه",
+        btnMealBreakfastSub: "تزریق اول (زرد Reg + سبز NPH)",
+        btnMealLunch: "🍱 ناهار",
+        btnMealLunchSub: "معمولاً بدون تزریق (اثر NPH صبح)",
+        btnMealDinner: "🍲 شام",
+        btnMealDinnerSub: "تزریق دوم (زرد Reg + سبز NPH)",
+        btnMealSnack: "🥨 میان‌وعده و تنقلات",
+        btnMealSnackSub: "انتخاب زمان میان‌وعده",
+        snackTimingTitle: "چه زمانی می‌خواهید میان‌وعده بخورید؟",
+        timing1Title: "۱. قبل از صبحانه",
+        timing1Sub: "ناشتا پس از بیدار شدن",
+        timing2Title: "۲. بین صبحانه و ناهار",
+        timing2Sub: "ساعت ۹:۳۰ تا ۱۱:۳۰ (احتمال افت قند)",
+        timing3Title: "۳. بین ناهار و شام",
+        timing3Sub: "ساعت ۱۵ تا ۱۸ (احتمال بالا رفتن قند)",
+        timing4Title: "۴. بعد از شام / قبل از خواب",
+        timing4Sub: "جلوگیری از افت قند شبانه",
+        step2Label: "مرحله دوم",
+        step2Title: "عدد قند خون فعلی (Dexcom) را انتخاب کنید:",
+        bgLabelLow: "پایین (<90)",
+        bgLabelNormal: "نرمال (90–150)",
+        bgLabelMid: "کمی بالا (150–180)",
+        bgLabelHigh: "بالا (180–240)",
+        bgLabelVeryHigh: "خیلی بالا (250+)",
+        recommendedMenuHeading: "غذاهای پیشنهادی متناسب با وضعیت فعلی شما:",
+        amBtnAll: "همه غذاها",
+        amBtnBreakfast: "🌅 صبحانه",
+        amBtnLunch: "🍱 ناهار",
+        amBtnDinner: "🍲 شام",
+        amBtnSnack: "🥨 میان‌وعده و مخلفات",
+        searchPlaceholder: "جستجوی نام غذا یا مواد اولیه...",
+        seasoningPageTitle: "🧂 راهنمای استفاده از ۷ سس و چاشنی آسیایی",
+        seasoningPageDesc: "قابل استفاده در غذاهای ایرانی و همچنین غذاهای چینی، ژاپنی و کره‌ای. به جز سس فلفل کره‌ای که کمی قند دارد، بقیه چاشنی‌ها بدون قند هستند.",
+        howToEatLabel: "🍽️ نکات مصرف و طرز تهیه:",
+        currentMealDoseLabel: "💉 دوز انسولین و روش مصرف در این وعده:",
+        giGreen: "🟢 قند بسیار متعادل",
+        giYellow: "🟡 افزایش قند متوسط",
+        giRed: "🔴 افزایش قند سریع",
+        highBgWarn: "⚠️ قند خون شما сейчас بالاست. بهتر است غذاهای [🟢 متعادل] را انتخاب کنید. اگر این غذا را می‌خورید، حتماً دوز اصلاحی انسولین زرد (Reg) و زمان انتظار را رعایت کنید.",
+        lowBgWarn: "💡 قند خون پایین است. ابتدا چند لقمه نان یا برنج بخورید و سپس انسولین بزنید.",
+        mealLabels: { breakfast: "🌅 صبحانه", lunch: "🍱 ناهار", dinner: "🍲 شام", snack: "🥨 میان‌وعده" }
+      },
+      ko: {
+        dir: "ltr",
+        appTitle: "🍽️ 식단 참고 레시피",
+        coreRule: "핵심 규칙: [초록병 NPH] 눈금은 항상 고정하고(아침 NPH 36~38 권장, 저녁 NPH 40), 오직 [노란병 Reg]만 조절하세요!",
+        tabPlanner: "🎯 식사 & 혈당별 맞춤 메뉴",
+        tabAllMenus: "📖 전체 메뉴 보기",
+        tabSeasonings: "🧂 양념 사용법",
+        step1Label: "1단계",
+        step1Title: "지금 드실 식사를 선택하세요:",
+        btnMealBreakfast: "🌅 아침 식사",
+        btnMealBreakfastSub: "첫 번째 주사 (노란병 Reg + 초록병 NPH)",
+        btnMealLunch: "🍱 점심 식사",
+        btnMealLunchSub: "기본적으로 주사 안 맞음 (아침 NPH 효과)",
+        btnMealDinner: "🍲 저녁 식사",
+        btnMealDinnerSub: "두 번째 주사 (노란병 Reg + 초록병 NPH)",
+        btnMealSnack: "🥨 간식",
+        btnMealSnackSub: "간식 먹는 시간대 선택",
+        snackTimingTitle: "간식을 먹는 시간대를 선택하세요:",
+        timing1Title: "1. 아침 식사 전",
+        timing1Sub: "기상 직후 공복 시간",
+        timing2Title: "2. 아침 ~ 점심 사이",
+        timing2Sub: "오전 09:30~11:30 (저혈당 주의 구간)",
+        timing3Title: "3. 점심 ~ 저녁 사이",
+        timing3Sub: "오후 15:00~18:00 (혈당 상승 구간)",
+        timing4Title: "4. 저녁 식사 후 / 취침 전",
+        timing4Sub: "야간 저혈당 예방 구간",
+        step2Label: "2단계",
+        step2Title: "현재 덱스콤(Dexcom) 혈당 수치를 선택하세요:",
+        bgLabelLow: "낮음 (<90)",
+        bgLabelNormal: "정상 (90–150)",
+        bgLabelMid: "약간 높음 (150–180)",
+        bgLabelHigh: "높음 (180–240)",
+        bgLabelVeryHigh: "매우 높음 (250+)",
+        recommendedMenuHeading: "현재 상태에 맞춘 추천 메뉴:",
+        amBtnAll: "전체 메뉴",
+        amBtnBreakfast: "🌅 아침",
+        amBtnLunch: "🍱 점심",
+        amBtnDinner: "🍲 저녁",
+        amBtnSnack: "🥨 간식 & 반찬",
+        searchPlaceholder: "요리 이름이나 재료 검색...",
+        seasoningPageTitle: "🧂 가져간 7가지 양념 간단 사용법",
+        seasoningPageDesc: "이란 가정식이나 (중국), (일본), (한국) 요리에 모두 활용할 수 있습니다. 한국 고추장(당분 포함)을 제외한 나머지 양념은 모두 무당이라 혈당을 올리지 않습니다.",
+        howToEatLabel: "🍽️ 식사 요령 & 조리 팁:",
+        currentMealDoseLabel: "💉 이번 끼니 인슐린 & 식사 가이드:",
+        giGreen: "🟢 혈당 매우 안정",
+        giYellow: "🟡 혈당 보통",
+        giRed: "🔴 혈당 빠르게 상승",
+        highBgWarn: "⚠️ 현재 혈당이 높습니다. 가급적 [🟢 혈당 안정] 메뉴를 먼저 선택하시고, 이 메뉴를 드실 경우 노란병(Reg) 추가 용량과 대기 시간을 꼭 지켜주세요.",
+        lowBgWarn: "💡 현재 혈당이 낮습니다. 먼저 빵이나 밥을 두세 입 드신 후에 주사를 맞으세요.",
+        mealLabels: { breakfast: "🌅 아침", lunch: "🍱 점심", dinner: "🍲 저녁", snack: "🥨 간식/반찬" }
+      }
+    };
+
+    // ==================== 7 SEASONINGS DATA (4 LANGUAGES) ====================
+    const seasoningsData = [
+      {
+        title: {
+          zh: "1. 中国酱油（配番茄料理绝配 / 增香提鲜）",
+          en: "1. Chinese Soy Sauce (Great with Tomatoes & All-Purpose Umami)",
+          fa: "۱. سویا سس چینی (فوق‌العاده با غذاهای گوجه‌ای و طعم‌دهنده همه‌کاره)",
+          ko: "1. 중국 간장 (토마토 요리와 찰떡궁합 / 만능 감칠맛)"
+        },
+        desc: {
+          zh: "• 配番茄料理：放一点到有番茄的料理里（如波斯番茄炒蛋、茄子炖番茄、番茄肉酱面、番茄羊汤），和番茄非常搭。<br>• 偏热油激香：在偏热一点的油里稍微热一下激发出香味（注意火不要太大），有点像味素的作用，几乎可以放进所有料理里增加风味，也可以直接当蘸料。（0糖）",
+          en: "• With Tomatoes: Add a splash to any tomato-based dish (Persian tomato omelet, Bademjan eggplant stew, Macaroni meat sauce, Abgoosht). It pairs wonderfully with tomatoes.<br>• Sizzle in Warm Oil: Heat it briefly in slightly hot oil to release a rich aroma (keep heat moderate so it doesn't burn). Works like umami seasoning for almost any dish or as a dipping sauce. (0 Sugar)",
+          fa: "• عالی با گوجه‌فرنگی: کمی از آن را داخل غذاهایی که گوجه دارند بریزید (مثل املت گوجه، خورشت بادمجان، ماکارونی یا آبگوشت)؛ طعم گوجه را فوق‌العاده می‌کند.<br>• تفت دادن در روغن گرم: در روغن کمی داغ، سویا سس را چند ثانیه تفت دهید تا عطر آن آزاد شود (شعله زیاد نباشد تا نسوزد). مثل یک طعم‌دهنده طبیعی در همه غذاها یا به عنوان سس کنار غذا عالی است. (بدون قند)",
+          ko: "• 토마토 요리에 추가: 토마토가 들어가는 요리(페르시아식 토마토 달걀볶음, 가지 토마토 스튜, 미트소스 파스타 등)에 살짝 넣으면 감칠맛이 살아납니다.<br>• 따뜻한 기름에 향 내기: 약간 달궈진 기름에 간장을 살짝 데워 향을 내주세요(불이 너무 세지 않게 주의). 조미료처럼 거의 모든 요리에 풍미를 더해주며, 찍어 먹는 소스로 써도 좋습니다. (무당)"
+        }
+      },
+      {
+        title: {
+          zh: "2. 中国陈醋（放面条里 / 做菜最后提味）",
+          en: "2. Chinese Aged Vinegar (For Noodles & Finishing Touch)",
+          fa: "۲. سرکه سیاه چینی (برای نودل، ماکارونی و طعم‌دهنده آخر پخت)",
+          ko: "2. 중국 진식초 (면 요리 및 요리 마지막 풍미 추가)"
+        },
+        desc: {
+          zh: "• 放面条与做菜提味：吃汤面、拌面或意面时可以直接放一点；做炒菜（如醋溜土豆丝、鱼香茄子）时，在出锅前最后淋一点提味。<br>• 当蘸料与压糖：也可以配酱油蘸烤肉、炸肉饼吃，醋酸能顺便帮主食减缓 20%–30% 的升糖速度。",
+          en: "• Noodles & Finishing: Add directly to noodle soups, mixed noodles, or pasta. When stir-frying (like shredded potatoes or eggplant), drizzle a little right at the end before turning off the heat.<br>• Dipping & Blood Sugar Benefit: Mix with soy sauce as a dip for kebabs or Kotlet. Naturally slows down starch absorption, reducing post-meal blood sugar spikes by 20%–30%.",
+          fa: "• در نودل و آخر آشپزی: موقع خوردن نودل، سوپ یا ماکارونی کمی داخل ظرف بریزید. در غذاهای سرخ‌کردنی (مثل سیب‌زمینی خلالی یا بادمجان)، در آخرین لحظه قبل از خاموش کردن شعله اضافه کنید تا عطر بگیرد.<br>• کاهش قند خون: ترکیب آن با سویا سس برای کتلت و کباب عالی است و سرعت بالا رفتن قند خون ناشی از برنج و نان را ۲۰ تا ۳۰ درصد کاهش می‌دهد.",
+          ko: "• 면 요리 & 마지막 풍미: 국수, 비빔면, 파스타를 먹을 때 살짝 넣거나, 볶음 요리(감자채볶음, 가지볶음 등) 마지막 단계에 둘러 향을 내줍니다.<br>• 찍어 먹기 & 혈당 완화: 간장과 섞어 튀김이나 고기를 찍어 먹어도 좋으며, 식초 성분이 탄수화물 흡수를 늦춰 식후 혈당 피크를 20~30% 낮춰줍니다."
+        }
+      },
+      {
+        title: {
+          zh: "3. 郫县豆瓣酱（小火炒香炒熟 / 不需要额外放盐）",
+          en: "3. Pixian Doubanjiang Chili Bean Paste (Sizzle on Low Heat / No Extra Salt Needed)",
+          fa: "۳. رب تند سیچوان - دوبانجیانگ (تفت با شعله کم / بدون نیاز به نمک)",
+          ko: "3. 피현 두반장 (약불에 볶아 향 내기 / 추가 소금 불필요)"
+        },
+        desc: {
+          zh: "• 用法：质地很干很香。用前可以切碎（可选，不切也可以），跟一点点油混合，开小火慢慢炒香，激发出香味、炒熟一点出红油后，再下肉和菜翻炒。<br>• 无需放盐：咸鲜味很足（炒一盘菜挖大拇指指甲盖大小/半小勺即可），不需要额外放盐！（0糖）",
+          en: "• How to Use: Very dry and fragrant. You can chop it finely (optional), mix with a little oil, and fry slowly over low heat until fragrant and cooked into red oil, then add meat and vegetables.<br>• No Salt Needed: Very savory and salty (use only a thumbnail-sized amount / half teaspoon per dish). You don't need to add extra salt! (0 Sugar)",
+          fa: "• روش استفاده: بافت خشک و بسیار معطری دارد. می‌توانید کمی خرد کنید (اختیاری)؛ با کمی روغن مخلوط کرده و روی شعله بسیار کم تفت دهید تا پخته شود، عطر آن بلند شود و روغن قرمز رنگ شود، سپس گوشت و سبزیجات را اضافه کنید.<br>• بدون نیاز به نمک: برای یک بشقاب غذا فقط به اندازه ناخن شست (نصف قاشق چای‌خوری) کافی است و دیگر نیازی به اضافه کردن نمک نیست! (بدون قند)",
+          ko: "• 사용법: 되직하고 향이 아주 진합니다. 잘게 다져서(생략 가능) 약간의 기름과 섞은 뒤, 약불에서 천천히 볶아 고소한 향과 붉은 기름을 낸 다음 고기와 채소를 넣고 볶으세요.<br>• 소금 추가 불필요: 한 접시 기준 엄지손톱만큼(반 티스푼)만 넣어도 간이 충분하므로 소금을 따로 넣지 않아도 됩니다! (무당)"
+        }
+      },
+      {
+        title: {
+          zh: "4. 日本柚子胡椒酱（蘸所有肉 / 放汤面里增加风味）",
+          en: "4. Japanese Yuzu Kosho (Dip for All Meats & Noodle Soup Enhancer)",
+          fa: "۴. سس یوزو کوشو ژاپنی (مناسب انواع گوشت و سوپ نودل)",
+          ko: "4. 일본 유자후추 소스 (모든 고기 찍어 먹기 & 국물 풍미 추가)"
+        },
+        desc: {
+          zh: "• 蘸所有肉：青柚子皮与青辣椒做的清香辣酱。可以直接蘸所有肉吃（水煮鸡腿、煎鸡排、牛羊肉烤串 Kebab、烤鱼）。<br>• 放汤面里：吃汤面、关东煮、鸡汤或牛肉汤时，放一点点进去增加清爽风味。（味道浓，每次抹绿豆大小即可，0糖）",
+          en: "• Dip for All Meats: A citrusy, mildly spicy paste made from yuzu zest and green chili. Use it directly on boiled/fried chicken legs, beef/lamb kebabs, or grilled trout.<br>• In Noodle Soups: Stir a tiny dab into noodle soup, Oden, or broth for a bright citrus aroma. (Concentrated flavor—a mung-bean-sized dab is enough. 0 Sugar)",
+          fa: "• کنار انواع گوشت: تهیه شده از پوست مرکبات یوزو و فلفل سبز. عالی برای زدن روی مرغ آب‌پز یا سرخ‌شده، انواع کباب، جوجه و ماهی قزل‌آلا.<br>• داخل سوپ و نودل: مقدار بسیار کمی (به اندازه یک عدس) داخل سوپ، نودل یا آبگوشت مرغ حل کنید تا عطر فوق‌العاده‌ای بگیرد. (بدون قند)",
+          ko: "• 모든 고기에 곁들이기: 유자 향과 청고추의 깔끔한 매운맛이 어우러진 소스입니다. 삶거나 구운 닭다리, 케밥(양/소고기), 생선구이 등 모든 고기에 살짝 찍어 드세요.<br>• 국물/탕면에 추가: 국수나 오뎅탕, 맑은 국물에 녹두알만큼 살짝 풀면 상큼한 풍미가 살아납니다. (무당)"
+        }
+      },
+      {
+        title: {
+          zh: "5. 草原阿妈蘸料（水煮菜/烫菜/涮肉蘸料 & 加点水拌面）",
+          en: "5. Grassland Ama Sesame Dip (For Boiled Veggies/Meats & Mixed Noodles)",
+          fa: "۵. سس کنجد مغولی (برای سبزیجات آب‌پز، گوشت آب‌پز و نودل)",
+          ko: "5. 초원엄마 참깨 소스 (데친 채소/샤브샤브 찍먹 & 비빔면)"
+        },
+        desc: {
+          zh: "• 主要是当蘸料：吃水煮菜、烫青菜（菠菜/包菜/西葫芦）、涮牛羊肉、水煮鸡腿时直接当蘸料吃，非常香。<br>• 拌面与调稀：也可以用来拌面条；如果觉得咸了或太稠，加一点点温水化开即可。（用完后可用伊朗纯芝麻酱 Ardeh + 水 + 酱油 + 陈醋调出同款）",
+          en: "• Primarily a Dip: Delicious as a dipping sauce for boiled/blanched vegetables (spinach, cabbage, zucchini), boiled chicken, or hotpot sliced beef/lamb.<br>• Mixed Noodles & Diluting: Great for tossing with noodles. If it feels too salty or thick, simply mix in a little warm water. (When finished, recreate it using Iranian pure tahini `Ardeh` + water + soy sauce + vinegar).",
+          fa: "• عالی به عنوان سس کنار غذا: مخصوص خوردن با سبزیجات آب‌پز یا بخارپز (اسفناج، کلم، کدو، قارچ)، گوشت و مرغ آب‌پز که طعم فوق‌العاده خوشمزه‌ای به آن‌ها می‌دهد.<br>• برای نودل و رقیق کردن: برای مخلوط کردن با نودل هم عالی است. اگر کمی شور یا غلیظ بود، کمی آب ولرم به آن اضافه کنید تا باز شود. (بعد از تمام شدن، با «ارده خالص» ایرانی + آب + سویا سس + سرکه می‌توانید مشابهش را بسازید).",
+          ko: "• 만능 디핑 소스: 데친 채소(시금치, 양배추, 애호박, 버섯)나 샤브샤브 고기, 삶은 닭다리를 찍어 먹으면 정말 고소하고 맛있습니다.<br>• 비빔면 & 농도 조절: 면을 비벼 먹어도 맛있습니다. 너무 짜거나 되직하면 따뜻한 물을 약간 넣어 풀어서 드세요. (다 먹은 후엔 이란 순수 참깨페이스트 Ardeh + 물 + 간장 + 식초로 비슷하게 만들 수 있습니다)"
+        }
+      },
+      {
+        title: {
+          zh: "6. 韩国辣椒酱 & 7. 大喜大牛肉粉",
+          en: "6. Korean Chili Paste (Gochujang) & 7. Dashida Beef Powder",
+          fa: "۶. رب فلفل کره‌ای (گوچوجانگ) و ۷. پودر عصاره گوشت داشیدا",
+          ko: "6. 한국 고추장 & 7. 다시다 소고기 분말"
+        },
+        desc: {
+          zh: "• 韩国辣椒酱：① 可以直接当作蘸酱，配烤肉/煎肉和生菜吃；② 用来做韩式料理的基底（炒肉、拌饭）。（注意：辣酱含糖，每次用 1 小茶匙不升糖；若放 1 大满勺，黄瓶 Reg 需 +1 单位）<br>• 大喜大牛肉粉：做菜、煮汤、煮面或拌凉菜时，只需要加一点点（很少一点），就能增加浓郁的牛肉风味。",
+          en: "• Korean Chili Paste: ① Use directly as a dipping sauce with grilled meat and lettuce; ② Use as a base for Korean stir-fries and Bibimbap. (Note: Contains sugar. 1 tsp needs no extra insulin; if using 1 full tbsp, add +1U Yellow Reg).<br>• Dashida Beef Powder: Add just a tiny pinch when stir-frying, making soup, or seasoning veggies to instantly add rich beef flavor.",
+          fa: "• سس فلفل کره‌ای: ۱. به عنوان سس کنار گوشت کبابی یا سرخ‌شده؛ ۲. به عنوان پایه غذاهای کره‌ای. (توجه: این سس کمی قند دارد؛ ۱ قاشق چای‌خوری قند را بالا نمی‌برد، اما اگر ۱ قاشق غذاخوری پر استفاده کردید، ۱ واحد به انسولین زرد Reg اضافه کنید).<br>• پودر گوشت داشیدا: پودر طعم‌دهنده گوشت گاو است؛ موقع پخت سوپ، نودل یا غذاهای سرخ‌کردنی فقط مقدار بسیار کمی اضافه کنید تا طعم عالی گوشت بگیرد.",
+          ko: "• 한국 고추장: ① 구운 고기를 찍어 먹는 쌈장 대용으로 쓰거나, ② 제육/닭갈비/비빔밥 등 한식 요리의 베이스로 사용하세요. (단맛이 있으므로 1작은술은 괜찮지만, 1큰술 가득 넣을 땐 노란병 Reg +1단위 추가)<br>• 다시다: 볶음 요리나 국, 탕, 나물 무침을 할 때 아주 조금만 넣어도 진한 소고기 풍미가 살아납니다."
+        }
+      }
+    ];
+
+    // ==================== RECIPES DATABASE (4 LANGUAGES) ====================
+    // baseReg: standard yellow (Reg) units for breakfast/dinner.
+    const recipes = [
+      // -------------------- BREAKFAST --------------------
+      {
+        id: "b1",
+        meals: ["breakfast"],
+        giLevel: "green",
+        baseReg: { breakfast: 15 },
+        waitMins: { breakfast: 15 },
+        title: {
+          zh: "波斯传统咸口早餐（含番茄炒蛋）",
+          en: "Traditional Persian Savory Breakfast (with Tomato Omelet)",
+          fa: "صبحانه سنتی ایرانی (پنیر و گردو + املت گوجه + نان سنگک)",
+          ko: "페르시아 전통 짭짤한 아침식사 (토마토 달걀볶음 포함)"
+        },
+        subTitle: {
+          zh: "白奶酪 (Panir) + 核桃 (Gerdoo) + 橄榄 + 番茄炒蛋 (Omelet-e Gojeh) + 全麦石子饼 (Sangak)",
+          en: "White Cheese (Panir) + Walnuts + Olives + Tomato Omelet + Whole Wheat Sangak Bread",
+          fa: "پنیر سفید + گردو + زיתون + املت گوجه‌فرنگی + نان سنگک",
+          ko: "화이트 치즈(Panir) + 호두 + 올리브 + 토마토 오믈렛 + 통밀 상가크 빵"
+        },
+        howToEat: {
+          zh: [
+            "做番茄炒蛋时，在偏热一点的油里放一点【中国酱油】稍微热一下激出香味（火不要太大），再下番茄和鸡蛋，和番茄非常搭。",
+            "先吃奶酪、核桃、橄榄和鸡蛋，最后吃全麦石子饼，能缓慢释放能量，预防上午 10:00–11:30 的低血糖。"
+          ],
+          en: [
+            "When making the tomato omelet, sizzle a splash of [Chinese Soy Sauce] in warm oil (moderate heat) before adding tomatoes and eggs—it pairs wonderfully with tomatoes.",
+            "Eat cheese, walnuts, olives, and eggs first, then eat Sangak bread. Provides steady energy for 4 hours to prevent the 10:00–11:30 AM blood sugar drop."
+          ],
+          fa: [
+            "موقع درست کردن املت گوجه، در روغن کمی گرم مقدار کمی [سویا سس چینی] بریزید تا عطرش آزاد شود (شعله زیاد نباشد) و بعد گوجه و تخم‌مرغ را اضافه کنید؛ با گوجه فوق‌العاده می‌شود.",
+            "اول پنیر، گردو، زیتون و تخم‌مرغ را بخورید و در ادامه نان سنگک میل کنید تا انرژی به آرامی آزاد شود و ساعت ۱۰ تا ۱۱:۳۰ صبح دچار افت قند نشوید."
+          ],
+          ko: [
+            "토마토 달걀볶음을 만들 때 약간 달궈진 기름에 [중국 간장]을 살짝 데워 향을 낸 뒤(불 세기 주의) 토마토와 달걀을 넣으면 풍미가 훨씬 좋아집니다.",
+            "치즈, 호두, 올리브, 달걀을 먼저 먹고 통밀빵(Sangak)을 드시면 오전 10:00~11:30 저혈당을 예방하는 데 아주 좋습니다."
+          ]
+        }
+      },
+      {
+        id: "b2",
+        meals: ["breakfast"],
+        giLevel: "green",
+        baseReg: { breakfast: 15 },
+        waitMins: { breakfast: 15 },
+        title: {
+          zh: "波斯扁豆浓汤早餐 (Adasi)",
+          en: "Persian Green Lentil Soup (Adasi) with Bread",
+          fa: "عدسی گرم با نان سنگک",
+          ko: "페르시아 렌틸콩 수프 아침식사 (Adasi)"
+        },
+        subTitle: {
+          zh: "慢炖绿扁豆浓汤 + 洋葱 + 全麦石子饼",
+          en: "Slow-cooked green lentils + caramelized onion + whole wheat bread",
+          fa: "عدس پخته شده با پیاز داغ + نان سنگک",
+          ko: "초록 렌틸콩 수프 + 양파 + 통밀빵"
+        },
+        howToEat: {
+          zh: [
+            "煮扁豆汤时可以加很少一点点【大喜大牛肉粉】增加牛肉风味；喝之前在碗里最后淋半勺【中国陈醋】提味。",
+            "扁豆富含膳食纤维，加上陈醋能进一步放慢淀粉吸收，一整个上午血糖都会很平稳。"
+          ],
+          en: [
+            "Add a tiny pinch of [Dashida Beef Powder] while cooking the lentil soup for rich beef flavor, and drizzle half a spoon of [Chinese Vinegar] right before eating.",
+            "Lentils are high in fiber, and the vinegar slows down starch absorption, keeping blood sugar steady all morning."
+          ],
+          fa: [
+            "موقع پخت عدسی، مقدار بسیار کمی [پودر گوشت داشیدا] اضافه کنید تا طعم عالی بگیرد؛ قبل از خوردن هم نصف قاشق [سرکه چینی] به عنوان چاشنی آخر بریزید.",
+            "فیبر بالای عدس همراه با سرکه باعث می‌شود قند خون در طول صبح کاملاً صاف و متعادل بماند."
+          ],
+          ko: [
+            "렌틸콩 수프를 끓일 때 [다시다]를 아주 조금 넣으면 소고기 풍미가 살아나고, 먹기 직전에 [중국 진식초]를 살짝 두르면 맛이 깔끔해집니다.",
+            "식이섬유가 풍부해 오전 내내 혈당을 안정적으로 유지해 줍니다."
+          ]
+        }
+      },
+      {
+        id: "b3",
+        meals: ["breakfast", "lunch", "dinner"],
+        giLevel: "yellow",
+        baseReg: { breakfast: 15, lunch: 0, dinner: 15 },
+        waitMins: { breakfast: 20, lunch: 0, dinner: 20 },
+        title: {
+          zh: "（中国/日本）草原阿妈拌面 / 柚子胡椒牛肉汤面",
+          en: "(China/Japan) Sesame Mixed Noodles / Yuzu Kosho Beef Noodle Soup",
+          fa: "(چین/ژاپن) نودل با سس کنجد / سوپ نودل گوشت با یوزو کوشو",
+          ko: "(중국/일본) 초원엄마 참깨 비빔면 / 유자후추 소고기 탕면"
+        },
+        subTitle: {
+          zh: "细面条 + 煎蛋/牛肉片 + 烫青菜 + 草原阿妈蘸料 或 柚子胡椒大喜大清汤",
+          en: "Noodles + fried egg/beef slices + blanched greens + sesame dip or Yuzu Kosho broth",
+          fa: "نودل + تخم‌مرغ یا گوشت + اسفناج آب‌پز + سس کنجد یا سوپ یوزو کوشو",
+          ko: "면 + 달걀프라이/소고기 + 데친 채소 + 참깨소스 또는 유자후추 육수"
+        },
+        howToEat: {
+          zh: [
+            "（中国）拌面做法：【草原阿妈蘸料】如果觉得咸或稠加一点水化开，放进煮好的面条和烫菠菜里，再加一点【中国陈醋】和【中国酱油】拌匀。",
+            "（日本）汤面做法：水里放一点【中国酱油】和很少一点点【大喜大】煮面和牛肉青菜，出锅后在汤里放一点【日本柚子胡椒酱】和陈醋增加风味。先吃蛋和肉菜再吃面。"
+          ],
+          en: [
+            "(China) Mixed Noodles: Dilute [Grassland Ama Dip] with a little water, toss with noodles and boiled spinach, and add a splash of [Chinese Vinegar] and [Soy Sauce].",
+            "(Japan) Noodle Soup: Boil noodles, beef, and greens with a little [Soy Sauce] and a tiny pinch of [Dashida]. Stir a dab of [Japanese Yuzu Kosho] and vinegar into the soup before eating. Eat egg and meat first."
+          ],
+          fa: [
+            "(چین) نودل مخلوط: [سس کنجد مغولی] را با کمی آب رقیق کنید، با نودل پخته و اسفناج مخلوط کرده و کمی [سرکه چینی] و [سویا سس] بزنید.",
+            "(ژاپن) سوپ نودل: در آب در حال جوش کمی [سویا سس] و مقدار بسیار کمی [داشیدا] بریزید و نودل و گوشت را بپزید. در آخر کمی [سس یوزو کوشو] و سرکه برای عطر بیشتر داخل سوپ بزنید. اول تخم‌مرغ و گوشت را بخورید."
+          ],
+          ko: [
+            "(중국식) 비빔면: [초원엄마 소스]가 짜거나 되직하면 물을 약간 섞어 푼 뒤, 삶은 면과 데친 채소에 넣고 [중국 진식초]와 [간장]을 약간 넣어 비벼 드세요.",
+            "(일본식) 탕면: 물에 [간장]과 [다시다]를 아주 조금 넣고 면과 고기, 채소를 끓인 뒤 마지막에 [유자후추 소스]와 식초를 살짝 풀어 풍미를 더합니다. 달걀과 고기를 먼저 드세요."
+          ]
+        }
+      },
+      {
+        id: "b4",
+        meals: ["breakfast"],
+        giLevel: "yellow",
+        baseReg: { breakfast: 15 },
+        waitMins: { breakfast: 20 },
+        title: {
+          zh: "西式煎蛋肉片三明治 / 无糖酸奶坚果燕麦碗",
+          en: "Savory Egg & Meat Sandwich / Unsweetened Yogurt with Oats & Nuts",
+          fa: "ساندویچ تخم‌مرغ و گوشت / ماست ساده با جو دوسر و گردو",
+          ko: "달걀 고기 샌드위치 / 무가당 요거트 견과류 오트밀 볼"
+        },
+        subTitle: {
+          zh: "煎蛋 + 香肠/牛肉片 + 芝士吐司，或 无糖浓酸奶 (Mast) + 燕麦 + 核桃巴旦木",
+          en: "Fried egg + sausage/beef + cheese toast, or plain thick yogurt + oats + walnuts/almonds",
+          fa: "تخم‌مرغ نیمرو + کالباس/گوشت + پنیر و نان تست، یا ماست چکیده + جو دوسر + مغزها",
+          ko: "달걀프라이 + 소시지/소고기 + 치즈 토스트, 또는 플레인 요거트 + 오트밀 + 견과류"
+        },
+        howToEat: {
+          zh: [
+            "吃三明治时，可以在里面的肉片和煎蛋上抹一点点【日本柚子胡椒酱】或蘸一点【韩国辣椒酱】，先把肉和蛋吃掉一半再吃面包。",
+            "吃酸奶燕麦碗时，多放核桃和巴旦木，靠坚果油脂延缓消化速度。"
+          ],
+          en: [
+            "Add a tiny dab of [Japanese Yuzu Kosho] or [Korean Chili Paste] to the meat and egg inside the sandwich. Eat half the meat/egg filling first before eating the bread.",
+            "For the yogurt bowl, add plenty of walnuts and almonds to slow down digestion."
+          ],
+          fa: [
+            "در ساندویچ می‌توانید کمی [یوزو کوشو] یا [سس فلفل کره‌ای] به گوشت و تخم‌مرغ بزنید. ابتدا نیمی از تخم‌مرغ و گوشت را بخورید و سپس نان را میل کنید.",
+            "در کاسه ماست و جو دوسر، گردو و بادام بیشتری بریزید تا جذب کربوهیدرات کندتر شود."
+          ],
+          ko: [
+            "샌드위치 속 고기와 달걀에 [유자후추 소스]나 [한국 고추장]을 살짝 발라 드시고, 속재료를 먼저 절반쯤 먹은 뒤 빵을 드세요.",
+            "요거트 오트밀 볼에는 호두와 아몬드를 넉넉히 넣어 탄수화물 흡수를 늦춰줍니다."
+          ]
+        }
+      },
+      {
+        id: "b5",
+        meals: ["breakfast"],
+        giLevel: "red",
+        baseReg: { breakfast: 17 },
+        waitMins: { breakfast: 25 },
+        title: {
+          zh: "阿尔达比勒水牛奶油配蜂蜜烤饼 / 小麦炖肉粥 (Haleem)",
+          en: "Ardabil Sarshir Cream & Honey with Barbari Bread / Haleem Porridge",
+          fa: "سرشیر و عسل اردبیل با نان بربری / حلیم گندم و گوشت",
+          ko: "아르다빌 사르시르 크림 & 꿀 바르바리 빵 / 할림(Haleem) 밀죽"
+        },
+        subTitle: {
+          zh: "浓缩水牛奶油 (Sarshir) + 蜂蜜 (Asal) + 厚烤饼 (Barbari)，或 传统小麦肉丝粥",
+          en: "Clotted cream (Sarshir) + honey + thick flatbread (Barbari), or wheat & meat porridge",
+          fa: "سرشیر + عسل طبیعی + نان بربری، یا حلیم سنتی با دارچین",
+          ko: "농축 크림(Sarshir) + 꿀 + 두꺼운 구운 빵(Barbari), 또는 전통 밀 고기죽"
+        },
+        howToEat: {
+          zh: [
+            "蜂蜜、白面厚烤饼和小麦粥升糖很快，吃之前必须先吃 1–2 个水煮蛋或几块咸白奶酪垫底，不要空腹第一口直接吃甜食。",
+            "水牛奶油 (Sarshir) 是纯乳脂不含糖，可以多抹；蜂蜜薄涂一层即可。吃 Haleem 小麦粥时不放白糖，只撒肉桂粉（或加一点酱油吃咸口）。"
+          ],
+          en: [
+            "Honey, white Barbari bread, and Haleem raise blood sugar quickly. Always eat 1–2 boiled eggs or white cheese first before eating the sweet bread.",
+            "Sarshir cream is pure fat (0 carbs), so use generously while keeping honey light. Eat Haleem with cinnamon only—no white sugar."
+          ],
+          fa: [
+            "عسل، نان بربری و حلیم قند خون را سریع بالا می‌برند؛ حتماً قبل از شروع، ۱ تا ۲ عدد تخم‌مرغ آب‌پز یا چند تکه پنیر سفید بخورید.",
+            "سرشیر چربی خالص است و قند ندارد، اما عسل را لایه نازک بمالید. حلیم را بدون شکر و فقط با دارچین و روغن کنجد میل کنید."
+          ],
+          ko: [
+            "꿀과 두꺼운 흰 빵, 밀죽은 혈당을 빠르게 올리므로 식사 첫입으로 삶은 달걀 1~2개나 화이트 치즈를 먼저 드세요.",
+            "사르시르 크림은 당분이 없으니 넉넉히 바르고 꿀은 얇게 바르세요. 할림(밀죽)에는 설탕 대신 시나몬 가루만 뿌려 드세요."
+          ]
+        }
+      },
+
+      // -------------------- LUNCH & DINNER --------------------
+      {
+        id: "ld1",
+        meals: ["lunch", "dinner"],
+        giLevel: "green",
+        baseReg: { lunch: 0, dinner: 15 },
+        waitMins: { lunch: 0, dinner: 15 },
+        title: {
+          zh: "（中国）川味小炒牛羊肉 / 鸡腿肉",
+          en: "(China) Sichuan Stir-Fried Beef, Lamb, or Chicken",
+          fa: "(چین) خوراک گوشت یا مرغ تفت‌داده شده به سبک سیچوان",
+          ko: "(중국) 사천식 소/양고기 또는 닭고기 야채볶음"
+        },
+        subTitle: {
+          zh: "牛羊肉薄片或鸡腿丁 + 青红甜椒 (Felfel Dolmeh) + 洋葱 + 包菜片 (Kalam)",
+          en: "Sliced beef/lamb or chicken + bell peppers + onion + cabbage",
+          fa: "گوشت ورقه‌ای یا مرغ خردشده + فلفل دلمه‌ای + پیاز + کلم برگ",
+          ko: "소/양고기 또는 닭다리살 + 피망 + 양파 + 양배추"
+        },
+        howToEat: {
+          zh: [
+            "做法：【郫县豆瓣酱】（切碎或不切都可以，取大拇指指甲盖大小）跟一点点油混合，开小火炒香、炒熟一点激发出香味后，下肉片和甜椒、洋葱、包菜炒熟，淋一点【中国酱油】和很少一点点【大喜大】，不需要额外放盐。",
+            "这道菜不含糖，先吃肉和蔬菜，再配 1 小平盘米饭或半张饼，餐后血糖很稳。"
+          ],
+          en: [
+            "Cooking: Mix a thumbnail-sized dab of [Pixian Doubanjiang] (chopped or whole) with a little oil and sizzle on low heat until fragrant and cooked. Add meat and veggies, stir-fry on high heat, and finish with a splash of [Chinese Soy Sauce] and a tiny pinch of [Dashida]. No extra salt needed.",
+            "0 sugar dish. Eat meat and vegetables first, then have a small plate of rice or flatbread."
+          ],
+          fa: [
+            "طرز تهیه: به اندازه ناخن شست از [رب دوبانجیانگ] را با کمی روغن مخلوط کنید و روی شعله کم تفت دهید تا پخته و معطر شود؛ سپس گوشت، فلفل دلمه‌ای، پیاز و کلم را اضافه کرده و تفت دهید. در آخر کمی [سویا سس چینی] و مقدار بسیار کمی [داشیدا] بزنید (نیازی به نمک نیست).",
+            "این غذا بدون قند است. ابتدا گوشت و سبزیجات را بخورید و سپس برنج یا نان میل کنید."
+          ],
+          ko: [
+            "조리법: [피현 두반장](다지거나 그대로 엄지손톱만큼)을 기름 약간과 섞어 약불에서 볶아 향을 충분히 낸 뒤, 고기와 피망, 양파, 양배추를 넣고 볶습니다. 마무리로 [중국 간장] 약간과 [다시다]를 아주 조금만 넣으세요(소금 추가 불필요).",
+            "무당 요리이므로 고기와 채소를 먼저 드시고 밥이나 빵을 곁들이면 혈당이 매우 안정적입니다."
+          ]
+        }
+      },
+      {
+        id: "ld2",
+        meals: ["lunch", "dinner"],
+        giLevel: "green",
+        baseReg: { lunch: 0, dinner: 13 },
+        waitMins: { lunch: 0, dinner: 10 },
+        title: {
+          zh: "（中国）草原阿妈：水煮菜 / 烫青菜 / 涮牛羊肉",
+          en: "(China) Boiled Veggies & Sliced Meats with Grassland Ama Sesame Dip",
+          fa: "(چین) سبزیجات و گوشت آب‌پز با سس کنجد مغولی",
+          ko: "(중국) 초원엄마 소스를 곁들인 데친 채소 & 샤브샤브 고기"
+        },
+        subTitle: {
+          zh: "水煮菠菜、包菜、西葫芦、蘑菇 + 涮牛羊肉/水煮鸡腿 + 草原阿妈蘸料",
+          en: "Boiled spinach, cabbage, zucchini, mushrooms + sliced beef/lamb/chicken + sesame dip",
+          fa: "اسفناج، کلم، کدو و قارچ آب‌پز + گوشت یا مرغ آب‌پز + سس کنجد",
+          ko: "데친 시금치, 양배추, 애호박, 버섯 + 샤브샤브 고기/삶은 닭다리 + 참깨 소스"
+        },
+        howToEat: {
+          zh: [
+            "做法：水里加很少一点点【大喜大】和一点【中国酱油】，把牛羊肉、鸡腿肉和各种蔬菜丢进去水煮烫熟。",
+            "蘸料用法：直接拿水煮菜、烫菜和涮肉蘸【草原阿妈蘸料】吃，非常香；如果觉得咸了可以加一点水化开（也可加点陈醋）。",
+            "注意：午餐不打针吃它时，请搭配 1 块煮土豆或半张大饼防下午低血糖；晚餐如果只吃肉菜不吃饭，黄瓶 (Reg) 减至 12–13 单位。"
+          ],
+          en: [
+            "Cooking: Boil water with a tiny pinch of [Dashida] and a splash of [Soy Sauce], then cook sliced meats and vegetables.",
+            "Dipping: Dip the boiled veggies and meats directly into [Grassland Ama Sesame Sauce]. Add a little water if it tastes salty or thick.",
+            "Note: At lunch (no shot), include a boiled potato or half a flatbread to prevent afternoon low BG. At dinner without rice/bread, reduce Yellow (Reg) to 12–13U."
+          ],
+          fa: [
+            "طرز تهیه: در آب جوش مقدار بسیار کمی [داشیدا] و کمی [سویا سس] بریزید و گوشت و سبزیجات را داخل آن بپزید.",
+            "روش مصرف: سبزیجات آب‌پز و گوشت را داخل [سس کنجد مغولی] بزنید و میل کنید (اگر شور یا غلیظ بود کمی آب اضافه کنید).",
+            "توجه: در وعده ناهار حتماً یک سیب‌زمینی آب‌پز یا نصف نان کنارش بخورید تا عصر قندتان نیفتد. در وعده شام بدون برنج، انسولین زرد (Reg) را ۱۲ تا ۱۳ واحد بزنید."
+          ],
+          ko: [
+            "조리법: 물에 [다시다]를 아주 조금 넣고 [간장]을 약간 더해 고기와 채소를 데쳐냅니다.",
+            "소스 활용: 데친 채소와 고기를 [초원엄마 소스]에 찍어 드세요. 짜거나 되직하면 물을 약간 타서 드시면 됩니다.",
+            "참고: 점심(주사 안 맞을 때)에는 오후 저혈당 예방을 위해 삶은 감자나 빵 반쪽을 곁들이세요. 저녁에 밥 없이 드실 때는 노란병(Reg)을 12~13단위로 줄여서 맞으세요."
+          ]
+        }
+      },
+      {
+        id: "ld3",
+        meals: ["lunch", "dinner"],
+        giLevel: "green",
+        baseReg: { lunch: 0, dinner: 13 },
+        waitMins: { lunch: 0, dinner: 10 },
+        title: {
+          zh: "（日本）关东煮 Oden / 柚子胡椒炖鸡腿萝卜汤",
+          en: "(Japan) Oden Hotpot: Daikon Radish, Eggs & Chicken with Yuzu Kosho",
+          fa: "(ژاپن) خوراک اودن: ترب سفید، تخم‌مرغ و مرغ آب‌پز با یوزو کوشو",
+          ko: "(일본) 오뎅탕 (무, 삶은 달걀, 닭다리살 스튜 & 유자후추)"
+        },
+        subTitle: {
+          zh: "白萝卜切厚块 (Torob-e Sefid) + 水煮蛋 + 鸡腿块/牛羊肉丸 + 蘑菇 + 土豆",
+          en: "Thick daikon radish + boiled eggs + chicken legs/meatballs + mushrooms + potato",
+          fa: "ترب سفید خردشده + تخم‌مرغ آب‌پز + مرغ یا کوفته + قارچ + سیب‌زمینی",
+          ko: "두툼하게 썬 무 + 삶은 달걀 + 닭다리살/완자 + 버섯 + 감자"
+        },
+        howToEat: {
+          zh: [
+            "做法：锅里接 4–5 碗水，放 2 勺【中国酱油】+ 很少一点点【大喜大牛肉粉】+ 半个洋葱，把白萝卜、剥壳水煮蛋、鸡腿肉、蘑菇和土豆放进去慢炖 20 分钟。",
+            "吃法：用【日本柚子胡椒酱】蘸里面的鸡腿肉和鸡蛋吃，或者放一点点进汤里增加风味。晚餐吃它几乎不升糖，很容易把夜间高血糖降下来。"
+          ],
+          en: [
+            "Cooking: Simmer 4–5 bowls of water with 2 tbsp [Soy Sauce], a tiny pinch of [Dashida], and half an onion. Add daikon radish, peeled boiled eggs, chicken, mushrooms, and potato; simmer for 20 mins.",
+            "How to Eat: Dip the chicken and eggs into [Japanese Yuzu Kosho], or stir a tiny bit into the broth. Very steady for evening blood sugar."
+          ],
+          fa: [
+            "طرز تهیه: در ۴ تا ۵ کاسه آب، ۲ قاشق [سویا سس چینی]، مقدار بسیار کمی [پودر داشیدا] و نصف پیاز بریزید و ترب سفید، تخم‌مرغ آب‌پز، مرغ، قارچ و سیب‌زمینی را ۲۰ دقیقه بپزید.",
+            "روش مصرف: گوشت مرغ و تخم‌مرغ را به کمی [سس یوزو کوشو ژاپنی] بزنید یا کمی از آن را داخل آب سوپ حل کنید. برای شام بسیار سبک است و قند شبانه را کاملاً متعادل می‌کند."
+          ],
+          ko: [
+            "조리법: 물 4~5공기에 [중국 간장] 2큰술, [다시다] 아주 조금, 양파 반 개를 넣고 무, 삶은 달걀, 닭다리살, 버섯, 감자를 넣어 20분간 푹 끓입니다.",
+            "먹는 법: 고기와 달걀을 [일본 유자후추 소스]에 찍어 먹거나 국물에 살짝 풀어 드세요. 저녁에 먹으면 야간 고혈당을 잡는 데 매우 효과적입니다."
+          ]
+        }
+      },
+      {
+        id: "ld4",
+        meals: ["lunch", "dinner"],
+        giLevel: "yellow",
+        baseReg: { lunch: 0, dinner: 15 },
+        waitMins: { lunch: 0, dinner: 15 },
+        title: {
+          zh: "家常煎鸡腿 / 水煮鸡腿配米饭 &（日本）柚子胡椒煎鸡排/烤鱼",
+          en: "Pan-Fried / Boiled Chicken Leg with Rice & (Japan) Yuzu Kosho Grilled Chicken/Trout",
+          fa: "مرغ سرخ‌شده یا آب‌پز با برنج / (ژاپن) مرغ و قزل‌آلا با یوزو کوشو",
+          ko: "가정식 닭다리 구이/백숙 백반 & (일본) 유자후추 치킨스테이크/송어구이"
+        },
+        subTitle: {
+          zh: "鸡腿 (Morgh) 或 虹鳟鱼 (Ghezel-ala) + 白米饭 (Chelow) + 蔬菜",
+          en: "Chicken leg or rainbow trout + Persian steamed rice + vegetables",
+          fa: "ران مرغ یا ماهی قزل‌آلا + چلو + سبزیجات",
+          ko: "닭다리 또는 무지개송어 + 페르시아 쌀밥 + 채소"
+        },
+        howToEat: {
+          zh: [
+            "蘸肉用法：无论是妈妈做的水煮鸡腿、煎鸡腿，还是自己煎的鸡排、烤虹鳟鱼，直接蘸【日本柚子胡椒酱】或【草原阿妈蘸料】吃，肉类本身 0 碳水不升糖。",
+            "如果妈妈用番茄炖鸡腿，可以在偏热的油里放一点【中国酱油】稍微热一下激出香味再下番茄。先吃鸡腿和蔬菜，米饭控制在 1 小平盘（晚餐半盘）。"
+          ],
+          en: [
+            "Dipping: Whether it's boiled/fried chicken leg or grilled trout, dip the meat directly in [Japanese Yuzu Kosho] or [Grassland Ama Sesame Dip]. Meat has 0 carbs.",
+            "If making tomato-braised chicken, sizzle a little [Chinese Soy Sauce] in warm oil before adding tomatoes. Eat chicken and veggies first; keep rice to 1 small flat plate (half plate at dinner)."
+          ],
+          fa: [
+            "روش مصرف: مرغ آب‌پز، مرغ سرخ‌شده یا ماهی قزل‌آلا را مستقیم به [سس یوزو کوشو ژاپنی] یا [سس کنجد مغولی] بزنید. خود مرغ و ماهی کربوهیدراتی ندارند.",
+            "اگر مرغ را با سس گوجه می‌پزید، کمی [سویا سس چینی] را در روغن گرم تفت دهید تا عطرش باز شود و بعد گوجه را بریزید. اول مرغ و سبزیجات را بخورید و برنج را در حد یک بشقاب کوچک نگه دارید."
+          ],
+          ko: [
+            "소스 활용: 삶거나 구운 닭다리, 송어구이 등 모든 고기에 [일본 유자후추 소스]나 [초원엄마 소스]를 찍어 드세요. 고기 자체는 탄수화물이 없습니다.",
+            "토마토소스로 닭다리를 조리할 때는 따뜻한 기름에 [중국 간장]을 살짝 데워 향을 낸 뒤 토마토를 넣으세요. 고기와 채소를 먼저 먹고 밥은 한 접시(저녁엔 반 접시)로 조절합니다."
+          ]
+        }
+      },
+      {
+        id: "ld5",
+        meals: ["lunch", "dinner"],
+        giLevel: "green",
+        baseReg: { lunch: 0, dinner: 15 },
+        waitMins: { lunch: 0, dinner: 15 },
+        title: {
+          zh: "波斯家常炖肉配米饭 (Khoresh) & 番茄羊汤泡饼 (Abgoosht)",
+          en: "Persian Meat & Bean Stews (Khoresh) & Tomato Lamb Broth (Abgoosht)",
+          fa: "انواع خورشت ایرانی (قورمه‌سبزی، قیمه، پیچاق‌قیمه) و آبگوشت",
+          ko: "페르시아 가정식 고기 스튜 (Khoresh) & 토마토 양고기탕 (Abgoosht)"
+        },
+        subTitle: {
+          zh: "杏仁炖肉 (Pichagh Gheymeh) / 香草芸豆炖肉 (Ghormeh Sabzi) / 黄豌豆番茄炖肉 (Gheimeh) / 羊汤",
+          en: "Ardabil Almond Beef Stew / Herb Kidney Bean Stew / Split Pea Tomato Stew / Lamb Soup",
+          fa: "پیچاق قیمه اردبیلی / قورمه‌سبزی / خورشت قیمه / دیزی",
+          ko: "아몬드 고기 스튜 / 허브 강낭콩 스튜 / 노란 완두콩 토마토 스튜 / 양고기 스프"
+        },
+        howToEat: {
+          zh: [
+            "做有番茄的炖肉（如 Gheimeh、Pichagh Gheymeh）或番茄羊汤（Abgoosht）时，在偏热一点的油里放一点【中国酱油】稍微热一下激出香味，再加很少一点点【大喜大】，和番茄非常配。",
+            "炖肉和豆子升糖很慢，先大口吃炖肉和豆子，把米饭或泡饼控制在正常小份，最后淋一点【中国陈醋】或配酸腌菜（Torshi）吃。"
+          ],
+          en: [
+            "For tomato-based stews (Gheimeh, Pichagh Gheymeh) or Abgoosht, sizzle a splash of [Chinese Soy Sauce] in warm oil and add a tiny pinch of [Dashida]—pairs wonderfully with tomatoes.",
+            "Stewed meat and beans digest slowly. Eat plenty of stew first, keep rice or soaked bread moderate, and pair with [Chinese Vinegar] or Torshi pickles."
+          ],
+          fa: [
+            "در خورشت‌هایی که گوجه و رب دارند (مثل قیمه، پیچاق‌قیمه و آبگوشت)، کمی [سویا سس چینی] را در روغن گرم تفت دهید و مقدار بسیار کمی [داشیدا] بزنید؛ طعم گوجه را عالی می‌کند.",
+            "خورشت و حبوبات قند را بالا نمی‌برند؛ ابتدا خورشت و گوشت را بخورید و مقدار برنج یا نان تیلیت‌شده را کمتر نگه دارید و کنارش ترشی یا کمی سرکه مصرف کنید."
+          ],
+          ko: [
+            "토마토가 들어가는 스튜(게이메 등)나 양고기탕(Abgoosht)을 만들 때, 따뜻한 기름에 [중국 간장]을 살짝 데워 향을 내고 [다시다]를 조금 넣으면 토마토 풍미가 훨씬 깊어집니다.",
+            "고기와 콩 스튜를 먼저 충분히 드시고 쌀밥이나 적셔 먹는 빵은 소량으로 조절하며, 식초나 피클(Torshi)을 곁들이세요."
+          ]
+        }
+      },
+      {
+        id: "ld6",
+        meals: ["lunch", "dinner"],
+        giLevel: "yellow",
+        baseReg: { lunch: 0, dinner: 15 },
+        waitMins: { lunch: 0, dinner: 15 },
+        title: {
+          zh: "（中国）川味鱼香茄子 & 家常茄子炖番茄 (Bademjan)",
+          en: "(China) Sichuan Garlic Eggplant & Persian Tomato Eggplant (Bademjan)",
+          fa: "(چین) خوراک بادمجان و گوشت سیچوان / خورشت بادمجان و گوجه",
+          ko: "(중국) 사천식 어향가지볶음 & 페르시아 가지 토마토 스튜"
+        },
+        subTitle: {
+          zh: "茄子 (Bademjan) + 番茄 / 牛羊肉末 + 蒜末",
+          en: "Eggplant + tomatoes / minced beef or lamb + garlic",
+          fa: "بادمجان + گوجه‌فرنگی / گوشت چرخ‌کرده + سیر",
+          ko: "가지 + 토마토 / 다진 고기 + 다진 마늘"
+        },
+        howToEat: {
+          zh: [
+            "做波斯茄子炖番茄时：放一点【中国酱油】在偏热的油里稍微热一下激出香味（和番茄很配），吃的时候淋一点【中国陈醋】解油腻（如果茄子油炸得很重，随餐吃 1 粒消化酶）。",
+            "（中国）鱼香肉末茄子做法：茄子切条少油煎软；一点点油混合【郫县豆瓣酱】（半小勺）开小火炒香炒熟，下牛肉末和蒜末炒香，倒回茄子加一点【中国酱油】和一点点【大喜大】焖2分钟，出锅前最后淋【中国陈醋】提味（不需要额外放盐）。"
+          ],
+          en: [
+            "For Persian Tomato Eggplant: Sizzle a splash of [Chinese Soy Sauce] in warm oil to pair with the tomatoes, and drizzle [Chinese Vinegar] when eating (take 1 digestive enzyme if heavily fried).",
+            "(China) Sichuan Eggplant: Pan-fry eggplant strips with minimal oil. Sizzle 1/2 tsp [Pixian Doubanjiang] in a little oil on low heat until cooked, add minced meat and garlic, return eggplant with a splash of [Soy Sauce] and a pinch of [Dashida], and finish with [Chinese Vinegar] before serving (no extra salt needed)."
+          ],
+          fa: [
+            "برای خوراک بادمجان و گوجه ایرانی: کمی [سویا سس چینی] را در روغن گرم تفت دهید (با گوجه عالی می‌شود) و موقع خوردن کمی [سرکه چینی] بریزید (اگر بادمجان پرروغن است ۱ عدد آنزیم گوارشی بخورید).",
+            "(چین) بادمجان سیچوان: بادمجان را با روغن کم سرخ یا بخارپز کنید. نصف قاشق چای‌خوری [رب دوبانجیانگ] را با کمی روغن روی شعله کم تفت دهید تا پخته شود، گوشت چرخ‌کرده و سیر را اضافه کنید، بادمجان را برگردانید و کمی [سویا سس] و [داشیدا] بزنید و در آخر [سرکه چینی] اضافه کنید (بدون نمک)."
+          ],
+          ko: [
+            "페르시아식 가지 토마토 요리: 따뜻한 기름에 [중국 간장]을 살짝 데워 토마토와 함께 조리하고, 먹을 때 [중국 진식초]를 살짝 뿌려 드세요(기름기가 많으면 소화효소 1알 복용).",
+            "(중국) 어향가지볶음: 가지는 기름을 적게 둘러 구워내고, 약간의 기름에 [피현 두반장] 반 작은술을 약불로 볶아 향을 낸 뒤 다진 고기와 마늘, 가지를 넣고 [간장]과 [다시다] 약간을 넣어 볶다가 마지막에 [중국 진식초]를 둘러 마무리합니다(소금 불필요)."
+          ]
+        }
+      },
+      {
+        id: "ld7",
+        meals: ["lunch", "dinner"],
+        giLevel: "yellow",
+        baseReg: { lunch: 0, dinner: 15 },
+        waitMins: { lunch: 0, dinner: 15 },
+        title: {
+          zh: "（中国）酸辣醋溜土豆丝",
+          en: "(China) Crisp Vinegar Stir-Fried Shredded Potatoes",
+          fa: "(چین) خوراک سیب‌زمینی خلالی ترد با سرکه",
+          ko: "(중국) 새콤매콤 중국식 감자채볶음"
+        },
+        subTitle: {
+          zh: "阿尔达比勒土豆切细丝 + 青椒丝 + 蒜末",
+          en: "Finely shredded Ardabil potato + green pepper strips + garlic",
+          fa: "سیب‌زمینی اردبیل خلالی نازک + فلفل سبز + سیر",
+          ko: "가늘게 채 썬 감자 + 피망채 + 다진 마늘"
+        },
+        howToEat: {
+          zh: [
+            "做法：土豆切细丝后用冷水洗两遍（洗掉表面淀粉）；偏热一点的油里放蒜末和一点【中国酱油】稍微热一下激出香味（火不要太大），下土豆丝大火快炒 1 分钟，加很少一点点【大喜大】，出锅前最后淋 2 勺【中国陈醋】提味。",
+            "土豆本身算主食，吃这盘菜时米饭或大饼减半即可。"
+          ],
+          en: [
+            "Cooking: Rinse shredded potatoes twice in cold water to remove surface starch. Sizzle garlic and a splash of [Chinese Soy Sauce] in warm oil (moderate heat), stir-fry potatoes on high heat for 1 min, add a tiny pinch of [Dashida], and finish with 2 tbsp [Chinese Vinegar].",
+            "Counts as half a starch portion—reduce rice or bread by half when eating this."
+          ],
+          fa: [
+            "طرز تهیه: سیب‌زمینی خلالی ریز را دو بار با آب سرد بشویید تا نشاسته آن برود. در روغن گرم سیر و کمی [سویا سس چینی] را کمی تفت دهید، سیب‌زمینی را ۱ دقیقه با شعله بالا تفت دهید، کمی [داشیدا] بزنید و در آخر ۲ قاشق [سرکه چینی] اضافه کنید.",
+            "این غذا جایگزین بخشی از نان و برنج است؛ موقع خوردن آن برنج یا نان را نصف کنید."
+          ],
+          ko: [
+            "조리법: 채 썬 감자를 찬물에 두 번 헹궈 전분을 뺀 뒤, 따뜻한 기름에 마늘과 [중국 간장]을 살짝 데워 향을 내고 감자채를 강불에서 1분간 빠르게 볶습니다. [다시다]를 아주 조금 넣고 마지막에 [중국 진식초] 2큰술을 둘러 마무리합니다.",
+            "감자 자체가 탄수화물이므로 이 요리를 드실 때는 밥이나 빵의 양을 절반으로 줄이세요."
+          ]
+        }
+      },
+      {
+        id: "ld8",
+        meals: ["lunch", "dinner"],
+        giLevel: "yellow",
+        baseReg: { lunch: 0, dinner: 15 },
+        waitMins: { lunch: 0, dinner: 20 },
+        title: {
+          zh: "（韩国）韩式辣炒鸡肉/牛羊肉 &（日本）洋葱肥牛滑蛋饭",
+          en: "(Korea) Spicy Stir-Fried Chicken/Beef & (Japan) Beef Onion Egg Donburi",
+          fa: "(کره) خوراک مرغ و گوشت تند کره‌ای / (ژاپن) چلو گوشت با پیاز و تخم‌مرغ",
+          ko: "(한국) 고추장 닭갈비/제육볶음 & (일본) 규동/오야코동 덮밥"
+        },
+        subTitle: {
+          zh: "鸡腿肉或牛羊肉 + 洋葱包菜 + 韩国辣椒酱，或 洋葱牛肉滑蛋盖饭 + 大喜大牛肉汤",
+          en: "Chicken/beef + cabbage & onion with Gochujang, or beef/egg rice bowl + Dashida soup",
+          fa: "مرغ یا گوشت با کلم و سس فلفل کره‌ای، یا گوشت و پیاز و تخم‌مرغ روی برنج + سوپ داشیدا",
+          ko: "닭고기/소고기 + 양배추 고추장볶음, 또는 양파 소고기 계란덮밥 + 다시다 소고기뭇국"
+        },
+        howToEat: {
+          zh: [
+            "（韩国）用法：① 煎烤的肉直接拿【韩国辣椒酱】当蘸酱配生菜吃；② 用 1 小勺【韩国辣椒酱】+【中国酱油】+ 一点点【大喜大】做基底炒鸡肉或牛羊肉（若用 1 大满勺辣酱，黄瓶 Reg +1 单位）。配汤只需水煮牛肉白萝卜加一点酱油和一点点【大喜大】。",
+            "（日本）滑蛋饭做法：洋葱丝炒软发甜，加水、一点【中国酱油】和一点点【大喜大】煮熟牛肉，淋鸡蛋液焖滑浇在米饭上，配一点【日本柚子胡椒酱】吃。"
+          ],
+          en: [
+            "(Korea) How to Use: ① Use [Korean Chili Paste] directly as a dip for grilled meat; ② Use 1 tsp [Korean Chili Paste] + [Soy Sauce] + a pinch of [Dashida] as a stir-fry base (if using 1 full tbsp paste, add +1U Yellow Reg). Make Korean beef radish soup with water, [Soy Sauce], and a pinch of [Dashida].",
+            "(Japan) Donburi: Cook sliced onions until soft, add water, [Soy Sauce], and a pinch of [Dashida] to cook beef, pour beaten eggs over for 30s, and serve over rice with a dab of [Yuzu Kosho]."
+          ],
+          fa: [
+            "(کره): ۱. از [سس فلفل کره‌ای] مستقیم به عنوان سس کنار گوشت کبابی استفاده کنید؛ ۲. یا ۱ قاشق چای‌خوری [سس فلفل کره‌ای] + [سویا سس] + کمی [داشیدا] را پایه تفت دادن مرغ و سبزیجات قرار دهید (اگر ۱ قاشق غذاخوری پر زدید، ۱ واحد انسولین زرد Reg اضافه کنید).",
+            "(ژاپن): پیاز خلالی را تفت دهید تا نرم شود، کمی آب، [سویا سس] و [داشیدا] بریزید، گوشت را بپزید و در آخر تخم‌مرغ زده‌شده را اضافه کنید و با کمی [یوزو کوشو] میل کنید."
+          ],
+          ko: [
+            "(한국식): ① 구운 고기에 [한국 고추장]을 바로 찍어 상추에 싸 드시거나, ② 고추장 1작은술 + [간장] + [다시다] 약간을 베이스로 고기와 채소를 볶아 드세요(고추장 1큰술 가득 사용 시 노란병 Reg +1단위). 소고기뭇국은 물에 무와 소고기, 간장, 다시다 조금만 넣으면 완성됩니다.",
+            "(일본식) 덮밥: 양파를 볶아 단맛을 낸 뒤 물, [간장], [다시다] 약간을 넣고 고기를 익혀 달걀물을 부어 반숙으로 익힌 뒤 [유자후추]를 곁들여 드세요."
+          ]
+        }
+      },
+      {
+        id: "ld9",
+        meals: ["lunch", "dinner"],
+        giLevel: "yellow",
+        baseReg: { lunch: 0, dinner: 16 },
+        waitMins: { lunch: 0, dinner: 15 },
+        title: {
+          zh: "【外卖】波斯烤肉串配米饭 (Chelow Kebab) / 三明治汉堡 + 薯条",
+          en: "[Takeout] Persian Kebabs with Rice / Baguette Sandwiches, Burgers & Fries",
+          fa: "[غذای بیرون‌بر] چلوکباب / جوجه کباب / ساندویچ، همبرگر و سیب‌زمینی",
+          ko: "[배달/외식] 페르시아 케밥 도시락 / 바게트 샌드위치, 햄버거 & 감자튀김"
+        },
+        subTitle: {
+          zh: "牛羊肉烤串 / 烤鸡串 + 大盒白米饭，或 炸肉饼 (Kotlet) / 烤鸡法棍三明治 + 薯条",
+          en: "Beef/lamb/chicken kebabs + large rice box, or Kotlet/chicken baguette sandwich + fries",
+          fa: "کباب کوبیده یا جوجه با برنج، یا ساندویچ کتلت و مرغ با نان باگت و سیب‌زمینی سرخ‌کرده",
+          ko: "케밥 + 대용량 쌀밥, 또는 코틀렛/치킨 바게트 샌드위치 + 감자튀김"
+        },
+        howToEat: {
+          zh: [
+            "外卖烤肉饭：盒里的米饭通常有两人份，开盒先拨走一半米饭。烤肉可以直接蘸【日本柚子胡椒酱】或【韩国辣椒酱】，烤番茄压碎淋一点【中国酱油 + 陈醋】。",
+            "外卖三明治/汉堡薯条：把法棍面包（Nan-e Bulki）里面的白面芯掏掉一半；不蘸外卖甜番茄酱，薯条和炸肉饼改蘸【中国陈醋 + 酱油】或【草原阿妈蘸料】，随餐吃 1 粒消化酶。"
+          ],
+          en: [
+            "Kebab Takeout: The rice box usually holds 2–3 portions—set aside half the rice before eating. Dip kebabs in [Japanese Yuzu Kosho] or [Korean Chili Paste], and mash the grilled tomato with a splash of [Soy Sauce + Vinegar].",
+            "Sandwiches & Fries: Scoop out half the soft white bread center from the baguette. Skip sugary ketchup—dip fries and Kotlet in [Chinese Vinegar + Soy Sauce] or [Grassland Ama Dip], and take 1 digestive enzyme."
+          ],
+          fa: [
+            "چلوکباب بیرون‌بر: برنج ظرف بیرون‌بر زیاد است؛ قبل از شروع نیمی از برنج را کنار بگذارید. کباب و جوجه را با [یوزو کوشو] یا [سس فلفل کره‌ای] بخورید و روی گوجه کبابی کمی [سویا سس و سرکه] بریزید.",
+            "ساندویچ و سیب‌زمینی: خمیر داخل نان باگت را خالی کنید؛ به جای سس کچاپ شیرین، سیب‌زمینی و کتلت را با [سرکه و سویا سس چینی] یا [سس کنجد مغولی] بخورید و ۱ عدد آنزیم گوارشی مصرف کنید."
+          ],
+          ko: [
+            "케밥 도시락: 배달용 밥은 양이 매우 많으므로 먹기 전에 밥을 절반 덜어내세요. 구운 고기는 [유자후추 소스]나 [한국 고추장]에 찍어 먹고, 구운 토마토에는 [간장+식초]를 살짝 뿌려 드세요.",
+            "샌드위치 & 감자튀김: 바게트 빵 속의 흰 빵 파이를 절반 파내고 드세요. 단맛이 강한 케첩 대신 [중국 진식초+간장]이나 [초원엄마 소스]에 감자튀김을 찍어 드시고 소화효소 1알을 챙기세요."
+          ]
+        }
+      },
+      {
+        id: "ld10",
+        meals: ["lunch", "dinner"],
+        giLevel: "red",
+        baseReg: { lunch: 3, dinner: 17 },
+        waitMins: { lunch: 15, dinner: 25 },
+        title: {
+          zh: "波斯番茄肉酱意面 (Macaroni) / 千层面 (Lazania) / 披萨",
+          en: "Persian Tomato Meat Pasta (Macaroni) / Lasagna (Lazania) / Pizza",
+          fa: "ماکارونی ایرانی / لازانیا / پیتزا",
+          ko: "페르시아식 토마토 미트 파스타 (Macaroni) / 라자냐 / 피자"
+        },
+        subTitle: {
+          zh: "软面条/面皮 + 番茄牛羊肉酱 + 芝士 + 土豆锅巴 (Tahdig)",
+          en: "Pasta/lasagna sheets + tomato meat sauce + cheese + potato crust",
+          fa: "ماکارونی دم‌کشیده با سس گوشت و گوجه + تهویه سیب‌زمینی / لازانیا با پنیر",
+          ko: "파스타/라자냐 면 + 토마토 고기소스 + 치즈 + 감자 누룽지(Tahdig)"
+        },
+        howToEat: {
+          zh: [
+            "调料搭法：波斯意面有大量番茄肉酱，炒酱时在偏热的油里放一点【中国酱油】稍微热一下激出香味（和番茄绝配）；吃面条时直接放一点【中国陈醋】提味并减缓升糖。",
+            "注射提醒：这道菜升糖非常猛！如果【中午】吃它，午饭前 15 分钟必须单独抽 3–4 单位纯【黄瓶 Reg】（不抽绿瓶 NPH）补一针；如果【晚上】吃它，黄瓶 (Reg) 基准需加至 17–18 单位。"
+          ],
+          en: [
+            "Seasoning Tip: Since Persian Macaroni uses rich tomato meat sauce, sizzle a splash of [Chinese Soy Sauce] in warm oil when cooking the sauce. Add [Chinese Vinegar] directly to the pasta when eating to enhance flavor and slow glucose rise.",
+            "Insulin Note: Very high glycemic load! If eating at [Lunch], take a separate 3–4U pure [Yellow Reg] shot 15 mins before eating (do NOT draw Green NPH). At [Dinner], increase base Yellow (Reg) to 17–18U."
+          ],
+          fa: [
+            "نکته طعم‌دهی: موقع درست کردن سس گوجه و گوشت ماکارونی، کمی [سویا سس چینی] در روغن گرم تفت دهید (با گوجه عالی می‌شود) و موقع خوردن هم کمی [سرکه چینی] روی ماکارونی بریزید تا جلوی جهش شدید قند را بگیرد.",
+            "نکته مهم انسولین: ماکارونی و لازانیا قند را به شدت بالا می‌برند! اگر در وعده [ناهار] می‌خورید، ۱۵ دقیقه قبل از غذا ۳ تا ۴ واحد [انسولین زرد خالص Reg] (بدون NPH) تزریق کنید. برای [شام] هم دوز پایه زرد (Reg) ۱۷ تا ۱۸ واحد است."
+          ],
+          ko: [
+            "양념 활용: 토마토 미트소스를 볶을 때 따뜻한 기름에 [중국 간장]을 살짝 데워 넣으면 토마토와 아주 잘 어울립니다. 면을 먹을 때는 [중국 진식초]를 살짝 뿌려 풍미를 더하고 혈당 상승을 늦추세요.",
+            "인슐린 주의: 혈당이 가장 많이 오르는 메뉴입니다! [점심]에 드실 때는 식사 15분 전에 단독으로 [노란병 Reg]만 3~4단위(초록병 제외) 추가 주사하시고, [저녁]에는 기본 노란병(Reg)을 17~18단위로 높여 잡으세요."
+          ]
+        }
+      },
+
+      // -------------------- SNACKS & SIDES (WITH TIMING TAGS) --------------------
+      {
+        id: "s1",
+        meals: ["snack"],
+        snackTimings: ["before_breakfast", "between_bl", "between_ld", "after_dinner"],
+        snackBgFit: ["low"],
+        giLevel: "red",
+        baseReg: { snack: 0 },
+        waitMins: { snack: 0 },
+        title: {
+          zh: "🧃 低血糖急救：半小盒纯果汁 (100ml) + 5颗坚果锁糖",
+          en: "🧃 Low Blood Sugar Rescue: 100ml Pure Juice + 5 Nuts",
+          fa: "🧃 درمان افت قند (<90): نصف پاکت آبمیوه (۱۰۰ سی‌سی) + ۵ عدد بادام/گردو",
+          ko: "🧃 저혈당 응급 대처: 주스 반 팩(100ml) + 견과류 5알"
+        },
+        subTitle: {
+          zh: "纯石榴汁 / 橙汁 (Abmiveh 100ml) + 巴旦木/核桃 或 1块白奶酪",
+          en: "Pure pomegranate or orange juice (100ml) + almonds/walnuts or 1 piece of white cheese",
+          fa: "آب انار یا پرتقال (۱۰۰ سی‌سی) + چند عدد بادام یا یک تکه پنیر سفید",
+          ko: "석류주스/오렌지주스(100ml) + 아몬드/호두 또는 화이트 치즈 1조각"
+        },
+        howToEat: {
+          zh: [
+            "适用场景：任何时间段只要血糖 < 90 mg/dL（或快速下降），先喝 100ml 纯果汁，5 分钟拉回安全区。",
+            "防反跳关键：不要一口气猛灌两大杯果汁（否则下午或晚上会反跳飙到 300+），喝完半小盒果汁后吃 5 颗坚果或 1 块奶酪稳住血糖。"
+          ],
+          en: [
+            "When to Use: Whenever blood sugar drops below 90 mg/dL, drink 100ml pure juice to bring it back up within 5 minutes.",
+            "Prevent Rebound Highs: Avoid drinking multiple large glasses of juice (which causes 300+ rebound spikes later). Follow the 100ml juice with 5 almonds or a piece of cheese to lock blood sugar steady."
+          ],
+          fa: [
+            "زمان مصرف: در هر ساعتی از شبانه‌روز که قند خون زیر ۹۰ آمد، فقط نصف پاکت کوچک (۱۰۰ سی‌سی) آبمیوه بنوشید تا قند سریع بالا بیاید.",
+            "جلوگیری از نوسان شدید: از نوشیدن چند لیوان آبمیوه خودداری کنید (چون باعث جهش قند به بالای ۳۰۰ می‌شود). ۵ دقیقه بعد از آبمیوه، ۵ عدد بادام یا یک تکه پنیر بخورید تا قند ثابت بماند."
+          ],
+          ko: [
+            "섭취 시점: 어느 시간대든 혈당이 90 미만으로 떨어지면 주스 반 팩(100ml)을 마셔 5분 내에 안전 구간으로 올립니다.",
+            "반동 고혈당 방지: 주스를 한꺼번에 많이 마시면 나중에 300 이상으로 치솟으니 100ml만 마시고, 아몬드 5알이나 치즈 1조각을 함께 드셔 혈당을 잡아주세요."
+          ]
+        }
+      },
+      {
+        id: "s2",
+        meals: ["snack"],
+        snackTimings: ["between_bl"],
+        snackBgFit: ["low", "normal"],
+        giLevel: "yellow",
+        baseReg: { snack: 0 },
+        waitMins: { snack: 0 },
+        title: {
+          zh: "🥔 早餐~午餐之间（防上午低血糖）：薯片蘸浓酸奶/草原阿妈 或 石榴配核桃",
+          en: "🥔 Morning Gap (09:30–11:30): Chips with Thick Yogurt/Sesame Dip or Pomegranate & Walnuts",
+          fa: "🥔 میان‌وعده صبح (۹:۳۰ تا ۱۱:۳۰): چیپس با ماست موسیر/سس کنجد یا انار و گردو",
+          ko: "🥔 아침~점심 사이 (오전 저혈당 예방): 요거트/참깨소스 찍먹 감자칩 또는 석류와 호두"
+        },
+        subTitle: {
+          zh: "一小碗原味薯片蘸蒜香浓酸奶 (Mast-o-Mousir) / 草原阿妈蘸料，或 鲜石榴籽配 8 颗核桃",
+          en: "Small bowl of chips dipped in thick yogurt or Grassland Ama dip, or pomegranate seeds with 8 walnuts",
+          fa: "یک پیاله چیپس با ماست موسیر یا سس کنجد مغولی، یا نصف کاسه انار با گردو",
+          ko: "작은 그릇에 담은 감자칩 + 진한 요거트/초원엄마 소스, 또는 석류알 + 호두 8알"
+        },
+        howToEat: {
+          zh: [
+            "适用场景：上午 09:30–11:30 是早上的绿瓶 (NPH) 和黄瓶 (Reg) 药效重叠最猛的时候，最容易发生低血糖。",
+            "当血糖在 90–140 之间时，不用打针，吃一小碗蘸了浓酸奶或【草原阿妈蘸料】的薯片，或者吃石榴/苹果配一把核桃，能平稳托住上午的血糖。"
+          ],
+          en: [
+            "Why Morning Gap: 09:30–11:30 AM is when morning NPH and Reg overlap strongly, creating the highest risk for low blood sugar.",
+            "When BG is 90–140, no shot is needed. Eat a small bowl of chips dipped in thick yogurt or [Grassland Ama Dip], or pomegranate/apple with walnuts to hold blood sugar steady until lunch."
+          ],
+          fa: [
+            "چرا ساعت ۹:۳۰ تا ۱۱:۳۰ صبح؟ در این ساعت اثر انسولین صبح به اوج می‌رسد و بیشترین احتمال افت قند وجود دارد.",
+            "وقتی قند بین ۹۰ تا ۱۴۰ است (بدون تزریق)، یک پیاله کوچک چیپس با ماست موسیر یا [سس کنجد مغولی]، و یا کمی انار و سیب به همراه گردو بخورید تا قند تا ظهر کاملاً متعادل بماند."
+          ],
+          ko: [
+            "섭취 이유: 오전 09:30~11:30은 아침 주사 약효가 가장 강해져 저혈당이 오기 쉬운 시간대입니다.",
+            "혈당이 90~140 사이일 때 주사 없이 감자칩을 진한 요거트나 [초원엄마 소스]에 찍어 드시거나, 과일(석류/사과)에 호두를 곁들여 드시면 점심때까지 혈당을 안정적으로 받쳐줍니다."
+          ]
+        }
+      },
+      {
+        id: "s3",
+        meals: ["snack"],
+        snackTimings: ["before_breakfast", "between_bl", "between_ld", "after_dinner"],
+        snackBgFit: ["normal", "mid", "high", "veryhigh"],
+        giLevel: "green",
+        baseReg: { snack: 0 },
+        waitMins: { snack: 0 },
+        title: {
+          zh: "🥜 0升糖日常零嘴（下午爬升期首选）：波斯混合坚果 (Ajil)、咸橄榄与无糖茶",
+          en: "🥜 Zero-Glycemic Snack (Best for Afternoon): Persian Nuts (Ajil), Olives & Unsweetened Tea",
+          fa: "🥜 میان‌وعده بدون قند (مخصوص عصرها): آجیل، زیتون، پنیر و چای بدون قند",
+          ko: "🥜 혈당 안 오르는 간식 (오후 시간대 추천): 페르시아 견과류(Ajil), 올리브 & 무설탕 홍차"
+        },
+        subTitle: {
+          zh: "开心果 (Pesteh) + 巴旦木 (Badam) + 核桃 + 咸橄榄 + 黄瓜条蘸草原阿妈 + 无糖红茶 (Chai)",
+          en: "Pistachios + almonds + walnuts + olives + cucumber with sesame dip + unsweetened Persian tea",
+          fa: "پسته + بادام + گردو + زیتون + خیار با سس کنجد + چای تلخ",
+          ko: "피스타치오 + 아몬드 + 호두 + 올리브 + 오이 스틱(참깨소스) + 무설탕 홍차"
+        },
+        howToEat: {
+          zh: [
+            "适用场景：下午（午餐~晚餐之间）体内药效减弱，血糖很容易往上爬升；或者当前血糖已经 > 150 mg/dL 但肚子饿、想喝茶时。",
+            "吃法：抓一把混合坚果（Ajil）、咸橄榄、白奶酪，或拿黄瓜条蘸一点【草原阿妈蘸料】配无糖红茶，完全不升糖（此时喝茶不要含方糖或吃甜饼干）。"
+          ],
+          en: [
+            "When to Use: Between Lunch & Dinner (afternoon) when insulin fades and blood sugar tends to rise, or anytime BG is >150 mg/dL and you want a snack.",
+            "How to Eat: Enjoy mixed nuts (Ajil), olives, white cheese, or cucumber sticks with [Grassland Ama Dip] alongside unsweetened tea (skip sugar cubes and cookies)."
+          ],
+          fa: [
+            "زمان مصرف: بین ناهار و شام (ساعت ۱۵ تا ۱۸) که قند خون تمایل به بالا رفتن دارد، یا هر زمان که قند بالای ۱۵۰ است و هوس میان‌وعده کرده‌اید.",
+            "روش مصرف: یک مشت آجیل (پسته، بادام، گردو)، زیتون، پنیر یا خیار با [سس کنجد مغولی] همراه با چای بدون قند میل کنید (در این ساعات قند حبه یا شیرینی نخورید)."
+          ],
+          ko: [
+            "섭취 시점: 점심~저녁 사이(오후) 약효가 줄어들며 혈당이 오르기 쉬울 때, 또는 현재 혈당이 150 이상인데 입이 심심할 때 적합합니다.",
+            "먹는 법: 각설탕이나 과자 대신 혼합 견과류(Ajil), 올리브, 치즈, 또는 오이를 [초원엄마 소스]에 찍어 무설탕 홍차와 함께 드시면 혈당이 전혀 오르지 않습니다."
+          ]
+        }
+      },
+      {
+        id: "s4",
+        meals: ["snack"],
+        snackTimings: ["after_dinner"],
+        snackBgFit: ["low", "normal"],
+        giLevel: "green",
+        baseReg: { snack: 0 },
+        waitMins: { snack: 0 },
+        title: {
+          zh: "🌙 晚餐后 / 睡前防低血糖夜宵：全麦饼卷奶酪核桃 或 抹草原阿妈蘸料",
+          en: "🌙 Bedtime Slow-Release Snack: Whole Wheat Bread with Cheese/Walnuts or Sesame Dip",
+          fa: "🌙 عصرانه دیرهنگام / قبل از خواب: لقمه نان سنگک با پنیر و گردو یا ارده/سس کنجد",
+          ko: "🌙 저녁 식사 후 / 취침 전 야식: 통밀빵 치즈 호두 롤 또는 참깨소스 스프레드"
+        },
+        subTitle: {
+          zh: "手掌心大小全麦饼 (Sangak) + 白奶酪 + 2颗核桃，或 抹一层草原阿妈蘸料 / 纯麻酱 (Ardeh)",
+          en: "Palm-sized Sangak bread + white cheese + 2 walnuts, or spread with Grassland Ama / pure Ardeh",
+          fa: "یک کف دست نان سنگک + پنیر سفید + گردو، یا کمی سس کنجد / ارده خالص (بدون شیره)",
+          ko: "손바닥 크기 통밀빵(Sangak) + 화이트 치즈 + 호두 2알, 또는 초원엄마/참깨 페이스트"
+        },
+        howToEat: {
+          zh: [
+            "适用场景：因为晚上打了 40 单位绿瓶 (NPH)，如果晚餐后或睡前血糖在 115 mg/dL 以下，半夜容易发生低血糖。",
+            "睡前吃这一小口带油脂和蛋白质的全麦饼，能在胃里缓慢释放 4–5 小时；如果睡前血糖已经在 150 以上，则不需要吃夜宵，直接安心睡觉。"
+          ],
+          en: [
+            "When to Use: Because evening NPH is 40U, if blood sugar after dinner or before bed is below 115 mg/dL, eat this slow-release snack to prevent overnight lows.",
+            "Whole wheat bread with cheese/walnuts or sesame paste releases slowly over 4–5 hours. If bedtime BG is >150 mg/dL, skip the snack and sleep directly."
+          ],
+          fa: [
+            "زمان مصرف: چون شب ۴۰ واحد انسولین سبز (NPH) تزریق می‌شود، اگر قند قبل از خواب زیر ۱۱۵ باشد، خوردن این لقمه کوچک جلوی افت قند نیمه‌شب را می‌گیرد.",
+            "نان سنگک با پنیر و گردو یا سس کنجد تا ۵ ساعت انرژی آزاد می‌کند. (اگر قند قبل از خواب بالای ۱۵۰ است، نیازی به خوردن شب‌چره نیست)."
+          ],
+          ko: [
+            "섭취 시점: 저녁에 초록병(NPH) 40단위를 맞기 때문에, 취침 전 혈당이 115 이하라면 새벽 저혈당 예방을 위해 드세요.",
+            "치즈와 호두 또는 참깨소스를 바른 통밀빵은 4~5시간 동안 천천히 흡수됩니다. (취침 전 혈당이 150 이상이면 드시지 말고 바로 주무세요)"
+          ]
+        }
+      },
+      {
+        id: "s5",
+        meals: ["snack", "lunch", "dinner"],
+        snackTimings: ["between_bl", "between_ld", "after_dinner"],
+        snackBgFit: ["normal", "mid", "high", "veryhigh"],
+        giLevel: "green",
+        baseReg: { lunch: 0, dinner: 0, snack: 0 },
+        waitMins: { lunch: 0, dinner: 0, snack: 0 },
+        title: {
+          zh: "🥒 餐桌降糖配菜：波斯酸腌菜 (Torshi) &（韩国/中国）陈醋麻油拌菜",
+          en: "🥒 Mealtime Buffer Sides: Persian Torshi Pickles & (Korea/China) Vinegar Sesame Veggies",
+          fa: "🥒 مخلفات کاهش قند کنار غذا: ترشی لیته و سالاد سبزیجات با سرکه و روغن کنجد",
+          ko: "🥒 식사 시 혈당 완화 반찬: 페르시아 피클(Torshi) & (한국/중국) 식초 참기름 나물무침"
+        },
+        subTitle: {
+          zh: "蔬菜碎腌菜 (Torshi Liteh) / 烫菠菜 / 拍黄瓜 / 包菜丝 + 中国陈醋 + 酱油 + 大喜大",
+          en: "Torshi Liteh pickles / blanched spinach / cucumber / cabbage + Chinese vinegar + soy sauce + Dashida",
+          fa: "ترشی لیته / اسفناج آب‌پز، خیار یا کلم + سرکه چینی + سویا سس + کمی داشیدا",
+          ko: "토르시 피클 / 데친 시금치 / 오이무침 / 양배추채 + 중국 진식초 + 간장 + 다시다"
+        },
+        howToEat: {
+          zh: [
+            "用法：把烫菠菜、蒸茄子、黄瓜或包菜丝，加一点芝麻油、一点【中国酱油】、很少一点点【大喜大】，最后淋【中国陈醋】拌匀（或直接蘸【草原阿妈蘸料】）。",
+            "在吃米饭、意面或外卖前先吃几口酸腌菜或醋拌菜，能帮当餐主食压低 20%–30% 的餐后血糖升幅。"
+          ],
+          en: [
+            "How to Make: Toss blanched spinach, steamed eggplant, cucumber, or cabbage with sesame oil, a splash of [Soy Sauce], a tiny pinch of [Dashida], and finish with [Chinese Vinegar] (or dip in [Grassland Ama Sauce]).",
+            "Eating a few bites before rice, pasta, or takeout reduces the meal's blood sugar spike by 20%–30%."
+          ],
+          fa: [
+            "طرز تهیه: اسفناج آب‌پز، بادمجان بخارپز، خیار یا کلم را با کمی روغن کنجد، کمی [سویا سس چینی]، مقدار بسیار کمی [داشیدا] و در آخر [سرکه چینی] مخلوط کنید (یا با [سس کنجد مغولی] بخورید).",
+            "خوردن چند لقمه از این مخلفات یا ترشی لیته قبل از برنج و ماکارونی، اوج قند بعد از غذا را ۲۰ تا ۳۰ درصد کاهش می‌دهد."
+          ],
+          ko: [
+            "만드는 법: 데친 시금치나 찐 가지, 오이, 양배추에 참기름과 [중국 간장] 약간, [다시다] 아주 조금을 넣고 마지막에 [중국 진식초]를 둘러 무쳐냅니다(또는 [초원엄마 소스] 찍먹).",
+            "쌀밥이나 파스타, 배달 음식을 먹기 전에 먼저 몇 입 드시면 식후 혈당 상승폭을 20~30% 줄여줍니다."
+          ]
+        }
+      }
+    ];
+
+    // ==================== DYNAMIC PLAN GENERATOR LOGIC ====================
+    function getBgAdjustment(bgState) {
+      switch (bgState) {
+        case "low":
+          return { delta: -2, waitDelta: -15 };
+        case "normal":
+          return { delta: 0, waitDelta: 0 };
+        case "mid":
+          return { delta: 1, waitDelta: 5 };
+        case "high":
+          return { delta: 2, waitDelta: 10 };
+        case "veryhigh":
+          return { delta: 3, waitDelta: 15 };
+        default:
+          return { delta: 0, waitDelta: 0 };
+      }
+    }
+
+    function generatePlanSummary(lang, meal, timing, bg) {
+      const adj = getBgAdjustment(bg);
+
+      // 1. BREAKFAST PLAN
+      if (meal === "breakfast") {
+        const summaries = {
+          zh: {
+            low: "【早餐 · 当前血糖偏低 (<90)】<br>• <strong>绿瓶 (NPH)</strong>：保持 36–38 单位不变。<br>• <strong>黄瓶 (Reg)</strong>：比下方菜谱标准量 <strong>少抽 1–2 单位</strong>。<br>• <strong>打针与进食顺序</strong>：<strong>不用提前等待！</strong>先吃两口大饼或主食把血糖托住，再打针并继续吃奶酪、鸡蛋。",
+            normal: "【早餐 · 当前血糖正常 (90–150)】<br>• <strong>绿瓶 (NPH)</strong>：保持 36–38 单位不变。<br>• <strong>黄瓶 (Reg)</strong>：按下方每道菜的<strong>标准剂量（约 15–17 单位）</strong>抽取。<br>• <strong>打针与进食顺序</strong>：提前 <strong>15–20 分钟</strong>打针，先吃鸡蛋、奶酪、核桃，最后吃饼，预防上午 10 点低血糖。",
+            mid: "【早餐 · 当前血糖略高 (150–180)】<br>• <strong>绿瓶 (NPH)</strong>：保持 36–38 单位不变。<br>• <strong>黄瓶 (Reg)</strong>：在菜谱标准量基础上 <strong>+1 单位</strong>。<br>• <strong>打针与进食顺序</strong>：提前 <strong>25 分钟</strong>打针，优先选择咸口奶酪鸡蛋早餐。",
+            high: "【早餐 · 当前血糖偏高 (180–240)】<br>• <strong>绿瓶 (NPH)</strong>：锁死 36–38 单位（绝不加绿瓶 NPH）。<br>• <strong>黄瓶 (Reg)</strong>：在菜谱标准量基础上 <strong>+2 单位</strong>。<br>• <strong>打针与进食顺序</strong>：必须<strong>提前 30 分钟</strong>打针！建议今天不吃蜂蜜甜食，改吃番茄炒蛋配奶酪石子饼。",
+            veryhigh: "【早餐 · 当前血糖很高 (250+)】<br>• <strong>绿瓶 (NPH)</strong>：锁死 36–38 单位（绝不加绿瓶 NPH）。<br>• <strong>黄瓶 (Reg)</strong>：在菜谱标准量基础上 <strong>+3 单位</strong>。<br>• <strong>打针与进食顺序</strong>：必须<strong>提前 35–40 分钟</strong>打针，多喝温水，先吃纯蛋白（鸡蛋、奶酪），主食减半。"
+          },
+          en: {
+            low: "[Breakfast · Low BG (<90)]<br>• <strong>Green Bottle (NPH)</strong>: Keep fixed at 36–38U.<br>• <strong>Yellow Bottle (Reg)</strong>: Reduce by <strong>1–2 units</strong> below the dish's standard dose.<br>• <strong>Timing</strong>: <strong>Do NOT wait before eating!</strong> Eat a few bites of bread first, then inject.",
+            normal: "[Breakfast · Normal BG (90–150)]<br>• <strong>Green Bottle (NPH)</strong>: Keep fixed at 36–38U.<br>• <strong>Yellow Bottle (Reg)</strong>: Use the dish's <strong>standard dose (15–17U)</strong>.<br>• <strong>Timing</strong>: Inject <strong>15–20 mins</strong> before eating. Eat eggs, cheese, and walnuts first.",
+            mid: "[Breakfast · Slightly High BG (150–180)]<br>• <strong>Green Bottle (NPH)</strong>: Keep fixed at 36–38U.<br>• <strong>Yellow Bottle (Reg)</strong>: Standard dose <strong>+1 unit</strong>.<br>• <strong>Timing</strong>: Inject <strong>25 mins</strong> before eating. Prefer savory breakfast options.",
+            high: "[Breakfast · High BG (180–240)]<br>• <strong>Green Bottle (NPH)</strong>: Keep locked at 36–38U (never increase NPH).<br>• <strong>Yellow Bottle (Reg)</strong>: Standard dose <strong>+2 units</strong>.<br>• <strong>Timing</strong>: Inject <strong>30 mins</strong> before eating. Avoid honey/sweet pastries today.",
+            veryhigh: "[Breakfast · Very High BG (250+)]<br>• <strong>Green Bottle (NPH)</strong>: Keep locked at 36–38U.<br>• <strong>Yellow Bottle (Reg)</strong>: Standard dose <strong>+3 units</strong>.<br>• <strong>Timing</strong>: Inject <strong>35–40 mins</strong> before eating, drink water, eat eggs/cheese first, and cut bread in half."
+          },
+          fa: {
+            low: "[صبحانه · قند خون پایین (<90)]<br>• <strong>شیشه سبز (NPH)</strong>: ثابت روی ۳۶ تا ۳۸ واحد.<br>• <strong>شیشه زرد (Reg)</strong>: <strong>۱ تا ۲ واحد کمتر</strong> از مقدار استاندارد غذا بکشید.<br>• <strong>روش مصرف</strong>: <strong>قبل از غذا صبر نکنید!</strong> ابتدا چند لقمه نان بخورید و سپس انسولین بزنید.",
+            normal: "[صبحانه · قند خون نرمال (90–150)]<br>• <strong>شیشه سبز (NPH)</strong>: ثابت روی ۳۶ تا ۳۸ واحد.<br>• <strong>شیشه زرد (Reg)</strong>: طبق دوز استاندارد هر غذا (معمولاً ۱۵ واحد).<br>• <strong>روش مصرف</strong>: <strong>۱۵ تا ۲۰ دقیقه قبل از صبحانه</strong> تزریق کنید. اول پنیر، گردو و تخم‌مرغ را بخورید.",
+            mid: "[صبحانه · قند خون کمی بالا (150–180)]<br>• <strong>شیشه سبز (NPH)</strong>: ثابت روی ۳۶ تا ۳۸ واحد.<br>• <strong>شیشه زرد (Reg)</strong>: دوز استاندارد غذا <strong>+ ۱ واحد اضافه</strong>.<br>• <strong>روش مصرف</strong>: <strong>۲۵ دقیقه قبل از غذا</strong> تزریق کنید.",
+            high: "[صبحانه · قند خون بالا (180–240)]<br>• <strong>شیشه سبز (NPH)</strong>: قفل روی ۳۶ تا ۳۸ واحد (NPH را زیاد نکنید).<br>• <strong>شیشه زرد (Reg)</strong>: دوز استاندارد غذا <strong>+ ۲ واحد اضافه</strong>.<br>• <strong>روش مصرف</strong>: <strong>۳۰ دقیقه قبل از صبحانه</strong> تزریق کنید و امروز صبحانه شیرین (عسل/حلیم) نخورید.",
+            veryhigh: "[صبحانه · قند خون خیلی بالا (250+)]<br>• <strong>شیشه سبز (NPH)</strong>: قفل روی ۳۶ تا ۳۸ واحد.<br>• <strong>شیشه زرد (Reg)</strong>: دوز استاندارد غذا <strong>+ ۳ واحد اضافه</strong>.<br>• <strong>روش مصرف</strong>: <strong>۳۵ تا ۴۰ دقیقه قبل از صبحانه</strong> تزریق کنید، آب بنوشید و نان را نصف کنید."
+          },
+          ko: {
+            low: "[아침 식사 · 현재 혈당 낮음 (<90)]<br>• <strong>초록병 (NPH)</strong>: 36~38단위 고정.<br>• <strong>노란병 (Reg)</strong>: 메뉴 기본 용량보다 <strong>1~2단위 적게</strong> 추출.<br>• <strong>식사 요령</strong>: <strong>대기하지 마세요!</strong> 먼저 빵을 두세 입 드신 후 주사를 맞으세요.",
+            normal: "[아침 식사 · 현재 혈당 정상 (90–150)]<br>• <strong>초록병 (NPH)</strong>: 36~38단위 고정.<br>• <strong>노란병 (Reg)</strong>: 아래 메뉴의 <strong>기본 용량(15~17단위)</strong>대로 추출.<br>• <strong>식사 요령</strong>: 식사 <strong>15~20분 전</strong>에 주사하고, 치즈·호두·달걀을 먼저 드세요.",
+            mid: "[아침 식사 · 현재 혈당 약간 높음 (150–180)]<br>• <strong>초록병 (NPH)</strong>: 36~38단위 고정.<br>• <strong>노란병 (Reg)</strong>: 메뉴 기본 용량 <strong>+1단위 추가</strong>.<br>• <strong>식사 요령</strong>: 식사 <strong>25분 전</strong>에 주사하세요.",
+            high: "[아침 식사 · 현재 혈당 높음 (180–240)]<br>• <strong>초록병 (NPH)</strong>: 36~38단위 고정 (절대 추가 금지).<br>• <strong>노란병 (Reg)</strong>: 메뉴 기본 용량 <strong>+2단위 추가</strong>.<br>• <strong>식사 요령</strong>: 반드시 <strong>30분 전</strong>에 주사하고, 오늘은 꿀이나 단 음식 대신 달걀·치즈 식단을 선택하세요.",
+            veryhigh: "[아침 식사 · 현재 혈당 매우 높음 (250+)]<br>• <strong>초록병 (NPH)</strong>: 36~38단위 고정.<br>• <strong>노란병 (Reg)</strong>: 메뉴 기본 용량 <strong>+3단위 추가</strong>.<br>• <strong>식사 요령</strong>: 식사 <strong>35~40분 전</strong>에 주사하고 물을 충분히 마시며 빵 섭취량을 절반으로 줄이세요."
+          }
+        };
+        return summaries[lang][bg];
+      }
+
+      // 2. LUNCH PLAN
+      if (meal === "lunch") {
+        const summaries = {
+          zh: {
+            low: "【午餐 · 当前血糖偏低 (<90)】<br>• <strong>注射方案</strong>：<strong>不打针！</strong>此时早上的绿瓶 (NPH) 药力正猛。<br>• <strong>进食建议</strong>：进餐第一口<strong>先喝半小盒果汁（100ml）或先吃几口白米饭/大饼/土豆</strong>把血糖拉起来，再正常吃肉和菜（今天午餐必须保证有 1 正常碗米饭或大饼，防止下午继续低血糖）。",
+            normal: "【午餐 · 当前血糖正常 (90–150)】<br>• <strong>注射方案</strong>：日常菜品<strong>默认不打针</strong>（靠早上绿瓶 NPH 波峰消化）；唯独吃<strong>波斯意面/千层面</strong>时需单独补 <strong>3 单位纯黄瓶 (Reg)</strong>。<br>• <strong>进食建议</strong>：先吃肉菜、炖菜和醋拌小菜，最后吃 1 小平盘白米饭。",
+            mid: "【午餐 · 当前血糖略高 (150–180)】<br>• <strong>注射方案</strong>：吃普通家常菜<strong>不用打针</strong>（将米饭或大饼减至小半盘，多吃肉菜和陈醋/酸腌菜即可）；若吃意面/千层面则单补 <strong>3–4 单位纯黄瓶 (Reg)</strong>。",
+            high: "【午餐 · 当前血糖偏高 (180–240)】<br>• <strong>注射方案</strong>：虽然平时中午不打针，但当前餐前已偏高，建议午饭前 20 分钟<strong>单独抽 2 单位纯【黄瓶 Reg】（严禁抽绿瓶 NPH！）</strong>帮身体压一下血糖（若吃意面则抽 4–5 单位纯黄瓶 Reg）。<br>• <strong>进食建议</strong>：先吃陈醋拌菜或酸腌菜 + 肉类，米饭只吃几口。",
+            veryhigh: "【午餐 · 当前血糖很高 (250+)】<br>• <strong>注射方案</strong>：早上药力已压不住当前高血糖！建议午饭前 25–30 分钟<strong>单独抽 3 单位纯【黄瓶 Reg】（绝不碰绿瓶 NPH！）</strong>进行校正。<br>• <strong>进食建议</strong>：这顿建议选下方的【🟢 草原阿妈水煮菜涮肉】、【关东煮】或【川味小炒肉】，不吃或少吃白米饭。"
+          },
+          en: {
+            low: "[Lunch · Low BG (<90)]<br>• <strong>Injection</strong>: <strong>No shot!</strong> Morning Green (NPH) is peaking now.<br>• <strong>Action</strong>: Eat a few bites of rice/bread or 100ml juice first to raise BG, then eat your meal (make sure to include 1 normal portion of rice/bread/potato today).",
+            normal: "[Lunch · Normal BG (90–150)]<br>• <strong>Injection</strong>: <strong>No shot needed</strong> for regular meals (covered by morning NPH). Only if eating <strong>Macaroni/Lasagna</strong>, take <strong>3U pure Yellow (Reg)</strong>.<br>• <strong>Action</strong>: Eat meat, stew, and vinegar/pickled sides first, then 1 small plate of rice.",
+            mid: "[Lunch · Slightly High BG (150–180)]<br>• <strong>Injection</strong>: <strong>No shot</strong> for regular dishes (just reduce rice/bread to half a plate and eat pickles/vinegar sides). If eating Macaroni/Lasagna, take <strong>3–4U pure Yellow (Reg)</strong>.",
+            high: "[Lunch · High BG (180–240)]<br>• <strong>Injection</strong>: Since pre-lunch BG is already high, consider taking a small correction of <strong>2U pure [Yellow Reg] ONLY (NO Green NPH!)</strong> 20 mins before eating (4–5U if eating pasta).<br>• <strong>Action</strong>: Eat vinegar veggies/pickles and meat first; keep rice minimal.",
+            veryhigh: "[Lunch · Very High BG (250+)]<br>• <strong>Injection</strong>: Take a correction shot of <strong>3U pure [Yellow Reg] ONLY (NO Green NPH!)</strong> 25–30 mins before eating.<br>• <strong>Action</strong>: Choose [🟢 Boiled Veggies/Meats], [Oden], or [Sichuan Stir-Fry] below and skip white rice for this meal."
+          },
+          fa: {
+            low: "[ناهار · قند خون پایین (<90)]<br>• <strong>تزریق</strong>: <strong>بدون تزریق!</strong> انسولین سبز (NPH) صبح الان در اوج اثر است.<br>• <strong>روش مصرف</strong>: ابتدا چند لقمه برنج/نان یا نصف پاکت آبمیوه بخورید تا قند بالا بیاید و حتماً یک بشقاب معمولی برنج یا نان در این وعده میل کنید.",
+            normal: "[ناهار · قند خون نرمال (90–150)]<br>• <strong>تزریق</strong>: برای غذاهای عادی <strong>نیازی به تزریق نیست</strong>؛ فقط اگر <strong>ماکارونی یا لازانیا</strong> می‌خورید، <strong>۳ واحد انسولین زرد خالص (Reg)</strong> بزنید.<br>• <strong>روش مصرف</strong>: اول گوشت، خورشت و ترشی/سرکه بخورید و در آخر ۱ بشقاب کوچک برنج.",
+            mid: "[ناهار · قند خون کمی بالا (150–180)]<br>• <strong>تزریق</strong>: برای غذاهای معمولی <strong>بدون تزریق</strong> (فقط برنج و نان را نصف کنید و ترشی/سبزیجات بخورید). برای ماکارونی <strong>۳ تا ۴ واحد زرد خالص (Reg)</strong> بزنید.",
+            high: "[ناهار · قند خون بالا (180–240)]<br>• <strong>تزریق</strong>: چون قند قبل از ناهار بالاست، ۲۰ دقیقه قبل از غذا <strong>۲ واحد [انسولین زرد خالص Reg] (بدون NPH!)</strong> برای اصلاح قند بزنید (برای ماکارونی ۴ تا ۵ واحد Reg).<br>• <strong>روش مصرف</strong>: اول سبزیجات، ترشی و گوشت بخورید و برنج بسیار کم میل کنید.",
+            veryhigh: "[ناهار · قند خون خیلی بالا (250+)]<br>• <strong>تزریق</strong>: ۲۵ تا ۳۰ دقیقه قبل از غذا <strong>۳ واحد [انسولین زرد خالص Reg] (بدون شیشه سبز NPH!)</strong> تزریق کنید.<br>• <strong>روش مصرف</strong>: در این وعده غذاهای کم‌کربوهیدرات مثل [🟢 گوشت و سبزیجات آب‌پز]، [اودن] یا [خوراک گوشت سیچوان] را بدون برنج میل کنید."
+          },
+          ko: {
+            low: "[점심 식사 · 현재 혈당 낮음 (<90)]<br>• <strong>주사 안내</strong>: <strong>주사 맞지 마세요!</strong> 아침 초록병(NPH) 약효가 가장 강한 시간입니다.<br>• <strong>식사 요령</strong>: 먼저 주스 반 팩(100ml)이나 밥/빵을 몇 입 먹어 혈당을 올린 뒤 식사하세요(오후 저혈당 예방을 위해 밥/빵 1인분을 꼭 챙겨 드세요).",
+            normal: "[점심 식사 · 현재 혈당 정상 (90–150)]<br>• <strong>주사 안내</strong>: 일반 식사는 <strong>주사 안 맞음</strong> (파스타/라자냐를 먹을 때만 <strong>노란병 Reg 단독 3단위</strong> 주사).<br>• <strong>식사 요령</strong>: 고기, 스튜, 식초 반찬을 먼저 먹고 쌀밥은 작은 한 접시 이내로 드세요.",
+            mid: "[점심 식사 · 현재 혈당 약간 높음 (150–180)]<br>• <strong>주사 안내</strong>: 일반 식사는 <strong>주사 없이</strong> 밥양만 절반으로 줄이고 채소/식초 반찬을 늘리세요 (파스타 섭취 시 <strong>노란병 Reg 3~4단위</strong>).",
+            high: "[점심 식사 · 현재 혈당 높음 (180–240)]<br>• <strong>주사 안내</strong>: 식전 혈당이 높으므로 식사 20분 전에 <strong>[노란병 Reg]만 단독으로 2단위(초록병 NPH 절대 제외!)</strong> 보정 주사하는 것을 권장합니다.<br>• <strong>식사 요령</strong>: 식초 나물/피클과 고기를 먼저 드시고 밥은 몇 숟가락만 드세요.",
+            veryhigh: "[점심 식사 · 현재 혈당 매우 높음 (250+)]<br>• <strong>주사 안내</strong>: 식사 25~30분 전에 <strong>[노란병 Reg]만 단독으로 3단위(초록병 제외!)</strong> 주사하세요.<br>• <strong>식사 요령</strong>: 아래의 [🟢 데친 채소&샤브샤브], [오뎅탕], [사천식 고기볶음] 위주로 드시고 쌀밥은 생략하세요."
+          }
+        };
+        return summaries[lang][bg];
+      }
+
+      // 3. DINNER PLAN
+      if (meal === "dinner") {
+        const summaries = {
+          zh: {
+            low: "【晚餐 · 当前血糖偏低 (<90)】<br>• <strong>绿瓶 (NPH)</strong>：固定 40 单位不变。<br>• <strong>黄瓶 (Reg)</strong>：比下方菜谱标准量 <strong>少抽 2 单位</strong>。<br>• <strong>打针与进食顺序</strong>：<strong>不用提前等！</strong>先吃几口大饼或米饭，再打针。",
+            normal: "【晚餐 · 当前血糖正常 (90–150)】<br>• <strong>绿瓶 (NPH)</strong>：固定 40 单位不变。<br>• <strong>黄瓶 (Reg)</strong>：直接按下方每道菜卡片上的<strong>标准剂量（13–17 单位）</strong>抽取。<br>• <strong>打针与进食顺序</strong>：提前 <strong>15–20 分钟</strong>打针，先吃温热熟菜和肉，晚饭主食控制在半碗/半张饼。",
+            mid: "【晚餐 · 当前血糖略高 (150–180)】<br>• <strong>绿瓶 (NPH)</strong>：固定 40 单位不变。<br>• <strong>黄瓶 (Reg)</strong>：在下方菜谱标准量基础上 <strong>+1 单位</strong>。<br>• <strong>打针与进食顺序</strong>：提前 <strong>25 分钟</strong>打针，菜里或面里加点中国陈醋提味压糖。",
+            high: "【晚餐 · 当前血糖偏高 (180–240)】<br>• <strong>绿瓶 (NPH)</strong>：锁死 40 单位（绝不加绿瓶 NPH）。<br>• <strong>黄瓶 (Reg)</strong>：在下方菜谱标准量基础上 <strong>+2 单位</strong>（已为您自动算在下方卡片上）。<br>• <strong>打针与进食顺序</strong>：必须<strong>提前 30 分钟</strong>打针！强烈推荐选下方的【🟢 草原阿妈水煮菜涮肉】或【关东煮】，今晚就能把高血糖彻底压平。",
+            veryhigh: "【晚餐 · 当前血糖很高 (250+)】<br>• <strong>绿瓶 (NPH)</strong>：锁死 40 单位（绝不加绿瓶 NPH）。<br>• <strong>黄瓶 (Reg)</strong>：在下方菜谱标准量基础上 <strong>+3 单位</strong>（已为您自动算在下方卡片上）。<br>• <strong>打针与进食顺序</strong>：必须<strong>提前 35–40 分钟</strong>打针！今晚请避开意面/披萨/大盘白米饭，选【🟢 绿灯菜品】只吃肉菜和陈醋拌菜。"
+          },
+          en: {
+            low: "[Dinner · Low BG (<90)]<br>• <strong>Green Bottle (NPH)</strong>: Keep fixed at 40U.<br>• <strong>Yellow Bottle (Reg)</strong>: Reduce by <strong>2 units</strong> below the dish's standard dose.<br>• <strong>Timing</strong>: <strong>Do NOT wait!</strong> Eat bread/rice first, then inject.",
+            normal: "[Dinner · Normal BG (90–150)]<br>• <strong>Green Bottle (NPH)</strong>: Keep fixed at 40U.<br>• <strong>Yellow Bottle (Reg)</strong>: Use the dish's <strong>standard dose (13–17U)</strong>.<br>• <strong>Timing</strong>: Inject <strong>15–20 mins</strong> before eating. Keep dinner rice/bread to half a portion.",
+            mid: "[Dinner · Slightly High BG (150–180)]<br>• <strong>Green Bottle (NPH)</strong>: Keep fixed at 40U.<br>• <strong>Yellow Bottle (Reg)</strong>: Standard dose <strong>+1 unit</strong>.<br>• <strong>Timing</strong>: Inject <strong>25 mins</strong> before eating.",
+            high: "[Dinner · High BG (180–240)]<br>• <strong>Green Bottle (NPH)</strong>: Keep locked at 40U (do NOT add NPH).<br>• <strong>Yellow Bottle (Reg)</strong>: Standard dose <strong>+2 units</strong> (automatically calculated on cards below).<br>• <strong>Timing</strong>: Inject <strong>30 mins</strong> before eating! Choosing [🟢 Boiled Veggies/Meats] or [Oden] tonight will flatten your evening curve.",
+            veryhigh: "[Dinner · Very High BG (250+)]<br>• <strong>Green Bottle (NPH)</strong>: Keep locked at 40U.<br>• <strong>Yellow Bottle (Reg)</strong>: Standard dose <strong>+3 units</strong> (calculated on cards below).<br>• <strong>Timing</strong>: Inject <strong>35–40 mins</strong> before eating! Skip pasta/pizza/rice tonight and eat [🟢 Low Glycemic] meat & veggies."
+          },
+          fa: {
+            low: "[شام · قند خون پایین (<90)]<br>• <strong>شیشه سبز (NPH)</strong>: ثابت روی ۴۰ واحد.<br>• <strong>شیشه زرد (Reg)</strong>: <strong>۲ واحد کمتر</strong> از دوز استاندارد غذا بکشید.<br>• <strong>روش مصرف</strong>: <strong>صبر نکنید!</strong> اول چند لقمه نان یا برنج بخورید و بعد انسولین بزنید.",
+            normal: "[شام · قند خون نرمال (90–150)]<br>• <strong>شیشه سبز (NPH)</strong>: ثابت روی ۴۰ واحد.<br>• <strong>شیشه زرد (Reg)</strong>: طبق دوز استاندارد هر غذا (۱۳ تا ۱۷ واحد).<br>• <strong>روش مصرف</strong>: <strong>۱۵ تا ۲۰ دقیقه قبل از شام</strong> تزریق کنید.",
+            mid: "[شام · قند خون کمی بالا (150–180)]<br>• <strong>شیشه سبز (NPH)</strong>: ثابت روی ۴۰ واحد.<br>• <strong>شیشه زرد (Reg)</strong>: دوز استاندارد غذا <strong>+ ۱ واحد اضافه</strong>.<br>• <strong>روش مصرف</strong>: <strong>۲۵ دقیقه قبل از شام</strong> تزریق کنید.",
+            high: "[شام · قند خون بالا (180–240)]<br>• <strong>شیشه سبز (NPH)</strong>: قفل روی ۴۰ واحد (NPH را زیاد نکنید).<br>• <strong>شیشه زرد (Reg)</strong>: دوز استاندارد غذا <strong>+ ۲ واحد اضافه</strong> (در کارت‌های پایین محاسبه شده است).<br>• <strong>روش مصرف</strong>: حتماً <strong>۳۰ دقیقه قبل از شام</strong> تزریق کنید! انتخاب [🟢 سبزیجات و گوشت آب‌پز با سس کنجد] یا [اودن] قند شبانه را کاملاً صاف می‌کند.",
+            veryhigh: "[شام · قند خون خیلی بالا (250+)]<br>• <strong>شیشه سبز (NPH)</strong>: قفل روی ۴۰ واحد.<br>• <strong>شیشه زرد (Reg)</strong>: دوز استاندارد غذا <strong>+ ۳ واحد اضافه</strong> (در کارت‌های پایین محاسبه شده است).<br>• <strong>روش مصرف</strong>: حتماً <strong>۳۵ تا ۴۰ دقیقه قبل از شام</strong> تزریق کنید و امشب برنج، ماکارونی و پیتزا نخورید."
+          },
+          ko: {
+            low: "[저녁 식사 · 현재 혈당 낮음 (<90)]<br>• <strong>초록병 (NPH)</strong>: 40단위 고정.<br>• <strong>노란병 (Reg)</strong>: 아래 메뉴 기본 용량보다 <strong>2단위 적게</strong> 추출.<br>• <strong>식사 요령</strong>: <strong>대기하지 마세요!</strong> 먼저 빵이나 밥을 몇 입 드신 후 주사하세요.",
+            normal: "[저녁 식사 · 현재 혈당 정상 (90–150)]<br>• <strong>초록병 (NPH)</strong>: 40단위 고정.<br>• <strong>노란병 (Reg)</strong>: 아래 메뉴의 <strong>기본 용량(13~17단위)</strong>대로 추출.<br>• <strong>식사 요령</strong>: 식사 <strong>15~20분 전</strong>에 주사하고 저녁 밥/빵은 반 공기로 조절하세요.",
+            mid: "[저녁 식사 · 현재 혈당 약간 높음 (150–180)]<br>• <strong>초록병 (NPH)</strong>: 40단위 고정.<br>• <strong>노란병 (Reg)</strong>: 메뉴 기본 용량 <strong>+1단위 추가</strong>.<br>• <strong>식사 요령</strong>: 식사 <strong>25분 전</strong>에 주사하세요.",
+            high: "[저녁 식사 · 현재 혈당 높음 (180–240)]<br>• <strong>초록병 (NPH)</strong>: 40단위 고정 (절대 추가 금지).<br>• <strong>노란병 (Reg)</strong>: 메뉴 기본 용량 <strong>+2단위 추가</strong> (아래 카드에 자동 반영됨).<br>• <strong>식사 요령</strong>: 반드시 <strong>30분 전</strong>에 주사하세요! 오늘 저녁은 [🟢 데친 채소&샤브샤브]나 [오뎅탕]을 드시면 야간 고혈당을 깔끔하게 잡을 수 있습니다.",
+            veryhigh: "[저녁 식사 · 현재 혈당 매우 높음 (250+)]<br>• <strong>초록병 (NPH)</strong>: 40단위 고정.<br>• <strong>노란병 (Reg)</strong>: 메뉴 기본 용량 <strong>+3단위 추가</strong> (아래 카드에 자동 반영됨).<br>• <strong>식사 요령</strong>: 반드시 <strong>35~40분 전</strong>에 주사하고, 오늘 저녁은 파스타/피자/쌀밥을 피하고 [🟢 혈당 안정] 고기·채소 메뉴만 드세요."
+          }
+        };
+        return summaries[lang][bg];
+      }
+
+      // 4. SNACK PLAN (Depends on Snack Timing + BG)
+      if (meal === "snack") {
+        if (bg === "low") {
+          const lowSnackMsg = {
+            zh: "【零食加餐 · 当前血糖偏低 (<90)】<br>• <strong>不打针！立即处理低血糖</strong>：先喝 <strong>100ml 纯果汁</strong>，5 分钟后再吃 <strong>5 颗坚果或一小块奶酪配全麦饼</strong>，把血糖稳稳锁在安全区。",
+            en: "[Snack · Low BG (<90)]<br>• <strong>No shot! Treat low BG immediately</strong>: Drink <strong>100ml pure juice</strong> first, then eat <strong>5 nuts or cheese with whole wheat bread</strong> 5 mins later to keep blood sugar steady.",
+            fa: "[میان‌وعده · قند خون پایین (<90)]<br>• <strong>بدون تزریق! اقدام فوری برای افت قند</strong>: ابتدا <strong>نصف پاکت کوچک (۱۰۰ سی‌سی) آبمیوه</strong> بنوشید و ۵ دقیقه بعد <strong>چند عدد بادام/گردو یا یک لقمه نان و پنیر</strong> بخورید تا قند ثابت بماند.",
+            ko: "[간식 · 현재 혈당 낮음 (<90)]<br>• <strong>주사 안 맞음! 저혈당 즉시 대처</strong>: 먼저 <strong>순수 주스 100ml</strong>를 마시고, 5분 뒤에 <strong>견과류 5알이나 치즈 곁들인 통밀빵 한 조각</strong>을 드셔 혈당이 다시 떨어지지 않게 잡아주세요."
+          };
+          return lowSnackMsg[lang];
+        }
+
+        const snackPlans = {
+          before_breakfast: {
+            zh: "【早餐前 · 进食建议】<br>• 如果马上要吃早餐，请直接切换到【🌅 早餐】页面按餐前血糖打针吃饭。<br>• 如果早起只喝茶或咖啡暂不吃早饭：当前血糖正常或偏高时，只喝无糖红茶/黑咖啡配几颗坚果（Ajil），不要空腹吃甜饼干或含方糖。",
+            en: "[Before Breakfast · Advice]<br>• If eating breakfast soon, switch to the [🌅 Breakfast] tab.<br>• If only having morning tea/coffee now: Have unsweetened tea/coffee with a few nuts (Ajil). Avoid sugar cubes or sweet cookies on an empty stomach.",
+            fa: "[قبل از صبحانه · توصیه]<br>• اگر قصد خوردن صبحانه دارید، تب [🌅 صبحانه] را انتخاب کنید.<br>• اگر الان فقط چای صبحگاهی می‌خورید: چای بدون قند همراه با چند عدد گردو یا بادام میل کنید و ناشتا قند یا شیرینی نخورید.",
+            ko: "[아침 식사 전 · 가이드]<br>• 곧 아침 식사를 하신다면 [🌅 아침 식사] 탭으로 이동하세요.<br>• 기상 후 차만 마시는 경우: 각설탕이나 쿠키 대신 무설탕 홍차/블랙커피에 견과류 몇 알만 곁들이세요."
+          },
+          between_bl: {
+            zh: bg === "normal"
+              ? "【早餐 ~ 午餐之间 (上午 09:30–11:30) · 黄金加餐窗口】<br>• <strong>不用打针！</strong>这个时间段早上的胰岛素药力最猛，最容易往下掉血糖。<br>• <strong>推荐吃法</strong>：现在可以放心吃<strong>一小碗薯片蘸浓酸奶/草原阿妈蘸料</strong>，或<strong>石榴籽/水果配一把核桃</strong>，刚好托住中午前的血糖！"
+              : "【早餐 ~ 午餐之间 · 当前血糖已偏高 (150+)】<br>• <strong>不用打针，但暂缓吃薯片和水果</strong>：因为现在血糖高于 150，如果饿了请选下方的<strong>【波斯混合坚果 Ajil、咸橄榄、白奶酪或黄瓜蘸草原阿妈】</strong>配无糖茶。",
+            en: bg === "normal"
+              ? "[Between Breakfast & Lunch (09:30–11:30 AM) · Best Snack Window]<br>• <strong>No shot needed!</strong> Morning insulin peaks now.<br>• <strong>Recommended</strong>: Enjoy a small bowl of <strong>chips dipped in thick yogurt / Grassland Ama sauce</strong>, or <strong>pomegranate/fruit with walnuts</strong> to prevent a noon crash."
+              : "[Between Breakfast & Lunch · Current BG is High (150+)]<br>• <strong>No shot, skip chips/fruit for now</strong>: Since BG is above 150, choose <strong>[Mixed Nuts Ajil, Olives, Cheese, or Cucumber with Sesame Dip]</strong> with unsweetened tea.",
+            fa: bg === "normal"
+              ? "[بین صبحانه و ناهار (۹:۳۰ تا ۱۱:۳۰ صبح) · بهترین زمان میان‌وعده]<br>• <strong>بدون نیاز به تزریق!</strong> در این ساعت اثر انسولین صبح بسیار قوی است.<br>• <strong>پیشنهاد عالی</strong>: یک پیاله کوچک <strong>چیپس با ماست موسیر یا سس کنجد</strong>، و یا <strong>میوه و انار همراه با گردو</strong> میل کنید تا ظهر دچار افت قند نشوید."
+              : "[بین صبحانه و ناهار · قند فعلی بالاست (150+)]<br>• <strong>بدون تزریق، اما فعلاً چیپس و میوه نخورید</strong>: چون قند بالای ۱۵۰ است، فقط <strong>آجیل، زیتون، پنیر یا خیار با سس کنجد</strong> همراه با چای تلخ میل کنید.",
+            ko: bg === "normal"
+              ? "[아침 ~ 점심 사이 (오전 09:30–11:30) · 간식 골든타임]<br>• <strong>주사 안 맞음!</strong> 오전 인슐린 약효가 가장 강해 혈당이 내려가는 시간입니다.<br>• <strong>추천 간식</strong>: 지금 <strong>감자칩(진한 요거트/초원엄마 소스 찍먹)</strong>이나 <strong>석류/사과 + 호두</strong>를 드시면 점심 전 저혈당을 완벽하게 막아줍니다."
+              : "[아침 ~ 점심 사이 · 현재 혈당 높음 (150+)]<br>• <strong>주사 안 맞음, 감자칩/과일 생략</strong>: 현재 혈당이 150 이상이므로 출출하시면 <strong>[견과류 Ajil, 올리브, 치즈, 오이+참깨소스]</strong>와 무설탕 홍차를 드세요."
+          },
+          between_ld: {
+            zh: "【午餐 ~ 晚餐之间 (下午 15:00–18:00) · 控糖关键期】<br>• <strong>下午药效减弱，血糖极易往上爬升</strong>！<br>• <strong>进食建议</strong>：下午喝波斯红茶时<strong>不要嚼白方糖、甜饼干或干吃薯片</strong>。请选下方的<strong>【0升糖坚果 Ajil、咸橄榄、白奶酪、黄瓜蘸草原阿妈蘸料】</strong>，吃多少都不会推高晚饭前血糖。",
+            en: "[Between Lunch & Dinner (15:00–18:00 PM) · Afternoon Caution Window]<br>• <strong>Insulin fades in the afternoon, causing BG to climb easily!</strong><br>• <strong>Recommended</strong>: Enjoy Persian tea WITHOUT sugar cubes, cookies, or chips. Choose <strong>[Zero-Carb Mixed Nuts Ajil, Olives, Cheese, or Cucumber with Sesame Dip]</strong>.",
+            fa: "[بین ناهار و شام (ساعت ۱۵ تا ۱۸) · ساعت حساس عصر]<br>• <strong>در ساعات عصر اثر انسولین صبح کم شده و قند خون به راحتی بالا می‌رود!</strong><br>• <strong>توصیه</strong>: عصرها چای را <strong>بدون قند حبه، شیرینی یا چیپس</strong> بنوشید. بهترین انتخاب <strong>[آجیل، زیتون، پنیر سفید یا خیار با سس کنجد مغولی]</strong> است که قند را اصلاً بالا نمی‌برد.",
+            ko: "[점심 ~ 저녁 사이 (오후 15:00–18:00) · 혈당 상승 주의 구간]<br>• <strong>오후에는 인슐린 약효가 빠져 혈당이 쉽게 올라갑니다!</strong><br>• <strong>섭취 가이드</strong>: 오후 홍차를 마실 때 <strong>각설탕, 과자, 감자칩을 피하시고</strong> 아래의 <strong>[혈당 안 오르는 견과류 Ajil, 올리브, 치즈, 오이+참깨소스]</strong>를 드세요."
+          },
+          after_dinner: {
+            zh: bg === "normal"
+              ? "【晚餐后 / 睡前 · 当前血糖 90–150】<br>• 若睡前血糖在 <strong>90–115</strong> 之间：建议吃<strong>一小块全麦大饼 (Sangak) 卷白奶酪核桃或抹草原阿妈蘸料</strong>，防止晚间 40 单位绿瓶 (NPH) 在半夜引起低血糖。<br>• 若血糖在 <strong>120–150</strong> 且平稳：无需加餐，直接睡觉。"
+              : "【晚餐后 / 睡前 · 当前血糖偏高 (150+)】<br>• <strong>今晚睡前不需要吃任何加餐</strong>！晚上的 40 单位绿瓶 (NPH) 会在夜间把偏高的血糖慢慢压下来。如果口渴请喝温水或无糖茶。",
+            en: bg === "normal"
+              ? "[After Dinner / Bedtime · Current BG 90–150]<br>• If bedtime BG is <strong>90–115</strong>: Eat a small piece of <strong>Sangak bread with cheese/walnuts or Grassland Ama sesame dip</strong> to prevent overnight lows from the 40U evening NPH.<br>• If BG is <strong>120–150</strong> and steady: No snack needed."
+              : "[After Dinner / Bedtime · Current BG is High (150+)]<br>• <strong>Skip bedtime snacks tonight!</strong> Your 40U evening Green (NPH) will gradually bring your blood sugar down overnight. Drink water or unsweetened tea if thirsty.",
+            fa: bg === "normal"
+              ? "[بعد از شام / قبل از خواب · قند 90–150]<br>• اگر قند قبل از خواب بین <strong>۹۰ تا ۱۱۵</strong> است: یک لقمه کوچک <strong>نان سنگک با پنیر و گردو یا سس کنجد</strong> بخورید تا ۴۰ واحد NPH شب باعث افت قند در خواب نشود.<br>• اگر قند <strong>۱۲۰ تا ۱۵۰</strong> و صاف است: نیازی به خوردن چیزی نیست."
+              : "[بعد از شام / قبل از خواب · قند بالاست (150+)]<br>• <strong>امشب قبل از خواب نیازی به خوردن میان‌وعده نیست!</strong> انسولین سبز (NPH) شب به تدریج قند را در طول شب پایین می‌آورد.",
+            ko: bg === "normal"
+              ? "[저녁 식사 후 / 취침 전 · 현재 혈당 90–150]<br>• 취침 전 혈당이 <strong>90~115</strong> 사이라면: 새벽 저혈당 예방을 위해 <strong>통밀빵(Sangak)에 치즈·호두나 초원엄마 소스</strong>를 발라 한 조각 드세요.<br>• 혈당이 <strong>120~150</strong>으로 안정적이라면: 야식 없이 바로 주무셔도 됩니다."
+              : "[저녁 식사 후 / 취침 전 · 현재 혈당 높음 (150+)]<br>• <strong>오늘 밤에는 야식을 드시지 마세요!</strong> 저녁에 맞은 초록병(NPH) 40단위가 밤사이 혈당을 서서히 내려줍니다."
+          }
+        };
+        return snackPlans[timing][lang];
+      }
+    }
+
+    // Format per-card insulin instruction specifically for the selected meal & BG
+    function getCardMealInstruction(item, meal, bg, lang) {
+      const adj = getBgAdjustment(bg);
+
+      if (meal === "breakfast") {
+        const base = item.baseReg.breakfast || 15;
+        const finalReg = Math.max(8, base + adj.delta);
+        const wait = Math.max(0, (item.waitMins.breakfast || 15) + adj.waitDelta);
+        const corrNote = adj.delta === 0 ? "" : (adj.delta > 0 ? ` (${base}+${adj.delta})` : ` (${base}${adj.delta})`);
+
+        if (lang === "zh") {
+          return `黄瓶 (Reg) <strong>${finalReg} 单位</strong>${corrNote} + 绿瓶 (NPH) <strong>36–38 单位</strong> | ${wait === 0 ? "先吃两口再打针" : `提前 <strong>${wait} 分钟</strong>打针`}`;
+        } else if (lang === "en") {
+          return `Yellow (Reg) <strong>${finalReg}U</strong>${corrNote} + Green (NPH) <strong>36–38U</strong> | ${wait === 0 ? "Eat a few bites first, then inject" : `Inject <strong>${wait} mins</strong> before eating`}`;
+        } else if (lang === "fa") {
+          return `شیشه زرد (Reg) <strong>${finalReg} واحد</strong>${corrNote} + شیشه سبز (NPH) <strong>۳۶ تا ۳۸ واحد</strong> | ${wait === 0 ? "اول چند لقمه بخورید بعد بزنید" : `<strong>${wait} دقیقه</strong> قبل از غذا بزنید`}`;
+        } else {
+          return `노란병 (Reg) <strong>${finalReg}단위</strong>${corrNote} + 초록병 (NPH) <strong>36~38단위</strong> | ${wait === 0 ? "먼저 몇 입 드신 후 주사" : `식사 <strong>${wait}분 전</strong> 주사`}`;
+        }
+      }
+
+      if (meal === "lunch") {
+        const isPasta = item.id === "ld10";
+        let regUnits = isPasta ? 3 : 0;
+        if (bg === "high") regUnits += 2;
+        if (bg === "veryhigh") regUnits += 3;
+        if (bg === "low") regUnits = 0;
+
+        if (regUnits === 0) {
+          const noShotMsg = {
+            zh: "中午<strong>不打针</strong>（靠早上绿瓶 NPH 消化，先吃肉菜，米饭限 1 小平盘）",
+            en: "<strong>No injection needed</strong> at lunch (eat meat/veggies first, limit rice to 1 small plate)",
+            fa: "ظهر <strong>بدون تزریق</strong> (اول گوشت و سبزیجات، برنج ۱ بشقاب کوچک)",
+            ko: "점심 <strong>주사 안 맞음</strong> (고기와 채소 먼저 섭취, 밥은 작은 1접시 이내)"
+          };
+          return noShotMsg[lang];
+        } else {
+          const shotMsg = {
+            zh: `午饭前 15–20 分钟单独抽 <strong>${regUnits} 单位纯【黄瓶 Reg】</strong>（绝不抽绿瓶 NPH！）`,
+            en: `Take <strong>${regUnits}U pure [Yellow Reg] ONLY</strong> 15–20 mins before lunch (NO Green NPH!)`,
+            fa: `۱۵ تا ۲۰ دقیقه قبل از ناهار <strong>${regUnits} واحد [انسولین زرد خالص Reg]</strong> بزنید (بدون شیشه سبز NPH!)`,
+            ko: `점심 15~20분 전 <strong>[노란병 Reg]만 단독 ${regUnits}단위</strong> 주사 (초록병 NPH 절대 제외!)`
+          };
+          return shotMsg[lang];
+        }
+      }
+
+      if (meal === "dinner") {
+        const base = item.baseReg.dinner || 15;
+        const finalReg = Math.max(8, base + adj.delta);
+        const wait = Math.max(0, (item.waitMins.dinner || 15) + adj.waitDelta);
+        const corrNote = adj.delta === 0 ? "" : (adj.delta > 0 ? ` (${base}+${adj.delta})` : ` (${base}${adj.delta})`);
+
+        if (lang === "zh") {
+          return `黄瓶 (Reg) <strong>${finalReg} 单位</strong>${corrNote} + 绿瓶 (NPH) <strong>40 单位</strong> | ${wait === 0 ? "先吃两口再打针" : `提前 <strong>${wait} 分钟</strong>打针`}`;
+        } else if (lang === "en") {
+          return `Yellow (Reg) <strong>${finalReg}U</strong>${corrNote} + Green (NPH) <strong>40U</strong> | ${wait === 0 ? "Eat a few bites first, then inject" : `Inject <strong>${wait} mins</strong> before eating`}`;
+        } else if (lang === "fa") {
+          return `شیشه زرد (Reg) <strong>${finalReg} واحد</strong>${corrNote} + شیشه سبز (NPH) <strong>۴۰ واحد</strong> | ${wait === 0 ? "اول چند لقمه بخورید بعد بزنید" : `<strong>${wait} دقیقه</strong> قبل از شام بزنید`}`;
+        } else {
+          return `노란병 (Reg) <strong>${finalReg}단위</strong>${corrNote} + 초록병 (NPH) <strong>40단위</strong> | ${wait === 0 ? "먼저 몇 입 드신 후 주사" : `식사 <strong>${wait}분 전</strong> 주사`}`;
+        }
+      }
+
+      // Snack
+      const snackMsg = {
+        zh: "无需注射胰岛素（按上方时间段与当前血糖搭配食用）",
+        en: "No insulin injection needed (follow timing & BG advice above)",
+        fa: "بدون نیاز به تزریق انسولین (طبق راهنمای بالا میل شود)",
+        ko: "인슐린 주사 불필요 (위 시간대 및 혈당 가이드에 맞춰 섭취)"
+      };
+      return snackMsg[lang];
+    }
+
+    // ==================== RENDER FUNCTIONS ====================
+    function setLang(lang) {
+      currentLang = lang;
+      const t = i18n[lang];
+      const htmlRoot = document.getElementById("htmlRoot");
+      htmlRoot.setAttribute("dir", t.dir);
+      htmlRoot.setAttribute("lang", lang);
+
+      // Update language buttons
+      document.querySelectorAll(".lang-btn").forEach(btn => {
+        if (btn.dataset.lang === lang) {
+          btn.className = "lang-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-900 text-white transition";
+        } else {
+          btn.className = "lang-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition";
+        }
+      });
+
+      // Update static texts
+      document.getElementById("appTitle").textContent = t.appTitle;
+      document.getElementById("coreRuleBanner").textContent = t.coreRule;
+      document.getElementById("tabPlanner").textContent = t.tabPlanner;
+      document.getElementById("tabAllMenus").textContent = t.tabAllMenus;
+      document.getElementById("tabSeasonings").textContent = t.tabSeasonings;
+
+      document.getElementById("step1Label").textContent = t.step1Label;
+      document.getElementById("step1Title").textContent = t.step1Title;
+      document.getElementById("btnMealBreakfast").textContent = t.btnMealBreakfast;
+      document.getElementById("btnMealBreakfastSub").textContent = t.btnMealBreakfastSub;
+      document.getElementById("btnMealLunch").textContent = t.btnMealLunch;
+      document.getElementById("btnMealLunchSub").textContent = t.btnMealLunchSub;
+      document.getElementById("btnMealDinner").textContent = t.btnMealDinner;
+      document.getElementById("btnMealDinnerSub").textContent = t.btnMealDinnerSub;
+      document.getElementById("btnMealSnack").textContent = t.btnMealSnack;
+      document.getElementById("btnMealSnackSub").textContent = t.btnMealSnackSub;
+
+      document.getElementById("snackTimingTitle").textContent = t.snackTimingTitle;
+      document.getElementById("timing1Title").textContent = t.timing1Title;
+      document.getElementById("timing1Sub").textContent = t.timing1Sub;
+      document.getElementById("timing2Title").textContent = t.timing2Title;
+      document.getElementById("timing2Sub").textContent = t.timing2Sub;
+      document.getElementById("timing3Title").textContent = t.timing3Title;
+      document.getElementById("timing3Sub").textContent = t.timing3Sub;
+      document.getElementById("timing4Title").textContent = t.timing4Title;
+      document.getElementById("timing4Sub").textContent = t.timing4Sub;
+
+      document.getElementById("step2Label").textContent = t.step2Label;
+      document.getElementById("step2Title").textContent = t.step2Title;
+      document.getElementById("bgLabelLow").textContent = t.bgLabelLow;
+      document.getElementById("bgLabelNormal").textContent = t.bgLabelNormal;
+      document.getElementById("bgLabelMid").textContent = t.bgLabelMid;
+      document.getElementById("bgLabelHigh").textContent = t.bgLabelHigh;
+      document.getElementById("bgLabelVeryHigh").textContent = t.bgLabelVeryHigh;
+
+      document.getElementById("recommendedMenuHeading").textContent = t.recommendedMenuHeading;
+      document.getElementById("amBtnAll").textContent = t.amBtnAll;
+      document.getElementById("amBtnBreakfast").textContent = t.amBtnBreakfast;
+      document.getElementById("amBtnLunch").textContent = t.amBtnLunch;
+      document.getElementById("amBtnDinner").textContent = t.amBtnDinner;
+      document.getElementById("amBtnSnack").textContent = t.amBtnSnack;
+      document.getElementById("allMenuSearch").placeholder = t.searchPlaceholder;
+
+      document.getElementById("seasoningPageTitle").textContent = t.seasoningPageTitle;
+      document.getElementById("seasoningPageDesc").textContent = t.seasoningPageDesc;
+
+      renderPlanner();
+      renderAllMenus();
+      renderSeasonings();
+    }
+
+    function switchPage(page) {
+      currentPage = page;
+      document.getElementById("pagePlanner").classList.toggle("hidden", page !== "planner");
+      document.getElementById("pageAllMenus").classList.toggle("hidden", page !== "allMenus");
+      document.getElementById("pageSeasonings").classList.toggle("hidden", page !== "seasonings");
+
+      document.querySelectorAll(".nav-tab").forEach(btn => {
+        if (btn.dataset.page === page) {
+          btn.className = "nav-tab px-4 py-2 rounded-xl text-sm font-bold bg-slate-900 text-white shadow-sm shrink-0 transition";
+        } else {
+          btn.className = "nav-tab px-4 py-2 rounded-xl text-sm font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shrink-0 transition";
+        }
+      });
+    }
+
+    function selectPlannerMeal(meal) {
+      plannerMeal = meal;
+      document.getElementById("snackTimingBox").classList.toggle("hidden", meal !== "snack");
+      renderPlanner();
+    }
+
+    function selectSnackTiming(timing) {
+      plannerSnackTiming = timing;
+      renderPlanner();
+    }
+
+    function selectPlannerBG(bg) {
+      plannerBG = bg;
+      renderPlanner();
+    }
+
+    function getGiBadgeInfo(level, lang) {
+      const t = i18n[lang];
+      if (level === "green") {
+        return {
+          text: t.giGreen,
+          border: "border-emerald-200",
+          headerBg: "bg-emerald-50/70",
+          badge: "bg-emerald-100 text-emerald-800 border border-emerald-300"
+        };
+      } else if (level === "yellow") {
+        return {
+          text: t.giYellow,
+          border: "border-amber-200",
+          headerBg: "bg-amber-50/70",
+          badge: "bg-amber-100 text-amber-800 border border-amber-300"
+        };
+      } else {
+        return {
+          text: t.giRed,
+          border: "border-rose-200",
+          headerBg: "bg-rose-50/70",
+          badge: "bg-rose-100 text-rose-800 border border-rose-300"
+        };
+      }
+    }
+
+    function renderPlanner() {
+      const t = i18n[currentLang];
+
+      // Highlight selected meal button
+      document.querySelectorAll(".p-meal-btn").forEach(btn => {
+        if (btn.dataset.meal === plannerMeal) {
+          btn.className = "p-meal-btn p-3.5 rounded-xl border-2 text-start transition flex flex-col justify-between bg-emerald-50/80 border-emerald-600 shadow-sm";
+        } else {
+          btn.className = "p-meal-btn p-3.5 rounded-xl border-2 text-start transition flex flex-col justify-between bg-slate-50 border-slate-200 hover:border-slate-300";
+        }
+      });
+
+      // Highlight selected snack timing button
+      document.querySelectorAll(".s-timing-btn").forEach(btn => {
+        if (btn.dataset.timing === plannerSnackTiming) {
+          btn.className = "s-timing-btn px-3 py-2.5 rounded-xl border-2 text-xs sm:text-sm font-bold text-start transition bg-emerald-50 border-emerald-600 text-emerald-950 shadow-sm";
+        } else {
+          btn.className = "s-timing-btn px-3 py-2.5 rounded-xl border text-xs sm:text-sm font-semibold text-start transition bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300";
+        }
+      });
+
+      // Highlight selected BG button
+      document.querySelectorAll(".p-bg-btn").forEach(btn => {
+        const isSelected = btn.dataset.bg === plannerBG;
+        const spanClass = btn.dataset.bg === "veryhigh" ? "col-span-2 sm:col-span-1" : "";
+        if (isSelected) {
+          btn.className = `p-bg-btn p-3 rounded-xl border-2 text-center transition bg-slate-900 border-slate-900 text-white shadow-sm ${spanClass}`;
+        } else {
+          btn.className = `p-bg-btn p-3 rounded-xl border-2 text-center transition bg-slate-50 border-slate-200 hover:border-slate-300 ${spanClass}`;
+        }
+      });
+
+      // Render Action Plan Summary
+      const summaryHtml = generatePlanSummary(currentLang, plannerMeal, plannerSnackTiming, plannerBG);
+      document.getElementById("generatedPlanBox").innerHTML = `
+        <div class="text-xs sm:text-sm leading-relaxed space-y-1">${summaryHtml}</div>
+      `;
+
+      // Filter Recipes for the Selected Meal
+      let matched = recipes.filter(r => r.meals.includes(plannerMeal));
+
+      if (plannerMeal === "snack") {
+        matched = matched.filter(r => {
+          const timingMatch = !r.snackTimings || r.snackTimings.includes(plannerSnackTiming);
+          if (plannerBG === "low") {
+            return r.id === "s1" || r.id === "s2" || r.id === "s4";
+          }
+          if (plannerBG === "high" || plannerBG === "veryhigh") {
+            return r.giLevel === "green" && timingMatch;
+          }
+          return timingMatch && r.id !== "s1";
+        });
+      } else {
+        // Sort green dishes first when BG is high/veryhigh
+        if (plannerBG === "high" || plannerBG === "veryhigh") {
+          const order = { green: 1, yellow: 2, red: 3 };
+          matched.sort((a, b) => order[a.giLevel] - order[b.giLevel]);
+        }
+      }
+
+      document.getElementById("recommendedMenuCount").textContent = `${matched.length}`;
+
+      const grid = document.getElementById("plannerRecipeGrid");
+      grid.innerHTML = matched.map(item => {
+        const giInfo = getGiBadgeInfo(item.giLevel, currentLang);
+        const doseHtml = getCardMealInstruction(item, plannerMeal, plannerBG, currentLang);
+        const showHighWarn = (plannerBG === "high" || plannerBG === "veryhigh") && item.giLevel === "red" && plannerMeal !== "snack";
+        const showLowWarn = plannerBG === "low" && plannerMeal !== "snack";
+
+        return `
+          <article class="bg-white rounded-2xl border ${giInfo.border} shadow-sm overflow-hidden flex flex-col justify-between">
+            <div>
+              <div class="${giInfo.headerBg} px-4 py-3.5 border-b ${giInfo.border}">
+                <div class="flex items-start justify-between gap-2">
+                  <h4 class="font-bold text-slate-900 text-base leading-snug">${item.title[currentLang]}</h4>
+                  <span class="px-2.5 py-0.5 rounded-full text-xs font-bold shrink-0 ${giInfo.badge}">
+                    ${giInfo.text}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1 font-medium">${item.subTitle[currentLang]}</p>
+              </div>
+
+              <!-- Single Meal Specific Dose Box -->
+              <div class="px-4 pt-3 pb-2 space-y-2">
+                <div class="p-3 rounded-xl bg-slate-900 text-white text-xs sm:text-sm leading-relaxed">
+                  <div class="text-[11px] font-bold text-emerald-400 mb-0.5">${t.currentMealDoseLabel}</div>
+                  <div>${doseHtml}</div>
+                </div>
+                ${showHighWarn ? `<div class="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium">${t.highBgWarn}</div>` : ""}
+                ${showLowWarn ? `<div class="p-2.5 rounded-xl bg-sky-50 border border-sky-200 text-sky-900 text-xs font-medium">${t.lowBgWarn}</div>` : ""}
+              </div>
+
+              <!-- Eating & Cooking Tips -->
+              <div class="px-4 py-2.5">
+                <div class="text-xs font-bold text-slate-700 mb-1.5">${t.howToEatLabel}</div>
+                <ul class="space-y-1.5 text-xs text-slate-600 leading-relaxed">
+                  ${item.howToEat[currentLang].map(line => `<li class="flex items-start gap-1.5"><span class="text-emerald-600 font-bold">•</span><span>${line}</span></li>`).join("")}
+                </ul>
+              </div>
+            </div>
+            <div class="h-2"></div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    // ==================== PAGE 2: RENDER ALL MENUS ====================
+    function setAllMenuFilter(filter) {
+      allMenuFilter = filter;
+      document.querySelectorAll(".am-filter-btn").forEach(btn => {
+        if (btn.dataset.filter === filter) {
+          btn.className = "am-filter-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white shrink-0 transition";
+        } else {
+          btn.className = "am-filter-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition";
+        }
+      });
+      renderAllMenus();
+    }
+
+    function renderAllMenus() {
+      const t = i18n[currentLang];
+      const q = (document.getElementById("allMenuSearch").value || "").trim().toLowerCase();
+
+      const filtered = recipes.filter(item => {
+        const matchMeal = allMenuFilter === "all" || item.meals.includes(allMenuFilter);
+        const matchQuery = !q ||
+          item.title[currentLang].toLowerCase().includes(q) ||
+          item.subTitle[currentLang].toLowerCase().includes(q) ||
+          item.howToEat[currentLang].some(line => line.toLowerCase().includes(q));
+        return matchMeal && matchQuery;
+      });
+
+      const grid = document.getElementById("allMenusGrid");
+      grid.innerHTML = filtered.map(item => {
+        const giInfo = getGiBadgeInfo(item.giLevel, currentLang);
+        const mealBadges = item.meals.map(m => `<span class="px-2 py-0.5 rounded-md bg-white/80 border border-slate-200 text-[11px] font-semibold text-slate-700">${t.mealLabels[m]}</span>`).join("");
+
+        return `
+          <article class="bg-white rounded-2xl border ${giInfo.border} shadow-sm overflow-hidden flex flex-col justify-between">
+            <div>
+              <div class="${giInfo.headerBg} px-4 py-3.5 border-b ${giInfo.border}">
+                <div class="flex items-start justify-between gap-2">
+                  <h4 class="font-bold text-slate-900 text-base leading-snug">${item.title[currentLang]}</h4>
+                  <span class="px-2.5 py-0.5 rounded-full text-xs font-bold shrink-0 ${giInfo.badge}">
+                    ${giInfo.text}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1 font-medium">${item.subTitle[currentLang]}</p>
+                <div class="flex flex-wrap gap-1.5 mt-2">${mealBadges}</div>
+              </div>
+
+              <div class="px-4 py-3">
+                <div class="text-xs font-bold text-slate-700 mb-1.5">${t.howToEatLabel}</div>
+                <ul class="space-y-1.5 text-xs text-slate-600 leading-relaxed">
+                  ${item.howToEat[currentLang].map(line => `<li class="flex items-start gap-1.5"><span class="text-emerald-600 font-bold">•</span><span>${line}</span></li>`).join("")}
+                </ul>
+              </div>
+            </div>
+            <div class="h-2"></div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    // ==================== PAGE 3: RENDER SEASONINGS ====================
+    function renderSeasonings() {
+      const grid = document.getElementById("seasoningGrid");
+      grid.innerHTML = seasoningsData.map(s => `
+        <div class="p-4 rounded-xl bg-amber-50/60 border border-amber-200/90">
+          <h3 class="font-bold text-slate-900 text-sm sm:text-base">${s.title[currentLang]}</h3>
+          <p class="text-xs sm:text-sm text-slate-700 mt-1.5 leading-relaxed">${s.desc[currentLang]}</p>
+        </div>
+      `).join("");
+    }
+
+    window.onload = function() {
+      setLang("zh");
+    };
+  </script>
+</body>
+</html>
