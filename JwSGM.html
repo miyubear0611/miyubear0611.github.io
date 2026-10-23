@@ -9,10 +9,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
     body {
       font-family: 'Inter', 'Noto Sans SC', 'Noto Sans KR', 'Noto Sans Arabic', sans-serif;
       background-color: #f4f9f6;
       color: #1e293b;
+      padding-bottom: 64px;
+    }
+    @media (min-width: 768px) {
+      body {
+        padding-bottom: 0;
+      }
     }
     [dir="rtl"] {
       font-family: 'Noto Sans Arabic', 'Inter', sans-serif;
@@ -48,189 +58,196 @@
 </head>
 <body class="min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white">
 
-  <!-- Toast Notification Container -->
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-xs w-auto pointer-events-none px-4 sm:px-0"></div>
+  <!-- Toast Notification Container (Centered at top on mobile so it is never cut off) -->
+  <div id="toastContainer" class="fixed top-16 sm:top-auto sm:bottom-5 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-5 z-50 flex flex-col gap-2 max-w-xs w-auto pointer-events-none px-4 sm:px-0"></div>
 
-  <!-- Top Sticky Header -->
+  <!-- Top Sticky Header (Ultra-compact on mobile so content is never blocked) -->
   <header id="mainStickyHeader" class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-emerald-100 shadow-sm">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5">
-      <div class="flex flex-wrap items-center justify-between gap-3">
+    <div class="max-w-7xl mx-auto px-2.5 sm:px-6 py-2">
+      <div class="flex flex-wrap items-center justify-between gap-2">
         <!-- Brand Title with Green Heart -->
-        <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shadow-sm">
-            <svg class="w-6 h-6 text-emerald-500 fill-current" viewBox="0 0 24 24">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shadow-sm shrink-0">
+            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500 fill-current" viewBox="0 0 24 24">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
             </svg>
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h1 id="uiAppTitle" class="text-base sm:text-lg font-bold text-slate-800 tracking-tight">血糖健康打卡系统</h1>
-            </div>
-            <p id="uiAppSubtitle" class="text-xs text-slate-500">1型糖尿病精准稳糖 · 护胃断药 · 零负担神经修复</p>
-          </div>
-        </div>
-
-        <!-- Dual Timezone Real-Time Network Clocks (24h) -->
-        <div class="flex items-center gap-2 sm:gap-3 bg-slate-50 border border-slate-200/80 rounded-2xl px-3 py-1.5 text-xs sm:text-sm">
-          <div class="flex items-center gap-1.5">
-            <span class="text-base">🇮🇷</span>
-            <div>
-              <span id="uiIranLabel" class="text-[11px] text-slate-400 block leading-none">伊朗时间 (24h)</span>
-              <span id="clockIran" class="font-mono font-bold text-slate-700">--:--:--</span>
-            </div>
-          </div>
-          <div class="h-6 w-px bg-slate-200"></div>
-          <div class="flex items-center gap-1.5">
-            <span class="text-base">🇰🇷</span>
-            <div>
-              <span id="uiKoreaLabel" class="text-[11px] text-slate-400 block leading-none">韩国时间 (24h)</span>
-              <span id="clockKorea" class="font-mono font-bold text-emerald-700">--:--:--</span>
-            </div>
+          <div class="min-w-0">
+            <h1 id="uiAppTitle" class="text-sm sm:text-lg font-bold text-slate-800 tracking-tight truncate">血糖健康打卡系统</h1>
+            <p id="uiAppSubtitle" class="hidden sm:block text-xs text-slate-500 truncate">1型糖尿病精准稳糖 · 护胃断药 · 零负担神经修复</p>
           </div>
         </div>
 
         <!-- Language Switcher & Server Config Button -->
-        <div class="flex items-center gap-2">
-          <div class="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200">
-            <button onclick="setLanguage('zh')" id="langBtn-zh" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all bg-white text-emerald-700 shadow-sm">中文</button>
-            <button onclick="setLanguage('ko')" id="langBtn-ko" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900">한국어</button>
-            <button onclick="setLanguage('fa')" id="langBtn-fa" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900">فارسی</button>
-            <button onclick="setLanguage('en')" id="langBtn-en" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900">EN</button>
+        <div class="flex items-center gap-1.5 sm:gap-2 ml-auto sm:ml-0 order-2 sm:order-3">
+          <div class="inline-flex rounded-xl bg-slate-100 p-0.5 sm:p-1 border border-slate-200">
+            <button onclick="setLanguage('zh')" id="langBtn-zh" class="px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-semibold transition-all bg-white text-emerald-700 shadow-sm">中文</button>
+            <button onclick="setLanguage('ko')" id="langBtn-ko" class="px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-semibold transition-all text-slate-600 hover:text-slate-900">한국어</button>
+            <button onclick="setLanguage('fa')" id="langBtn-fa" class="px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-semibold transition-all text-slate-600 hover:text-slate-900">فارسی</button>
+            <button onclick="setLanguage('en')" id="langBtn-en" class="px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-semibold transition-all text-slate-600 hover:text-slate-900">EN</button>
           </div>
-          <button onclick="openServerModal()" class="p-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors" title="JSON 服务器与 Dexcom Share 配置">
+          <button onclick="openServerModal()" class="p-1.5 sm:p-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors shrink-0" title="JSON 服务器与 Dexcom Share 配置">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
           </button>
         </div>
-      </div>
 
-      <!-- Dexcom Share Live Bar & Steady-State Metrics -->
-      <div class="mt-2.5 pt-2.5 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
-        <!-- 1. Dexcom Follow Style Live BG Card -->
-        <div class="flex flex-col justify-between bg-gradient-to-br from-emerald-50/95 to-teal-50/90 border border-emerald-200/90 rounded-xl px-3 py-2 overflow-hidden shadow-sm">
-          <div class="flex items-center justify-between gap-1.5">
-            <div class="flex items-center gap-1.5 min-w-0">
-              <span id="dexcomStatusDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse-soft shrink-0"></span>
-              <span id="uiDexcomLiveLabel" class="text-xs font-bold text-emerald-950 truncate">Dexcom Follow 实时读数</span>
+        <!-- Dual Timezone Real-Time Network Clocks (24h) -->
+        <div class="w-full sm:w-auto order-3 sm:order-2 flex items-center justify-around sm:justify-start gap-2 sm:gap-3 bg-slate-50 border border-slate-200/80 rounded-xl sm:rounded-2xl px-2.5 py-1 text-xs">
+          <div class="flex items-center gap-1.5">
+            <span class="text-sm sm:text-base">🇮🇷</span>
+            <div class="flex sm:block items-center gap-1">
+              <span id="uiIranLabel" class="text-[10px] sm:text-[11px] text-slate-400 leading-none">伊朗时间 (24h)</span>
+              <span id="clockIran" class="font-mono font-bold text-slate-700">--:--:--</span>
             </div>
-            <button onclick="syncDexcomNow(false)" id="uiRefreshBtn" class="text-[11px] px-2.5 py-0.5 rounded-lg bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold transition shrink-0 whitespace-nowrap shadow-sm">🔄 刷新</button>
           </div>
-
-          <div class="flex items-center justify-between gap-2 mt-1.5">
-            <!-- Dexcom Follow Circle / Pill Badge -->
-            <div class="flex items-center gap-2">
-              <div id="followCircleBadge" class="px-2.5 py-1 rounded-2xl bg-slate-200 text-slate-600 flex items-baseline gap-1 shadow-inner transition-colors">
-                <span id="liveBgValue" class="text-2xl font-black font-mono leading-none">--</span>
-                <span id="liveBgTrend" class="text-lg font-extrabold leading-none" title="趋势">→</span>
-              </div>
-              <div class="flex flex-col">
-                <span id="liveBgDelta" class="text-[11px] font-mono font-bold text-slate-500 leading-tight">mg/dL</span>
-                <span id="liveBgTimeAgo" class="text-[10px] text-slate-400 leading-tight">等待同步</span>
-              </div>
+          <div class="h-4 sm:h-6 w-px bg-slate-200"></div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-sm sm:text-base">🇰🇷</span>
+            <div class="flex sm:block items-center gap-1">
+              <span id="uiKoreaLabel" class="text-[10px] sm:text-[11px] text-slate-400 leading-none">韩国时间 (24h)</span>
+              <span id="clockKorea" class="font-mono font-bold text-emerald-700">--:--:--</span>
             </div>
-            <button type="button" onclick="openServerModal()" id="dexcomSyncHint" class="text-[10px] text-emerald-700 hover:underline font-semibold truncate text-right">⚙️ 点此配置</button>
           </div>
-        </div>
-
-        <!-- 2. 80-160 Steady-State Target Rate -->
-        <div class="flex flex-col justify-center bg-white border border-slate-200/80 rounded-xl px-3 py-2">
-          <div class="flex items-center justify-between text-xs">
-            <span id="uiTirLabel" class="font-semibold text-slate-600">🎯 80–160 稳态达标率</span>
-            <span id="tirPercentText" class="font-bold text-emerald-600 font-mono">--%</span>
-          </div>
-          <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-1.5">
-            <div id="tirProgressBar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-300" style="width: 0%"></div>
-          </div>
-          <div class="flex justify-between text-[10px] text-slate-400 mt-1">
-            <span id="uiTirSub1">目标: 80–160 平稳维持</span>
-            <span id="tirCountText">0/0</span>
-          </div>
-        </div>
-
-        <!-- 3. Cumulative Insulin Today (Yellow Regular + Green NPH) -->
-        <div class="flex flex-col justify-center bg-white border border-slate-200/80 rounded-xl px-3 py-2">
-          <span id="uiTotalInsulinLabel" class="text-xs font-semibold text-slate-600">💉 今日累计已打胰岛素</span>
-          <div class="flex items-center gap-2 mt-1">
-            <span class="px-2 py-0.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold font-mono">
-              🟡 <span id="uiYellowShort">黄瓶</span>: <span id="totalRegularUnits">0</span>U
-            </span>
-            <span class="px-2 py-0.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold font-mono">
-              🟢 <span id="uiGreenShort">绿瓶</span>: <span id="totalNphUnits">0</span>U
-            </span>
-          </div>
-          <span id="totalCombinedText" class="text-[10px] text-slate-400 mt-0.5">0 U</span>
-        </div>
-
-        <!-- 4. Time Since Last Injection (Anti-Crash Guard) -->
-        <div class="flex flex-col justify-center bg-white border border-slate-200/80 rounded-xl px-3 py-2">
-          <div class="flex items-center justify-between">
-            <span id="uiLastInjLabel" class="text-xs font-semibold text-slate-600">⏱️ 距上一针间隔 (防重叠)</span>
-            <span id="nphSafetyBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">--</span>
-          </div>
-          <div id="lastInjectionIntervalText" class="text-sm font-bold text-slate-800 font-mono mt-1">
-            --
-          </div>
-          <span id="uiNphRuleTip" class="text-[10px] text-slate-400 mt-0.5">两针绿瓶建议间隔 10–12 小时</span>
-        </div>
-
-        <!-- 5. Weekly Abdomen Quadrant Rotation -->
-        <div class="flex flex-col justify-center bg-white border border-slate-200/80 rounded-xl px-3 py-2">
-          <div class="flex items-center justify-between">
-            <span id="uiQuadrantLabel" class="text-xs font-semibold text-slate-600">🔄 本周腹部轮换区</span>
-            <span id="uiQuadSubTip" class="text-[10px] text-teal-600 font-medium">每针隔3cm · 涂喜辽妥</span>
-          </div>
-          <select id="abdomenQuadrantSelect" onchange="updateQuadrant(this.value)" class="mt-1 w-full text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            <option value="LU" id="optQuadLU">↖️ 左上腹区 (Left Upper)</option>
-            <option value="RU" id="optQuadRU">↗️ 右上腹区 (Right Upper)</option>
-            <option value="LL" id="optQuadLL">↙️ 左下腹区 (Left Lower)</option>
-            <option value="RL" id="optQuadRL">↘️ 右下腹区 (Right Lower)</option>
-          </select>
         </div>
       </div>
 
-      <!-- Main Navigation Tabs -->
-      <div class="mt-2.5 flex items-center justify-between flex-wrap gap-2">
-        <nav class="flex items-center gap-1.5 overflow-x-auto custom-scroll py-0.5">
-          <button onclick="switchTab('daily')" id="tabBtn-daily" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-emerald-600 text-white shadow-sm flex items-center gap-1.5 shrink-0">
+      <!-- Main Navigation Tabs (Horizontally scrollable on mobile) -->
+      <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between gap-2">
+        <nav class="flex items-center gap-1.5 overflow-x-auto custom-scroll py-0.5 w-full">
+          <button onclick="switchTab('daily')" id="tabBtn-daily" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-emerald-600 text-white shadow-sm flex items-center gap-1 shrink-0">
             <span>✅</span> <span id="uiTabDaily">今日执行与打卡</span>
           </button>
-          <button onclick="switchTab('history')" id="tabBtn-history" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center gap-1.5 shrink-0">
+          <button onclick="switchTab('history')" id="tabBtn-history" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center gap-1 shrink-0">
             <span>🔍</span> <span id="uiTabHistory">历史记录与多维筛选</span>
           </button>
-          <button onclick="switchTab('reportDay')" id="tabBtn-reportDay" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center gap-1.5 shrink-0">
+          <button onclick="switchTab('reportDay')" id="tabBtn-reportDay" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center gap-1 shrink-0">
             <span>📄</span> <span id="uiTabReportDay">每日报告 (次日10:00)</span>
           </button>
-          <button onclick="switchTab('reportWeek')" id="tabBtn-reportWeek" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center gap-1.5 shrink-0">
+          <button onclick="switchTab('reportWeek')" id="tabBtn-reportWeek" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center gap-1 shrink-0">
             <span>📊</span> <span id="uiTabReportWeek">每周报告与双邮箱发送 (周日10:00)</span>
           </button>
         </nav>
-
-        <!-- Active Date Selector -->
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <span id="autoSyncStatusBadge" class="px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold flex items-center gap-1">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-            <span id="autoSyncStatusText">实时自动保存已开启</span>
-          </span>
-          <span id="uiCurrentDateLabel" class="text-slate-500 font-medium">当前记录日期:</span>
-          <input type="date" id="activeDatePicker" value="2026-10-22" onchange="switchActiveDate(this.value)" class="px-2.5 py-1 rounded-xl border border-emerald-200 bg-emerald-50/50 font-mono font-bold text-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-          <button onclick="resetCurrentDayToBlank()" class="px-2.5 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold transition flex items-center gap-1" title="Reset">
-            <span>🧹</span> <span id="uiResetBtnText">重置今日空白</span>
-          </button>
-          <button onclick="saveCurrentDayToServer(false)" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm transition flex items-center gap-1" title="Sync Cloud">
-            <span>☁️</span> <span id="uiSyncBtnText">立即同步云端</span>
-          </button>
-          <button onclick="fetchFromJsonServer(false)" class="px-2.5 py-1 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 font-semibold transition flex items-center gap-1" title="Pull Cloud">
-            <span>🔄</span> <span id="uiPullBtnText">拉取最新</span>
-          </button>
-        </div>
       </div>
     </div>
   </header>
 
-  <!-- MAIN CONTENT + NON-OVERLAPPING STICKY SIDEBAR LAYOUT -->
-  <div class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5 flex items-start gap-2.5 sm:gap-4">
+  <!-- Top Steady-State Metrics & Active Date Bar (Scrolls naturally on mobile so it never blocks the screen) -->
+  <section id="topDashboardSection" class="max-w-7xl w-full mx-auto px-2.5 sm:px-6 pt-3 space-y-2.5">
+    <!-- 5 Steady-State Cards: 2-column compact grid on mobile, 5-column on desktop -->
+    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-2.5">
+      <!-- 1. Dexcom Follow Style Live BG Card (Full width on mobile for clarity) -->
+      <div class="col-span-2 lg:col-span-1 flex flex-col justify-between bg-gradient-to-br from-emerald-50/95 to-teal-50/90 border border-emerald-200/90 rounded-xl px-3 py-2 overflow-hidden shadow-sm">
+        <div class="flex items-center justify-between gap-1.5">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span id="dexcomStatusDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse-soft shrink-0"></span>
+            <span id="uiDexcomLiveLabel" class="text-xs font-bold text-emerald-950 truncate">Dexcom Follow 实时读数</span>
+          </div>
+          <button onclick="syncDexcomNow(false)" id="uiRefreshBtn" class="text-[11px] px-2.5 py-0.5 rounded-lg bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold transition shrink-0 whitespace-nowrap shadow-sm">🔄 刷新</button>
+        </div>
 
-  <!-- MAIN CONTENT AREA (Never covered by sidebar) -->
-  <main class="flex-1 min-w-0 space-y-6">
+        <div class="flex items-center justify-between gap-2 mt-1.5">
+          <!-- Dexcom Follow Circle / Pill Badge -->
+          <div class="flex items-center gap-2">
+            <div id="followCircleBadge" class="px-2.5 py-1 rounded-2xl bg-slate-200 text-slate-600 flex items-baseline gap-1 shadow-inner transition-colors">
+              <span id="liveBgValue" class="text-2xl font-black font-mono leading-none">--</span>
+              <span id="liveBgTrend" class="text-lg font-extrabold leading-none" title="趋势">→</span>
+            </div>
+            <div class="flex flex-col">
+              <span id="liveBgDelta" class="text-[11px] font-mono font-bold text-slate-500 leading-tight">mg/dL</span>
+              <span id="liveBgTimeAgo" class="text-[10px] text-slate-400 leading-tight">等待同步</span>
+            </div>
+          </div>
+          <button type="button" onclick="openServerModal()" id="dexcomSyncHint" class="text-[10px] text-emerald-700 hover:underline font-semibold truncate text-right">⚙️ 点此配置</button>
+        </div>
+      </div>
+
+      <!-- 2. 80-160 Steady-State Target Rate -->
+      <div class="flex flex-col justify-center bg-white border border-slate-200/80 rounded-xl px-2.5 sm:px-3 py-2">
+        <div class="flex items-center justify-between text-[11px] sm:text-xs">
+          <span id="uiTirLabel" class="font-semibold text-slate-600 truncate">🎯 80–160 稳态达标率</span>
+          <span id="tirPercentText" class="font-bold text-emerald-600 font-mono shrink-0">--%</span>
+        </div>
+        <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-1.5">
+          <div id="tirProgressBar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <div class="flex justify-between text-[10px] text-slate-400 mt-1 gap-1">
+          <span id="uiTirSub1" class="truncate">目标: 80–160</span>
+          <span id="tirCountText" class="shrink-0">0/0</span>
+        </div>
+      </div>
+
+      <!-- 3. Cumulative Insulin Today (Yellow Regular + Green NPH) -->
+      <div class="flex flex-col justify-center bg-white border border-slate-200/80 rounded-xl px-2.5 sm:px-3 py-2">
+        <span id="uiTotalInsulinLabel" class="text-[11px] sm:text-xs font-semibold text-slate-600 truncate">💉 今日累计已打胰岛素</span>
+        <div class="flex flex-wrap items-center gap-1 sm:gap-1.5 mt-1">
+          <span class="px-1.5 py-0.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-bold font-mono">
+            🟡<span id="uiYellowShort">黄瓶</span>:<span id="totalRegularUnits">0</span>U
+          </span>
+          <span class="px-1.5 py-0.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold font-mono">
+            🟢<span id="uiGreenShort">绿瓶</span>:<span id="totalNphUnits">0</span>U
+          </span>
+        </div>
+        <span id="totalCombinedText" class="text-[10px] text-slate-400 mt-0.5 truncate">0 U</span>
+      </div>
+
+      <!-- 4. Time Since Last Injection (Anti-Crash Guard) -->
+      <div class="flex flex-col justify-center bg-white border border-slate-200/80 rounded-xl px-2.5 sm:px-3 py-2">
+        <div class="flex items-center justify-between gap-1">
+          <span id="uiLastInjLabel" class="text-[11px] sm:text-xs font-semibold text-slate-600 truncate">⏱️ 距上一针间隔</span>
+          <span id="nphSafetyBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold shrink-0">--</span>
+        </div>
+        <div id="lastInjectionIntervalText" class="text-xs sm:text-sm font-bold text-slate-800 font-mono mt-1 truncate">
+          --
+        </div>
+        <span id="uiNphRuleTip" class="text-[10px] text-slate-400 mt-0.5 truncate">两针绿瓶建议隔10–12h</span>
+      </div>
+
+      <!-- 5. Weekly Abdomen Quadrant Rotation -->
+      <div class="flex flex-col justify-center bg-white border border-slate-200/80 rounded-xl px-2.5 sm:px-3 py-2">
+        <div class="flex items-center justify-between gap-1">
+          <span id="uiQuadrantLabel" class="text-[11px] sm:text-xs font-semibold text-slate-600 truncate">🔄 本周腹部轮换区</span>
+          <span id="uiQuadSubTip" class="hidden sm:inline text-[10px] text-teal-600 font-medium shrink-0">每针隔3cm</span>
+        </div>
+        <select id="abdomenQuadrantSelect" onchange="updateQuadrant(this.value)" class="mt-1 w-full text-[11px] sm:text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-1.5 py-1 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="LU" id="optQuadLU">↖️ 左上腹区 (LU)</option>
+          <option value="RU" id="optQuadRU">↗️ 右上腹区 (RU)</option>
+          <option value="LL" id="optQuadLL">↙️ 左下腹区 (LL)</option>
+          <option value="RL" id="optQuadRL">↘️ 右下腹区 (RL)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Active Date Selector & Cloud Action Bar -->
+    <div class="bg-white/90 border border-slate-200/80 rounded-xl px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex flex-wrap items-center gap-2">
+        <span id="autoSyncStatusBadge" class="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold flex items-center gap-1 text-[11px]">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+          <span id="autoSyncStatusText">实时自动保存已开启</span>
+        </span>
+        <div class="flex items-center gap-1.5">
+          <span id="uiCurrentDateLabel" class="text-slate-500 font-medium text-[11px] sm:text-xs">当前记录日期:</span>
+          <input type="date" id="activeDatePicker" value="2026-10-22" onchange="switchActiveDate(this.value)" class="px-2 py-0.5 rounded-lg border border-emerald-200 bg-emerald-50/50 font-mono font-bold text-emerald-800 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-1.5 w-full sm:w-auto justify-end">
+        <button onclick="resetCurrentDayToBlank()" class="flex-1 sm:flex-initial justify-center px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold transition flex items-center gap-1 text-[11px]" title="Reset">
+          <span>🧹</span> <span id="uiResetBtnText">重置今日空白</span>
+        </button>
+        <button onclick="saveCurrentDayToServer(false)" class="flex-1 sm:flex-initial justify-center px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm transition flex items-center gap-1 text-[11px]" title="Sync Cloud">
+          <span>☁️</span> <span id="uiSyncBtnText">立即同步云端</span>
+        </button>
+        <button onclick="fetchFromJsonServer(false)" class="flex-1 sm:flex-initial justify-center px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 font-semibold transition flex items-center gap-1 text-[11px]" title="Pull Cloud">
+          <span>🔄</span> <span id="uiPullBtnText">拉取最新</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT + NON-OVERLAPPING STICKY SIDEBAR LAYOUT -->
+  <div class="flex-1 max-w-7xl w-full mx-auto px-2.5 sm:px-6 py-3 sm:py-4 flex items-start gap-2.5 sm:gap-4">
+
+  <!-- MAIN CONTENT AREA (100% full width on mobile, never squeezed or covered) -->
+  <main class="flex-1 w-full min-w-0 space-y-5 sm:space-y-6">
 
     <!-- ==================== TAB 1: DAILY EXECUTION & CHECK-IN ==================== -->
     <section id="tabContent-daily" class="space-y-6">
@@ -257,20 +274,22 @@
             <p id="uiWakeUpHint" class="text-[11px] text-slate-500 mt-0.5">直接按 24 小时制输入（如 08:00 或 11:30）</p>
           </div>
           <div class="lg:col-span-4 flex flex-wrap gap-1.5">
-            <button onclick="selectWakeMode('early', '05:45')" id="wakeBtn-early" class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:border-emerald-400">
+            <button onclick="selectWakeMode('early', '05:45')" id="wakeBtn-early" class="flex-1 sm:flex-initial justify-center px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:border-emerald-400">
               🌅 05:00–06:30 早醒
             </button>
-            <button onclick="selectWakeMode('normal', '08:00')" id="wakeBtn-normal" class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-emerald-600 text-white border-emerald-600 shadow-sm">
+            <button onclick="selectWakeMode('normal', '08:00')" id="wakeBtn-normal" class="flex-1 sm:flex-initial justify-center px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-emerald-600 text-white border-emerald-600 shadow-sm">
               ☀️ 07:30–09:00 正常
             </button>
-            <button onclick="selectWakeMode('late', '10:30')" id="wakeBtn-late" class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:border-emerald-400">
+            <button onclick="selectWakeMode('late', '10:30')" id="wakeBtn-late" class="flex-1 sm:flex-initial justify-center px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:border-emerald-400">
               🛌 10:00–11:00 晚起
             </button>
           </div>
-          <div class="lg:col-span-4 flex flex-wrap items-center gap-1.5 justify-end">
+          <div class="lg:col-span-4 flex flex-wrap items-center gap-1.5 justify-between sm:justify-end">
             <span id="uiExactWakeTime" class="text-xs font-semibold text-slate-600">🇮🇷起床(24h):</span>
-            <input type="text" id="wakeTimeInput" value="08:00" maxlength="5" placeholder="HH:mm" oninput="format24hTyping(this)" onchange="updateExactWakeTime(this.value)" class="w-16 text-center px-2 py-1.5 rounded-xl border border-emerald-300 bg-white font-mono text-xs font-bold text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-            <span id="wakeTimeKoreaBadge" class="px-2.5 py-1.5 rounded-xl bg-teal-50 border border-teal-200 font-mono text-xs font-bold text-teal-800">🇰🇷 13:30</span>
+            <div class="flex items-center gap-1.5">
+              <input type="text" id="wakeTimeInput" value="08:00" maxlength="5" placeholder="HH:mm" oninput="format24hTyping(this)" onchange="updateExactWakeTime(this.value)" class="w-16 text-center px-2 py-1.5 rounded-xl border border-emerald-300 bg-white font-mono text-xs font-bold text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <span id="wakeTimeKoreaBadge" class="px-2.5 py-1.5 rounded-xl bg-teal-50 border border-teal-200 font-mono text-xs font-bold text-teal-800">🇰🇷 13:30</span>
+            </div>
           </div>
         </div>
 
@@ -565,37 +584,65 @@
 
   </main>
 
-  <!-- Non-Overlapping Sticky Quick-Jump Sidebar (Docked beside main content, only shown on Daily Tab) -->
-  <aside id="floatingSidebar" style="top: 236px; max-height: calc(100vh - 250px);" class="sticky z-30 shrink-0 w-11 sm:w-36 flex flex-col gap-1 bg-white/95 backdrop-blur-md border border-emerald-200/90 shadow-md rounded-2xl p-1.5 sm:p-2.5 overflow-y-auto custom-scroll transition-all">
+  <!-- Desktop/Tablet Non-Overlapping Sticky Quick-Jump Sidebar (Hidden on mobile so main cards get 100% width) -->
+  <aside id="floatingSidebar" style="top: 110px; max-height: calc(100vh - 125px);" class="hidden md:flex sticky z-30 shrink-0 w-36 flex-col gap-1 bg-white/95 backdrop-blur-md border border-emerald-200/90 shadow-md rounded-2xl p-2.5 overflow-y-auto custom-scroll transition-all">
     <div id="uiSideNavHeader" class="text-[10px] font-extrabold text-emerald-800 text-center px-1 pb-1 border-b border-emerald-100 truncate">快捷导航</div>
-    <button type="button" onclick="scrollToSection('mod-supplements')" class="px-1.5 sm:px-2.5 py-1 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-center sm:justify-start gap-1.5 whitespace-nowrap" title="晨起与保健品">
-      <span>💊</span> <span id="uiSideSupp" class="hidden sm:inline truncate">晨起与保健品</span>
+    <button type="button" onclick="scrollToSection('mod-supplements')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 whitespace-nowrap" title="晨起与保健品">
+      <span>💊</span> <span id="uiSideSupp" class="truncate">晨起与保健品</span>
     </button>
-    <button type="button" onclick="scrollToSection('mealNode-breakfast')" class="px-1.5 sm:px-2.5 py-1 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-center sm:justify-start gap-1.5 whitespace-nowrap" title="1. 早餐">
-      <span>🌅</span> <span id="uiSideMeal1" class="hidden sm:inline truncate">1. 早餐</span>
+    <button type="button" onclick="scrollToSection('mealNode-breakfast')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 whitespace-nowrap" title="1. 早餐">
+      <span>🌅</span> <span id="uiSideMeal1" class="truncate">1. 早餐</span>
     </button>
-    <button type="button" onclick="scrollToSection('mealNode-breakfast_extra')" class="px-1.5 sm:px-2.5 py-1 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-center sm:justify-start gap-1.5 whitespace-nowrap" title="2. 早后额外">
-      <span>➕</span> <span id="uiSideMeal2" class="hidden sm:inline truncate">2. 早后额外</span>
+    <button type="button" onclick="scrollToSection('mealNode-breakfast_extra')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 whitespace-nowrap" title="2. 早后额外">
+      <span>➕</span> <span id="uiSideMeal2" class="truncate">2. 早后额外</span>
     </button>
-    <button type="button" onclick="scrollToSection('mealNode-lunch')" class="px-1.5 sm:px-2.5 py-1 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-center sm:justify-start gap-1.5 whitespace-nowrap" title="3. 午餐">
-      <span>☀️</span> <span id="uiSideMeal3" class="hidden sm:inline truncate">3. 午餐</span>
+    <button type="button" onclick="scrollToSection('mealNode-lunch')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 whitespace-nowrap" title="3. 午餐">
+      <span>☀️</span> <span id="uiSideMeal3" class="truncate">3. 午餐</span>
     </button>
-    <button type="button" onclick="scrollToSection('mealNode-lunch_extra')" class="px-1.5 sm:px-2.5 py-1 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-center sm:justify-start gap-1.5 whitespace-nowrap" title="4. 午后额外">
-      <span>➕</span> <span id="uiSideMeal4" class="hidden sm:inline truncate">4. 午后额外</span>
+    <button type="button" onclick="scrollToSection('mealNode-lunch_extra')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 whitespace-nowrap" title="4. 午后额外">
+      <span>➕</span> <span id="uiSideMeal4" class="truncate">4. 午后额外</span>
     </button>
-    <button type="button" onclick="scrollToSection('mealNode-dinner')" class="px-1.5 sm:px-2.5 py-1 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-center sm:justify-start gap-1.5 whitespace-nowrap" title="5. 晚餐">
-      <span>🌙</span> <span id="uiSideMeal5" class="hidden sm:inline truncate">5. 晚餐</span>
+    <button type="button" onclick="scrollToSection('mealNode-dinner')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 whitespace-nowrap" title="5. 晚餐">
+      <span>🌙</span> <span id="uiSideMeal5" class="truncate">5. 晚餐</span>
     </button>
-    <button type="button" onclick="scrollToSection('mealNode-dinner_extra')" class="px-1.5 sm:px-2.5 py-1 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-center sm:justify-start gap-1.5 whitespace-nowrap" title="6. 晚后额外">
-      <span>➕</span> <span id="uiSideMeal6" class="hidden sm:inline truncate">6. 晚后额外</span>
+    <button type="button" onclick="scrollToSection('mealNode-dinner_extra')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 whitespace-nowrap" title="6. 晚后额外">
+      <span>➕</span> <span id="uiSideMeal6" class="truncate">6. 晚后额外</span>
     </button>
     <div class="h-px bg-emerald-100 my-0.5"></div>
-    <button type="button" onclick="scrollToTop()" class="px-1.5 sm:px-2.5 py-1.5 rounded-xl text-[11px] font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition flex items-center justify-center gap-1 whitespace-nowrap" title="回到顶部">
-      <span>⬆️</span> <span id="uiSideTop" class="hidden sm:inline truncate">回到顶部</span>
+    <button type="button" onclick="scrollToTop()" class="px-2.5 py-1.5 rounded-xl text-[11px] font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition flex items-center justify-center gap-1 whitespace-nowrap" title="回到顶部">
+      <span>⬆️</span> <span id="uiSideTop" class="truncate">回到顶部</span>
     </button>
   </aside>
 
   </div>
+
+  <!-- Mobile Bottom Quick-Jump Bar (Only shown on mobile screens during Daily tab) -->
+  <nav id="mobileBottomNav" class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-emerald-200 shadow-lg px-2 py-1.5 flex items-center gap-1.5 overflow-x-auto custom-scroll">
+    <button type="button" onclick="scrollToSection('mod-supplements')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 shrink-0 flex items-center gap-1">
+      <span>💊</span><span id="uiMobSupp">保健品</span>
+    </button>
+    <button type="button" onclick="scrollToSection('mealNode-breakfast')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-100 text-slate-700 shrink-0 flex items-center gap-1">
+      <span>🌅</span><span id="uiMobMeal1">早餐</span>
+    </button>
+    <button type="button" onclick="scrollToSection('mealNode-breakfast_extra')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-100 text-slate-700 shrink-0 flex items-center gap-1">
+      <span>➕</span><span id="uiMobMeal2">早后</span>
+    </button>
+    <button type="button" onclick="scrollToSection('mealNode-lunch')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-100 text-slate-700 shrink-0 flex items-center gap-1">
+      <span>☀️</span><span id="uiMobMeal3">午餐</span>
+    </button>
+    <button type="button" onclick="scrollToSection('mealNode-lunch_extra')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-100 text-slate-700 shrink-0 flex items-center gap-1">
+      <span>➕</span><span id="uiMobMeal4">午后</span>
+    </button>
+    <button type="button" onclick="scrollToSection('mealNode-dinner')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-100 text-slate-700 shrink-0 flex items-center gap-1">
+      <span>🌙</span><span id="uiMobMeal5">晚餐</span>
+    </button>
+    <button type="button" onclick="scrollToSection('mealNode-dinner_extra')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-100 text-slate-700 shrink-0 flex items-center gap-1">
+      <span>➕</span><span id="uiMobMeal6">晚后</span>
+    </button>
+    <button type="button" onclick="scrollToTop()" class="px-2.5 py-1 rounded-xl text-[11px] font-extrabold bg-emerald-600 text-white shrink-0 flex items-center gap-1 ml-auto">
+      <span>⬆️</span>
+    </button>
+  </nav>
 
   <!-- MODAL: JSON SERVER & DEXCOM SHARE BRIDGE CONFIG -->
   <div id="serverConfigModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
@@ -4215,7 +4262,17 @@ export default {
 
       const sidebar = document.getElementById('floatingSidebar');
       if (sidebar) {
-        sidebar.classList.toggle('hidden', tabKey !== 'daily');
+        if (tabKey === 'daily') {
+          sidebar.classList.remove('md:hidden');
+          sidebar.classList.add('md:flex');
+        } else {
+          sidebar.classList.remove('md:flex');
+          sidebar.classList.add('md:hidden');
+        }
+      }
+      const mobNav = document.getElementById('mobileBottomNav');
+      if (mobNav) {
+        mobNav.classList.toggle('hidden', tabKey !== 'daily');
       }
 
       if (tabKey === 'history') applyHistoryFilters();
