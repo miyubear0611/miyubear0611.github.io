@@ -648,91 +648,91 @@
         <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <label class="font-bold text-emerald-950 text-sm block">2. Dexcom Share 账号密码与自动填入设置（密码仅加密存在您本地浏览器，不上传 GitHub）</label>
-              <span class="text-[11px] text-emerald-800">填好账号密码后，网页每 5 分钟自动拉取他最新血糖，并在勾选餐饮时自动填入【餐前血糖】！</span>
-            </div>
-            <button onclick="testDexcomConnectionNow()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition">⚡ 立即测试连接并拉取血糖</button>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            <div>
-              <label class="text-[11px] font-bold text-emerald-900 block mb-1">Dexcom 服务器区域:</label>
-              <select id="cfgDexcomRegion" class="w-full px-2.5 py-2 rounded-xl border border-emerald-300 bg-white font-semibold text-xs">
-                <option value="ous">🌏 韩国/伊朗/亚太国际服 (shareous1)</option>
-                <option value="us">🇺🇸 美国本土服 (share2)</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-[11px] font-bold text-emerald-900 block mb-1">Dexcom 主账号 (用户名/邮箱/手机号):</label>
-              <input type="text" id="cfgDexcomUser" placeholder="输入他的 Dexcom 登录账号" class="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
-            </div>
-            <div>
-              <label class="text-[11px] font-bold text-emerald-900 block mb-1">Dexcom 登录密码:</label>
-              <input type="password" id="cfgDexcomPass" placeholder="输入他的 Dexcom 密码" class="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
-            </div>
-          </div>
-
-          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
-            <label class="inline-flex items-center gap-2 cursor-pointer text-emerald-950 font-semibold">
-              <input type="checkbox" id="cfgAutoFillBgOnMeal" checked class="rounded text-emerald-600" />
-              <span>🩸 当他点击/勾选某顿饭的食物或打针时，自动把当前 Dexcom 实时血糖填入【餐前血糖】（仍可手动改写）</span>
-            </label>
-          </div>
-
-          <!-- Real-Time Connection Diagnostic Console -->
-          <div id="dexcomDiagBox" class="hidden rounded-xl bg-slate-900 text-slate-100 p-3 font-mono text-[11px] space-y-1 max-h-48 overflow-y-auto custom-scroll border border-slate-700">
-            <div class="text-emerald-400 font-bold">🔍 Dexcom Share 实时诊断日志：</div>
-            <div id="dexcomDiagLogs" class="space-y-1 text-slate-300"></div>
-          </div>
-
-          <details class="bg-white/90 rounded-xl border border-emerald-200 p-2.5">
-            <summary class="font-bold text-emerald-900 cursor-pointer">🔧 高级选项：自建 Cloudflare Worker 专属桥接地址（若浏览器直连跨域受限时使用）</summary>
+          <details class="bg-white/90 rounded-xl border border-emerald-200 p-2.5" open>
+            <summary class="font-bold text-emerald-900 cursor-pointer">🔧 高级选项：自建 Cloudflare Worker 专属桥接地址（解决浏览器 CORS 跨域拦截）</summary>
             <div class="mt-2 space-y-2">
               <div class="flex items-center gap-2">
-                <input type="url" id="cfgDexcomBridgeUrl" placeholder="选填: https://your-worker.workers.dev (留空则默认使用内置跨域代理直连)" class="flex-1 px-3 py-1.5 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
-                <button onclick="copyDexcomBridgeCode()" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-[11px] shrink-0">📋 复制 Worker 代码</button>
+                <input type="url" id="cfgDexcomBridgeUrl" placeholder="把 Cloudflare 生成的 https://xxx.workers.dev 粘贴到这里" class="flex-1 px-3 py-1.5 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
+                <button type="button" onclick="copyDexcomBridgeCode()" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] shrink-0">📋 一键复制 Worker 代码</button>
               </div>
-              <pre id="dexcomBridgeCodeBlock" class="p-2.5 rounded-xl bg-slate-900 text-emerald-300 font-mono text-[10px] overflow-x-auto leading-relaxed">// 免费 Cloudflare Worker 1分钟部署代码（已升级 Dexcom G7 官方两步验证协议）：
-export default {
+              <pre id="dexcomBridgeCodeBlock" class="p-2.5 rounded-xl bg-slate-900 text-emerald-300 font-mono text-[10px] overflow-x-auto leading-relaxed">export default {
   async fetch(request) {
-    const corsHeaders = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST,GET,OPTIONS", "Access-Control-Allow-Headers": "Content-Type" };
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
+    };
     if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+    if (request.method === "GET") {
+      return new Response(JSON.stringify({ ok: true, msg: "Dexcom Bridge Worker is running!" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
     try {
-      const body = request.method === "POST" ? await request.json() : {};
+      const body = await request.json();
       const hostMap = {
-        us: "https://share2.dexcom.com/ShareWebServices/Services",
         ous: "https://shareous1.dexcom.com/ShareWebServices/Services",
+        us: "https://share2.dexcom.com/ShareWebServices/Services",
         jp: "https://share.dexcom.jp/ShareWebServices/Services"
       };
-      const base = hostMap[body.region] || hostMap.ous;
+      const order = body.region === "us" ? ["us", "ous", "jp"] : ["ous", "us", "jp"];
       const appId = "d89443d2-327c-4a6f-89e5-496bbb0317db";
       const headers = { "Content-Type": "application/json", "Accept": "application/json" };
+      let lastError = "";
 
-      // Step 1: AuthenticatePublisherAccount -> get accountId
-      const authRes = await fetch(`${base}/General/AuthenticatePublisherAccount`, {
-        method: "POST", headers,
-        body: JSON.stringify({ accountName: body.accountName, password: body.password, applicationId: appId })
+      for (const reg of order) {
+        const base = hostMap[reg];
+        // Step 1: AuthenticatePublisherAccount -> get accountId
+        const authRes = await fetch(`${base}/General/AuthenticatePublisherAccount`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ accountName: body.accountName, password: body.password, applicationId: appId })
+        });
+        const authText = (await authRes.text()).trim();
+        if (!authRes.ok) {
+          lastError = `[${reg}] Step1 HTTP ${authRes.status}: ${authText}`;
+          continue;
+        }
+        const accountId = authText.replace(/"/g, "").trim();
+
+        // Step 2: LoginPublisherAccountById -> get sessionId
+        const loginRes = await fetch(`${base}/General/LoginPublisherAccountById`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ accountId, password: body.password, applicationId: appId })
+        });
+        const loginText = (await loginRes.text()).trim();
+        if (!loginRes.ok) {
+          lastError = `[${reg}] Step2 HTTP ${loginRes.status}: ${loginText}`;
+          continue;
+        }
+        const sessionId = loginText.replace(/"/g, "").trim();
+
+        // Step 3: ReadPublisherLatestGlucoseValues
+        const bgRes = await fetch(`${base}/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${sessionId}&minutes=1440&maxCount=1`, {
+          method: "POST",
+          headers
+        });
+        const arr = await bgRes.json();
+        const latest = Array.isArray(arr) && arr[0] ? arr[0] : null;
+        return new Response(JSON.stringify({
+          ok: true,
+          regionUsed: reg,
+          count: Array.isArray(arr) ? arr.length : 0,
+          bg: latest ? latest.Value : null,
+          trend: latest ? latest.Trend : null,
+          wt: latest ? latest.WT : null
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
+      return new Response(JSON.stringify({ error: "AuthFailedAllRegions", detail: lastError }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
-      const authText = await authRes.text();
-      if (!authRes.ok) return new Response(JSON.stringify({ error: "Step1_AuthFailed", status: authRes.status, detail: authText }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      const accountId = authText.replace(/"/g, "").trim();
-
-      // Step 2: LoginPublisherAccountById -> get sessionId
-      const loginRes = await fetch(`${base}/General/LoginPublisherAccountById`, {
-        method: "POST", headers,
-        body: JSON.stringify({ accountId, password: body.password, applicationId: appId })
-      });
-      const loginText = await loginRes.text();
-      if (!loginRes.ok) return new Response(JSON.stringify({ error: "Step2_LoginFailed", status: loginRes.status, detail: loginText }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      const sessionId = loginText.replace(/"/g, "").trim();
-
-      // Step 3: ReadPublisherLatestGlucoseValues
-      const bgRes = await fetch(`${base}/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${sessionId}&minutes=1440&maxCount=1`, { method: "POST", headers });
-      const arr = await bgRes.json();
-      const latest = Array.isArray(arr) && arr[0] ? arr[0] : null;
-      return new Response(JSON.stringify({ ok: true, sessionId, count: Array.isArray(arr) ? arr.length : 0, bg: latest ? latest.Value : null, trend: latest ? latest.Trend : null, wt: latest ? latest.WT : null }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     } catch (err) {
-      return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ error: err.message }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
     }
   }
 };</pre>
