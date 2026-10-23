@@ -679,6 +679,12 @@
             </label>
           </div>
 
+          <!-- Real-Time Connection Diagnostic Console -->
+          <div id="dexcomDiagBox" class="hidden rounded-xl bg-slate-900 text-slate-100 p-3 font-mono text-[11px] space-y-1 max-h-48 overflow-y-auto custom-scroll border border-slate-700">
+            <div class="text-emerald-400 font-bold">🔍 Dexcom Share 实时诊断日志：</div>
+            <div id="dexcomDiagLogs" class="space-y-1 text-slate-300"></div>
+          </div>
+
           <details class="bg-white/90 rounded-xl border border-emerald-200 p-2.5">
             <summary class="font-bold text-emerald-900 cursor-pointer">🔧 高级选项：自建 Cloudflare Worker 专属桥接地址（若浏览器直连跨域受限时使用）</summary>
             <div class="mt-2 space-y-2">
@@ -686,23 +692,48 @@
                 <input type="url" id="cfgDexcomBridgeUrl" placeholder="选填: https://your-worker.workers.dev (留空则默认使用内置跨域代理直连)" class="flex-1 px-3 py-1.5 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
                 <button onclick="copyDexcomBridgeCode()" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-[11px] shrink-0">📋 复制 Worker 代码</button>
               </div>
-              <pre id="dexcomBridgeCodeBlock" class="p-2.5 rounded-xl bg-slate-900 text-emerald-300 font-mono text-[10px] overflow-x-auto leading-relaxed">// 免费 Cloudflare Worker 1分钟部署代码（支持从前端安全传入账号密码或固定账号密码）：
+              <pre id="dexcomBridgeCodeBlock" class="p-2.5 rounded-xl bg-slate-900 text-emerald-300 font-mono text-[10px] overflow-x-auto leading-relaxed">// 免费 Cloudflare Worker 1分钟部署代码（已升级 Dexcom G7 官方两步验证协议）：
 export default {
   async fetch(request) {
     const corsHeaders = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST,GET,OPTIONS", "Access-Control-Allow-Headers": "Content-Type" };
     if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-    const body = request.method === "POST" ? await request.json() : {};
-    const base = body.region === "us" ? "https://share2.dexcom.com/ShareWebServices/Services" : "https://shareous1.dexcom.com/ShareWebServices/Services";
-    const appId = "d89443d2-327c-4a6f-89e5-496bbb0317db";
-    const sRes = await fetch(`${base}/General/LoginPublisherAccountByName`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountName: body.accountName, password: body.password, applicationId: appId })
-    });
-    const sessionId = (await sRes.text()).replace(/"/g, "").trim();
-    const bgRes = await fetch(`${base}/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${sessionId}&minutes=1440&maxCount=1`, { method: "POST" });
-    const arr = await bgRes.json();
-    const latest = arr && arr[0] ? arr[0] : {};
-    return new Response(JSON.stringify({ bg: latest.Value, trend: latest.Trend, wt: latest.WT }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    try {
+      const body = request.method === "POST" ? await request.json() : {};
+      const hostMap = {
+        us: "https://share2.dexcom.com/ShareWebServices/Services",
+        ous: "https://shareous1.dexcom.com/ShareWebServices/Services",
+        jp: "https://share.dexcom.jp/ShareWebServices/Services"
+      };
+      const base = hostMap[body.region] || hostMap.ous;
+      const appId = "d89443d2-327c-4a6f-89e5-496bbb0317db";
+      const headers = { "Content-Type": "application/json", "Accept": "application/json" };
+
+      // Step 1: AuthenticatePublisherAccount -> get accountId
+      const authRes = await fetch(`${base}/General/AuthenticatePublisherAccount`, {
+        method: "POST", headers,
+        body: JSON.stringify({ accountName: body.accountName, password: body.password, applicationId: appId })
+      });
+      const authText = await authRes.text();
+      if (!authRes.ok) return new Response(JSON.stringify({ error: "Step1_AuthFailed", status: authRes.status, detail: authText }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      const accountId = authText.replace(/"/g, "").trim();
+
+      // Step 2: LoginPublisherAccountById -> get sessionId
+      const loginRes = await fetch(`${base}/General/LoginPublisherAccountById`, {
+        method: "POST", headers,
+        body: JSON.stringify({ accountId, password: body.password, applicationId: appId })
+      });
+      const loginText = await loginRes.text();
+      if (!loginRes.ok) return new Response(JSON.stringify({ error: "Step2_LoginFailed", status: loginRes.status, detail: loginText }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      const sessionId = loginText.replace(/"/g, "").trim();
+
+      // Step 3: ReadPublisherLatestGlucoseValues
+      const bgRes = await fetch(`${base}/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${sessionId}&minutes=1440&maxCount=1`, { method: "POST", headers });
+      const arr = await bgRes.json();
+      const latest = Array.isArray(arr) && arr[0] ? arr[0] : null;
+      return new Response(JSON.stringify({ ok: true, sessionId, count: Array.isArray(arr) ? arr.length : 0, bg: latest ? latest.Value : null, trend: latest ? latest.Trend : null, wt: latest ? latest.WT : null }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    } catch (err) {
+      return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
   }
 };</pre>
             </div>
@@ -3090,9 +3121,33 @@ export default {
       RateOutOfRange: '⚠️'
     };
 
+    function appendDexcomDiagLog(msg, colorClass = 'text-slate-300') {
+      const box = document.getElementById('dexcomDiagBox');
+      const logs = document.getElementById('dexcomDiagLogs');
+      if (!box || !logs) return;
+      box.classList.remove('hidden');
+      const line = document.createElement('div');
+      line.className = colorClass;
+      const nowStr = new Date().toTimeString().slice(0, 8);
+      line.textContent = `[${nowStr}] ${msg}`;
+      logs.appendChild(line);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function clearDexcomDiagLogs() {
+      const logs = document.getElementById('dexcomDiagLogs');
+      if (logs) logs.innerHTML = '';
+    }
+
     async function syncDexcomNow(silent = false) {
-      // 1. If user configured a custom bridge URL (or Cloudflare Worker)
+      if (!silent) {
+        clearDexcomDiagLogs();
+        appendDexcomDiagLog('开始检测 Dexcom Share 连接...', 'text-teal-300');
+      }
+
+      // 1. If user configured a custom Cloudflare Worker bridge URL
       if (serverConfig.dexcomBridgeUrl) {
+        if (!silent) appendDexcomDiagLog(`正在通过专属 Worker 桥接器请求: ${serverConfig.dexcomBridgeUrl}`, 'text-slate-300');
         try {
           const fetchOpts = serverConfig.dexcomUser && serverConfig.dexcomPass
             ? {
@@ -3106,87 +3161,172 @@ export default {
               }
             : { method: 'GET' };
           const res = await fetch(serverConfig.dexcomBridgeUrl, fetchOpts);
-          if (res.ok) {
-            const data = await res.json();
-            if (data && data.bg) {
-              updateLiveBgManually(data.bg);
-              const arrow = DEXCOM_TREND_ARROW_MAP[data.trend] || data.trend || '→';
-              updateLiveTrendManually(arrow);
-              if (!silent) showToast(`⚡ 已从 Dexcom Share 实时同步血糖: ${data.bg} mg/dL (${arrow})`);
-              return;
+          const data = await res.json();
+          if (data && data.bg) {
+            updateLiveBgManually(data.bg, true);
+            const arrow = DEXCOM_TREND_ARROW_MAP[data.trend] || data.trend || '→';
+            updateLiveTrendManually(arrow);
+            const { krHm } = getFormattedDualClocks();
+            const hintEl = document.getElementById('dexcomSyncHint');
+            if (hintEl) hintEl.textContent = `✅ 已同步 (${krHm})`;
+            if (!silent) {
+              appendDexcomDiagLog(`✅ 成功获取最新血糖: ${data.bg} mg/dL (${arrow})`, 'text-emerald-400 font-bold');
+              showToast('succeed', 'success', 800);
             }
+            return;
+          } else if (data && data.ok && data.count === 0) {
+            if (!silent) {
+              appendDexcomDiagLog('✅ 账号登录成功！但过去 24 小时 (1440分钟) 内云端无血糖读数（可能他当前未佩戴传感器或手机未上传数据）。', 'text-amber-300 font-bold');
+              showToast('fail', 'warn', 800);
+            }
+            return;
+          } else if (data && data.error) {
+            if (!silent) appendDexcomDiagLog(`❌ Worker 返回错误: ${data.error} (${data.detail || ''})`, 'text-rose-400');
           }
         } catch (e) {
-          console.warn('Custom bridge fetch failed, trying direct/proxy...', e);
+          if (!silent) appendDexcomDiagLog(`⚠️ 自定义 Worker 连接失败 (${e.message})，尝试内置代理通道...`, 'text-amber-300');
         }
       }
 
-      // 2. If user entered Dexcom Username & Password directly in Settings Modal
+      // 2. Direct / Proxy Two-Step Dexcom G7 Official Login Flow
       if (serverConfig.dexcomUser && serverConfig.dexcomPass) {
         const hintEl = document.getElementById('dexcomSyncHint');
         const dotEl = document.getElementById('dexcomStatusDot');
-        if (hintEl) hintEl.textContent = '⏳ 正在连接韩国服...';
+        if (hintEl) hintEl.textContent = '⏳ 正在连接...';
 
-        const baseHost = serverConfig.dexcomRegion === 'us'
-          ? 'https://share2.dexcom.com/ShareWebServices/Services'
-          : 'https://shareous1.dexcom.com/ShareWebServices/Services';
+        const regionOrder = serverConfig.dexcomRegion === 'us' ? ['us', 'ous', 'jp'] : ['ous', 'us', 'jp'];
+        const hostMap = {
+          ous: 'https://shareous1.dexcom.com/ShareWebServices/Services',
+          us: 'https://share2.dexcom.com/ShareWebServices/Services',
+          jp: 'https://share.dexcom.jp/ShareWebServices/Services'
+        };
         const appId = 'd89443d2-327c-4a6f-89e5-496bbb0317db';
 
-        // Try direct or via public CORS proxies for static GitHub Pages
-        const endpointsToTry = [
-          (u) => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-          (u) => u
+        const proxies = [
+          { name: 'CORSProxy.io', wrap: u => `https://corsproxy.io/?url=${encodeURIComponent(u)}` },
+          { name: 'CodeTabs Proxy', wrap: u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}` },
+          { name: '浏览器直连', wrap: u => u }
         ];
 
-        for (const wrapUrl of endpointsToTry) {
-          try {
-            const loginUrl = wrapUrl(`${baseHost}/General/AuthenticatePublisherAccount`);
-            const loginUrl2 = wrapUrl(`${baseHost}/General/LoginPublisherAccountByName`);
-            for (const targetAuthUrl of [loginUrl2, loginUrl]) {
-              const sRes = await fetch(targetAuthUrl, {
+        let corsBlockedAll = true;
+
+        for (const reg of regionOrder) {
+          const baseHost = hostMap[reg];
+          if (!silent) appendDexcomDiagLog(`🌐 尝试区域 [${reg.toUpperCase()}] (${baseHost})...`, 'text-sky-300');
+
+          for (const proxy of proxies) {
+            try {
+              // STEP 1: AuthenticatePublisherAccount -> get AccountId (UUID)
+              const step1Url = proxy.wrap(`${baseHost}/General/AuthenticatePublisherAccount`);
+              const s1Res = await fetch(step1Url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
-                  accountName: serverConfig.dexcomUser,
+                  accountName: serverConfig.dexcomUser.trim(),
                   password: serverConfig.dexcomPass,
                   applicationId: appId
                 })
               });
-              if (sRes.ok) {
-                const sessionId = (await sRes.text()).replace(/"/g, '').trim();
-                if (sessionId && sessionId.length === 36 && sessionId !== '00000000-0000-0000-0000-000000000000') {
-                  const bgUrl = wrapUrl(`${baseHost}/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${sessionId}&minutes=1440&maxCount=1`);
-                  const bgRes = await fetch(bgUrl, { method: 'POST' });
-                  if (bgRes.ok) {
-                    const arr = await bgRes.json();
-                    if (Array.isArray(arr) && arr.length > 0 && arr[0].Value) {
-                      const latest = arr[0];
-                      const arrow = DEXCOM_TREND_ARROW_MAP[latest.Trend] || '→';
-                      updateLiveBgManually(latest.Value, true);
-                      updateLiveTrendManually(arrow);
-                      const { krHm } = getFormattedDualClocks();
-                      if (hintEl) hintEl.textContent = `✅ 已同步 (${krHm})`;
-                      if (dotEl) dotEl.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse-soft shrink-0';
-                      if (!silent) showToast(`🩸 Dexcom 实时血糖同步成功: ${latest.Value} mg/dL (${arrow})`);
-                      return;
-                    }
+
+              corsBlockedAll = false;
+              const s1Text = (await s1Res.text()).trim();
+
+              if (!s1Res.ok) {
+                if (!silent) {
+                  appendDexcomDiagLog(`  ↳ [${proxy.name}] 第1步验证返回 HTTP ${s1Res.status}: ${s1Text.slice(0, 120)}`, 'text-rose-300');
+                }
+                if (s1Text.includes('AccountPasswordInvalid')) {
+                  // Try next region in case account belongs to US or JP server
+                  break;
+                }
+                continue;
+              }
+
+              const accountId = s1Text.replace(/"/g, '').trim();
+              if (!accountId || accountId.length !== 36) {
+                if (!silent) appendDexcomDiagLog(`  ↳ [${proxy.name}] 未能解析有效 AccountId: ${accountId.slice(0, 60)}`, 'text-amber-300');
+                continue;
+              }
+
+              if (!silent) appendDexcomDiagLog(`  ✅ 第1步成功：已获取 AccountId (${accountId.slice(0, 8)}...)`, 'text-emerald-300');
+
+              // STEP 2: LoginPublisherAccountById -> get SessionId (UUID)
+              const step2Url = proxy.wrap(`${baseHost}/General/LoginPublisherAccountById`);
+              const s2Res = await fetch(step2Url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                  accountId: accountId,
+                  password: serverConfig.dexcomPass,
+                  applicationId: appId
+                })
+              });
+
+              const s2Text = (await s2Res.text()).trim();
+              if (!s2Res.ok) {
+                if (!silent) appendDexcomDiagLog(`  ↳ 第2步换取 SessionId 失败 HTTP ${s2Res.status}: ${s2Text.slice(0, 120)}`, 'text-rose-300');
+                continue;
+              }
+
+              const sessionId = s2Text.replace(/"/g, '').trim();
+              if (!sessionId || sessionId.length !== 36 || sessionId === '00000000-0000-0000-0000-000000000000') {
+                if (!silent) appendDexcomDiagLog(`  ↳ SessionId 无效: ${sessionId}`, 'text-rose-300');
+                continue;
+              }
+
+              if (!silent) appendDexcomDiagLog(`  ✅ 第2步成功：已获取 SessionId (${sessionId.slice(0, 8)}...)，正在读取最近24小时血糖...`, 'text-emerald-300');
+
+              // STEP 3: ReadPublisherLatestGlucoseValues
+              const bgUrl = proxy.wrap(`${baseHost}/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${sessionId}&minutes=1440&maxCount=1`);
+              const bgRes = await fetch(bgUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+              });
+
+              if (bgRes.ok) {
+                const arr = await bgRes.json();
+                if (Array.isArray(arr) && arr.length > 0 && arr[0].Value) {
+                  const latest = arr[0];
+                  const arrow = DEXCOM_TREND_ARROW_MAP[latest.Trend] || '→';
+                  updateLiveBgManually(latest.Value, true);
+                  updateLiveTrendManually(arrow);
+                  const { krHm } = getFormattedDualClocks();
+                  if (hintEl) hintEl.textContent = `✅ 已同步 (${krHm})`;
+                  if (dotEl) dotEl.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse-soft shrink-0';
+                  if (!silent) {
+                    appendDexcomDiagLog(`🎉 第3步成功！当前实时血糖: ${latest.Value} mg/dL (${arrow})`, 'text-emerald-400 font-bold');
+                    showToast('succeed', 'success', 800);
                   }
+                  return;
+                } else if (Array.isArray(arr) && arr.length === 0) {
+                  if (hintEl) hintEl.textContent = '⚠️ 过去24h无传感器数据';
+                  if (!silent) {
+                    appendDexcomDiagLog('⚠️ 账号密码 100% 正确且已成功登录 Dexcom 云端！但云端返回空数组 [] —— 说明过去 24 小时内他手机上的 Dexcom G7 没有上传新的血糖数据（例如当前未戴传感器、传感器过期或未开启 Share 共享）。', 'text-amber-300 font-bold');
+                    showToast('fail', 'warn', 800);
+                  }
+                  return;
                 }
               }
+            } catch (err) {
+              if (!silent) appendDexcomDiagLog(`  ↳ [${proxy.name}] 跨域请求被浏览器或代理拦截 (${err.message})`, 'text-slate-400');
             }
-          } catch (err) {
-            // Continue to next proxy
           }
         }
-        if (hintEl) hintEl.textContent = '🇰🇷 账号已保存 (需主账号开启Share)';
-        if (!silent) {
-          showToast('已保存账号！若未拉取到数值，请确认填写的是“他手机Dexcom G7主软件账号”且已开启Share功能', 'info');
+
+        if (corsBlockedAll && !silent) {
+          appendDexcomDiagLog('💡 诊断结论：公共免费跨域代理均拦截了 POST 登录请求。请展开下方【🔧 高级选项】，用免费的 Cloudflare Worker 部署专属桥接地址（1分钟搞定，100%稳定直连）！', 'text-amber-300 font-bold');
+        } else if (!silent) {
+          appendDexcomDiagLog('💡 诊断结论：未能拉取到数据。请对照上方红色日志检查：1) 是否需用用户名/手机号代替邮箱登录；2) 他的 G7 App 内 Share 是否开启且至少有1位关注者；3) 或者配置下方 Cloudflare Worker 专属桥接。', 'text-amber-300 font-bold');
         }
+
+        if (hintEl) hintEl.textContent = '⚙️ 请点右上角看诊断日志';
+        if (!silent) showToast('fail', 'warn', 800);
         return;
       }
 
       if (!silent) {
-        showToast('请点击右上角 ⚙️ 检查 Dexcom 账号设置', 'info');
+        appendDexcomDiagLog('❌ 请先填写 Dexcom 主账号和密码！', 'text-rose-400 font-bold');
+        showToast('fail', 'warn', 800);
       }
     }
 
