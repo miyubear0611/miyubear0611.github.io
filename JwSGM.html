@@ -501,8 +501,8 @@
                 <span>miyubear0611@gmail.com</span>
               </label>
               <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-xs font-bold text-emerald-900 cursor-pointer">
-                <input type="checkbox" id="chkEmail2" value="arsonbear0530@gmail.com" checked class="rounded text-emerald-600" />
-                <span>arsonbear0530@gmail.com</span>
+                <input type="checkbox" id="chkEmail2" value="arsanbear0503@gmail.com" checked class="rounded text-emerald-600" />
+                <span>arsanbear0503@gmail.com</span>
               </label>
               <input type="email" id="extraEmailInput" placeholder="+ 附加其他邮箱 (选填, 逗号分隔)" class="flex-1 min-w-[210px] px-3 py-1.5 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
             </div>
@@ -920,7 +920,9 @@ export default {
         thWeekMeals: '早/中/晚 & 3次餐后额外摄入明细',
         thWeekFamo: '法莫替丁',
         weekRangeText: '范围:',
-        weekNoMeals: '当日暂未录入餐食'
+        weekNoMeals: '当日暂未录入餐食',
+        emailSubjDaily: '[JW][血糖健康打卡日报]',
+        emailSubjWeekly: '[JW][血糖健康打卡周报]'
       },
       ko: {
         appTitle: '혈당 건강 체크인 시스템',
@@ -1092,7 +1094,9 @@ export default {
         thWeekMeals: '아침/점심/저녁 & 3회 추가 섭취 내역',
         thWeekFamo: '파모티딘',
         weekRangeText: '범위:',
-        weekNoMeals: '당일 식사 기록 없음'
+        weekNoMeals: '당일 식사 기록 없음',
+        emailSubjDaily: '[JW][혈당 건강 체크인 일일 보고서]',
+        emailSubjWeekly: '[JW][혈당 건강 체크인 주간 보고서]'
       },
       fa: {
         appTitle: 'سیستم ثبت سلامت قند خون',
@@ -1264,7 +1268,9 @@ export default {
         thWeekMeals: 'جزئیات صبحانه/ناهار/شام و میان‌وعده‌ها',
         thWeekFamo: 'فاموتیدین',
         weekRangeText: 'بازه:',
-        weekNoMeals: 'بدون ثبت وعده غذایی'
+        weekNoMeals: 'بدون ثبت وعده غذایی',
+        emailSubjDaily: '[JW][گزارش روزانه سلامت قند خون]',
+        emailSubjWeekly: '[JW][گزارش هفتگی سلامت قند خون]'
       },
       en: {
         appTitle: 'BG Health Check-in System',
@@ -1436,7 +1442,9 @@ export default {
         thWeekMeals: 'B/L/D & 3 Post-Meal Extra Intakes',
         thWeekFamo: 'Famotidine',
         weekRangeText: 'Range:',
-        weekNoMeals: 'No meals logged on this day'
+        weekNoMeals: 'No meals logged on this day',
+        emailSubjDaily: '[JW][BG Health Daily Report]',
+        emailSubjWeekly: '[JW][BG Health Weekly Report]'
       }
     };
 
@@ -3718,30 +3726,40 @@ export default {
     }
 
     function buildPlainTextReport(reportType = 'daily') {
+      const t = UI_TEXT[currentLang] || UI_TEXT.zh;
       if (reportType === 'daily') {
         const selDate = document.getElementById('dailyReportDateSelect')?.value || activeDate;
         const day = allDaysStore[selDate] || createDefaultDay(selDate);
         const m = calculateDaySummaryMetrics(day);
         const lines = [
-          `【80–160 血糖稳态 · 每日全中文执行报告】`,
-          `📅 日期: ${selDate} | ⏰ 起床时间: 伊朗 ${day.wakeTime} (韩国 ${iranTimeToKoreaTime(day.wakeTime)})`,
-          `🎯 80-160 稳态达标率: ${m.tir}% (最低 ${m.minBg} / 最高 ${m.maxBg} mg/dL)`,
-          `💉 全天累计胰岛素: 黄瓶(Regular) ${m.sumReg}U + 绿瓶(NPH) ${m.sumNph}U | 腹部轮换: ${day.quadrant}区`,
-          `💊 法莫替丁今日用量: ${day.famotidineDose} 粒`,
+          `${t.emailSubjDaily} ${selDate}`,
+          `${t.repDateWake}: ${selDate} | 🇮🇷 ${day.wakeTime} (🇰🇷 ${iranTimeToKoreaTime(day.wakeTime)})`,
+          `${t.repTirLabel}: ${m.tir}% (${t.weekRangeText} ${m.minBg}–${m.maxBg} mg/dL)`,
+          `${t.repTotalIns}: ${t.yellowShort} ${m.sumReg}U + ${t.greenShort} ${m.sumNph}U | ${day.quadrant}`,
+          `${t.famoTitle}: ${day.famotidineDose}`,
           `----------------------------------------`,
-          `【全天 6 大餐饮与额外摄入明细】`
+          `${t.repSuppHeader}`
         ];
+        SUPPLEMENTS_DICT.forEach(s => {
+          const st = day.supplements?.[s.id];
+          const sName = s.name[currentLang] || s.name.zh;
+          lines.push(`• ${sName}: ${st && st.checked ? `✅ (🇮🇷 ${st.timeIr} / 🇰🇷 ${iranTimeToKoreaTime(st.timeIr)})` : `⬜ ${t.repUnchecked}`}`);
+        });
+        lines.push(`----------------------------------------`);
+        lines.push(`${t.repMealsHeader}`);
         MEAL_NODES_META.forEach(meta => {
           const md = day.meals?.[meta.key] || {};
-          lines.push(`• ${meta.title.zh} (伊朗 ${md.time} / 韩国 ${iranTimeToKoreaTime(md.time)}) | 血糖: ${md.preBg || '--'} → ${md.postBg || '--'} mg/dL | 胰岛素: ${md.insStatus === 'done' ? `黄${md.regUnits}U+绿${md.nphUnits}U` : '未打'} | 食物: ${formatFoodListInChinese(md)}`);
+          const mTitle = meta.title[currentLang] || meta.title.zh;
+          const insStr = md.insStatus === 'done' ? `${t.repShotDone} ${t.yellowShort}${md.regUnits}U+${t.greenShort}${md.nphUnits}U` : t.repNoShot;
+          lines.push(`• ${mTitle} (🇮🇷 ${md.time} / 🇰🇷 ${iranTimeToKoreaTime(md.time)}) | ${t.repPrePostBg} ${md.preBg || '--'} → ${md.postBg || '--'} mg/dL | ${insStr} | ${t.repFoodDetailLabel}${formatFoodListLocalized(md)}`);
         });
         return lines.join('\n');
       } else {
-        const lines = [`【80–160 血糖稳态 · 本周汇总报告】`];
+        const lines = [`${t.emailSubjWeekly} ${activeDate}`];
         Object.keys(allDaysStore).sort().reverse().forEach(dStr => {
           const day = allDaysStore[dStr];
           const m = calculateDaySummaryMetrics(day);
-          lines.push(`📅 ${dStr}: 起床 🇮🇷${day.wakeTime}(🇰🇷${iranTimeToKoreaTime(day.wakeTime)}) | 稳态率 ${m.tir}% | 黄瓶${m.sumReg}U+绿瓶${m.sumNph}U | 法莫替丁 ${day.famotidineDose}粒`);
+          lines.push(`📅 ${dStr}: 🇮🇷${day.wakeTime}(🇰🇷${iranTimeToKoreaTime(day.wakeTime)}) | TIR ${m.tir}% (${m.minBg}-${m.maxBg}) | ${t.yellowShort}${m.sumReg}U+${t.greenShort}${m.sumNph}U | ${t.thWeekFamo}: ${day.famotidineDose}`);
         });
         return lines.join('\n');
       }
@@ -3834,9 +3852,13 @@ export default {
         showToast('fail', 'warn', 800);
         return;
       }
+      const t = UI_TEXT[currentLang] || UI_TEXT.zh;
+      const targetDate = reportType === 'daily'
+        ? (document.getElementById('dailyReportDateSelect')?.value || activeDate)
+        : activeDate;
       const subject = reportType === 'daily'
-        ? `[血糖健康打卡日报] ${activeDate} 每日执行全中文报告`
-        : `[血糖健康打卡周报] 本周7天执行与血糖对比总表`;
+        ? `${t.emailSubjDaily} ${targetDate}`
+        : `${t.emailSubjWeekly} ${targetDate}`;
       const bodyText = buildPlainTextReport(reportType);
 
       // 1. Direct EmailJS REST API silent automatic dispatch (if configured)
