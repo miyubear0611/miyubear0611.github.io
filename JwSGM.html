@@ -648,6 +648,44 @@
         <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
+              <label class="font-bold text-emerald-950 text-sm block">2. Dexcom Share 账号密码与自动填入设置（密码仅保存在您本地浏览器，不上传 GitHub）</label>
+              <span class="text-[11px] text-emerald-800">填好主账号、密码及下方 Worker 桥接网址后，网页每 5 分钟自动拉取最新血糖！</span>
+            </div>
+            <button type="button" onclick="testDexcomConnectionNow()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition">
+              ⚡ 立即测试连接并拉取血糖
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div>
+              <label class="text-[11px] font-bold text-emerald-900 block mb-1">Dexcom 服务器区域:</label>
+              <select id="cfgDexcomRegion" class="w-full px-2.5 py-2 rounded-xl border border-emerald-300 bg-white font-semibold text-xs">
+                <option value="ous" selected>🌏 韩国/伊朗/亚太国际服 (shareous1)</option>
+                <option value="us">🇺🇸 美国服 (share2.dexcom.com)</option>
+                <option value="jp">🇯🇵 日本服 (share.dexcom.jp)</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-emerald-900 block mb-1">Dexcom 主账号 (用户名/邮箱/手机号):</label>
+              <input type="text" id="cfgDexcomUser" placeholder="例如: arsanbear0503@gmail.com" class="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-emerald-900 block mb-1">Dexcom 登录密码:</label>
+              <input type="password" id="cfgDexcomPass" placeholder="输入他的 Dexcom 密码" class="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
+            </div>
+          </div>
+
+          <label class="flex items-center gap-2 cursor-pointer pt-0.5">
+            <input type="checkbox" id="cfgAutoFillBgOnMeal" checked class="w-4 h-4 rounded text-emerald-600" />
+            <span class="font-bold text-emerald-900 text-xs">🩸 当他点击/勾选某顿饭的食物或打针时，自动把当前 Dexcom 实时血糖填入【餐前血糖】（仍可手动改写）</span>
+          </label>
+
+          <!-- Real-Time Diagnostic Console -->
+          <div id="dexcomDiagBox" class="hidden p-3 rounded-xl bg-slate-900 text-slate-200 font-mono text-[11px] space-y-1 max-h-40 overflow-y-auto custom-scroll">
+            <div class="text-emerald-400 font-bold">🔍 Dexcom Share 实时诊断日志:</div>
+            <div id="dexcomDiagLogs" class="space-y-1"></div>
+          </div>
+
           <details class="bg-white/90 rounded-xl border border-emerald-200 p-2.5" open>
             <summary class="font-bold text-emerald-900 cursor-pointer">🔧 高级选项：自建 Cloudflare Worker 专属桥接地址（解决浏览器 CORS 跨域拦截）</summary>
             <div class="mt-2 space-y-2">
@@ -655,7 +693,9 @@
                 <input type="url" id="cfgDexcomBridgeUrl" placeholder="把 Cloudflare 生成的 https://xxx.workers.dev 粘贴到这里" class="flex-1 px-3 py-1.5 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
                 <button type="button" onclick="copyDexcomBridgeCode()" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] shrink-0">📋 一键复制 Worker 代码</button>
               </div>
-              <pre id="dexcomBridgeCodeBlock" class="p-2.5 rounded-xl bg-slate-900 text-emerald-300 font-mono text-[10px] overflow-x-auto leading-relaxed">export default {
+              <pre id="dexcomBridgeCodeBlock" class="p-2.5 rounded-xl bg-slate-900 text-emerald-300 font-mono text-[10px] overflow-x-auto leading-relaxed">let cachedSession = { sessionId: "", region: "", accountName: "", ts: 0 };
+
+export default {
   async fetch(request) {
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
@@ -677,12 +717,40 @@
       };
       const order = body.region === "us" ? ["us", "ous", "jp"] : ["ous", "us", "jp"];
       const appId = "d89443d2-327c-4a6f-89e5-496bbb0317db";
-      const headers = { "Content-Type": "application/json", "Accept": "application/json" };
-      let lastError = "";
+      const headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Agent": "Dexcom Share/3.0.2.11 CFNetwork/711.2.23 Darwin/14.0.0"
+      };
 
+      const incomingSession = body.sessionId || (cachedSession.accountName === body.accountName ? cachedSession.sessionId : "");
+      const incomingReg = body.sessionRegion || cachedSession.region || order[0];
+
+      // 优先复用已有 SessionId 直接读取血糖（避免频繁重新登录被 Dexcom 临时限流）
+      if (incomingSession && hostMap[incomingReg]) {
+        const fastRes = await fetch(`${hostMap[incomingReg]}/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${incomingSession}&minutes=1440&maxCount=1`, {
+          method: "POST",
+          headers
+        });
+        if (fastRes.ok) {
+          const arr = await fastRes.json();
+          const latest = Array.isArray(arr) && arr[0] ? arr[0] : null;
+          return new Response(JSON.stringify({
+            ok: true,
+            reusedSession: true,
+            sessionId: incomingSession,
+            regionUsed: incomingReg,
+            count: Array.isArray(arr) ? arr.length : 0,
+            bg: latest ? latest.Value : null,
+            trend: latest ? latest.Trend : null,
+            wt: latest ? latest.WT : null
+          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+      }
+
+      let lastError = "";
       for (const reg of order) {
         const base = hostMap[reg];
-        // Step 1: AuthenticatePublisherAccount -> get accountId
         const authRes = await fetch(`${base}/General/AuthenticatePublisherAccount`, {
           method: "POST",
           headers,
@@ -695,7 +763,6 @@
         }
         const accountId = authText.replace(/"/g, "").trim();
 
-        // Step 2: LoginPublisherAccountById -> get sessionId
         const loginRes = await fetch(`${base}/General/LoginPublisherAccountById`, {
           method: "POST",
           headers,
@@ -707,8 +774,8 @@
           continue;
         }
         const sessionId = loginText.replace(/"/g, "").trim();
+        cachedSession = { sessionId, region: reg, accountName: body.accountName, ts: Date.now() };
 
-        // Step 3: ReadPublisherLatestGlucoseValues
         const bgRes = await fetch(`${base}/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${sessionId}&minutes=1440&maxCount=1`, {
           method: "POST",
           headers
@@ -717,6 +784,7 @@
         const latest = Array.isArray(arr) && arr[0] ? arr[0] : null;
         return new Response(JSON.stringify({
           ok: true,
+          sessionId,
           regionUsed: reg,
           count: Array.isArray(arr) ? arr.length : 0,
           bg: latest ? latest.Value : null,
@@ -2118,7 +2186,10 @@
       bg: '',
       trend: '--',
       updatedAtKr: '--:--',
-      updatedAtIr: '--:--'
+      updatedAtIr: '--:--',
+      cachedSessionId: '',
+      cachedRegion: 'ous',
+      sensorTimeDesc: ''
     };
 
     const DEFAULT_JSONBIN_URL = 'https://api.jsonbin.io/v3/b/6ad9d330ac6210605a4859b8';
@@ -2810,6 +2881,13 @@
             Object.assign(allDaysStore, parsed);
           }
         }
+        const savedLiveBg = localStorage.getItem('steadyBg_liveDexcomState_v4');
+        if (savedLiveBg) {
+          const parsedBg = JSON.parse(savedLiveBg);
+          if (parsedBg && typeof parsedBg === 'object') {
+            Object.assign(liveDexcomState, parsedBg);
+          }
+        }
       } catch (e) {
         console.warn('Local storage load skipped:', e);
       }
@@ -2820,6 +2898,7 @@
         Object.values(allDaysStore).forEach(d => enrichDayWithDualTimezones(d));
         localStorage.setItem('steadyBg_allDaysStore_v4', JSON.stringify(allDaysStore));
         localStorage.setItem('steadyBg_serverConfig_v4', JSON.stringify(serverConfig));
+        localStorage.setItem('steadyBg_liveDexcomState_v4', JSON.stringify(liveDexcomState));
       } catch (e) {
         console.warn('Local storage save skipped:', e);
       }
@@ -3139,6 +3218,20 @@
       if (logs) logs.innerHTML = '';
     }
 
+    function parseDexcomWT(wtStr) {
+      if (!wtStr || typeof wtStr !== 'string') return '';
+      const match = wtStr.match(/Date\((\d+)/);
+      if (!match) return '';
+      const ms = parseInt(match[1], 10);
+      if (isNaN(ms)) return '';
+      const diffMin = Math.max(0, Math.round((Date.now() - ms) / 60000));
+      if (diffMin <= 1) return '刚刚测得';
+      if (diffMin < 60) return `${diffMin}分钟前测得`;
+      const h = Math.floor(diffMin / 60);
+      const m = diffMin % 60;
+      return `${h}小时${m}分前测得`;
+    }
+
     async function syncDexcomNow(silent = false) {
       if (!silent) {
         clearDexcomDiagLogs();
@@ -3154,37 +3247,65 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  accountName: serverConfig.dexcomUser,
+                  accountName: serverConfig.dexcomUser.trim(),
                   password: serverConfig.dexcomPass,
-                  region: serverConfig.dexcomRegion || 'ous'
+                  region: serverConfig.dexcomRegion || 'ous',
+                  sessionId: liveDexcomState.cachedSessionId || '',
+                  sessionRegion: liveDexcomState.cachedRegion || serverConfig.dexcomRegion || 'ous'
                 })
               }
             : { method: 'GET' };
           const res = await fetch(serverConfig.dexcomBridgeUrl, fetchOpts);
           const data = await res.json();
+          if (data && data.sessionId) {
+            liveDexcomState.cachedSessionId = data.sessionId;
+            liveDexcomState.cachedRegion = data.regionUsed || 'ous';
+          }
           if (data && data.bg) {
-            updateLiveBgManually(data.bg, true);
             const arrow = DEXCOM_TREND_ARROW_MAP[data.trend] || data.trend || '→';
-            updateLiveTrendManually(arrow);
+            const wtDesc = parseDexcomWT(data.wt);
             const { krHm } = getFormattedDualClocks();
+            liveDexcomState.updatedAtKr = krHm;
+            liveDexcomState.sensorTimeDesc = wtDesc;
+            updateLiveBgManually(data.bg, true);
+            updateLiveTrendManually(arrow);
+            persistStateLocally();
             const hintEl = document.getElementById('dexcomSyncHint');
-            if (hintEl) hintEl.textContent = `✅ 已同步 (${krHm})`;
+            if (hintEl) hintEl.textContent = wtDesc ? `✅ ${wtDesc} (${krHm})` : `✅ 已同步 (${krHm})`;
+            const dotEl = document.getElementById('dexcomStatusDot');
+            if (dotEl) dotEl.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse-soft shrink-0';
             if (!silent) {
-              appendDexcomDiagLog(`✅ 成功获取最新血糖: ${data.bg} mg/dL (${arrow})`, 'text-emerald-400 font-bold');
+              appendDexcomDiagLog(`✅ 成功获取最新血糖: ${data.bg} mg/dL (${arrow}) ${wtDesc ? '[' + wtDesc + ']' : ''}`, 'text-emerald-400 font-bold');
               showToast('succeed', 'success', 800);
             }
             return;
           } else if (data && data.ok && data.count === 0) {
+            const hintEl = document.getElementById('dexcomSyncHint');
+            if (hintEl) hintEl.textContent = liveDexcomState.bg ? `⚠️ 暂无新点·保留上次(${liveDexcomState.updatedAtKr})` : '⚠️ 传感器暂无新数据';
             if (!silent) {
-              appendDexcomDiagLog('✅ 账号登录成功！但过去 24 小时 (1440分钟) 内云端无血糖读数（可能他当前未佩戴传感器或手机未上传数据）。', 'text-amber-300 font-bold');
+              appendDexcomDiagLog('✅ 账号连接正常！但当前传感器暂无新上传的血糖读数（可能他手机蓝牙/网络暂未上传，已为您保留上次读数）。', 'text-amber-300 font-bold');
               showToast('fail', 'warn', 800);
             }
             return;
           } else if (data && data.error) {
-            if (!silent) appendDexcomDiagLog(`❌ Worker 返回错误: ${data.error} (${data.detail || ''})`, 'text-rose-400');
+            // Clear cached session in case it expired
+            liveDexcomState.cachedSessionId = '';
+            persistStateLocally();
+            if (!silent) {
+              appendDexcomDiagLog(`❌ Worker 返回状态: ${data.error} (${data.detail || ''})`, 'text-rose-400');
+              if (String(data.detail || '').includes('500') || String(data.error).includes('AuthFailed')) {
+                appendDexcomDiagLog(`💡 提示：若刚开始能读到、突然报错，通常是因为短时间内连续点击多次触发了 Dexcom 官方 5~10 分钟防频繁登录保护，请隔几分钟再点即可恢复！`, 'text-amber-300 font-bold');
+              }
+              showToast('fail', 'warn', 800);
+            }
+            return;
           }
         } catch (e) {
-          if (!silent) appendDexcomDiagLog(`⚠️ 自定义 Worker 连接失败 (${e.message})，尝试内置代理通道...`, 'text-amber-300');
+          if (!silent) appendDexcomDiagLog(`⚠️ 自定义 Worker 连接异常 (${e.message})，请检查 Worker 网址是否正确。`, 'text-amber-300');
+          if (serverConfig.dexcomBridgeUrl) {
+            if (!silent) showToast('404', 'warn', 800);
+            return;
+          }
         }
       }
 
@@ -4175,6 +4296,16 @@
     window.onload = function () {
       seedInitial7DaysData();
       loadPersistedState();
+      if (liveDexcomState.bg) {
+        updateLiveBgManually(liveDexcomState.bg, true);
+        updateLiveTrendManually(liveDexcomState.trend || '→');
+        const hintEl = document.getElementById('dexcomSyncHint');
+        if (hintEl) {
+          hintEl.textContent = liveDexcomState.sensorTimeDesc
+            ? `✅ ${liveDexcomState.sensorTimeDesc} (${liveDexcomState.updatedAtKr || ''})`
+            : `✅ 上次同步 (${liveDexcomState.updatedAtKr || ''})`;
+        }
+      }
       updateClocksUI();
       setInterval(updateClocksUI, 1000);
       renderModule2();
