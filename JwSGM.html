@@ -1480,25 +1480,14 @@ svg, img, video, canvas {
         <button onclick="closePwaInstallModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-700">✕</button>
       </div>
       <div id="pwaLocalFileWarn" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs leading-relaxed">
-        ⚠️ <b>重要提醒：</b>检测到您当前直接打开的是手机本地文件（<code>file://</code>）。手机系统的“添加到主屏幕”功能<b>必须通过网址（<code>https://</code>）访问</b>才能生效且永不丢缓存！<br>
-        👉 您只需用浏览器访问您的专属云端网址：<b id="pwaWorkerAppUrl" class="font-mono underline cursor-pointer" onclick="window.open(this.textContent, '_blank')">https://late-field-eace.miyubear0611.workers.dev/</b> 即可一键添加桌面！
+        <span id="uiPwaLocalWarnText">⚠️ <b>重要提醒：</b>手机系统的“添加到主屏幕”功能<b>必须通过在线网址（<code>https://</code>）访问</b>才能生效且永不丢缓存！</span>
       </div>
-      <div class="space-y-3 text-xs text-slate-700 leading-relaxed">
-        <div class="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 space-y-1.5">
-          <div class="font-bold text-emerald-950">🍎 iPhone / iPad (Safari 浏览器)：</div>
-          <div>1. 用 <b>Safari</b> 打开本系统的在线网址；</div>
-          <div>2. 点击底部正中间的 <b>【分享按钮 ⬆️】</b>；</div>
-          <div>3. 向下滑动菜单，点击 <b>【添加到主屏幕 (Add to Home Screen)】</b> → 右上角点【添加】，桌面就会出现绿心稳糖图标！</div>
-        </div>
-        <div class="p-3 rounded-xl bg-sky-50/70 border border-sky-200 space-y-1.5">
-          <div class="font-bold text-sky-900">🤖 安卓手机 (Chrome / Edge / 三星浏览器)：</div>
-          <div>1. 点击下方【一键安装到桌面】按钮；</div>
-          <div>2. 或点击浏览器右上角 <b>【⋮ 菜单】</b> → 选择 <b>【添加到主屏幕 / 安装应用 (Install App / اضافه به صفحه اصلی)】</b>。</div>
-        </div>
+      <div id="uiPwaGuideContainer" class="space-y-3 text-xs text-slate-700 leading-relaxed">
+        <!-- Dynamically populated in zh / ko / fa / en -->
       </div>
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
         <button id="btnNativePwaPrompt" onclick="triggerNativePwaInstall()" class="hidden px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm">📲 立即一键安装到桌面</button>
-        <button onclick="closePwaInstallModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">知道了</button>
+        <button id="uiPwaCloseBtn" onclick="closePwaInstallModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">知道了</button>
       </div>
     </div>
   </div>
@@ -3519,6 +3508,7 @@ svg, img, video, canvas {
       touchDayTimestamp(fresh);
       allDaysStore[activeDate] = fresh;
       persistStateLocally();
+      renderPwaGuideByLang();
       renderModule2();
       renderMeals();
       updateTopSteadyStateDashboard();
@@ -6503,7 +6493,110 @@ svg, img, video, canvas {
       } catch (e) {}
     }
 
+    function renderPwaGuideByLang() {
+      const lang = currentLang || 'zh';
+      const titleMap = {
+        zh: '添加到手机桌面（全屏 App 模式）',
+        ko: '휴대폰 홈 화면에 추가 (전체화면 앱 모드)',
+        fa: 'افزودن به صفحه اصلی گوشی (حالت اپلیکیشن تمام‌صفحه)',
+        en: 'Add to Phone Home Screen (Full-Screen App Mode)'
+      };
+      const btnTextMap = {
+        zh: '加入桌面',
+        ko: '홈화면 추가',
+        fa: 'نصب در صفحه اصلی',
+        en: 'Install App'
+      };
+      const nativeBtnMap = {
+        zh: '📲 立即一键安装到桌面',
+        ko: '📲 홈 화면에 즉시 설치',
+        fa: '📲 نصب فوری در صفحه اصلی گوشی',
+        en: '📲 Install to Home Screen Now'
+      };
+      const closeBtnMap = {
+        zh: '知道了',
+        ko: '확인',
+        fa: 'متوجه شدم',
+        en: 'Got It'
+      };
+      const warnMap = {
+        zh: '⚠️ <b>重要提醒：</b>检测到当前打开的是本地文件（<code>file://</code>）。请通过您的 GitHub Pages 在线网址（<code>https://</code>）打开，即可一键添加到桌面！',
+        ko: '⚠️ <b>중요 안내:</b> 현재 로컬 파일(<code>file://</code>)로 열려 있습니다. GitHub Pages 온라인 주소(<code>https://</code>)로 접속하시면 홈 화면에 추가할 수 있습니다!',
+        fa: '⚠️ <b>نکته مهم:</b> برای افزودن به صفحه اصلی، لطفاً این صفحه را از طریق لینک اینترنتی (<code>https://</code>) در مرورگر باز کنید.',
+        en: '⚠️ <b>Note:</b> Please open this page via your online <code>https://</code> URL so your phone can install it to the home screen.'
+      };
+      const guideHtmlMap = {
+        zh: `
+          <div class="p-3 rounded-xl bg-sky-50/80 border border-sky-200 space-y-1.5">
+            <div class="font-bold text-sky-950">🤖 三星手机 (Samsung) / 安卓手机：</div>
+            <div><b>方式 A（Chrome 浏览器）：</b><br>1. 点击浏览器右上角 <b>【⋮ 菜单】</b>；<br>2. 点击 <b>【添加到主屏幕 (Add to Home screen)】</b> 或 <b>【安装应用 (Install app)】</b> → 点击【添加】。</div>
+            <div class="pt-1 border-t border-sky-200/70"><b>方式 B（三星自带浏览器 Samsung Internet）：</b><br>1. 点击底部右下角 <b>【☰ 三条杠菜单】</b>；<br>2. 点击 <b>【+ 添加当前网页到 (Add page to)】</b> → 选择 <b>【主屏幕 (Home screen)】</b>。</div>
+          </div>
+          <div class="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 space-y-1.5">
+            <div class="font-bold text-emerald-950">🍎 iPhone / iPad (Safari 浏览器)：</div>
+            <div>1. 用 <b>Safari</b> 打开在线网址，点击底部正中间的 <b>【分享按钮 ⬆️】</b>；</div>
+            <div>2. 向下滑动点击 <b>【添加到主屏幕 (Add to Home Screen)】</b> → 点右上角【添加】。</div>
+          </div>
+        `,
+        ko: `
+          <div class="p-3 rounded-xl bg-sky-50/80 border border-sky-200 space-y-1.5">
+            <div class="font-bold text-sky-950">🤖 삼성 갤럭시 (Samsung) / 안드로이드폰:</div>
+            <div><b>방법 A (Chrome 브라우저):</b><br>1. 우측 상단 <b>【⋮ 메뉴】</b> 터치;<br>2. <b>【홈 화면에 추가 (Add to Home screen)】</b> 또는 <b>【앱 설치 (Install app)】</b> 선택 → 【추가】.</div>
+            <div class="pt-1 border-t border-sky-200/70"><b>방법 B (삼성 인터넷 브라우저):</b><br>1. 우측 하단 <b>【☰ 메뉴(줄 3개)】</b> 터치;<br>2. <b>【+ 현재 페이지 추가 (Add page to)】</b> → <b>【홈 화면 (Home screen)】</b> 선택.</div>
+          </div>
+          <div class="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 space-y-1.5">
+            <div class="font-bold text-emerald-950">🍎 아이폰 / 아이패드 (Safari 브라우저):</div>
+            <div>1. <b>Safari</b>에서 하단 중앙의 <b>【공유 버튼 ⬆️】</b> 터치;</div>
+            <div>2. 아래로 스크롤하여 <b>【홈 화면에 추가】</b> 선택 → 우측 상단 【추가】 터치.</div>
+          </div>
+        `,
+        fa: `
+          <div class="p-3 rounded-xl bg-sky-50/80 border border-sky-200 space-y-2">
+            <div class="font-bold text-sky-950">🤖 گوشی سامسونگ (Samsung) و اندروید:</div>
+            <div>
+              <b>روش اول (مرورگر کروم / Chrome):</b><br>
+              ۱. روی دکمه <b>【⋮ سه نقطه】</b> در بالا سمت راست (یا چپ) مرورگر بزنید؛<br>
+              ۲. گزینه <b>«افزودن به صفحه اصلی» (Add to Home screen)</b> یا <b>«نصب برنامه» (Install app)</b> را انتخاب کرده و روی <b>Add / Install</b> بزنید.
+            </div>
+            <div class="pt-1.5 border-t border-sky-200/70">
+              <b>روش دوم (مرورگر سامسونگ / Samsung Internet):</b><br>
+              ۱. در پایین صفحه روی دکمه <b>【☰ سه خط (منو)】</b> بزنید؛<br>
+              ۲. گزینه <b>«+ افزودن صفحه به» (Add page to / افزودن به)</b> را بزنید؛<br>
+              ۳. گزینه <b>«صفحه اصلی» (Home screen)</b> را انتخاب کنید تا آیکون برنامه با قلب سبز روی صفحه گوشی شما قرار بگیرد!
+            </div>
+          </div>
+          <div class="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 space-y-1.5">
+            <div class="font-bold text-emerald-950">🍎 آیفون و آیپد (مرورگر Safari):</div>
+            <div>۱. لینک را در <b>Safari</b> باز کنید و در پایین صفحه روی دکمه <b>【اشتراک‌گذاری ⬆️ (Share)】</b> بزنید؛</div>
+            <div>۲. منو را به بالا بکشید و گزینه <b>«Add to Home Screen»</b> را انتخاب کرده و در بالا روی <b>Add</b> بزنید.</div>
+          </div>
+        `,
+        en: `
+          <div class="p-3 rounded-xl bg-sky-50/80 border border-sky-200 space-y-1.5">
+            <div class="font-bold text-sky-950">🤖 Samsung Galaxy / Android Phones:</div>
+            <div><b>Option A (Chrome Browser):</b><br>1. Tap the top-right <b>[⋮ Menu]</b>;<br>2. Tap <b>[Add to Home screen]</b> or <b>[Install app]</b> → Tap [Add / Install].</div>
+            <div class="pt-1 border-t border-sky-200/70"><b>Option B (Samsung Internet Browser):</b><br>1. Tap the bottom-right <b>[☰ Menu (3 lines)]</b>;<br>2. Tap <b>[+ Add page to]</b> → Select <b>[Home screen]</b>.</div>
+          </div>
+          <div class="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 space-y-1.5">
+            <div class="font-bold text-emerald-950">🍎 iPhone / iPad (Safari):</div>
+            <div>1. Open in <b>Safari</b> and tap the bottom <b>[Share button ⬆️]</b>;</div>
+            <div>2. Scroll down and tap <b>[Add to Home Screen]</b> → Tap [Add].</div>
+          </div>
+        `
+      };
+
+      const setTxt = (id, v) => { const el = document.getElementById(id); if (el && v) el.textContent = v; };
+      const setHtml = (id, v) => { const el = document.getElementById(id); if (el && v) el.innerHTML = v; };
+      setTxt('uiPwaModalTitle', titleMap[lang] || titleMap.zh);
+      setTxt('uiPwaBtnText', btnTextMap[lang] || btnTextMap.zh);
+      setTxt('btnNativePwaPrompt', nativeBtnMap[lang] || nativeBtnMap.zh);
+      setTxt('uiPwaCloseBtn', closeBtnMap[lang] || closeBtnMap.zh);
+      setHtml('uiPwaLocalWarnText', warnMap[lang] || warnMap.zh);
+      setHtml('uiPwaGuideContainer', guideHtmlMap[lang] || guideHtmlMap.zh);
+    }
+
     function openPwaInstallModal() {
+      renderPwaGuideByLang();
       if (deferredPwaPrompt) {
         triggerNativePwaInstall();
         return;
@@ -6511,10 +6604,6 @@ svg, img, video, canvas {
       const warnBox = document.getElementById('pwaLocalFileWarn');
       if (warnBox) {
         warnBox.classList.toggle('hidden', window.location.protocol !== 'file:');
-      }
-      const urlSpan = document.getElementById('pwaWorkerAppUrl');
-      if (urlSpan && serverConfig.dexcomBridgeUrl) {
-        urlSpan.textContent = serverConfig.dexcomBridgeUrl;
       }
       document.getElementById('pwaInstallModal')?.classList.remove('hidden');
     }
