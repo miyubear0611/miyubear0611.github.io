@@ -9,15 +9,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    html, body {
-      max-width: 100vw;
-      overflow-x: hidden;
-    }
     body {
       font-family: 'Inter', 'Noto Sans SC', 'Noto Sans KR', 'Noto Sans Arabic', sans-serif;
       background-color: #f4f9f6;
       color: #1e293b;
       padding-bottom: 64px;
+      overflow-x: clip;
     }
     @media (min-width: 768px) {
       body {
@@ -647,38 +644,40 @@
 
   </main>
 
-  <!-- Desktop/Tablet Non-Overlapping Sticky Quick-Jump Sidebar (Fully translated & highlights selected section) -->
-  <aside id="floatingSidebar" style="top: 110px; max-height: calc(100vh - 125px);" class="hidden md:flex sticky z-30 shrink-0 w-40 flex-col gap-1 bg-white/95 backdrop-blur-md border border-emerald-200/90 shadow-md rounded-2xl p-2.5 overflow-y-auto custom-scroll transition-all">
-    <div id="uiSideNavHeader" class="text-[11px] font-extrabold text-emerald-800 text-center px-1 pb-1 border-b border-emerald-100 break-words">快捷导航</div>
-    <button type="button" onclick="scrollToSection('mod-supplements')" data-sec="mod-supplements" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-emerald-600 text-white shadow-sm transition flex items-center justify-start gap-1.5 text-left">
-      <span>💊</span> <span id="uiSideSupp" class="break-words leading-tight">晨起与保健品</span>
-    </button>
-    <button type="button" onclick="scrollToSection('mealNode-pre_breakfast')" data-sec="mealNode-pre_breakfast" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 text-left">
-      <span>🥚</span> <span id="uiSideMeal0" class="break-words leading-tight">1. 早前零食</span>
-    </button>
-    <button type="button" onclick="scrollToSection('mealNode-breakfast')" data-sec="mealNode-breakfast" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 text-left">
-      <span>🌅</span> <span id="uiSideMeal1" class="break-words leading-tight">2. 早餐</span>
-    </button>
-    <button type="button" onclick="scrollToSection('mealNode-breakfast_extra')" data-sec="mealNode-breakfast_extra" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 text-left">
-      <span>➕</span> <span id="uiSideMeal2" class="break-words leading-tight">3. 早后额外</span>
-    </button>
-    <button type="button" onclick="scrollToSection('mealNode-lunch')" data-sec="mealNode-lunch" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 text-left">
-      <span>☀️</span> <span id="uiSideMeal3" class="break-words leading-tight">4. 午餐</span>
-    </button>
-    <button type="button" onclick="scrollToSection('mealNode-lunch_extra')" data-sec="mealNode-lunch_extra" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 text-left">
-      <span>➕</span> <span id="uiSideMeal4" class="break-words leading-tight">5. 午后额外</span>
-    </button>
-    <button type="button" onclick="scrollToSection('mealNode-dinner')" data-sec="mealNode-dinner" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 text-left">
-      <span>🌙</span> <span id="uiSideMeal5" class="break-words leading-tight">6. 晚餐</span>
-    </button>
-    <button type="button" onclick="scrollToSection('mealNode-dinner_extra')" data-sec="mealNode-dinner_extra" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 text-left">
-      <span>➕</span> <span id="uiSideMeal6" class="break-words leading-tight">7. 晚后额外</span>
-    </button>
-    <div class="h-px bg-emerald-100 my-0.5"></div>
-    <button type="button" onclick="scrollToTop()" class="px-2.5 py-1.5 rounded-xl text-[11px] font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition flex items-center justify-center gap-1">
-      <span>⬆️</span> <span id="uiSideTop" class="break-words">回到顶部</span>
-    </button>
-  </aside>
+  <!-- Desktop/Tablet Non-Overlapping Sticky/Fixed Quick-Jump Sidebar Track -->
+  <div id="sidebarTrack" class="hidden md:block shrink-0 w-40 relative">
+    <aside id="floatingSidebar" class="hidden md:flex fixed z-30 w-40 flex-col gap-1 bg-white/95 backdrop-blur-md border border-emerald-200/90 shadow-md rounded-2xl p-2.5 overflow-y-auto custom-scroll">
+      <div id="uiSideNavHeader" class="text-[11px] font-extrabold text-emerald-800 text-center px-1 pb-1 border-b border-emerald-100 break-words">快捷导航</div>
+      <button type="button" onclick="scrollToSection('mod-supplements')" data-sec="mod-supplements" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-emerald-600 text-white shadow-sm transition flex items-center justify-start gap-1.5 text-left">
+        <span>💊</span> <span id="uiSideSupp" class="break-words leading-tight">晨起与保健品</span>
+      </button>
+      <button type="button" onclick="scrollToSection('mealNode-pre_breakfast')" data-sec="mealNode-pre_breakfast" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 text-left">
+        <span>🥚</span> <span id="uiSideMeal0" class="break-words leading-tight">1. 早前零食</span>
+      </button>
+      <button type="button" onclick="scrollToSection('mealNode-breakfast')" data-sec="mealNode-breakfast" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 text-left">
+        <span>🌅</span> <span id="uiSideMeal1" class="break-words leading-tight">2. 早餐</span>
+      </button>
+      <button type="button" onclick="scrollToSection('mealNode-breakfast_extra')" data-sec="mealNode-breakfast_extra" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 text-left">
+        <span>➕</span> <span id="uiSideMeal2" class="break-words leading-tight">3. 早后额外</span>
+      </button>
+      <button type="button" onclick="scrollToSection('mealNode-lunch')" data-sec="mealNode-lunch" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 text-left">
+        <span>☀️</span> <span id="uiSideMeal3" class="break-words leading-tight">4. 午餐</span>
+      </button>
+      <button type="button" onclick="scrollToSection('mealNode-lunch_extra')" data-sec="mealNode-lunch_extra" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 text-left">
+        <span>➕</span> <span id="uiSideMeal4" class="break-words leading-tight">5. 午后额外</span>
+      </button>
+      <button type="button" onclick="scrollToSection('mealNode-dinner')" data-sec="mealNode-dinner" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 text-left">
+        <span>🌙</span> <span id="uiSideMeal5" class="break-words leading-tight">6. 晚餐</span>
+      </button>
+      <button type="button" onclick="scrollToSection('mealNode-dinner_extra')" data-sec="mealNode-dinner_extra" class="sec-jump-btn px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center justify-start gap-1.5 text-left">
+        <span>➕</span> <span id="uiSideMeal6" class="break-words leading-tight">7. 晚后额外</span>
+      </button>
+      <div class="h-px bg-emerald-100 my-0.5"></div>
+      <button type="button" onclick="scrollToTop()" class="px-2.5 py-1.5 rounded-xl text-[11px] font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition flex items-center justify-center gap-1">
+        <span>⬆️</span> <span id="uiSideTop" class="break-words">回到顶部</span>
+      </button>
+    </aside>
+  </div>
 
   </div>
 
@@ -2046,11 +2045,50 @@ export default {
     function updateSidebarStickyOffset() {
       const headerEl = document.getElementById('mainStickyHeader');
       const sidebarEl = document.getElementById('floatingSidebar');
-      if (!headerEl || !sidebarEl) return;
-      const headerHeight = headerEl.offsetHeight || 220;
-      const topGap = headerHeight + 12;
-      sidebarEl.style.top = `${topGap}px`;
-      sidebarEl.style.maxHeight = `calc(100vh - ${topGap + 16}px)`;
+      const trackEl = document.getElementById('sidebarTrack');
+      if (!headerEl || !sidebarEl || !trackEl) return;
+      if (window.innerWidth < 768 || trackEl.classList.contains('md:hidden')) return;
+
+      const headerRect = headerEl.getBoundingClientRect();
+      const trackRect = trackEl.getBoundingClientRect();
+      const minTop = Math.max(12, headerRect.bottom + 12);
+      const topPos = Math.max(minTop, trackRect.top);
+
+      sidebarEl.style.top = `${topPos}px`;
+      sidebarEl.style.left = `${trackRect.left}px`;
+      sidebarEl.style.width = `${trackRect.width}px`;
+      sidebarEl.style.maxHeight = `calc(100vh - ${topPos + 16}px)`;
+    }
+
+    function onWindowScrollSyncSidebar() {
+      updateSidebarStickyOffset();
+      const dailySec = document.getElementById('tabContent-daily');
+      if (!dailySec || dailySec.classList.contains('hidden')) return;
+      const headerEl = document.getElementById('mainStickyHeader');
+      const threshold = (headerEl ? headerEl.offsetHeight : 110) + 60;
+      const sectionIds = [
+        'mod-supplements',
+        'mealNode-pre_breakfast',
+        'mealNode-breakfast',
+        'mealNode-breakfast_extra',
+        'mealNode-lunch',
+        'mealNode-lunch_extra',
+        'mealNode-dinner',
+        'mealNode-dinner_extra'
+      ];
+      let foundId = sectionIds[0];
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= threshold) {
+            foundId = id;
+          }
+        }
+      }
+      if (foundId !== currentActiveSectionId) {
+        highlightActiveSectionButtons(foundId);
+      }
     }
 
     function highlightActiveSectionButtons(sectionId) {
@@ -4693,6 +4731,7 @@ export default {
       renderWeeklyReport();
       renderFoodImpactTab();
       highlightActiveSectionButtons(currentActiveSectionId);
+      setTimeout(updateSidebarStickyOffset, 20);
       // Automatically ensure any previously entered custom foods have 4-language translations
       ensureExistingCustomFoodsTranslated();
     }
@@ -5199,11 +5238,17 @@ export default {
       });
 
       const sidebar = document.getElementById('floatingSidebar');
-      if (sidebar) {
+      const track = document.getElementById('sidebarTrack');
+      if (sidebar && track) {
         if (tabKey === 'daily') {
+          track.classList.remove('md:hidden');
+          track.classList.add('md:block');
           sidebar.classList.remove('md:hidden');
           sidebar.classList.add('md:flex');
+          setTimeout(updateSidebarStickyOffset, 20);
         } else {
+          track.classList.remove('md:block');
+          track.classList.add('md:hidden');
           sidebar.classList.remove('md:flex');
           sidebar.classList.add('md:hidden');
         }
@@ -5288,6 +5333,7 @@ export default {
       highlightActiveSectionButtons('mod-supplements');
       updateSidebarStickyOffset();
       window.addEventListener('resize', updateSidebarStickyOffset);
+      window.addEventListener('scroll', onWindowScrollSyncSidebar, { passive: true });
       const headerEl = document.getElementById('mainStickyHeader');
       if (headerEl && typeof ResizeObserver !== 'undefined') {
         new ResizeObserver(() => updateSidebarStickyOffset()).observe(headerEl);
