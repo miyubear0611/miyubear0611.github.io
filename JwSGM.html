@@ -2,8 +2,18 @@
 <html lang="zh-CN" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <title>血糖健康打卡系统</title>
+  <!-- PWA & Mobile Standalone App Meta Tags -->
+  <meta name="theme-color" content="#059669" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="稳糖打卡" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23ecfdf5'/%3E%3Cpath d='M50 82L44 76.5C22 56.5 8 43.8 8 28.5C8 16 17.8 6 30.5 6C37.6 6 44.5 9.3 49 14.5L50 15.7L51 14.5C55.5 9.3 62.4 6 69.5 6C82.2 6 92 16 92 28.5C92 43.8 78 56.5 56 76.5L50 82Z' fill='%2310b981'/%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23ecfdf5'/%3E%3Cpath d='M50 82L44 76.5C22 56.5 8 43.8 8 28.5C8 16 17.8 6 30.5 6C37.6 6 44.5 9.3 49 14.5L50 15.7L51 14.5C55.5 9.3 62.4 6 69.5 6C82.2 6 92 16 92 28.5C92 43.8 78 56.5 56 76.5L50 82Z' fill='%2310b981'/%3E%3C/svg%3E" />
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%E8%A1%80%E7%B3%96%E5%81%A5%E5%BA%B7%E6%89%93%E5%8D%A1%E7%B3%BB%E7%BB%9F%22%2C%22short_name%22%3A%22%E7%A8%B3%E7%B3%96%E6%89%93%E5%8D%A1%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f4f9f6%22%2C%22theme_color%22%3A%22%23059669%22%7D" />
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -133,16 +143,37 @@
 
   <!-- Top Steady-State Metrics & Active Date Bar (Full text wrapping on mobile, never truncated) -->
   <section id="topDashboardSection" class="max-w-7xl w-full mx-auto px-2.5 sm:px-6 pt-3 space-y-2.5">
+
+    <!-- 15-15 Rule Hypoglycemia Rescue Countdown Banner (Hidden unless active) -->
+    <div id="hypoCountdownBanner" class="hidden rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 text-white px-4 py-3 shadow-lg flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <span class="text-2xl animate-bounce">🚨</span>
+        <div>
+          <h4 id="uiHypoBannerTitle" class="text-xs sm:text-sm font-extrabold tracking-wide">15-15 低血糖急救倒计时进行中</h4>
+          <p id="uiHypoBannerDesc" class="text-[11px] text-rose-100">已自动打卡 15g 急救快糖，请静坐休息防止摔倒，倒计时结束后请立即复测血糖！</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 ml-auto">
+        <span id="hypoTimerDisplay" class="px-3 py-1 rounded-xl bg-white text-rose-700 font-mono text-base sm:text-lg font-black shadow-inner">15:00</span>
+        <button type="button" onclick="completeHypoRecheckNow()" id="uiHypoRecheckBtn" class="px-3 py-1.5 rounded-xl bg-amber-300 hover:bg-amber-200 text-slate-900 font-extrabold text-xs shadow-sm transition">🩸 立即复测并填入</button>
+        <button type="button" onclick="undoHypoRescue()" id="uiHypoUndoBtn" class="px-2.5 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs border border-white/40 transition">↩️ 误触撤销</button>
+        <button type="button" onclick="cancelHypoTimer()" class="p-1.5 rounded-lg bg-rose-700/80 hover:bg-rose-800 text-white text-xs" title="Close">✕</button>
+      </div>
+    </div>
+
     <!-- 5 Steady-State Cards: 2-column grid on mobile, 5-column on desktop -->
     <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-2.5">
-      <!-- 1. Dexcom Follow Style Live BG Card (Full width on mobile for clarity) -->
+      <!-- 1. Dexcom Follow Style Live BG Card + 1-Tap Hypo Rescue Button -->
       <div class="col-span-2 lg:col-span-1 flex flex-col justify-between bg-gradient-to-br from-emerald-50/95 to-teal-50/90 border border-emerald-200/90 rounded-xl px-3 py-2 overflow-hidden shadow-sm">
         <div class="flex items-center justify-between gap-1.5">
           <div class="flex items-center gap-1.5 min-w-0">
             <span id="dexcomStatusDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse-soft shrink-0"></span>
             <span id="uiDexcomLiveLabel" class="text-xs font-bold text-emerald-950 break-words leading-snug">Dexcom 实时血糖</span>
           </div>
-          <button onclick="syncDexcomNow(false)" id="uiRefreshBtn" class="text-[11px] px-2.5 py-0.5 rounded-lg bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold transition shrink-0 whitespace-nowrap shadow-sm">🔄 刷新</button>
+          <div class="flex items-center gap-1 shrink-0">
+            <button onclick="triggerOneTapHypoRescue()" id="uiHypoRescueBtn" class="text-[10px] px-2 py-0.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold transition whitespace-nowrap shadow-sm" title="15-15 Rule Hypo Rescue">🚨 急救15g</button>
+            <button onclick="syncDexcomNow(false)" id="uiRefreshBtn" class="text-[11px] px-2 py-0.5 rounded-lg bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold transition whitespace-nowrap shadow-sm">🔄 刷新</button>
+          </div>
         </div>
 
         <div class="flex items-center justify-between gap-2 mt-1.5">
@@ -190,10 +221,10 @@
         <span id="totalCombinedText" class="text-[10px] text-slate-400 mt-0.5 break-words">0 U</span>
       </div>
 
-      <!-- 4. Time Since Last Injection (Anti-Crash Guard) -->
+      <!-- 4. Time Since Last Injection (NPH 10-12h Guard + Regular Anti-Stacking) -->
       <div class="flex flex-col justify-center bg-white border border-slate-200/80 rounded-xl px-2.5 sm:px-3 py-2">
         <div class="flex flex-wrap items-center justify-between gap-1">
-          <span id="uiLastInjLabel" class="text-[11px] sm:text-xs font-semibold text-slate-600 break-words leading-snug">⏱️ 距上一针间隔</span>
+          <span id="uiLastInjLabel" class="text-[11px] sm:text-xs font-semibold text-slate-600 break-words leading-snug">⏱️ 绿瓶NPH间隔 (防重叠)</span>
           <span id="nphSafetyBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold shrink-0">--</span>
         </div>
         <div id="lastInjectionIntervalText" class="text-xs sm:text-sm font-bold text-slate-800 font-mono mt-1 break-words leading-snug">
@@ -226,7 +257,8 @@
         </span>
         <div class="flex flex-wrap items-center gap-1.5">
           <span id="uiCurrentDateLabel" class="text-slate-500 font-medium text-[11px] sm:text-xs">当前记录日期:</span>
-          <input type="date" id="activeDatePicker" value="2026-10-24" onchange="switchActiveDate(this.value)" class="px-2 py-0.5 rounded-lg border border-emerald-200 bg-emerald-50/50 font-mono font-bold text-emerald-800 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          <input type="date" id="activeDatePicker" onchange="switchActiveDate(this.value)" class="px-2 py-0.5 rounded-lg border border-emerald-200 bg-emerald-50/50 font-mono font-bold text-emerald-800 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          <button type="button" onclick="jumpToTodayIranDate()" id="uiJumpTodayBtn" class="px-2 py-0.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 font-bold text-[11px] transition">📅 回到今天</button>
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-1.5 w-full sm:w-auto justify-end">
@@ -290,7 +322,7 @@
           <div class="lg:col-span-4 flex flex-wrap items-center gap-1.5 justify-between sm:justify-end">
             <span id="uiExactWakeTime" class="text-xs font-semibold text-slate-600">🇮🇷起床(24h):</span>
             <div class="flex flex-wrap items-center gap-1.5">
-              <input type="text" id="wakeTimeInput" value="08:00" maxlength="5" placeholder="08:00" onkeydown="if(event.key==='Enter') confirmWakeTimeInput()" class="w-20 text-center px-2 py-1.5 rounded-xl border-2 border-emerald-400 bg-white font-mono text-xs font-bold text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <input type="text" id="wakeTimeInput" value="08:00" maxlength="5" placeholder="08:00" oninput="format24hTyping(this)" onkeydown="if(event.key==='Enter') confirmWakeTimeInput()" class="w-20 text-center px-2 py-1.5 rounded-xl border-2 border-emerald-400 bg-white font-mono text-xs font-bold text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
               <button type="button" onclick="confirmWakeTimeInput()" id="uiWakeConfirmBtn" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 active:scale-95 text-white text-xs font-bold shadow-sm transition shrink-0">✓ 确认</button>
               <span id="wakeTimeKoreaBadge" class="px-2.5 py-1.5 rounded-xl bg-teal-50 border border-teal-200 font-mono text-xs font-bold text-teal-800">🇰🇷 13:30</span>
             </div>
@@ -360,7 +392,7 @@
               <span>🍽️</span> <span id="uiMod3Title">饮食记录</span>
             </h2>
             <p id="uiMod3Sub" class="text-xs text-slate-500 break-words">
-              含早餐前零食、早/中/晚正餐及餐后额外摄入 · 手动输入食物支持 Gemini AI 智能翻译
+              含早餐前零食、早/中/晚正餐及餐后额外摄入 · 餐后2小时自动从 Dexcom 抓取血糖回填 · 手动输入食物支持 Gemini AI 四语互译
             </p>
           </div>
           <!-- Quick Jump Pills for 7 Meal Nodes (With Active Selection State) -->
@@ -388,9 +420,14 @@
         <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
           <div>
             <h2 id="uiImpactTitle" class="text-base sm:text-lg font-bold text-slate-800 break-words">📈 每种食物平均升糖记录（餐后2h - 餐前血糖 ΔBG 统计）</h2>
-            <p id="uiImpactSub" class="text-xs text-slate-500 break-words">自动汇总所有同时记录了【餐前血糖】与【餐后2小时血糖】的餐次，帮您找出最稳糖的优选食物与升糖刺客</p>
+            <p id="uiImpactSub" class="text-xs text-slate-500 break-words">自动汇总所有同时记录了【餐前血糖】与【餐后2小时血糖】的餐次，支持排除低血糖急救干扰并对照平均配餐胰岛素剂量</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
+            <!-- Exclude Hypo Rescue Meals Toggle -->
+            <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs font-bold cursor-pointer">
+              <input type="checkbox" id="impactExcludeHypoChk" checked onchange="renderFoodImpactTab()" class="rounded text-rose-600 focus:ring-rose-500" />
+              <span id="uiImpExcludeHypo">排除低血糖急救餐次 (餐前<80)</span>
+            </label>
             <select id="impactCategoryFilter" onchange="renderFoodImpactTab()" class="text-xs font-semibold bg-white border border-slate-200 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500">
               <option value="all" id="optImpCatAll">🗂️ 全部食物分类</option>
               <option value="CAT_GOOD" id="optImpCatGood">🥗 优选护胃稳糖类</option>
@@ -421,6 +458,7 @@
                 <th id="thImpFood" class="py-2.5 px-3">食物名称</th>
                 <th id="thImpCat" class="py-2.5 px-3 whitespace-nowrap">所属分类</th>
                 <th id="thImpCount" class="py-2.5 px-3 whitespace-nowrap">记录餐数</th>
+                <th id="thImpAvgIns" class="py-2.5 px-3 whitespace-nowrap">平均配餐胰岛素</th>
                 <th id="thImpAvgPre" class="py-2.5 px-3 whitespace-nowrap">平均餐前血糖</th>
                 <th id="thImpAvgPost" class="py-2.5 px-3 whitespace-nowrap">平均餐后2h血糖</th>
                 <th id="thImpAvgDelta" class="py-2.5 px-3 whitespace-nowrap">平均升糖幅度 (ΔBG)</th>
@@ -455,15 +493,16 @@
           <div>
             <label id="uiFilterDateLabel" class="text-xs font-bold text-slate-600 block mb-1">📅 按日期范围筛选</label>
             <select id="histDatePreset" onchange="applyHistoryFilters()" class="w-full text-xs font-semibold bg-white border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-              <option value="7days" id="optHist7Days">最近 7 天 (2026-10-16 至 10-22)</option>
-              <option value="today" id="optHistToday">今天 (2026-10-22)</option>
-              <option value="yesterday" id="optHistYesterday">昨天 (2026-10-21)</option>
+              <option value="all" id="optHistAll">全部已保存日期</option>
+              <option value="7days" id="optHist7Days" selected>最近 7 天</option>
+              <option value="today" id="optHistToday">当前选中日期 (今天)</option>
+              <option value="yesterday" id="optHistYesterday">昨天</option>
               <option value="custom" id="optHistCustom">自定义起止日期</option>
             </select>
             <div id="customDateRangeBox" class="hidden mt-2 flex items-center gap-1">
-              <input type="date" id="histStartDate" value="2026-10-16" onchange="applyHistoryFilters()" class="w-1/2 text-[11px] px-2 py-1 border rounded-lg bg-white" />
+              <input type="date" id="histStartDate" onchange="applyHistoryFilters()" class="w-1/2 text-[11px] px-2 py-1 border rounded-lg bg-white" />
               <span class="text-slate-400">-</span>
-              <input type="date" id="histEndDate" value="2026-10-22" onchange="applyHistoryFilters()" class="w-1/2 text-[11px] px-2 py-1 border rounded-lg bg-white" />
+              <input type="date" id="histEndDate" onchange="applyHistoryFilters()" class="w-1/2 text-[11px] px-2 py-1 border rounded-lg bg-white" />
             </div>
           </div>
 
@@ -481,10 +520,10 @@
           <div>
             <label id="uiFilterCatLabel" class="text-xs font-bold text-slate-600 block mb-1">🗂️ 按事件类别筛选</label>
             <select id="histCategoryFilter" onchange="applyHistoryFilters()" class="w-full text-xs font-semibold bg-white border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-              <option value="all" id="optCatAll">📋 全部记录 (胰岛素 + 保健品 + 6大餐饮)</option>
+              <option value="all" id="optCatAll">📋 全部记录 (胰岛素 + 保健品 + 7大餐饮)</option>
               <option value="insulin" id="optCatIns">💉 仅看胰岛素记录 (早晚常规 + 餐前/额外补针)</option>
               <option value="supp" id="optCatSupp">💊 仅看保健品与法莫替丁打卡</option>
-              <option value="meal" id="optCatMeal">🍽️ 仅看六大餐饮与额外摄入明细</option>
+              <option value="meal" id="optCatMeal">🍽️ 仅看饮食与额外摄入明细</option>
             </select>
           </div>
 
@@ -494,7 +533,8 @@
             <input type="text" id="histKeywordInput" oninput="applyHistoryFilters()" placeholder="如: 全麦大饼 / 硫辛酸 / 180..." class="w-full text-xs bg-white border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
           </div>
         </div>
-          <!-- Filtered Results Table -->
+
+        <!-- Filtered Results Table -->
         <div class="mt-4 overflow-x-auto custom-scroll rounded-xl border border-slate-200">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
@@ -561,7 +601,7 @@
             <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-bold">✉️</div>
             <div>
               <h2 id="uiEmailCenterTitle" class="text-base sm:text-lg font-bold text-slate-800">双邮箱自动 / 手动报告发送中心</h2>
-              <p id="uiEmailCenterSub" class="text-xs text-slate-500">每日报告于次日 10:00 自动发送 · 每周 7 天对比总表于周日 10:00 自动发送</p>
+              <p id="uiEmailCenterSub" class="text-xs text-slate-500">每日报告于次日 10:00 自动发送（10点后打开网页亦会自动补发） · 每周 7 天对比总表于周日 10:00 自动发送</p>
             </div>
           </div>
           <!-- Auto-Send Toggle & Countdown -->
@@ -608,7 +648,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
           <div>
             <h2 id="uiWeekTableTitle" class="text-base sm:text-lg font-bold text-slate-800">📊 每周 7 天执行与血糖稳态详细汇总表</h2>
-            <p id="uiWeekTableSub" class="text-xs text-slate-500">涵盖每日起床时间、80–160 稳态达标率、全天胰岛素黄/绿瓶累计、保健品时间、六大餐饮节点及法莫替丁减停进度</p>
+            <p id="uiWeekTableSub" class="text-xs text-slate-500">涵盖每日起床时间、80–160 稳态达标率、全天胰岛素黄/绿瓶累计、保健品时间、7大餐饮节点及法莫替丁减停进度</p>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="copyWeeklyReportText()" id="uiBtnCopyWeek" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition">
@@ -740,337 +780,99 @@
 
   <!-- MODAL: JSON SERVER & DEXCOM SHARE BRIDGE & GEMINI API CONFIG -->
   <div id="serverConfigModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-emerald-100 p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto custom-scroll">
+    <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-emerald-100 p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto custom-scroll">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100">
         <div class="flex items-center gap-2">
           <span class="text-xl">⚙️</span>
-          <h3 class="text-base font-bold text-slate-800">云端 JSON 自动寄存 & Dexcom Share 实时血糖配置</h3>
+          <h3 class="text-base font-bold text-slate-800">系统连接与自动化设置</h3>
         </div>
         <button onclick="closeServerModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-700">✕</button>
       </div>
 
       <div class="space-y-4 text-xs">
-        <!-- 1. Cloud JSON Provider Selection & Auto-Sync -->
+        <!-- 1. Cloud Gateway & Backup -->
         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <label class="font-bold text-slate-800 text-sm">1. 选择免费 JSON 云端寄存平台（勾选/填表自动同步，免手动保存）</label>
+            <label class="font-bold text-slate-800 text-sm">1. 云端安全网关与本地备份</label>
             <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-bold cursor-pointer">
               <input type="checkbox" id="cfgAutoCloudSync" checked class="rounded text-emerald-600" />
-              <span>⚡ 开启实时自动云端同步</span>
+              <span>⚡ 实时自动云端同步</span>
             </label>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <div>
-              <label class="text-[11px] font-bold text-slate-600 block mb-1">寄存平台类型:</label>
-              <select id="cfgJsonProvider" onchange="onJsonProviderChange(this.value)" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-white font-semibold text-xs">
-                <option value="jsonbin" selected>📦 JSONBin.io (已内置您的专属ID)</option>
-                <option value="npoint">🌟 npoint.io (免Key·最简单推荐)</option>
-                <option value="firebase">🔥 Google Firebase (.json)</option>
-                <option value="pantry">🧺 GetPantry.cloud</option>
-                <option value="custom">🖥️ 自定义 JSON Server</option>
-              </select>
-            </div>
-            <div class="sm:col-span-2">
-              <label class="text-[11px] font-bold text-slate-600 block mb-1">JSON 云端 API 网址:</label>
-              <input type="url" id="cfgJsonServerUrl" value="https://api.jsonbin.io/v3/b/6ad9d330ac6210605a4859b8" placeholder="例如: https://api.jsonbin.io/v3/b/..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-mono text-xs" />
-            </div>
-          </div>
-
-          <div id="jsonBinKeyRow" class="grid grid-cols-1 gap-2">
-            <label class="text-[11px] font-bold text-slate-600 block">API 密钥 (若用 JSONBin.io 请填 X-Master-Key；若已设为 Public 留空即可):</label>
-            <input type="password" id="cfgJsonApiKey" placeholder="选填: $2a$10$... (仅 JSONBin.io 私有库需填写)" class="w-full px-3 py-1.5 rounded-xl border border-slate-300 bg-white font-mono text-xs" />
+          <div>
+            <label class="text-[11px] font-bold text-slate-600 block mb-1">专属 Cloudflare Worker 加密网关网址 (已内置云端存储/Dexcom/发信/翻译):</label>
+            <input type="url" id="cfgDexcomBridgeUrl" value="https://late-field-eace.miyubear0611.workers.dev/" placeholder="https://late-field-eace.miyubear0611.workers.dev/" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-mono text-xs" />
           </div>
 
           <div class="flex flex-wrap gap-2 pt-1">
-            <button onclick="downloadFullJsonBackup()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-semibold transition">💾 导出全量 JSON 备份文件 (.json)</button>
+            <button onclick="downloadFullJsonBackup()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-semibold transition">💾 导出全量 JSON 备份 (.json)</button>
             <label class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold cursor-pointer transition">
-              📂 导入本地 JSON 文件 (.json)
+              📂 导入本地备份 (.json)
               <input type="file" accept=".json" onchange="importFullJsonBackup(event)" class="hidden" />
             </label>
           </div>
         </div>
 
-        <!-- 2. Dexcom Share Account & Password Direct Input + Auto Fill -->
+        <!-- 2. Dexcom Settings & Optional Override -->
         <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <label class="font-bold text-emerald-950 text-sm block">2. Dexcom Follow / Share 实时最近读数直连配置</label>
-              <span class="text-[11px] text-emerald-800">填入主账号、密码与您的 Cloudflare Worker 网址（`https://xxx.workers.dev`），即可像 Dexcom Follow 一样实时显示最近 1 次读数、趋势箭头与几分钟前测得！</span>
+              <label class="font-bold text-emerald-950 text-sm block">2. Dexcom 实时血糖与自动回填设置</label>
+              <span class="text-[11px] text-emerald-800">账号已安全托管于云端网关；仅在未来更换新账号或改密码时需在下方选填覆盖</span>
             </div>
             <button type="button" onclick="testDexcomConnectionNow()" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition">
-              ⚡ 立即测试连接并拉取血糖
+              ⚡ 测试并拉取血糖
             </button>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <div>
-              <label class="text-[11px] font-bold text-emerald-900 block mb-1">1) 服务器区域 (自动轮询兜底):</label>
+              <label class="text-[11px] font-bold text-emerald-900 block mb-1">服务器区域:</label>
               <select id="cfgDexcomRegion" class="w-full px-2.5 py-2 rounded-xl border border-emerald-300 bg-white font-semibold text-xs">
-                <option value="ous" selected>🌏 韩国/伊朗/国际服 (OUS)</option>
+                <option value="ous" selected>🌏 国际服 (OUS)</option>
                 <option value="us">🇺🇸 美国服 (US)</option>
-                <option value="jp">🇯🇵 日本/亚太服 (JP)</option>
+                <option value="jp">🇯🇵 亚太服 (JP)</option>
               </select>
             </div>
             <div>
-              <label class="text-[11px] font-bold text-emerald-900 block mb-1">2) 他的 Dexcom 主账号:</label>
-              <input type="text" id="cfgDexcomUser" placeholder="arsanbear0503@gmail.com" class="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
+              <label class="text-[11px] font-bold text-emerald-900 block mb-1">更换账号 (选填):</label>
+              <input type="text" id="cfgDexcomUser" placeholder="默认使用云端内置账号" class="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
             </div>
             <div>
-              <label class="text-[11px] font-bold text-emerald-900 block mb-1">3) 他的 Dexcom 密码:</label>
-              <input type="password" id="cfgDexcomPass" placeholder="输入他的 Dexcom 密码" class="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
-            </div>
-            <div>
-              <label class="text-[11px] font-bold text-emerald-900 block mb-1">4) Cloudflare Worker 网址 (必填):</label>
-              <input type="url" id="cfgDexcomBridgeUrl" placeholder="https://xxx.workers.dev" class="w-full px-3 py-2 rounded-xl border-2 border-emerald-500 bg-white font-mono text-xs" />
+              <label class="text-[11px] font-bold text-emerald-900 block mb-1">更换密码 (选填):</label>
+              <input type="password" id="cfgDexcomPass" placeholder="默认使用云端内置密码" class="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
             </div>
           </div>
 
           <label class="flex items-center gap-2 cursor-pointer pt-0.5">
             <input type="checkbox" id="cfgAutoFillBgOnMeal" checked class="w-4 h-4 rounded text-emerald-600" />
-            <span class="font-bold text-emerald-900 text-xs">🩸 当他点击/勾选某顿饭的食物或打针时，自动把当前 Dexcom 实时血糖填入【餐前血糖】（仍可手动改写）</span>
+            <span class="font-bold text-emerald-900 text-xs">🩸 开启餐前血糖自动填入 & 餐后 2 小时血糖从 Dexcom 自动回填</span>
           </label>
 
           <!-- Real-Time Diagnostic Console -->
-          <div id="dexcomDiagBox" class="hidden p-3 rounded-xl bg-slate-900 text-slate-200 font-mono text-[11px] space-y-1 max-h-44 overflow-y-auto custom-scroll">
-            <div class="text-emerald-400 font-bold">🔍 Dexcom 实时诊断日志 (告诉您具体哪一步成功或卡住):</div>
+          <div id="dexcomDiagBox" class="hidden p-3 rounded-xl bg-slate-900 text-slate-200 font-mono text-[11px] space-y-1 max-h-40 overflow-y-auto custom-scroll">
+            <div class="text-emerald-400 font-bold">🔍 实时连接状态:</div>
             <div id="dexcomDiagLogs" class="space-y-1"></div>
           </div>
-
-          <details class="bg-white/90 rounded-xl border border-emerald-200 p-2.5">
-            <summary class="font-bold text-emerald-900 cursor-pointer flex items-center justify-between">
-              <span>📋 点此展开并复制最新 Cloudflare Worker 桥接代码（已修复第3步读取最新1条读数）</span>
-              <button type="button" onclick="event.stopPropagation(); copyDexcomBridgeCode()" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shrink-0">📋 一键复制最新 Worker 代码</button>
-            </summary>
-            <div class="mt-2 space-y-2">
-              <pre id="dexcomBridgeCodeBlock" class="p-2.5 rounded-xl bg-slate-900 text-emerald-300 font-mono text-[10px] overflow-x-auto leading-relaxed">let cachedSession = { sessionId: "", region: "", accountName: "", ts: 0 };
-
-export default {
-  async fetch(request) {
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type"
-    };
-    if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-
-    try {
-      let body = {};
-      if (request.method === "POST") {
-        try { body = await request.json(); } catch (e) { body = {}; }
-      }
-      const urlParams = new URL(request.url).searchParams;
-      const rawAccount = (body.accountName || urlParams.get("u") || "").trim();
-      const password = body.password || urlParams.get("p") || "";
-      const prefRegion = body.region || urlParams.get("r") || "ous";
-
-      if (!rawAccount || !password) {
-        return new Response(JSON.stringify({ ok: true, msg: "Worker 已就绪！请在网页设置中填入该 Worker 网址并点击测试。" }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        });
-      }
-
-      const hostMap = {
-        ous: "https://shareous1.dexcom.com/ShareWebServices/Services",
-        us: "https://share2.dexcom.com/ShareWebServices/Services",
-        jp: "https://share.dexcom.jp/ShareWebServices/Services"
-      };
-      const appIdMap = {
-        ous: "d89443d2-327c-4a6f-89e5-496bbb0317db",
-        us: "d89443d2-327c-4a6f-89e5-496bbb0317db",
-        jp: "d8665ade-9673-4e27-9ff6-92db4ce13d13"
-      };
-      const order = prefRegion === "us" ? ["us", "ous", "jp"] : (prefRegion === "jp" ? ["jp", "ous", "us"] : ["ous", "us", "jp"]);
-
-      const jsonHeaders = {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "User-Agent": "Dexcom Share/3.0.2.11 CFNetwork/711.2.23 Darwin/14.0.0"
-      };
-      const emptyPostHeaders = {
-        "Accept": "application/json",
-        "Content-Length": "0",
-        "User-Agent": "Dexcom Share/3.0.2.11 CFNetwork/711.2.23 Darwin/14.0.0"
-      };
-
-      async function fetchLatestBg(base, sid) {
-        const url = `${base}/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${sid}&minutes=1440&maxCount=2`;
-        let res = await fetch(url, { method: "POST", headers: emptyPostHeaders });
-        if (!res.ok) {
-          res = await fetch(url, {
-            method: "POST",
-            headers: jsonHeaders,
-            body: JSON.stringify({ sessionId: sid, minutes: 1440, maxCount: 2 })
-          });
-        }
-        if (!res.ok) return { ok: false, status: res.status, text: await res.text() };
-        const arr = await res.json();
-        return { ok: true, arr: Array.isArray(arr) ? arr : [] };
-      }
-
-      const incomingSession = body.sessionId || (cachedSession.accountName === rawAccount ? cachedSession.sessionId : "");
-      const incomingReg = body.sessionRegion || cachedSession.region || order[0];
-
-      if (incomingSession && hostMap[incomingReg]) {
-        const fast = await fetchLatestBg(hostMap[incomingReg], incomingSession);
-        if (fast.ok) {
-          const latest = fast.arr[0] || null;
-          const prev = fast.arr[1] || null;
-          return new Response(JSON.stringify({
-            ok: true,
-            reusedSession: true,
-            sessionId: incomingSession,
-            regionUsed: incomingReg,
-            count: fast.arr.length,
-            bg: latest ? latest.Value : null,
-            delta: (latest && prev) ? (latest.Value - prev.Value) : null,
-            trend: latest ? latest.Trend : null,
-            wt: latest ? (latest.WT || latest.ST) : null
-          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-        }
-      }
-
-      const candidates = [rawAccount];
-      if (rawAccount.includes("@")) candidates.push(rawAccount.split("@")[0]);
-
-      let lastError = "";
-      for (const reg of order) {
-        const base = hostMap[reg];
-        const appId = appIdMap[reg];
-        for (const accName of candidates) {
-          let sessionId = "";
-          const authRes = await fetch(`${base}/General/AuthenticatePublisherAccount`, {
-            method: "POST",
-            headers: jsonHeaders,
-            body: JSON.stringify({ accountName: accName, password, applicationId: appId })
-          });
-          const authText = (await authRes.text()).trim();
-          if (authRes.ok) {
-            const accountId = authText.replace(/"/g, "").trim();
-            const loginRes = await fetch(`${base}/General/LoginPublisherAccountById`, {
-              method: "POST",
-              headers: jsonHeaders,
-              body: JSON.stringify({ accountId, password, applicationId: appId })
-            });
-            const loginText = (await loginRes.text()).trim();
-            if (loginRes.ok) {
-              sessionId = loginText.replace(/"/g, "").trim();
-            } else {
-              lastError = `[${reg}/${accName}] Step2 HTTP ${loginRes.status}: ${loginText}`;
-            }
-          } else {
-            lastError = `[${reg}/${accName}] Step1 HTTP ${authRes.status}: ${authText}`;
-            const legacyRes = await fetch(`${base}/General/LoginPublisherAccountByName`, {
-              method: "POST",
-              headers: jsonHeaders,
-              body: JSON.stringify({ accountName: accName, password, applicationId: appId })
-            });
-            if (legacyRes.ok) {
-              sessionId = (await legacyRes.text()).replace(/"/g, "").trim();
-            }
-          }
-
-          if (sessionId && sessionId !== "00000000-0000-0000-0000-000000000000") {
-            cachedSession = { sessionId, region: reg, accountName: rawAccount, ts: Date.now() };
-            const bgData = await fetchLatestBg(base, sessionId);
-            if (bgData.ok) {
-              const latest = bgData.arr[0] || null;
-              const prev = bgData.arr[1] || null;
-              return new Response(JSON.stringify({
-                ok: true,
-                sessionId,
-                regionUsed: reg,
-                accountUsed: accName,
-                count: bgData.arr.length,
-                bg: latest ? latest.Value : null,
-                delta: (latest && prev) ? (latest.Value - prev.Value) : null,
-                trend: latest ? latest.Trend : null,
-                wt: latest ? (latest.WT || latest.ST) : null
-              }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-            } else {
-              lastError = `[${reg}] Step3 HTTP ${bgData.status}: ${bgData.text}`;
-            }
-          }
-        }
-      }
-
-      return new Response(JSON.stringify({ ok: false, error: "AuthFailedAllRegions", detail: lastError }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      });
-    } catch (err) {
-      return new Response(JSON.stringify({ ok: false, error: err.message }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      });
-    }
-  }
-};</pre>
-            </div>
-          </details>
         </div>
 
-        <!-- 3. EmailJS / Webhook Automatic Silent Email Config -->
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <label class="font-bold text-slate-800 text-sm block">3. 自动发信 EmailJS / Webhook 配置（实现云端静默自动发信至双邮箱）</label>
-              <span class="text-[11px] text-slate-500">填好下方 3 项 EmailJS 参数后，网页到 10:00 或点击发送按钮时将直接在后台自动发邮件，无需弹出邮件客户端！</span>
-            </div>
-            <button type="button" onclick="testEmailJsNow()" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-sm transition">📨 立即测试自动发信</button>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            <div>
-              <label class="text-[11px] font-bold text-slate-600 block mb-1">EmailJS Service ID:</label>
-              <input type="text" id="cfgEmailServiceId" placeholder="例如: service_xxxxxxx" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-mono text-xs" />
-            </div>
-            <div>
-              <label class="text-[11px] font-bold text-slate-600 block mb-1">EmailJS Template ID:</label>
-              <input type="text" id="cfgEmailTemplateId" placeholder="例如: template_xxxxxxx" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-mono text-xs" />
-            </div>
-            <div>
-              <label class="text-[11px] font-bold text-slate-600 block mb-1">EmailJS Public Key:</label>
-              <input type="text" id="cfgEmailPublicKey" placeholder="例如: user_xxxxxxx 或公钥" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-mono text-xs" />
-            </div>
-          </div>
+        <!-- 3. Quick Service Tests (Email & AI Translation) -->
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-2">
           <div>
-            <label class="text-[11px] font-bold text-slate-500 block mb-1">或自定义 Webhook 接口地址 (选填):</label>
-            <input type="url" id="cfgEmailWebhookUrl" placeholder="选填: 若您使用 Make.com / Zapier 等自定义邮件 Webhook 可填此处" class="w-full px-3 py-1.5 rounded-xl border border-slate-300 bg-white font-mono text-xs" />
+            <label class="font-bold text-slate-800 text-sm block">3. 云端发信与 AI 四语翻译连通性测试</label>
+            <span class="text-[11px] text-slate-500">EmailJS 与四语翻译引擎已封装于云端网关，可随时点击右侧按钮测试</span>
           </div>
-        </div>
-
-        <!-- 4. Gemini AI Translation API Configuration -->
-        <div class="bg-purple-50/60 p-4 rounded-xl border border-purple-200 space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <label class="font-bold text-purple-950 text-sm block">4. Gemini Ultra / Pro 旗舰级 AI 四语翻译引擎配置</label>
-              <span class="text-[11px] text-purple-800">支持将手写食物（含之前已输入的食物）一次性精准互译为【中 / 韩 / 波斯 / 英】四语，切换右上角语言时自动变更为对应母语！</span>
-            </div>
-            <button type="button" onclick="testGeminiAndTranslateExisting()" class="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-sm transition shrink-0">
-              ⚡ 测试 API 并翻译所有已输入食物
-            </button>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <div>
-              <label class="text-[11px] font-bold text-purple-900 block mb-1">1) 选择翻译模型级别:</label>
-              <select id="cfgGeminiModel" class="w-full px-2.5 py-2 rounded-xl border border-purple-300 bg-white font-semibold text-xs text-purple-950">
-                <option value="gemini-2.5-pro" selected>👑 Gemini Ultra / Pro 旗舰高阶模型 (最精准地道)</option>
-                <option value="gemini-3-flash-preview">⚡ Gemini 3 Flash 极速多语模型 (内置免Key通道)</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-[11px] font-bold text-purple-900 block mb-1">2) Google AI Studio API Key (AIzaSy...):</label>
-              <input type="password" id="cfgGeminiApiKey" placeholder="粘贴您的 AIzaSy... 密钥 (仅保存在本地浏览器)" class="w-full px-3 py-2 rounded-xl border border-purple-300 bg-white font-mono text-xs" />
-            </div>
-          </div>
-          <div class="text-[11px] text-purple-800 bg-white/80 rounded-lg p-2.5 border border-purple-200/80 leading-relaxed">
-            💡 <strong>如何 30 秒获取 API Key：</strong> 用您购买了会员的 Google 账号打开 <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="underline font-bold text-purple-700 hover:text-purple-900">https://aistudio.google.com/app/apikey</a> ，点击蓝色按钮 <strong>"Create API key"</strong>，复制生成的 <code>AIzaSy...</code> 密钥粘贴到上方第 2 框，点击【保存配置】即可！
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="testEmailJsNow()" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-sm transition">📨 测试云端发信</button>
+            <button type="button" onclick="testGeminiAndTranslateExisting()" class="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-sm transition">🌐 测试并刷新四语翻译</button>
           </div>
         </div>
       </div>
 
       <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
         <button onclick="closeServerModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">关闭</button>
-        <button onclick="saveServerConfig()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">保存配置并立即生效</button>
+        <button onclick="saveServerConfig()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">保存配置</button>
       </div>
     </div>
   </div>
@@ -1078,6 +880,11 @@ export default {
   <script>
     let currentLang = 'zh';
     let currentActiveSectionId = 'mod-supplements';
+    let currentFilteredHistoryRows = [];
+    let hypoCountdownInterval = null;
+    let hypoTargetTimestampMs = 0;
+    let hypoTargetMealKey = 'breakfast_extra';
+    let hypoUndoSnapshot = null;
 
     const UI_TEXT = {
       zh: {
@@ -1087,6 +894,12 @@ export default {
         koreaLabel: '韩国时间 (24h)',
         dexcomLiveLabel: 'Dexcom 实时血糖',
         refreshBtn: '🔄 刷新',
+        hypoRescueBtn: '🚨 急救15g',
+        hypoBannerTitle: '15-15 低血糖急救倒计时进行中',
+        hypoBannerDesc: '已自动打卡 15g 急救快糖，请静坐休息防跌倒，15分钟后请复测血糖！',
+        hypoRecheckBtn: '🩸 立即复测并填入',
+        hypoUndoBtn: '↩️ 误触撤销',
+        jumpTodayBtn: '📅 回到今天',
         dexcomWaitHint: '⚙️ 点此配置',
         dexcomSavedHint: '✅ 已记住主账号',
         dexcomSyncedAt: '✅ 同步于',
@@ -1126,13 +939,15 @@ export default {
         greenShort: '绿瓶',
         totalCombinedPrefix: '今日合计:',
         unitText: '单位',
-        lastInjLabel: '⏱️ 距上一针间隔 (防重叠)',
+        lastInjLabel: '⏱️ 绿瓶NPH间隔 (防重叠)',
         badgeWait: '待记录',
         badgeSafe: '✅ 10-12h 安全间隔',
         badgeWarn: '⚠️ 注意防重叠',
-        noShotToday: '今日暂未记录打针',
-        oneShotToday: '今日已打 1 针',
-        twoShotsInterval: '两针间隔',
+        badgeStackWarn: '⚠️ 黄瓶未满3.5h防叠加',
+        noShotToday: '今日暂未记录绿瓶(NPH)',
+        oneShotToday: '距第1针绿瓶已过',
+        twoShotsInterval: '两针绿瓶间隔',
+        regStackNote: '距最近黄瓶',
         hourText: '小时',
         minText: '分',
         nphRuleTip: '两针绿瓶建议间隔 10–12 小时',
@@ -1176,7 +991,7 @@ export default {
         walkTitle: '🚶‍♂️ 餐后散步 20 分钟',
         walkSub: '帮肌肉自然耗糖，压平晚间高血糖',
         mod3Title: '饮食记录',
-        mod3Sub: '含早餐前零食、早/中/晚正餐及餐后额外摄入 · 手动输入食物支持 Gemini AI 智能翻译',
+        mod3Sub: '含早餐前零食、早/中/晚正餐及餐后额外摄入 · 餐后2小时自动从 Dexcom 回填 · 手动输入食物支持 Gemini AI 智能翻译',
         jump0: '🥚 早前零食',
         jump1: '🌅 早餐',
         jump2: '➕ 早后额外',
@@ -1188,7 +1003,7 @@ export default {
         setNowBtn: '🕒 设为当前',
         expectPost2h: '🕒 应测(24h):',
         preBgLabel: '🩸 餐前血糖 (打针/第一口饭前)',
-        postBgLabel: '🕒 餐后2小时血糖',
+        postBgLabel: '🕒 餐后2小时血糖 (支持自动回填)',
         autoFillDexcom: '⚡ 填入Dexcom血糖',
         calibrateBtn: '✓ 校准',
         linkedInsulinTitle: '💉 本餐关联胰岛素记录',
@@ -1207,7 +1022,8 @@ export default {
         portionLarge: '多量',
         // Food Impact Tab
         impactTitle: '📈 每种食物平均升糖记录（餐后2h - 餐前血糖 ΔBG 统计）',
-        impactSub: '自动汇总所有同时记录了【餐前血糖】与【餐后2小时血糖】的餐次，帮您找出最稳糖的优选食物与升糖刺客',
+        impactSub: '自动汇总所有同时记录了【餐前血糖】与【餐后2小时血糖】的餐次，支持排除低血糖急救干扰并对照平均配餐胰岛素剂量',
+        impExcludeHypo: '排除低血糖急救餐次 (餐前<80)',
         optImpCatAll: '🗂️ 全部食物分类',
         optImpCatGood: '🥗 优选护胃稳糖类',
         optImpCatProt: '🥩 优质蛋白类',
@@ -1221,6 +1037,7 @@ export default {
         thImpFood: '食物名称',
         thImpCat: '所属分类',
         thImpCount: '记录餐数',
+        thImpAvgIns: '平均配餐胰岛素',
         thImpAvgPre: '平均餐前血糖',
         thImpAvgPost: '平均餐后2h血糖',
         thImpAvgDelta: '平均升糖幅度 (ΔBG)',
@@ -1235,8 +1052,9 @@ export default {
         histSub: '支持按日期区间、韩国/伊朗时区轴、以及胰岛素/保健品/饮食分类自由组合筛选，可随时删除测试日期',
         exportCsvBtn: '导出当前筛选 CSV (Excel)',
         filterDateLabel: '📅 按日期范围筛选',
+        optHistAll: '全部已保存日期',
         optHist7Days: '最近 7 天',
-        optHistToday: '今天',
+        optHistToday: '当前选中日期',
         optHistYesterday: '昨天',
         optHistCustom: '自定义起止日期',
         filterTzLabel: '🌐 主时间轴时区切换',
@@ -1281,7 +1099,7 @@ export default {
         repFoodDetailLabel: '🍽️ 摄入明细：',
         repNoFood: '未记录食物',
         emailCenterTitle: '双邮箱自动 / 手动报告发送中心',
-        emailCenterSub: '每日报告于次日 10:00 自动发送 · 每周 7 天对比总表于周日 10:00 自动发送',
+        emailCenterSub: '每日报告于次日 10:00 自动发送（10点后打开网页自动补发） · 每周 7 天对比总表于周日 10:00 自动发送',
         autoSendLabel: '⏰ 开启 10:00 自动定时发送',
         autoSendPaused: '自动定时发送: 已暂停',
         autoSendCountdownPrefix: '距下次 10:00 自动发信:',
@@ -1309,7 +1127,18 @@ export default {
         delModalDesc: '请选择您要彻底删除的日期（如测试时不小心留下的记录），确认后将同步从本地和云端移除：',
         delSelectLabel: '已保存记录的日期列表：',
         delCancelBtn: '取消',
-        delConfirmBtn: '🗑️ 确认彻底删除该日记录'
+        delConfirmBtn: '🗑️ 确认彻底删除该日记录',
+        // Localized descriptive toasts
+        toastSaved: '✅ 已保存并同步双时区记录',
+        toastInvalidTime: '⚠️ 请输入有效的 24 小时制时间 (00:00 - 23:59)',
+        toastInvalidBg: '⚠️ 请输入有效的血糖数值 (20 - 600 mg/dL)',
+        toastNoDexcom: '⚠️ 尚未获取到实时血糖，请先点击顶部【🔄 刷新】或配置 Dexcom',
+        toastOffline: '🌐 当前处于离线状态，已保存在本地浏览器',
+        toastTransOk: '✅ 食物名称已完成四语智能翻译',
+        toastTransFail: '⚠️ 在线翻译暂未响应，已保留您输入的原文',
+        toastHypoLogged: '🚨 已一键记录 15g 急救快糖并开启 15 分钟复测倒计时！',
+        toastHypoUndone: '↩️ 已撤销刚才的低血糖急救误触记录',
+        toastAutoPostBg: '🕒 已自动从 Dexcom 回填餐后 2 小时血糖：'
       },
       ko: {
         appTitle: '혈당 건강 체크인 시스템',
@@ -1318,6 +1147,12 @@ export default {
         koreaLabel: '한국 시간 (24h)',
         dexcomLiveLabel: 'Dexcom 실시간 혈당',
         refreshBtn: '🔄 새로고침',
+        hypoRescueBtn: '🚨 응급15g',
+        hypoBannerTitle: '15-15 저혈당 응급 타이머 진행 중',
+        hypoBannerDesc: '응급 당분 15g이 자동 기록되었습니다. 안정을 취하시고 15분 후 혈당을 재측정하세요!',
+        hypoRecheckBtn: '🩸 즉시 재측정 및 입력',
+        hypoUndoBtn: '↩️ 실수 취소',
+        jumpTodayBtn: '📅 오늘로 이동',
         dexcomWaitHint: '⚙️ 계정 설정',
         dexcomSavedHint: '✅ 계정 저장됨',
         dexcomSyncedAt: '✅ 동기화:',
@@ -1357,13 +1192,15 @@ export default {
         greenShort: '초록병(NPH)',
         totalCombinedPrefix: '오늘 합계:',
         unitText: '단위',
-        lastInjLabel: '⏱️ 이전 주사 후 경과 시간',
+        lastInjLabel: '⏱️ 초록병(NPH) 주사 간격',
         badgeWait: '기록 대기',
         badgeSafe: '✅ 10-12시간 안전 간격',
         badgeWarn: '⚠️ 약효 중첩 주의',
-        noShotToday: '오늘 주사 기록 없음',
-        oneShotToday: '오늘 1회 투여 완료',
-        twoShotsInterval: '주사 간격',
+        badgeStackWarn: '⚠️ 속효성 3.5시간 이내 중첩 주의',
+        noShotToday: '오늘 초록병(NPH) 기록 없음',
+        oneShotToday: '1차 초록병 투여 후 경과:',
+        twoShotsInterval: '초록병 2회 간격',
+        regStackNote: '최근 노란병 경과:',
         hourText: '시간',
         minText: '분',
         nphRuleTip: '초록병(NPH) 2회 간격은 10–12시간 유지 권장',
@@ -1407,7 +1244,7 @@ export default {
         walkTitle: '🚶‍♂️ 식후 20분 산책',
         walkSub: '근육 포도당 소모 촉진 및 저녁 고혈당 예방',
         mod3Title: '식사 기록',
-        mod3Sub: '아침 전 간식, 아침/점심/저녁 및 식후 추가 섭취 포함 · 직접 입력 음식 Gemini AI 자동 번역',
+        mod3Sub: '아침 전 간식, 아침/점심/저녁 및 식후 추가 섭취 포함 · 식후 2시간 Dexcom 자동 입력 · 직접 입력 음식 Gemini AI 번역',
         jump0: '🥚 아침 전 간식',
         jump1: '🌅 아침 식사',
         jump2: '➕ 아침 후 간식',
@@ -1419,7 +1256,7 @@ export default {
         setNowBtn: '🕒 현재 시간',
         expectPost2h: '🕒 식후2h(24h):',
         preBgLabel: '🩸 식전 혈당 (주사/첫 입 전)',
-        postBgLabel: '🕒 식후 2시간 혈당',
+        postBgLabel: '🕒 식후 2시간 혈당 (자동 입력 지원)',
         autoFillDexcom: '⚡ Dexcom 혈당 입력',
         calibrateBtn: '✓ 보정',
         linkedInsulinTitle: '💉 이 식사와 연관된 인슐린 기록',
@@ -1438,7 +1275,8 @@ export default {
         portionLarge: '다량',
         // Food Impact Tab
         impactTitle: '📈 음식별 평균 혈당 상승 기록 (식후 2시간 - 식전 혈당 ΔBG)',
-        impactSub: '식전 혈당과 식후 2시간 혈당이 모두 기록된 식사를 자동 분석하여 혈당에 가장 안전한 음식을 찾아줍니다',
+        impactSub: '식전 혈당과 식후 2시간 혈당이 모두 기록된 식사를 자동 분석하며, 저혈당 응급식을 제외하고 평균 인슐린 용량을 함께 표시합니다',
+        impExcludeHypo: '저혈당 응급 식사 제외 (식전<80)',
         optImpCatAll: '🗂️ 전체 식품 분류',
         optImpCatGood: '🥗 위장 보호 및 혈당 안정 식품',
         optImpCatProt: '🥩 양질의 단백질',
@@ -1452,6 +1290,7 @@ export default {
         thImpFood: '음식명',
         thImpCat: '분류',
         thImpCount: '기록 횟수',
+        thImpAvgIns: '평균 동반 인슐린',
         thImpAvgPre: '평균 식전 혈당',
         thImpAvgPost: '평균 식후2h 혈당',
         thImpAvgDelta: '평균 혈당 변화 (ΔBG)',
@@ -1466,8 +1305,9 @@ export default {
         histSub: '날짜 범위, 한국/이란 시간대, 인슐린/영양제/식사 카테고리별 상세 필터링 및 테스트 기록 삭제',
         exportCsvBtn: '현재 필터 CSV (Excel) 내보내기',
         filterDateLabel: '📅 날짜 범위 필터',
+        optHistAll: '저장된 모든 날짜',
         optHist7Days: '최근 7일',
-        optHistToday: '오늘',
+        optHistToday: '선택된 날짜 (오늘)',
         optHistYesterday: '어제',
         optHistCustom: '사용자 지정 날짜',
         filterTzLabel: '🌐 기준 시간대 전환',
@@ -1512,7 +1352,7 @@ export default {
         repFoodDetailLabel: '🍽️ 섭취 음식 상세: ',
         repNoFood: '기록된 음식 없음',
         emailCenterTitle: '듀얼 이메일 자동 / 수동 보고서 발송 센터',
-        emailCenterSub: '일일 보고서 익일 10:00 자동 발송 · 주간 7일 종합표 일요일 10:00 자동 발송',
+        emailCenterSub: '일일 보고서 익일 10:00 이후 자동 발송 · 주간 7일 종합표 일요일 10:00 자동 발송',
         autoSendLabel: '⏰ 10:00 자동 예약 발송 켜기',
         autoSendPaused: '자동 예약 발송: 일시 중지됨',
         autoSendCountdownPrefix: '다음 10:00 자동 발송까지:',
@@ -1540,7 +1380,17 @@ export default {
         delModalDesc: '완전히 삭제할 날짜를 선택하세요. 확인 시 로컬 및 클라우드에서 즉시 삭제됩니다:',
         delSelectLabel: '저장된 기록 날짜 목록:',
         delCancelBtn: '취소',
-        delConfirmBtn: '🗑️ 선택한 날짜 기록 영구 삭제'
+        delConfirmBtn: '🗑️ 선택한 날짜 기록 영구 삭제',
+        toastSaved: '✅ 기록이 저장 및 동기화되었습니다',
+        toastInvalidTime: '⚠️ 올바른 24시간제 시간(00:00 - 23:59)을 입력하세요',
+        toastInvalidBg: '⚠️ 올바른 혈당 수치(20 - 600 mg/dL)를 입력하세요',
+        toastNoDexcom: '⚠️ 아직 실시간 혈당이 없습니다. 상단 [🔄 새로고침]을 먼저 눌러주세요',
+        toastOffline: '🌐 오프라인 상태입니다. 기기에 안전하게 저장되었습니다',
+        toastTransOk: '✅ 4개 국어 AI 번역 완료',
+        toastTransFail: '⚠️ 번역 서버 응답 지연으로 원문이 유지됩니다',
+        toastHypoLogged: '🚨 응급 당분 15g 기록 및 15분 재측정 타이머가 시작되었습니다!',
+        toastHypoUndone: '↩️ 방금 기록된 저혈당 응급 기록이 취소되었습니다',
+        toastAutoPostBg: '🕒 Dexcom에서 식후 2시간 혈당을 자동 입력했습니다: '
       },
       fa: {
         appTitle: 'سیستم ثبت سلامت قند خون',
@@ -1549,6 +1399,12 @@ export default {
         koreaLabel: 'ساعت کره (24h)',
         dexcomLiveLabel: 'قند خون لحظه‌ای Dexcom',
         refreshBtn: '🔄 بروزرسانی',
+        hypoRescueBtn: '🚨 اورژانس افت قند',
+        hypoBannerTitle: 'تایمر ۱۵ دقیقه‌ای درمان افت قند (قانون ۱۵-۱۵)',
+        hypoBannerDesc: '۱۵ گرم قند سریع ثبت شد. لطفاً بنشینید و پس از پایان تایمر مجدداً قند خون را چک کنید!',
+        hypoRecheckBtn: '🩸 ثبت قند مجدد',
+        hypoUndoBtn: '↩️ لغو ثبت اشتباه',
+        jumpTodayBtn: '📅 بازگشت به امروز',
         dexcomWaitHint: '⚙️ تنظیم حساب',
         dexcomSavedHint: '✅ حساب ذخیره شد',
         dexcomSyncedAt: '✅ همگام‌سازی:',
@@ -1588,13 +1444,15 @@ export default {
         greenShort: 'سبز (NPH)',
         totalCombinedPrefix: 'مجموع امروز:',
         unitText: 'واحد',
-        lastInjLabel: '⏱️ فاصله از آخرین تزریق',
+        lastInjLabel: '⏱️ فاصله انسولین سبز (NPH)',
         badgeWait: 'در انتظار ثبت',
         badgeSafe: '✅ فاصله ایمن ۱۰-۱۲ ساعت',
         badgeWarn: '⚠️ احتیاط تداخل انسولین',
-        noShotToday: 'امروز تزریقی ثبت نشده است',
-        oneShotToday: '۱ نوبت تزریق ثبت شد',
-        twoShotsInterval: 'فاصله دو تزریق',
+        badgeStackWarn: '⚠️ احتیاط تداخل انسولین زرد (<3.5h)',
+        noShotToday: 'امروز انسولین سبز ثبت نشده',
+        oneShotToday: 'گذشته از تزریق اول سبز:',
+        twoShotsInterval: 'فاصله دو تزریق سبز',
+        regStackNote: 'گذشته از آخرین انسولین زرد:',
         hourText: 'ساعت',
         minText: 'دقیقه',
         nphRuleTip: 'فاصله دو تزریق انسولین شیری (سبز) باید ۱۰ تا ۱۲ ساعت باشد',
@@ -1638,7 +1496,7 @@ export default {
         walkTitle: '🚶‍♂️ ۲۰ دقیقه پیاده‌روی پس از شام',
         walkSub: 'کاهش طبیعی قند خون شبانه',
         mod3Title: 'ثبت تغذیه',
-        mod3Sub: 'شامل خوراکی قبل صبحانه، وعده‌های اصلی و میان‌وعده‌ها · ترجمه هوشمند غذاهای تایپ‌شده با Gemini AI',
+        mod3Sub: 'شامل خوراکی قبل صبحانه، وعده‌های اصلی و میان‌وعده‌ها · ثبت خودکار قند ۲ ساعت بعد از Dexcom · ترجمه هوشمند Gemini AI',
         jump0: '🥚 قبل صبحانه',
         jump1: '🌅 صبحانه',
         jump2: '➕ میان‌وعده صبح',
@@ -1650,7 +1508,7 @@ export default {
         setNowBtn: '🕒 ساعت فعلی',
         expectPost2h: '🕒 ۲ ساعت بعد:',
         preBgLabel: '🩸 قند قبل از غذا (پیش از تزریق/اولین لقمه)',
-        postBgLabel: '🕒 قند ۲ ساعت بعد از غذا',
+        postBgLabel: '🕒 قند ۲ ساعت بعد از غذا (ثبت خودکار)',
         autoFillDexcom: '⚡ درج قند Dexcom',
         calibrateBtn: '✓ تایید',
         linkedInsulinTitle: '💉 وضعیت تزریق انسولین در این وعده',
@@ -1669,7 +1527,8 @@ export default {
         portionLarge: 'زیاد',
         // Food Impact Tab
         impactTitle: '📈 میانگین تاثیر قند هر غذا (تغییر قند ۲ ساعت بعد نسبت به قبل از غذا)',
-        impactSub: 'محاسبه خودکار میزان افزایش قند خون برای هر خوراکی بر اساس وعده‌های ثبت‌شده',
+        impactSub: 'محاسبه خودکار میزان افزایش قند خون برای هر خوراکی همراه با میانگین دوز انسولین و حذف وعده‌های درمان افت قند',
+        impExcludeHypo: 'حذف وعده‌های درمان افت قند (قند قبل <80)',
         optImpCatAll: '🗂️ همه دسته‌های غذایی',
         optImpCatGood: '🥗 غذاهای محافظ معده و تثبیت‌کننده قند',
         optImpCatProt: '🥩 پروتئین‌های باکیفیت',
@@ -1683,6 +1542,7 @@ export default {
         thImpFood: 'نام خوراکی',
         thImpCat: 'دسته',
         thImpCount: 'تعداد دفعات',
+        thImpAvgIns: 'میانگین انسولین همراه',
         thImpAvgPre: 'میانگین قند قبل',
         thImpAvgPost: 'میانگین ۲ ساعت بعد',
         thImpAvgDelta: 'میانگین تغییر قند (ΔBG)',
@@ -1697,8 +1557,9 @@ export default {
         histSub: 'جستجو بر اساس بازه تاریخ، ساعت ایران/کره، انسولین، مکمل‌ها و وعده‌های غذایی',
         exportCsvBtn: 'دانلود فایل اکسل (CSV)',
         filterDateLabel: '📅 فیلتر بازه تاریخ',
+        optHistAll: 'همه تاریخ‌های ثبت‌شده',
         optHist7Days: '۷ روز گذشته',
-        optHistToday: 'امروز',
+        optHistToday: 'تاریخ انتخاب‌شده (امروز)',
         optHistYesterday: 'دیروز',
         optHistCustom: 'انتخاب تاریخ دلخواه',
         filterTzLabel: '🌐 نمایش ساعت',
@@ -1771,7 +1632,17 @@ export default {
         delModalDesc: 'لطفاً تاریخی که می‌خواهید کاملاً حذف شود را انتخاب کنید:',
         delSelectLabel: 'لیست تاریخ‌های ثبت‌شده:',
         delCancelBtn: 'انصراف',
-        delConfirmBtn: '🗑️ حذف کامل رکورد این تاریخ'
+        delConfirmBtn: '🗑️ حذف کامل رکورد این تاریخ',
+        toastSaved: '✅ اطلاعات با موفقیت ذخیره و همگام‌سازی شد',
+        toastInvalidTime: '⚠️ لطفاً ساعت را به فرمت ۲۴ ساعته صحیح (00:00 تا 23:59) وارد کنید',
+        toastInvalidBg: '⚠️ لطفاً عدد قند خون معتبر (بین ۲۰ تا ۶۰۰) وارد کنید',
+        toastNoDexcom: '⚠️ قند لحظه‌ای دریافت نشده است؛ ابتدا دکمه [🔄 بروزرسانی] در بالای صفحه را بزنید',
+        toastOffline: '🌐 اینترنت متصل نیست؛ اطلاعات در حافظه گوشی ذخیره شد',
+        toastTransOk: '✅ ترجمه هوشمند ۴ زبانه انجام شد',
+        toastTransFail: '⚠️ عدم پاسخ سرور ترجمه؛ متن اصلی شما ذخیره شد',
+        toastHypoLogged: '🚨 ۱۵ گرم قند سریع ثبت شد و تایمر ۱۵ دقیقه‌ای فعال گردید!',
+        toastHypoUndone: '↩️ ثبت اورژانس افت قند لغو شد و به حالت قبل بازگشت',
+        toastAutoPostBg: '🕒 قند ۲ ساعت بعد از غذا به صورت خودکار از Dexcom ثبت شد: '
       },
       en: {
         appTitle: 'BG Health Check-in System',
@@ -1780,6 +1651,12 @@ export default {
         koreaLabel: 'Korea Time (24h)',
         dexcomLiveLabel: 'Dexcom Live BG',
         refreshBtn: '🔄 Refresh',
+        hypoRescueBtn: '🚨 Hypo 15g',
+        hypoBannerTitle: '15-15 Hypo Rescue Timer Active',
+        hypoBannerDesc: '15g fast carbs logged automatically. Please rest seated and re-check BG when timer ends!',
+        hypoRecheckBtn: '🩸 Re-check & Fill Now',
+        hypoUndoBtn: '↩️ Undo Tap',
+        jumpTodayBtn: '📅 Today',
         dexcomWaitHint: '⚙️ Configure',
         dexcomSavedHint: '✅ Account Saved',
         dexcomSyncedAt: '✅ Synced at',
@@ -1819,13 +1696,15 @@ export default {
         greenShort: 'Green(NPH)',
         totalCombinedPrefix: 'Total Today:',
         unitText: 'U',
-        lastInjLabel: '⏱️ Time Since Last Injection',
+        lastInjLabel: '⏱️ Green(NPH) Interval',
         badgeWait: 'Pending',
         badgeSafe: '✅ 10-12h Safe Gap',
         badgeWarn: '⚠️ Overlap Caution',
-        noShotToday: 'No shots logged today',
-        oneShotToday: '1 shot logged today',
-        twoShotsInterval: 'Shot Interval',
+        badgeStackWarn: '⚠️ Regular <3.5h Stacking',
+        noShotToday: 'No Green(NPH) logged today',
+        oneShotToday: 'Since NPH Shot #1:',
+        twoShotsInterval: 'NPH Interval',
+        regStackNote: 'Since last Yellow(Reg):',
         hourText: 'h',
         minText: 'm',
         nphRuleTip: 'Keep 10–12h between 2 Green(NPH) shots',
@@ -1869,7 +1748,7 @@ export default {
         walkTitle: '🚶‍♂️ 20-Min Post-Dinner Walk',
         walkSub: 'Helps muscles burn glucose naturally & flattens evening spikes',
         mod3Title: 'Diet Log',
-        mod3Sub: 'Covers Pre-Breakfast Snack, B/L/D & post-meal extras · Custom food auto-translated via Gemini AI',
+        mod3Sub: 'Covers Pre-Breakfast Snack, B/L/D & extras · Auto-backfills 2h Post-Meal BG from Dexcom · Custom food translated via Gemini AI',
         jump0: '🥚 Pre-B Snack',
         jump1: '🌅 Breakfast',
         jump2: '➕ Post-B Extra',
@@ -1881,7 +1760,7 @@ export default {
         setNowBtn: '🕒 Set Now',
         expectPost2h: '🕒 2h Check(24h):',
         preBgLabel: '🩸 Pre-Meal BG (Before shot/bite)',
-        postBgLabel: '🕒 2h Post-Meal BG',
+        postBgLabel: '🕒 2h Post-Meal BG (Auto-Fill)',
         autoFillDexcom: '⚡ Fill Dexcom BG',
         calibrateBtn: '✓ Calibrate',
         linkedInsulinTitle: '💉 Linked Insulin for This Node',
@@ -1900,7 +1779,8 @@ export default {
         portionLarge: 'Large',
         // Food Impact Tab
         impactTitle: '📈 Food Average Glycemic Impact (2h Post-Meal minus Pre-Meal ΔBG)',
-        impactSub: 'Automatically analyzes all meals with both Pre-Meal & 2h Post-Meal BG to identify your steadiest foods',
+        impactSub: 'Analyzes meals with both Pre & 2h Post BG, excluding hypo rescues and showing average paired insulin',
+        impExcludeHypo: 'Exclude Hypo Rescues (Pre-BG <80)',
         optImpCatAll: '🗂️ All Food Categories',
         optImpCatGood: '🥗 Stomach-Protective & Steady-BG',
         optImpCatProt: '🥩 High-Quality Proteins',
@@ -1914,6 +1794,7 @@ export default {
         thImpFood: 'Food Item',
         thImpCat: 'Category',
         thImpCount: 'Logged Meals',
+        thImpAvgIns: 'Avg Paired Insulin',
         thImpAvgPre: 'Avg Pre-Meal BG',
         thImpAvgPost: 'Avg 2h Post BG',
         thImpAvgDelta: 'Avg Glycemic Impact (ΔBG)',
@@ -1928,8 +1809,9 @@ export default {
         histSub: 'Filter by date range, Iran/Korea 24h timezone axis, and categories · Delete test date records anytime',
         exportCsvBtn: 'Export Filtered CSV (Excel)',
         filterDateLabel: '📅 Filter by Date Range',
+        optHistAll: 'All Saved Dates',
         optHist7Days: 'Last 7 Days',
-        optHistToday: 'Today',
+        optHistToday: 'Active Date (Today)',
         optHistYesterday: 'Yesterday',
         optHistCustom: 'Custom Date Range',
         filterTzLabel: '🌐 Timezone Axis Mode',
@@ -2002,9 +1884,24 @@ export default {
         delModalDesc: 'Select the date you want to permanently delete from local & cloud storage:',
         delSelectLabel: 'Saved Date Records:',
         delCancelBtn: 'Cancel',
-        delConfirmBtn: '🗑️ Permanently Delete Selected Date'
+        delConfirmBtn: '🗑️ Permanently Delete Selected Date',
+        toastSaved: '✅ Saved & synced dual-timezone record',
+        toastInvalidTime: '⚠️ Please enter a valid 24-hour time (00:00 - 23:59)',
+        toastInvalidBg: '⚠️ Please enter a valid BG value (20 - 600 mg/dL)',
+        toastNoDexcom: '⚠️ No live Dexcom BG yet. Please tap [🔄 Refresh] at top first',
+        toastOffline: '🌐 Offline mode: Saved safely in local browser',
+        toastTransOk: '✅ 4-language AI translation complete',
+        toastTransFail: '⚠️ Translation service busy; kept original text',
+        toastHypoLogged: '🚨 Logged 15g fast carbs & started 15-min re-check timer!',
+        toastHypoUndone: '↩️ Accidental hypo rescue log undone',
+        toastAutoPostBg: '🕒 Auto-filled 2h Post-Meal BG from Dexcom: '
       }
     };
+
+    function tMsg(key) {
+      const t = UI_TEXT[currentLang] || UI_TEXT.zh;
+      return t[key] || UI_TEXT.zh[key] || key;
+    }
 
     // Strict 24-hour validation & normalization helper (00:00 - 23:59)
     function parseStrict24hTime(rawVal) {
@@ -2040,6 +1937,14 @@ export default {
       if (isNaN(h) || isNaN(m)) return '--:--';
       const total = ((h * 60 + m + deltaMin) % 1440 + 1440) % 1440;
       return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+    }
+
+    function shiftDateString(dateStr, deltaDays) {
+      if (!dateStr) return '';
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dt = new Date(Date.UTC(y, m - 1, d));
+      dt.setUTCDate(dt.getUTCDate() + deltaDays);
+      return dt.toISOString().slice(0, 10);
     }
 
     function updateSidebarStickyOffset() {
@@ -2161,6 +2066,13 @@ export default {
       return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
     }
 
+    function touchDayTimestamp(day) {
+      if (day) {
+        day.updatedAt = Date.now();
+      }
+      return day;
+    }
+
     function enrichDayWithDualTimezones(day) {
       if (!day) return day;
       day.wakeTimeIr = day.wakeTime || '08:00';
@@ -2187,7 +2099,6 @@ export default {
       return day;
     }
 
-    // Removed Biotin (SUPP_BIOTIN) as requested
     const SUPPLEMENTS_DICT = [
       {
         id: 'SUPP_RLA',
@@ -2278,7 +2189,6 @@ export default {
       }
     ];
 
-    // Added Pre-Breakfast Snack (pre_breakfast) as Node 1 (7 intake nodes total)
     const MEAL_NODES_META = [
       {
         key: 'pre_breakfast',
@@ -2595,7 +2505,6 @@ export default {
       }
     ];
 
-    // Quick lookup map for any food ID -> Chinese name & current language name
     const FOOD_ID_MAP = {};
     FOOD_CATEGORIES.forEach(cat => {
       cat.items.forEach(item => {
@@ -2603,10 +2512,6 @@ export default {
       });
     });
 
-    /********************************************************************
-     * 2. REAL CLOUD & LOCAL TRANSLATION ENGINE WITH STRICT STATUS CHECK
-     *    Supports 4-Language (zh/ko/fa/en) Ultra/Pro AI Translation
-     ********************************************************************/
     const LOCAL_CUSTOM_TRANSLATION_CACHE = {
       'بستنی زعفرانی': { zh: '藏红花冰淇淋', ko: '사프란 아이스크림', fa: 'بستنی زعفرانی', en: 'Saffron Ice Cream' },
       'زرشک پلو با مرغ': { zh: '小檗果藏红花鸡肉饭', ko: '제레쉬크 폴로 (페르시아 치킨 라이스)', fa: 'زرشک پلو با مرغ', en: 'Zereshk Polo with Chicken' },
@@ -2621,7 +2526,7 @@ export default {
       'پالوده': { zh: '波斯玫瑰水米粉冰沙 (Faloodeh)', ko: '팔루데 (장미수 쌀국수 소르베)', fa: 'پالوده', en: 'Faloodeh Rosewater Sorbet' },
       'باقلوا': { zh: '波斯果仁蜜饼 (Baklava)', ko: '바클라바 (견과류 페이스트리)', fa: 'باقلوا', en: 'Persian Baklava' },
       'شله زرد': { zh: '藏红花米布丁 (Sholeh Zard)', ko: '숄레 자르드 (사프란 라이스 푸딩)', fa: 'شله زرد', en: 'Sholeh Zard Saffron Pudding' },
-      '삼겹살': { zh: '烤五花肉', ko: '삼겹살', fa: 'گوشت пурچرب کبابی (سامگیوپسال)', en: 'Grilled Pork Belly (Samgyeopsal)' },
+      '삼겹살': { zh: '烤五花肉', ko: '삼겹살', fa: 'گوشت پرچرب کبابی (سامگیوپسال)', en: 'Grilled Pork Belly (Samgyeopsal)' },
       '김치찌개': { zh: '泡菜汤', ko: '김치찌개', fa: 'سوپ کیمچی (کیمچی جیگه)', en: 'Kimchi Stew (Kimchi Jjigae)' },
       '된장찌개': { zh: '大酱汤', ko: '된장찌개', fa: 'سوپ خمیر سویا کره‌ای (된장찌개)', en: 'Soybean Paste Stew (Doenjang Jjigae)' },
       '불고기': { zh: '韩式烤牛肉', ko: '불고기', fa: 'بولگوگی (گوشت گوساله مرینیت‌شده کره‌ای)', en: 'Korean Bulgogi Beef' },
@@ -2632,13 +2537,6 @@ export default {
       '치킨': { zh: '炸鸡', ko: '치킨', fa: 'مرغ سوخاری', en: 'Fried Chicken' },
       '라면': { zh: '方便面/拉面', ko: '라면', fa: 'رامیون / نودل فوری', en: 'Ramen / Instant Noodles' }
     };
-
-    function detectSourceLanguageCode(text) {
-      if (/[\u0600-\u06FF]/.test(text)) return 'fa';
-      if (/[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]/.test(text)) return 'ko';
-      if (/[\u4e00-\u9fa5]/.test(text)) return 'zh-CN';
-      return 'en';
-    }
 
     function formatCustomFoodDisplay(cf, lang = currentLang) {
       if (!cf) return '';
@@ -2674,12 +2572,10 @@ export default {
       const text = (rawText || '').trim();
       if (!text) return { status: 'fail', text: '', translations: null };
 
-      // 1. Check internet connection first: if offline, strictly return 404
       if (typeof navigator !== 'undefined' && navigator.onLine === false) {
         return { status: '404', text: `${text} [未联网]`, translations: null };
       }
 
-      // 2. Check verified dictionary cache (all 4 languages)
       if (LOCAL_CUSTOM_TRANSLATION_CACHE[text] && typeof LOCAL_CUSTOM_TRANSLATION_CACHE[text] === 'object') {
         const tObj = LOCAL_CUSTOM_TRANSLATION_CACHE[text];
         const zhStr = tObj.zh !== text ? `${tObj.zh} [原文: ${text}]` : text;
@@ -2687,14 +2583,33 @@ export default {
       }
 
       let networkErrorOccurred = false;
+      const workerUrl = (serverConfig && (serverConfig.dexcomBridgeUrl || serverConfig.jsonServerUrl)) ? (serverConfig.dexcomBridgeUrl || serverConfig.jsonServerUrl).trim() : DEFAULT_WORKER_URL;
 
-      // 3. Primary Intelligent Engine: Gemini Ultra/Pro or Gemini 3 Flash LLM API (outputs all 4 languages at once)
+      // 优先通过您的安全 Cloudflare Worker 翻译通道
+      if (workerUrl && workerUrl.includes('workers.dev')) {
+        try {
+          const wRes = await fetch(workerUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'translate', text })
+          });
+          if (wRes.ok) {
+            const wData = await wRes.json();
+            if (wData && wData.ok && wData.translations && wData.translations.zh) {
+              const tObj = wData.translations;
+              LOCAL_CUSTOM_TRANSLATION_CACHE[text] = tObj;
+              const zhStr = tObj.zh.toLowerCase() !== text.toLowerCase() ? `${tObj.zh} [原文: ${text}]` : text;
+              return { status: 'succeed', text: zhStr, translations: tObj };
+            }
+          }
+        } catch (e) {}
+      }
+
       const apiKey = (serverConfig && serverConfig.geminiApiKey) ? serverConfig.geminiApiKey.trim() : "";
       const preferredModel = (serverConfig && serverConfig.geminiModel) ? serverConfig.geminiModel : "gemini-2.5-pro";
-      // Try user's preferred Ultra/Pro model first (if API key provided), then fallback to gemini-3-flash-preview
-      const modelsToTry = apiKey
+      const modelsToTry = apiKey && apiKey.startsWith('AIza')
         ? Array.from(new Set([preferredModel, 'gemini-2.5-pro', 'gemini-3-flash-preview']))
-        : ['gemini-3-flash-preview'];
+        : [];
 
       const systemPrompt = "You are an expert medical & culinary translator fluent in Simplified Chinese (zh), Korean (ko), Persian/Farsi (fa), and English (en). Translate the user's food, beverage, or health item into natural, idiomatic names in all 4 languages. Return strictly valid JSON with keys: zh, ko, fa, en.";
 
@@ -2735,12 +2650,9 @@ export default {
               }
             }
           }
-        } catch (gemErr) {
-          // Continue to next model or GTX fallback
-        }
+        } catch (gemErr) {}
       }
 
-      // 4. Secondary Cloud API: Google Translate GTX (fetches all 4 languages in parallel)
       try {
         const [zh, ko, fa, en] = await Promise.all([
           translateSingleLangGTX(text, 'zh-CN'),
@@ -2759,21 +2671,13 @@ export default {
       }
 
       if (networkErrorOccurred || (typeof navigator !== 'undefined' && navigator.onLine === false)) {
-        return { status: '404', text: `${text} [404]`, translations: null };
+        return { status: '404', text: `${text} [离线]`, translations: null };
       }
-      return { status: 'fail', text: `${text} [翻译失败]`, translations: null };
+      return { status: 'fail', text: `${text}`, translations: null };
     }
 
-    async function translateCustomTextToChinese(rawText) {
-      const res = await translateCustomTextWithStatus(rawText);
-      return res.text;
-    }
-
-    /********************************************************************
-     * 3. IN-MEMORY STATE & BLANK DEFAULT DAY INITIALIZATION
-     ********************************************************************/
     const allDaysStore = {};
-    let activeDate = '2026-10-24';
+    let activeDate = '';
     let liveDexcomState = {
       bg: '',
       delta: null,
@@ -2783,21 +2687,23 @@ export default {
       cachedSessionId: '',
       cachedRegion: 'ous',
       sensorTimeDesc: '',
-      sensorTimestampMs: null
+      sensorTimestampMs: null,
+      history: [] // Stores recent 36 readings [{ Value, WT }] for auto-backfilling 2h post-meal BG
     };
 
-    const DEFAULT_JSONBIN_URL = 'https://api.jsonbin.io/v3/b/6ad9d330ac6210605a4859b8';
+    // 您的专属 Cloudflare Worker 安全加密网关（所有敏感 Key 均保存在该 Worker 内，前端 HTML 零密钥暴露）
+    const DEFAULT_WORKER_URL = 'https://late-field-eace.miyubear0611.workers.dev/';
 
     let serverConfig = {
-      jsonProvider: 'jsonbin',
-      jsonServerUrl: DEFAULT_JSONBIN_URL,
+      jsonProvider: 'worker',
+      jsonServerUrl: DEFAULT_WORKER_URL,
       jsonApiKey: '',
       autoCloudSync: true,
       dexcomRegion: 'ous',
       dexcomUser: '',
       dexcomPass: '',
       autoFillBgOnMeal: true,
-      dexcomBridgeUrl: '',
+      dexcomBridgeUrl: DEFAULT_WORKER_URL,
       emailServiceId: '',
       emailTemplateId: '',
       emailPublicKey: '',
@@ -2825,10 +2731,10 @@ export default {
       };
     }
 
-    // Every new day starts 100% BLANK (with 5 supplements & 7 meal nodes including pre_breakfast)
     function createDefaultDay(dateStr) {
       return enrichDayWithDualTimezones({
         date: dateStr,
+        updatedAt: 0,
         wakeMode: 'normal',
         wakeTime: '08:00',
         fastingBg: '',
@@ -2859,6 +2765,7 @@ export default {
 
     function ensureDaySchemaIntegrity(day) {
       if (!day) return day;
+      if (typeof day.updatedAt !== 'number') day.updatedAt = 0;
       if (!day.meals) day.meals = {};
       MEAL_NODES_META.forEach(meta => {
         if (!day.meals[meta.key]) {
@@ -2875,26 +2782,6 @@ export default {
       return enrichDayWithDualTimezones(day);
     }
 
-    function seedInitial7DaysData() {
-      const picker = document.getElementById('activeDatePicker');
-      if (picker && picker.value) {
-        activeDate = picker.value;
-      }
-      if (!allDaysStore[activeDate]) {
-        allDaysStore[activeDate] = createDefaultDay(activeDate);
-      }
-    }
-
-    function resetCurrentDayToBlank() {
-      allDaysStore[activeDate] = createDefaultDay(activeDate);
-      persistStateLocally();
-      renderModule2();
-      renderMeals();
-      updateTopSteadyStateDashboard();
-      scheduleAutoSync('已重置为空白');
-      showToast(`🧹 已将 ${activeDate} 重置为全新空白状态！`);
-    }
-
     function getFormattedDualClocks() {
       const now = new Date();
       const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
@@ -2902,31 +2789,76 @@ export default {
       const krDate = new Date(utcMs + 9 * 3600000);
       const fmtFull = d => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
       const fmtHm = d => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+      const fmtYmd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       return {
         irFull: fmtFull(irDate),
         krFull: fmtFull(krDate),
         irHm: fmtHm(irDate),
         krHm: fmtHm(krDate),
+        irDateStr: fmtYmd(irDate),
+        krDateStr: fmtYmd(krDate),
+        irDateObj: irDate,
         krDateObj: krDate
       };
     }
 
+    // Automatically initialize to today's actual Iran date on startup
+    function seedInitial7DaysData() {
+      const { irDateStr } = getFormattedDualClocks();
+      activeDate = irDateStr;
+      const picker = document.getElementById('activeDatePicker');
+      if (picker) {
+        picker.value = activeDate;
+      }
+      const startInput = document.getElementById('histStartDate');
+      const endInput = document.getElementById('histEndDate');
+      if (startInput) startInput.value = shiftDateString(activeDate, -6);
+      if (endInput) endInput.value = activeDate;
+
+      if (!allDaysStore[activeDate]) {
+        allDaysStore[activeDate] = createDefaultDay(activeDate);
+      }
+    }
+
+    function jumpToTodayIranDate() {
+      const { irDateStr } = getFormattedDualClocks();
+      const picker = document.getElementById('activeDatePicker');
+      if (picker) picker.value = irDateStr;
+      switchActiveDate(irDateStr);
+    }
+
+    function resetCurrentDayToBlank() {
+      const fresh = createDefaultDay(activeDate);
+      touchDayTimestamp(fresh);
+      allDaysStore[activeDate] = fresh;
+      persistStateLocally();
+      renderModule2();
+      renderMeals();
+      updateTopSteadyStateDashboard();
+      scheduleAutoSync('已重置为空白');
+      showToast(`🧹 ${activeDate} ${tMsg('toastSaved')}`);
+    }
+
     function updateClocksUI() {
-      const { irFull, krFull, krHm, krDateObj } = getFormattedDualClocks();
+      const { irFull, krFull, krDateStr, krDateObj } = getFormattedDualClocks();
       const irEl = document.getElementById('clockIran');
       const krEl = document.getElementById('clockKorea');
       if (irEl) irEl.textContent = irFull;
       if (krEl) krEl.textContent = krFull;
       updateNext10AmCountdown();
 
-      // Automatic 10:00 AM Daily & Sunday 10:00 AM Weekly Email Trigger
-      if (serverConfig.autoSendEnabled && krHm === '10:00') {
-        const todayKey = krDateObj.toISOString().slice(0, 10);
-        const lastSent = localStorage.getItem('steadyBg_lastAutoEmailDate');
-        if (lastSent !== todayKey && (serverConfig.emailServiceId || serverConfig.emailWebhookUrl)) {
-          localStorage.setItem('steadyBg_lastAutoEmailDate', todayKey);
+      // 双保险自动补发机制：韩国时间 >= 10:00 后打开网页，自动检查并补发【每日报告】与【周日每周7天总表】
+      if (serverConfig.autoSendEnabled && krDateObj.getHours() >= 10) {
+        const lastDailySent = localStorage.getItem('steadyBg_lastAutoEmailDate');
+        if (lastDailySent !== krDateStr) {
+          localStorage.setItem('steadyBg_lastAutoEmailDate', krDateStr);
           sendReportEmailNow('daily', true);
-          if (krDateObj.getDay() === 0) {
+        }
+        // 如果是周日（或本周日尚未补发周报），自动补发每周 7 天对比总表
+        if (krDateObj.getDay() === 0) {
+          const lastWeeklySent = localStorage.getItem('steadyBg_lastAutoWeeklyEmailDate');
+          if (lastWeeklySent !== krDateStr) {
+            localStorage.setItem('steadyBg_lastAutoWeeklyEmailDate', krDateStr);
             sendReportEmailNow('weekly', true);
           }
         }
@@ -2963,7 +2895,7 @@ export default {
         info: 'bg-slate-800 text-white border-slate-600'
       };
       const div = document.createElement('div');
-      div.className = `px-3.5 py-2 rounded-xl border shadow-lg text-xs font-bold transition-all duration-200 pointer-events-auto flex items-center justify-center gap-2 ${colors[type] || colors.success}`;
+      div.className = `px-3.5 py-2 rounded-xl border shadow-lg text-xs font-bold transition-all duration-200 pointer-events-auto flex items-center justify-center gap-2 text-center ${colors[type] || colors.success}`;
       div.innerHTML = `<span>${msg}</span>`;
       container.appendChild(div);
       setTimeout(() => {
@@ -2971,6 +2903,128 @@ export default {
         div.style.transform = 'translateY(6px)';
         setTimeout(() => div.remove(), 200);
       }, durationMs);
+    }
+
+    /********************************************************************
+     * 15-15 RULE HYPOGLYCEMIA ONE-TAP RESCUE & 15-MIN COUNTDOWN TIMER
+     ********************************************************************/
+    function pickMealNodeForCurrentTime(irHm) {
+      const [h, m] = (irHm || '10:00').split(':').map(Number);
+      const mins = h * 60 + m;
+      if (mins < 450) return 'pre_breakfast';
+      if (mins < 540) return 'breakfast';
+      if (mins < 750) return 'breakfast_extra';
+      if (mins < 900) return 'lunch';
+      if (mins < 1140) return 'lunch_extra';
+      if (mins < 1260) return 'dinner';
+      return 'dinner_extra';
+    }
+
+    function triggerOneTapHypoRescue() {
+      const { irDateStr, irHm } = getFormattedDualClocks();
+      if (activeDate !== irDateStr) {
+        switchActiveDate(irDateStr);
+      }
+      const day = getCurrentDayData();
+      const targetKey = pickMealNodeForCurrentTime(irHm);
+      hypoTargetMealKey = targetKey;
+      const md = day.meals[targetKey];
+
+      // Save snapshot before first modification so accidental taps (even multiple taps) can be cleanly undone
+      if (!hypoUndoSnapshot || hypoUndoSnapshot.date !== activeDate || hypoUndoSnapshot.mealKey !== targetKey) {
+        hypoUndoSnapshot = {
+          date: activeDate,
+          mealKey: targetKey,
+          prevTime: md.time,
+          prevPreBg: md.preBg,
+          hadSugarHypo: md.selectedFoods.includes('FOOD_SUGAR_HYPO')
+        };
+      }
+
+      md.time = irHm;
+      if (liveDexcomState.bg && !md.preBg) {
+        md.preBg = liveDexcomState.bg;
+      }
+      if (!md.selectedFoods.includes('FOOD_SUGAR_HYPO')) {
+        md.selectedFoods.push('FOOD_SUGAR_HYPO');
+      }
+      touchDayTimestamp(day);
+      renderMeals();
+      updateTopSteadyStateDashboard();
+      scheduleAutoSync('低血糖15g急救打卡');
+      startHypoCountdownTimer(15 * 60);
+      const targetMeta = MEAL_NODES_META.find(m => m.key === targetKey);
+      const nodeTitle = targetMeta ? (targetMeta.title[currentLang] || targetMeta.title.zh) : targetKey;
+      showToast(`${tMsg('toastHypoLogged')} → [${nodeTitle}]`, 'warn', 4000);
+    }
+
+    function undoHypoRescue() {
+      if (hypoUndoSnapshot) {
+        const day = allDaysStore[hypoUndoSnapshot.date];
+        const md = day?.meals?.[hypoUndoSnapshot.mealKey];
+        if (md) {
+          md.time = hypoUndoSnapshot.prevTime;
+          md.preBg = hypoUndoSnapshot.prevPreBg;
+          if (!hypoUndoSnapshot.hadSugarHypo) {
+            md.selectedFoods = (md.selectedFoods || []).filter(id => id !== 'FOOD_SUGAR_HYPO');
+          }
+          touchDayTimestamp(day);
+          renderMeals();
+          updateTopSteadyStateDashboard();
+          renderFoodImpactTab();
+          scheduleAutoSync('撤销低血糖急救误触');
+        }
+        hypoUndoSnapshot = null;
+      }
+      cancelHypoTimer();
+      showToast(tMsg('toastHypoUndone'), 'info', 2800);
+    }
+
+    function startHypoCountdownTimer(durationSeconds = 900) {
+      const banner = document.getElementById('hypoCountdownBanner');
+      if (banner) banner.classList.remove('hidden');
+      hypoTargetTimestampMs = Date.now() + durationSeconds * 1000;
+      if (hypoCountdownInterval) clearInterval(hypoCountdownInterval);
+      updateHypoTimerTick();
+      hypoCountdownInterval = setInterval(updateHypoTimerTick, 1000);
+    }
+
+    function updateHypoTimerTick() {
+      const disp = document.getElementById('hypoTimerDisplay');
+      if (!disp) return;
+      const remSec = Math.max(0, Math.ceil((hypoTargetTimestampMs - Date.now()) / 1000));
+      const mm = String(Math.floor(remSec / 60)).padStart(2, '0');
+      const ss = String(remSec % 60).padStart(2, '0');
+      disp.textContent = `${mm}:${ss}`;
+      if (remSec <= 0) {
+        clearInterval(hypoCountdownInterval);
+        hypoCountdownInterval = null;
+        disp.textContent = '00:00';
+        syncDexcomNow(false);
+      }
+    }
+
+    async function completeHypoRecheckNow() {
+      await syncDexcomNow(false);
+      if (liveDexcomState.bg) {
+        const day = getCurrentDayData();
+        const md = day.meals[hypoTargetMealKey];
+        if (md) {
+          md.postBg = liveDexcomState.bg;
+          touchDayTimestamp(day);
+          renderMeals();
+          updateTopSteadyStateDashboard();
+          scheduleAutoSync('低血糖15分钟复测血糖');
+        }
+      }
+      cancelHypoTimer();
+    }
+
+    function cancelHypoTimer() {
+      if (hypoCountdownInterval) clearInterval(hypoCountdownInterval);
+      hypoCountdownInterval = null;
+      hypoUndoSnapshot = null;
+      document.getElementById('hypoCountdownBanner')?.classList.add('hidden');
     }
 
     function calculateDaySummaryMetrics(day) {
@@ -3023,7 +3077,6 @@ export default {
       return parts.length > 0 ? parts.join('、') : '未记录食物';
     }
 
-    // Format food list in currently selected UI language (with 4-language custom food support)
     function formatFoodListLocalized(md) {
       const t = UI_TEXT[currentLang] || UI_TEXT.zh;
       if (!md) return t.repNoFood;
@@ -3074,6 +3127,7 @@ export default {
       return liveDexcomState.bg ? t.dexcomLatestReading : t.dexcomWaitSync;
     }
 
+    // Upgraded: Separates Green (NPH) 10-12h interval from Yellow (Regular) anti-stacking check
     function updateTopSteadyStateDashboard() {
       const day = getCurrentDayData();
       const m = calculateDaySummaryMetrics(day);
@@ -3106,39 +3160,65 @@ export default {
         if (liveDexcomState.bg && liveDexcomState.updatedAtKr && liveDexcomState.updatedAtKr !== '--:--') {
           hintEl.textContent = `${t.dexcomSyncedAt} ${liveDexcomState.updatedAtKr}`;
         } else {
-          hintEl.textContent = serverConfig.dexcomUser ? t.dexcomSavedHint : t.dexcomWaitHint;
+          hintEl.textContent = (serverConfig.dexcomUser || serverConfig.dexcomBridgeUrl) ? t.dexcomSavedHint : t.dexcomWaitHint;
         }
       }
 
-      // Calculate interval between shots
-      const shotTimes = [];
+      // Separate NPH (Green Bottle) shots from Regular (Yellow Bottle) shots
+      const nphShots = [];
+      const regShots = [];
       MEAL_NODES_META.forEach(meta => {
         const md = day.meals[meta.key];
-        if (md && md.insStatus === 'done' && (md.regUnits > 0 || md.nphUnits > 0) && md.time) {
-          shotTimes.push({ time: md.time, nph: md.nphUnits, title: meta.title[currentLang] || meta.title.zh });
+        if (md && md.insStatus === 'done' && md.time) {
+          if (Number(md.nphUnits) > 0) {
+            nphShots.push({ time: md.time, nph: Number(md.nphUnits), title: meta.title[currentLang] || meta.title.zh });
+          }
+          if (Number(md.regUnits) > 0) {
+            regShots.push({ time: md.time, reg: Number(md.regUnits), title: meta.title[currentLang] || meta.title.zh });
+          }
         }
       });
+
       const intervalEl = document.getElementById('lastInjectionIntervalText');
       const badgeEl = document.getElementById('nphSafetyBadge');
-      if (shotTimes.length >= 2) {
-        const first = shotTimes[0].time.split(':').map(Number);
-        const last = shotTimes[shotTimes.length - 1].time.split(':').map(Number);
+      const { irHm } = getFormattedDualClocks();
+      const [curH, curM] = irHm.split(':').map(Number);
+      const curTotalMin = curH * 60 + curM;
+
+      // Check if two Regular shots were taken within < 3.5 hours (210 mins)
+      let regularStackingAlert = false;
+      if (regShots.length >= 2) {
+        const rPrev = regShots[regShots.length - 2].time.split(':').map(Number);
+        const rLast = regShots[regShots.length - 1].time.split(':').map(Number);
+        const rDiff = Math.abs((rLast[0] * 60 + rLast[1]) - (rPrev[0] * 60 + rPrev[1]));
+        if (rDiff > 0 && rDiff < 210) regularStackingAlert = true;
+      }
+
+      if (nphShots.length >= 2) {
+        const first = nphShots[0].time.split(':').map(Number);
+        const last = nphShots[nphShots.length - 1].time.split(':').map(Number);
         const diffMin = Math.abs((last[0] * 60 + last[1]) - (first[0] * 60 + first[1]));
         const dh = Math.floor(diffMin / 60);
         const dm = diffMin % 60;
-        if (intervalEl) intervalEl.textContent = `${t.twoShotsInterval} ${dh}${t.hourText} ${dm}${t.minText} (${shotTimes[0].time} → ${shotTimes[shotTimes.length - 1].time})`;
+        if (intervalEl) intervalEl.textContent = `${t.twoShotsInterval}: ${dh}${t.hourText} ${dm}${t.minText} (${nphShots[0].time} → ${nphShots[nphShots.length - 1].time})`;
         if (badgeEl) {
-          const safe = dh >= 10 && dh <= 13;
-          badgeEl.textContent = safe ? t.badgeSafe : t.badgeWarn;
+          const safe = dh >= 10 && dh <= 13 && !regularStackingAlert;
+          badgeEl.textContent = regularStackingAlert ? t.badgeStackWarn : (safe ? t.badgeSafe : t.badgeWarn);
           badgeEl.className = safe
             ? 'text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold shrink-0'
             : 'text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold shrink-0';
         }
-      } else if (shotTimes.length === 1) {
-        if (intervalEl) intervalEl.textContent = `${t.oneShotToday} (🇮🇷 ${shotTimes[0].time} / 🇰🇷 ${iranTimeToKoreaTime(shotTimes[0].time)})`;
+      } else if (nphShots.length === 1) {
+        const s1 = nphShots[0].time.split(':').map(Number);
+        const elapsedMin = Math.max(0, curTotalMin - (s1[0] * 60 + s1[1]));
+        const eh = Math.floor(elapsedMin / 60);
+        const em = elapsedMin % 60;
+        if (intervalEl) intervalEl.textContent = `${t.oneShotToday} ${eh}${t.hourText}${em}${t.minText} (🇮🇷${nphShots[0].time})`;
         if (badgeEl) {
-          badgeEl.textContent = t.badgeSafe;
-          badgeEl.className = 'text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold shrink-0';
+          badgeEl.textContent = regularStackingAlert ? t.badgeStackWarn : t.badgeSafe;
+          badgeEl.className = regularStackingAlert
+            ? 'text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold shrink-0'
+            : 'text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold shrink-0';
         }
       } else {
         if (intervalEl) intervalEl.textContent = t.noShotToday;
@@ -3149,7 +3229,6 @@ export default {
       }
     }
 
-    // Dynamic personalized schedule generator based on exact manual wake-up time (HH:mm)
     function buildDynamicWakePlanHtml(wakeHm) {
       const hm = normalize24hTime(wakeHm, '08:00');
       const [h, m] = hm.split(':').map(Number);
@@ -3158,7 +3237,6 @@ export default {
       const shot1Earliest = addMinutesToHm(hm, 35);
       const breakfastTime = addMinutesToHm(hm, 50);
 
-      // Early wake (< 07:00)
       if (totalMinutes < 420) {
         const eveningShotStart = '19:30';
         const eveningShotEnd = '20:30';
@@ -3183,13 +3261,12 @@ export default {
         return dict[currentLang] || dict.zh;
       }
 
-      // Late wake (>= 09:45)
       if (totalMinutes >= 585) {
         const nphPeakStart = addMinutesToHm(shot1Earliest, 240);
         const nphPeakEnd = addMinutesToHm(shot1Earliest, 420);
         const secondMealTime = addMinutesToHm(shot1Earliest, 255);
-        const shot2Start = addMinutesToHm(shot1Earliest, 600); // +10h
-        const shot2End = addMinutesToHm(shot1Earliest, 690);   // +11.5h
+        const shot2Start = addMinutesToHm(shot1Earliest, 600);
+        const shot2End = addMinutesToHm(shot1Earliest, 690);
         const dict = {
           zh: `<strong>🛌 晚起专属顺延方案 (手动起床时间 🇮🇷 ${hm} / 🇰🇷 ${iranTimeToKoreaTime(hm)})：</strong><br>
                1️⃣ <strong>${rlaTime} 纯空腹：</strong> 先吃 1 粒超级硫辛酸，隔 30–35 分钟。<br>
@@ -3211,10 +3288,9 @@ export default {
         return dict[currentLang] || dict.zh;
       }
 
-      // Normal wake (07:00 - 09:44)
       const guardSnackTime = addMinutesToHm(shot1Earliest, 110);
-      const eveningStart = addMinutesToHm(shot1Earliest, 660); // +11h
-      const eveningEnd = addMinutesToHm(shot1Earliest, 720);   // +12h
+      const eveningStart = addMinutesToHm(shot1Earliest, 660);
+      const eveningEnd = addMinutesToHm(shot1Earliest, 720);
       const dict = {
         zh: `<strong>☀️ 标准稳糖方案 (手动起床时间 🇮🇷 ${hm} / 🇰🇷 ${iranTimeToKoreaTime(hm)})：</strong><br>
              1️⃣ <strong>${rlaTime} 纯空腹：</strong> 温水吞服 1 粒超级硫辛酸。<br>
@@ -3261,11 +3337,10 @@ export default {
         tipTextEl.innerHTML = buildDynamicWakePlanHtml(day.wakeTime || '08:00');
       }
 
-      // Render Supplements Grid (5 items, Super R-Lipoic Acid includes Auto-Fill + Manual Calibrate Fasting BG)
       const grid = document.getElementById('supplementsGrid');
       if (grid) {
         let checkedCount = 0;
-        const isSaturday = new Date(day.date).getDay() === 6;
+        const isSaturday = new Date(day.date + 'T12:00:00Z').getUTCDay() === 6;
         grid.innerHTML = SUPPLEMENTS_DICT.map(supp => {
           const st = day.supplements[supp.id] || { checked: false, timeIr: '' };
           if (st.checked) checkedCount++;
@@ -3293,7 +3368,7 @@ export default {
                 <div class="flex flex-wrap items-center justify-between gap-1.5">
                   <div class="flex items-center gap-1">
                     <span class="text-slate-500 font-medium">${t.iranTimeLabel}</span>
-                    <input type="text" value="${st.timeIr || ''}" maxlength="5" placeholder="HH:mm" onchange="updateSupplementTime('${supp.id}', this.value)" class="w-16 text-center px-1.5 py-0.5 rounded border border-slate-200 bg-white font-mono font-bold text-slate-700 text-[11px]" />
+                    <input type="text" value="${st.timeIr || ''}" maxlength="5" placeholder="HH:mm" oninput="format24hTyping(this)" onchange="updateSupplementTime('${supp.id}', this.value)" class="w-16 text-center px-1.5 py-0.5 rounded border border-slate-200 bg-white font-mono font-bold text-slate-700 text-[11px]" />
                     <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono">🇰🇷 ${krTime}</span>
                   </div>
                 </div>
@@ -3318,7 +3393,6 @@ export default {
         if (badge) badge.textContent = `${t.suppProgressPrefix} ${checkedCount}/${SUPPLEMENTS_DICT.length}`;
       }
 
-      // Famotidine buttons
       ['0', '0.5', '1'].forEach(d => {
         const btn = document.getElementById(`famoBtn-${d}`);
         if (!btn) return;
@@ -3415,7 +3489,6 @@ export default {
 
         return `
           <div id="mealNode-${meta.key}" class="glass-card rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
-            <!-- Top Row: Title & Dual-Timezone 24h Time Picker -->
             <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
               <div>
                 <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2">
@@ -3432,9 +3505,7 @@ export default {
               </div>
             </div>
 
-            <!-- Second Row: Pre-Meal BG, Post-Meal 2h BG & Linked Insulin Module -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5">
-              <!-- Pre & Post BG with Prominent Fill Dexcom BG Buttons & Calibrate Confirm Button -->
               <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-2.5 bg-slate-50/90 p-3 rounded-2xl border border-slate-200/70">
                 <div class="space-y-1.5">
                   <div class="flex items-center justify-between gap-1">
@@ -3464,7 +3535,6 @@ export default {
                 </div>
               </div>
 
-              <!-- Linked Insulin Box -->
               <div class="lg:col-span-7 bg-gradient-to-r from-emerald-50/70 to-teal-50/60 p-3 rounded-2xl border border-emerald-200/80 space-y-2.5">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                   <span class="text-xs font-bold text-emerald-950">${t.linkedInsulinTitle}</span>
@@ -3510,7 +3580,6 @@ export default {
               </div>
             </div>
 
-            <!-- 6 Color Food Categories Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               ${categoriesHtml}
             </div>
@@ -3518,6 +3587,8 @@ export default {
         `;
       }).join('');
     }
+
+    let deletedDatesMap = {};
 
     function loadPersistedState() {
       try {
@@ -3530,16 +3601,27 @@ export default {
           const parsedCfg = JSON.parse(savedCfg);
           Object.assign(serverConfig, parsedCfg);
         }
-        // Always ensure the built-in JSONBin URL is active if not overridden
-        if (!serverConfig.jsonServerUrl) {
-          serverConfig.jsonProvider = 'jsonbin';
-          serverConfig.jsonServerUrl = DEFAULT_JSONBIN_URL;
+        // 默认绑定您的专属 Cloudflare Worker 加密网关，清理旧版明文 JSONBin 地址
+        if (!serverConfig.jsonServerUrl || serverConfig.jsonServerUrl.includes('jsonbin.io')) {
+          serverConfig.jsonProvider = 'worker';
+          serverConfig.jsonServerUrl = DEFAULT_WORKER_URL;
+        }
+        if (!serverConfig.dexcomBridgeUrl) {
+          serverConfig.dexcomBridgeUrl = DEFAULT_WORKER_URL;
+        }
+        const savedDeleted = localStorage.getItem('steadyBg_deletedDates_v4');
+        if (savedDeleted) {
+          deletedDatesMap = JSON.parse(savedDeleted) || {};
         }
         const savedDays = localStorage.getItem('steadyBg_allDaysStore_v4');
         if (savedDays) {
           const parsed = JSON.parse(savedDays);
           if (parsed && typeof parsed === 'object') {
-            Object.assign(allDaysStore, parsed);
+            Object.keys(parsed).forEach(k => {
+              if (!deletedDatesMap[k]) {
+                allDaysStore[k] = parsed[k];
+              }
+            });
           }
         }
         const savedLiveBg = localStorage.getItem('steadyBg_liveDexcomState_v4');
@@ -3558,6 +3640,7 @@ export default {
       try {
         Object.values(allDaysStore).forEach(d => enrichDayWithDualTimezones(d));
         localStorage.setItem('steadyBg_allDaysStore_v4', JSON.stringify(allDaysStore));
+        localStorage.setItem('steadyBg_deletedDates_v4', JSON.stringify(deletedDatesMap));
         localStorage.setItem('steadyBg_serverConfig_v4', JSON.stringify(serverConfig));
         localStorage.setItem('steadyBg_liveDexcomState_v4', JSON.stringify(liveDexcomState));
       } catch (e) {
@@ -3565,7 +3648,6 @@ export default {
       }
     }
 
-    // Automatically save to localStorage and debounce cloud JSON sync (no manual button click required!)
     function scheduleAutoSync(actionLabel = '已自动记录') {
       persistStateLocally();
       const statusText = document.getElementById('autoSyncStatusText');
@@ -3586,15 +3668,78 @@ export default {
       }
     }
 
+    // Automatic 2h Post-Meal BG backfill from Dexcom live reading or history curve
+    function autoBackfillPostMealBgFromDexcom() {
+      if (!serverConfig.autoFillBgOnMeal) return;
+      const { irDateStr, irHm } = getFormattedDualClocks();
+      const day = allDaysStore[irDateStr];
+      if (!day || !day.meals) return;
+
+      const [curH, curM] = irHm.split(':').map(Number);
+      const curTotalMin = curH * 60 + curM;
+      let filledAny = false;
+      let filledValue = '';
+
+      MEAL_NODES_META.forEach(meta => {
+        const md = day.meals[meta.key];
+        if (!md || md.postBg) return;
+        const hasActivity = (md.selectedFoods && md.selectedFoods.length > 0) || (md.customFoods && md.customFoods.length > 0) || md.preBg || md.insStatus === 'done';
+        if (!hasActivity || !md.time) return;
+
+        const [mh, mm] = md.time.split(':').map(Number);
+        if (isNaN(mh) || isNaN(mm)) return;
+        const targetPostMin = (mh * 60 + mm + 120) % 1440;
+        const diffFromNow = curTotalMin - targetPostMin;
+
+        // 1. If current time is within [target2h - 5m, target2h + 25m] and we have live BG
+        if (diffFromNow >= -5 && diffFromNow <= 25 && liveDexcomState.bg) {
+          md.postBg = liveDexcomState.bg;
+          filledValue = liveDexcomState.bg;
+          filledAny = true;
+          return;
+        }
+
+        // 2. Or check Dexcom history array (last 3 hours of readings) for a reading near target2h
+        if (diffFromNow > 25 && Array.isArray(liveDexcomState.history) && liveDexcomState.history.length > 0) {
+          const targetAgoMin = diffFromNow;
+          const targetTsMs = Date.now() - targetAgoMin * 60000;
+          let bestReading = null;
+          let bestDiffMs = 15 * 60000; // within 15 minutes tolerance
+          liveDexcomState.history.forEach(pt => {
+            const ptMs = parseDexcomWT(pt.WT);
+            if (ptMs && Math.abs(ptMs - targetTsMs) < bestDiffMs && pt.Value) {
+              bestDiffMs = Math.abs(ptMs - targetTsMs);
+              bestReading = pt.Value;
+            }
+          });
+          if (bestReading) {
+            md.postBg = bestReading;
+            filledValue = bestReading;
+            filledAny = true;
+          }
+        }
+      });
+
+      if (filledAny) {
+        touchDayTimestamp(day);
+        renderMeals();
+        updateTopSteadyStateDashboard();
+        renderFoodImpactTab();
+        scheduleAutoSync('Dexcom自动回填餐后2h血糖');
+        showToast(`${tMsg('toastAutoPostBg')}${filledValue} mg/dL`, 'success', 3200);
+      }
+    }
+
     function selectWakeMode(mode, defaultHm) {
       const day = getCurrentDayData();
       day.wakeMode = mode;
       day.wakeTime = defaultHm;
+      touchDayTimestamp(day);
       const wakeInput = document.getElementById('wakeTimeInput');
       if (wakeInput) wakeInput.value = defaultHm;
       renderModule2();
       scheduleAutoSync(`起床档位 ${defaultHm}`);
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastSaved'));
     }
 
     function confirmWakeTimeInput() {
@@ -3602,7 +3747,7 @@ export default {
       const rawVal = wakeInput ? wakeInput.value.trim() : '';
       const parsed = parseStrict24hTime(rawVal);
       if (!parsed) {
-        showToast('fail', 'warn', 800);
+        showToast(tMsg('toastInvalidTime'), 'warn');
         return;
       }
       updateExactWakeTime(parsed);
@@ -3611,7 +3756,7 @@ export default {
     function updateExactWakeTime(val) {
       const parsed = parseStrict24hTime(val);
       if (!parsed) {
-        showToast('fail', 'warn', 800);
+        showToast(tMsg('toastInvalidTime'), 'warn');
         return;
       }
       const day = getCurrentDayData();
@@ -3621,11 +3766,12 @@ export default {
       if (totalMin < 420) day.wakeMode = 'early';
       else if (totalMin >= 585) day.wakeMode = 'late';
       else day.wakeMode = 'normal';
+      touchDayTimestamp(day);
       const wakeInput = document.getElementById('wakeTimeInput');
       if (wakeInput) wakeInput.value = parsed;
       renderModule2();
       scheduleAutoSync(`起床 ${parsed}`);
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastSaved'));
     }
 
     function toggleSupplement(suppId, checked) {
@@ -3636,129 +3782,105 @@ export default {
         timeIr: checked ? (day.supplements[suppId]?.timeIr || irHm) : '',
         timeKr: checked ? (day.supplements[suppId]?.timeKr || krHm) : ''
       };
-      // When checking Super R-Lipoic Acid, auto-fill fasting BG from live Dexcom if available and fastingBg is empty
       if (suppId === 'SUPP_RLA' && checked && (!day.fastingBg || day.fastingBg === '') && liveDexcomState.bg) {
         day.fastingBg = liveDexcomState.bg;
       }
+      touchDayTimestamp(day);
       renderModule2();
       updateTopSteadyStateDashboard();
       scheduleAutoSync('保健品打卡');
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastSaved'));
     }
 
     function updateSupplementTime(suppId, irTimeVal) {
+      const parsed = parseStrict24hTime(irTimeVal);
+      if (!parsed) {
+        showToast(tMsg('toastInvalidTime'), 'warn');
+        renderModule2();
+        return;
+      }
       const day = getCurrentDayData();
-      const { irHm } = getFormattedDualClocks();
-      const normVal = normalize24hTime(irTimeVal, irHm);
       day.supplements[suppId] = {
         checked: true,
-        timeIr: normVal,
-        timeKr: iranTimeToKoreaTime(normVal)
+        timeIr: parsed,
+        timeKr: iranTimeToKoreaTime(parsed)
       };
+      touchDayTimestamp(day);
       renderModule2();
       scheduleAutoSync('保健品时间更新');
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastSaved'));
     }
 
     function fillFastingBgFromDexcom() {
       if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        showToast('404', 'warn', 800);
+        showToast(tMsg('toastOffline'), 'warn');
         return;
       }
       if (!liveDexcomState.bg) {
-        showToast('fail', 'warn', 800);
+        showToast(tMsg('toastNoDexcom'), 'warn');
         return;
       }
       const day = getCurrentDayData();
       day.fastingBg = liveDexcomState.bg;
+      touchDayTimestamp(day);
       renderModule2();
       updateTopSteadyStateDashboard();
       scheduleAutoSync('填入Dexcom空腹血糖');
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastSaved'));
     }
 
     function confirmFastingBg() {
-      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        showToast('404', 'warn', 800);
-        return;
-      }
       const inputEl = document.getElementById('fastingBgInput');
       const rawVal = inputEl ? inputEl.value.trim() : '';
       const numVal = Number(rawVal);
       if (!rawVal || isNaN(numVal) || numVal < 20 || numVal > 600) {
-        showToast('fail', 'warn', 800);
+        showToast(tMsg('toastInvalidBg'), 'warn');
         return;
       }
       const day = getCurrentDayData();
       day.fastingBg = numVal;
+      touchDayTimestamp(day);
       renderModule2();
       updateTopSteadyStateDashboard();
       scheduleAutoSync('空腹血糖校准');
-      showToast('succeed', 'success', 800);
-    }
-
-    function updateFastingBg(val) {
-      const numVal = Number(val);
-      if (!val || isNaN(numVal) || numVal < 20 || numVal > 600) {
-        showToast('fail', 'warn', 800);
-        return;
-      }
-      const day = getCurrentDayData();
-      day.fastingBg = numVal;
-      updateTopSteadyStateDashboard();
-      scheduleAutoSync('空腹血糖更新');
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastSaved'));
     }
 
     function confirmMealBg(mealKey, field) {
-      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        showToast('404', 'warn', 800);
-        return;
-      }
       const inputEl = document.getElementById(`bgInput-${mealKey}-${field}`);
       const rawVal = inputEl ? inputEl.value.trim() : '';
       const numVal = Number(rawVal);
       if (!rawVal || isNaN(numVal) || numVal < 20 || numVal > 600) {
-        showToast('fail', 'warn', 800);
+        showToast(tMsg('toastInvalidBg'), 'warn');
         return;
       }
       const day = getCurrentDayData();
       day.meals[mealKey][field] = numVal;
+      touchDayTimestamp(day);
       renderMeals();
       updateTopSteadyStateDashboard();
+      renderFoodImpactTab();
       scheduleAutoSync('餐前/餐后血糖校准');
-      showToast('succeed', 'success', 800);
-    }
-
-    function updateMealBg(mealKey, field, val) {
-      const numVal = Number(val);
-      if (!val || isNaN(numVal) || numVal < 20 || numVal > 600) {
-        showToast('fail', 'warn', 800);
-        return;
-      }
-      const day = getCurrentDayData();
-      day.meals[mealKey][field] = numVal;
-      renderMeals();
-      updateTopSteadyStateDashboard();
-      scheduleAutoSync('餐前/餐后血糖更新');
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastSaved'));
     }
 
     function fillMealBgFromDexcom(mealKey, field) {
       if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        showToast('404', 'warn', 800);
+        showToast(tMsg('toastOffline'), 'warn');
         return;
       }
       if (!liveDexcomState.bg) {
-        showToast('fail', 'warn', 800);
+        showToast(tMsg('toastNoDexcom'), 'warn');
         return;
       }
       const day = getCurrentDayData();
       day.meals[mealKey][field] = liveDexcomState.bg;
+      touchDayTimestamp(day);
       renderMeals();
       updateTopSteadyStateDashboard();
+      renderFoodImpactTab();
       scheduleAutoSync('填入Dexcom血糖');
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastSaved'));
     }
 
     function setMealInsulinStatus(mealKey, status) {
@@ -3769,7 +3891,6 @@ export default {
         autoFillPreBgIfEmpty(md);
       }
       if (status !== 'none' && md.regUnits === 0 && md.nphUnits === 0) {
-        // Default helpful values
         if (mealKey === 'breakfast' || mealKey === 'dinner') {
           md.regUnits = 15;
           md.nphUnits = 40;
@@ -3778,6 +3899,7 @@ export default {
           md.nphUnits = 0;
         }
       }
+      touchDayTimestamp(day);
       renderMeals();
       updateTopSteadyStateDashboard();
       scheduleAutoSync('胰岛素状态更新');
@@ -3787,6 +3909,7 @@ export default {
       const day = getCurrentDayData();
       const cur = Number(day.meals[mealKey][field]) || 0;
       day.meals[mealKey][field] = Math.max(0, cur + delta);
+      touchDayTimestamp(day);
       renderMeals();
       updateTopSteadyStateDashboard();
       scheduleAutoSync('胰岛素剂量微调');
@@ -3795,6 +3918,7 @@ export default {
     function setInsulinDose(mealKey, field, val) {
       const day = getCurrentDayData();
       day.meals[mealKey][field] = Math.max(0, Number(val) || 0);
+      touchDayTimestamp(day);
       renderMeals();
       updateTopSteadyStateDashboard();
       scheduleAutoSync('胰岛素剂量输入');
@@ -3803,6 +3927,7 @@ export default {
     function toggleMealInsCheck(mealKey, field, checked) {
       const day = getCurrentDayData();
       day.meals[mealKey][field] = checked;
+      touchDayTimestamp(day);
       scheduleAutoSync('打针规范勾选');
     }
 
@@ -3817,50 +3942,51 @@ export default {
       } else {
         arr.push(foodId);
       }
+      touchDayTimestamp(day);
       renderMeals();
       updateTopSteadyStateDashboard();
+      renderFoodImpactTab();
       scheduleAutoSync('食物勾选自动保存');
     }
 
     function setTorshiPortion(mealKey, portion) {
       const day = getCurrentDayData();
       day.meals[mealKey].torshiPortion = portion;
+      touchDayTimestamp(day);
       renderMeals();
       scheduleAutoSync('腌菜分量更新');
-      showToast(`波斯酸腌菜/泡菜分量已设为: 【${portion}】`);
+      showToast(tMsg('toastSaved'));
     }
 
     async function addCustomFood(mealKey, catId) {
       const inputEl = document.getElementById(`customInput-${mealKey}-${catId}`);
       if (!inputEl) return;
       const rawText = inputEl.value.trim();
-      if (!rawText) {
-        showToast('fail', 'warn', 800);
-        return;
-      }
+      if (!rawText) return;
       inputEl.value = '';
 
       const day = getCurrentDayData();
       autoFillPreBgIfEmpty(day.meals[mealKey]);
-      const itemObj = { catId, raw: rawText, zhDisplay: `${rawText} (...)`, translations: null };
+      const itemObj = { catId, raw: rawText, zhDisplay: `${rawText}`, translations: null };
       day.meals[mealKey].customFoods.push(itemObj);
+      touchDayTimestamp(day);
       renderMeals();
 
-      // Real 4-language translation check with strict succeed / fail / 404 toast
       const transResult = await translateCustomTextWithStatus(rawText);
       itemObj.zhDisplay = transResult.text;
       if (transResult.translations) {
         itemObj.translations = transResult.translations;
       }
+      touchDayTimestamp(day);
       renderMeals();
       renderFoodImpactTab();
       scheduleAutoSync('手写食物自动保存');
       if (transResult.status === 'succeed') {
-        showToast('succeed', 'success', 800);
+        showToast(tMsg('toastTransOk'));
       } else if (transResult.status === '404') {
-        showToast('404', 'warn', 800);
+        showToast(tMsg('toastOffline'), 'warn');
       } else {
-        showToast('fail', 'warn', 800);
+        showToast(tMsg('toastTransFail'), 'info');
       }
     }
 
@@ -3877,7 +4003,9 @@ export default {
           }
         }
       }
+      touchDayTimestamp(day);
       renderMeals();
+      renderFoodImpactTab();
       scheduleAutoSync('移除手写食物');
     }
 
@@ -3893,49 +4021,54 @@ export default {
     function updateMealTime(mealKey, rawVal) {
       const parsed = parseStrict24hTime(rawVal);
       if (!parsed) {
-        showToast('fail', 'warn', 800);
+        showToast(tMsg('toastInvalidTime'), 'warn');
         renderMeals();
         return;
       }
       const day = getCurrentDayData();
       day.meals[mealKey].time = parsed;
+      touchDayTimestamp(day);
       renderMeals();
       updateTopSteadyStateDashboard();
       scheduleAutoSync(`用餐时间 ${parsed}`);
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastSaved'));
     }
 
     function setMealTimeNow(mealKey) {
       const { irHm } = getFormattedDualClocks();
       const day = getCurrentDayData();
       day.meals[mealKey].time = irHm;
+      touchDayTimestamp(day);
       renderMeals();
       updateTopSteadyStateDashboard();
       scheduleAutoSync(`用餐时间设为当前 ${irHm}`);
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastSaved'));
     }
 
     function setFamotidineDose(dose) {
       const day = getCurrentDayData();
       day.famotidineDose = String(dose);
+      touchDayTimestamp(day);
       renderModule2();
       scheduleAutoSync(`法莫替丁 ${dose}`);
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastSaved'));
     }
 
     function toggleCareItem(key, checked) {
       const day = getCurrentDayData();
       if (!day.care) day.care = {};
       day.care[key] = checked;
+      touchDayTimestamp(day);
       scheduleAutoSync('日常护理打卡');
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastSaved'));
     }
 
     function updateQuadrant(val) {
       const day = getCurrentDayData();
       day.quadrant = val;
+      touchDayTimestamp(day);
       scheduleAutoSync(`轮换区 ${val}`);
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastSaved'));
     }
 
     const DEXCOM_TREND_ARROW_MAP = {
@@ -3987,7 +4120,7 @@ export default {
 
     async function syncDexcomNow(silent = false) {
       if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        if (!silent) showToast('404', 'warn', 800);
+        if (!silent) showToast(tMsg('toastOffline'), 'warn');
         return;
       }
 
@@ -3995,22 +4128,21 @@ export default {
 
       if (!silent) {
         clearDexcomDiagLogs();
-        appendDexcomDiagLog('开始同步 Dexcom 最近 1 次读数 (Follow 模式)...', 'text-teal-300');
+        appendDexcomDiagLog('开始同步 Dexcom 实时血糖与最近 3 小时曲线...', 'text-teal-300');
       }
 
       const hintEl = document.getElementById('dexcomSyncHint');
       const dotEl = document.getElementById('dexcomStatusDot');
 
-      if (!serverConfig.dexcomUser || !serverConfig.dexcomPass) {
+      if (!serverConfig.dexcomBridgeUrl && (!serverConfig.dexcomUser || !serverConfig.dexcomPass)) {
         if (hintEl) hintEl.textContent = t.dexcomWaitHint;
         if (!silent) {
-          appendDexcomDiagLog('❌ 尚未填写他的 Dexcom 主账号或密码！请在上方第 2、3 框填入并保存。', 'text-rose-400 font-bold');
-          showToast('fail', 'warn', 800);
+          appendDexcomDiagLog('❌ 尚未填写 Cloudflare Worker 网址或 Dexcom 账号！', 'text-rose-400 font-bold');
+          showToast(tMsg('toastNoDexcom'), 'warn');
         }
         return;
       }
 
-      // 1. Primary path: User's Cloudflare Worker Bridge URL
       if (serverConfig.dexcomBridgeUrl) {
         let workerUrl = serverConfig.dexcomBridgeUrl.trim();
         if (!/^https?:\/\//i.test(workerUrl)) {
@@ -4023,8 +4155,8 @@ export default {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              accountName: serverConfig.dexcomUser.trim(),
-              password: serverConfig.dexcomPass,
+              accountName: (serverConfig.dexcomUser || '').trim(),
+              password: serverConfig.dexcomPass || '',
               region: serverConfig.dexcomRegion || 'ous',
               sessionId: liveDexcomState.cachedSessionId || '',
               sessionRegion: liveDexcomState.cachedRegion || serverConfig.dexcomRegion || 'ous'
@@ -4044,9 +4176,13 @@ export default {
             liveDexcomState.updatedAtKr = krHm;
             liveDexcomState.sensorTimestampMs = wtMs || Date.now();
             liveDexcomState.delta = (data.delta !== undefined && data.delta !== null) ? data.delta : null;
+            if (Array.isArray(data.history)) {
+              liveDexcomState.history = data.history;
+            }
 
             updateLiveBgManually(data.bg, true);
             updateLiveTrendManually(arrow);
+            autoBackfillPostMealBgFromDexcom();
             persistStateLocally();
 
             if (hintEl) hintEl.textContent = `${t.dexcomSyncedAt} ${krHm}`;
@@ -4054,14 +4190,14 @@ export default {
             if (!silent) {
               const deltaStr = liveDexcomState.delta !== null ? `(${liveDexcomState.delta >= 0 ? '+' + liveDexcomState.delta : liveDexcomState.delta} mg/dL)` : '';
               appendDexcomDiagLog(`🎉 成功读取最近读数: ${data.bg} ${arrow} ${deltaStr} [${formatLocalizedDexcomTimeAgo()}]`, 'text-emerald-400 font-bold');
-              showToast('succeed', 'success', 800);
+              showToast(tMsg('toastSaved'));
             }
             return;
           } else if (data && data.ok && data.count === 0) {
             if (hintEl) hintEl.textContent = t.dexcomNoNewData;
             if (!silent) {
-              appendDexcomDiagLog('⚠️ 账号登录成功！但过去 24 小时内他手机的 Dexcom G7 未上传新读数（与此时 Dexcom Follow 显示“无数据/横线”一致）。', 'text-amber-300 font-bold');
-              showToast('fail', 'warn', 800);
+              appendDexcomDiagLog('⚠️ 账号登录成功！但过去 24 小时内 Dexcom 未上传新读数。', 'text-amber-300 font-bold');
+              showToast(t.dexcomNoNewData, 'warn');
             }
             return;
           } else {
@@ -4070,26 +4206,18 @@ export default {
             if (hintEl) hintEl.textContent = t.dexcomSeeDiag;
             if (!silent) {
               appendDexcomDiagLog(`❌ Worker 返回信息: ${data?.error || '未知'} | ${data?.detail || data?.msg || ''}`, 'text-rose-400 font-bold');
-              appendDexcomDiagLog(`💡 请点击下方【📋 一键复制最新 Worker 代码】更新到 Cloudflare 并点 Deploy！`, 'text-amber-300');
-              showToast('fail', 'warn', 800);
+              showToast(t.dexcomSeeDiag, 'warn');
             }
             return;
           }
         } catch (e) {
           if (hintEl) hintEl.textContent = t.dexcomSeeDiag;
           if (!silent) {
-            appendDexcomDiagLog(`❌ 无法连接该 Worker 网址 (${e.message})。请确认第 4 框填的是 https://xxx.workers.dev 格式的网址！`, 'text-rose-400 font-bold');
-            showToast('404', 'warn', 800);
+            appendDexcomDiagLog(`❌ 无法连接该 Worker 网址 (${e.message})。`, 'text-rose-400 font-bold');
+            showToast(tMsg('toastOffline'), 'warn');
           }
           return;
         }
-      }
-
-      // If no Cloudflare Worker URL is filled yet
-      if (hintEl) hintEl.textContent = t.dexcomWaitHint;
-      if (!silent) {
-        appendDexcomDiagLog('⚠️ 尚未在第 4 框填入您的 Cloudflare Worker 网址 (https://xxx.workers.dev)！因为浏览器禁止网页直接跨域读取 Dexcom，请把您刚刚在 Cloudflare 生成的 .workers.dev 网址粘贴到上方第 4 框。', 'text-amber-300 font-bold');
-        showToast('fail', 'warn', 800);
       }
     }
 
@@ -4097,42 +4225,96 @@ export default {
       saveServerConfig(true);
       await syncDexcomNow(false);
     }
+
+    // Upgraded: Pull-Merge-Push Cloud Sync via Secure Cloudflare Worker (with fallback)
     async function saveCurrentDayToServer(silent = false) {
       const day = enrichDayWithDualTimezones(getCurrentDayData());
       Object.values(allDaysStore).forEach(d => enrichDayWithDualTimezones(d));
       persistStateLocally();
 
       const statusText = document.getElementById('autoSyncStatusText');
+      const targetUrl = (serverConfig.jsonServerUrl || DEFAULT_WORKER_URL).trim();
 
-      if (serverConfig.jsonServerUrl) {
+      if (targetUrl) {
         try {
-          const url = serverConfig.jsonServerUrl.trim();
-          const isJsonBin = serverConfig.jsonProvider === 'jsonbin' || url.includes('jsonbin.io');
-          const isFirebase = serverConfig.jsonProvider === 'firebase' || url.includes('firebaseio.com') || url.endsWith('.json');
-          const isNpoint = serverConfig.jsonProvider === 'npoint' || url.includes('npoint.io');
-          const isPantry = serverConfig.jsonProvider === 'pantry' || url.includes('getpantry.cloud');
+          const isWorkerGateway = serverConfig.jsonProvider === 'worker' || targetUrl.includes('workers.dev');
 
-          const headers = { 'Content-Type': 'application/json' };
+          if (isWorkerGateway) {
+            const wRes = await fetch(targetUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                action: 'json_save',
+                store: allDaysStore,
+                deletedDatesMap: deletedDatesMap
+              })
+            });
+            if (wRes.ok) {
+              const wData = await wRes.json();
+              if (wData && wData.ok && wData.record) {
+                Object.keys(wData.record).forEach(k => {
+                  if (/^\d{4}-\d{2}-\d{2}$/.test(k) && !deletedDatesMap[k]) {
+                    allDaysStore[k] = ensureDaySchemaIntegrity(wData.record[k]);
+                  }
+                });
+                persistStateLocally();
+                const { krHm } = getFormattedDualClocks();
+                if (statusText) statusText.textContent = `🛡️ 加密云端已同步 (${krHm})`;
+                if (!silent) showToast(tMsg('toastSaved'));
+                return;
+              }
+            }
+          }
+
+          const isJsonBin = serverConfig.jsonProvider === 'jsonbin' || targetUrl.includes('jsonbin.io');
+          const isFirebase = serverConfig.jsonProvider === 'firebase' || targetUrl.includes('firebaseio.com') || targetUrl.endsWith('.json');
+          const isNpoint = serverConfig.jsonProvider === 'npoint' || targetUrl.includes('npoint.io');
+          const isPantry = serverConfig.jsonProvider === 'pantry' || targetUrl.includes('getpantry.cloud');
+
+          const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
           if (serverConfig.jsonApiKey) {
             headers['X-Master-Key'] = serverConfig.jsonApiKey;
             headers['X-Access-Key'] = serverConfig.jsonApiKey;
           }
 
+          if (isJsonBin || isFirebase || isNpoint || isPantry) {
+            try {
+              const getRes = await fetch(targetUrl, { method: 'GET', headers });
+              if (getRes.ok) {
+                let remoteData = await getRes.json();
+                if (remoteData && remoteData.record && typeof remoteData.record === 'object') {
+                  remoteData = remoteData.record;
+                }
+                if (remoteData && typeof remoteData === 'object') {
+                  Object.keys(remoteData).forEach(k => {
+                    if (!/^\d{4}-\d{2}-\d{2}$/.test(k)) return;
+                    if (deletedDatesMap[k]) return;
+                    const remDay = remoteData[k];
+                    const locDay = allDaysStore[k];
+                    if (!locDay || ((remDay.updatedAt || 0) > (locDay.updatedAt || 0))) {
+                      allDaysStore[k] = ensureDaySchemaIntegrity(remDay);
+                    }
+                  });
+                }
+              }
+            } catch (pullErr) {}
+          }
+
           let method = 'POST';
           if (isJsonBin || isFirebase) method = 'PUT';
-
           const payload = (isJsonBin || isFirebase || isNpoint || isPantry) ? allDaysStore : day;
 
-          const res = await fetch(url, {
+          const res = await fetch(targetUrl, {
             method,
             headers,
             body: JSON.stringify(payload)
           });
 
           if (res.ok) {
+            persistStateLocally();
             const { krHm } = getFormattedDualClocks();
             if (statusText) statusText.textContent = `☁️ 云端已自动同步 (${krHm})`;
-            if (!silent) showToast(`☁️ 已成功同步双时区数据至云端 (${serverConfig.jsonProvider})！`);
+            if (!silent) showToast(tMsg('toastSaved'));
             return;
           }
         } catch (e) {
@@ -4140,49 +4322,73 @@ export default {
         }
       }
       if (!silent) {
-        showToast(`✅ 已自动保存 ${day.date} 双时区记录 (如需异地同步请点右上角 ⚙️ 填入 JSON 寄存网址)`);
+        showToast(tMsg('toastSaved'));
       }
     }
 
     async function fetchFromJsonServer(silent = false) {
-      if (!serverConfig.jsonServerUrl) {
-        if (!silent) showToast('请先点击右上角 ⚙️ 填入您的 JSON 云端寄存网址 (如 npoint.io 或 JSONBin.io)', 'warn');
-        return;
-      }
+      const targetUrl = (serverConfig.jsonServerUrl || DEFAULT_WORKER_URL).trim();
+      if (!targetUrl) return;
       try {
-        const headers = { 'Accept': 'application/json' };
-        if (serverConfig.jsonApiKey) {
-          headers['X-Master-Key'] = serverConfig.jsonApiKey;
-          headers['X-Access-Key'] = serverConfig.jsonApiKey;
-        }
-        const res = await fetch(serverConfig.jsonServerUrl.trim(), { headers });
-        if (res.ok) {
-          let data = await res.json();
-          // JSONBin v3 wraps payload inside { record: { ... } }
-          if (data && data.record && typeof data.record === 'object') {
-            data = data.record;
-          }
-          if (data && typeof data === 'object') {
-            if (data.date && data.meals) {
-              allDaysStore[data.date] = enrichDayWithDualTimezones(data);
-            } else if (Object.keys(data).some(k => /^\d{4}-\d{2}-\d{2}$/.test(k))) {
-              Object.assign(allDaysStore, data);
+        const isWorkerGateway = serverConfig.jsonProvider === 'worker' || targetUrl.includes('workers.dev');
+        let data = null;
+
+        if (isWorkerGateway) {
+          const wRes = await fetch(targetUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'json_get' })
+          });
+          if (wRes.ok) {
+            const wJson = await wRes.json();
+            if (wJson && wJson.ok && wJson.record) {
+              data = wJson.record;
             }
-            persistStateLocally();
-            renderModule2();
-            renderMeals();
-            updateTopSteadyStateDashboard();
-            populateDailyReportSelector();
-            const statusText = document.getElementById('autoSyncStatusText');
-            const { krHm } = getFormattedDualClocks();
-            if (statusText) statusText.textContent = `☁️ 已拉取云端最新 (${krHm})`;
-            if (!silent) showToast('🔄 已成功从云端拉取最新打卡记录！');
-            return;
+          }
+        } else {
+          const headers = { 'Accept': 'application/json' };
+          if (serverConfig.jsonApiKey) {
+            headers['X-Master-Key'] = serverConfig.jsonApiKey;
+            headers['X-Access-Key'] = serverConfig.jsonApiKey;
+          }
+          const res = await fetch(targetUrl, { headers });
+          if (res.ok) {
+            data = await res.json();
+            if (data && data.record && typeof data.record === 'object') {
+              data = data.record;
+            }
           }
         }
-        if (!silent) showToast('云端连接成功（当前云端盒子为空，您勾选任一选项后将自动写入）', 'info');
+
+        if (data && typeof data === 'object') {
+          if (data.date && data.meals) {
+            if (!deletedDatesMap[data.date]) {
+              allDaysStore[data.date] = ensureDaySchemaIntegrity(data);
+            }
+          } else {
+            Object.keys(data).forEach(k => {
+              if (!/^\d{4}-\d{2}-\d{2}$/.test(k) || deletedDatesMap[k]) return;
+              const remDay = data[k];
+              const locDay = allDaysStore[k];
+              if (!locDay || ((remDay.updatedAt || 0) >= (locDay.updatedAt || 0))) {
+                allDaysStore[k] = ensureDaySchemaIntegrity(remDay);
+              }
+            });
+          }
+          persistStateLocally();
+          renderModule2();
+          renderMeals();
+          updateTopSteadyStateDashboard();
+          populateDailyReportSelector();
+          renderFoodImpactTab();
+          const statusText = document.getElementById('autoSyncStatusText');
+          const { krHm } = getFormattedDualClocks();
+          if (statusText) statusText.textContent = `🛡️ 已拉取云端最新 (${krHm})`;
+          if (!silent) showToast(tMsg('toastSaved'));
+          return;
+        }
       } catch (err) {
-        if (!silent) showToast('暂时无法连接该 JSON 地址，请检查网址或 Master Key 是否正确', 'warn');
+        if (!silent) showToast(tMsg('toastOffline'), 'warn');
       }
     }
 
@@ -4200,24 +4406,14 @@ export default {
     }
 
     function openServerModal() {
-      // Populate modal inputs with current saved config
       const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
       const setChk = (id, v) => { const el = document.getElementById(id); if (el) el.checked = !!v; };
-      setVal('cfgJsonProvider', serverConfig.jsonProvider || 'jsonbin');
-      setVal('cfgJsonServerUrl', serverConfig.jsonServerUrl);
-      setVal('cfgJsonApiKey', serverConfig.jsonApiKey);
       setChk('cfgAutoCloudSync', serverConfig.autoCloudSync !== false);
       setVal('cfgDexcomRegion', serverConfig.dexcomRegion || 'ous');
       setVal('cfgDexcomUser', serverConfig.dexcomUser);
       setVal('cfgDexcomPass', serverConfig.dexcomPass);
       setChk('cfgAutoFillBgOnMeal', serverConfig.autoFillBgOnMeal !== false);
-      setVal('cfgDexcomBridgeUrl', serverConfig.dexcomBridgeUrl);
-      setVal('cfgEmailServiceId', serverConfig.emailServiceId);
-      setVal('cfgEmailTemplateId', serverConfig.emailTemplateId);
-      setVal('cfgEmailPublicKey', serverConfig.emailPublicKey);
-      setVal('cfgEmailWebhookUrl', serverConfig.emailWebhookUrl);
-      setVal('cfgGeminiModel', serverConfig.geminiModel || 'gemini-2.5-pro');
-      setVal('cfgGeminiApiKey', serverConfig.geminiApiKey);
+      setVal('cfgDexcomBridgeUrl', serverConfig.dexcomBridgeUrl || DEFAULT_WORKER_URL);
       document.getElementById('serverConfigModal')?.classList.remove('hidden');
     }
 
@@ -4226,25 +4422,19 @@ export default {
     }
 
     function saveServerConfig(keepOpen = false) {
-      serverConfig.jsonProvider = document.getElementById('cfgJsonProvider')?.value || 'jsonbin';
-      serverConfig.jsonServerUrl = document.getElementById('cfgJsonServerUrl')?.value.trim() || '';
-      serverConfig.jsonApiKey = document.getElementById('cfgJsonApiKey')?.value.trim() || '';
+      const bridgeUrl = document.getElementById('cfgDexcomBridgeUrl')?.value.trim() || DEFAULT_WORKER_URL;
+      serverConfig.jsonProvider = 'worker';
+      serverConfig.jsonServerUrl = bridgeUrl;
+      serverConfig.dexcomBridgeUrl = bridgeUrl;
       serverConfig.autoCloudSync = !!document.getElementById('cfgAutoCloudSync')?.checked;
       serverConfig.dexcomRegion = document.getElementById('cfgDexcomRegion')?.value || 'ous';
       serverConfig.dexcomUser = document.getElementById('cfgDexcomUser')?.value.trim() || '';
       serverConfig.dexcomPass = document.getElementById('cfgDexcomPass')?.value || '';
       serverConfig.autoFillBgOnMeal = !!document.getElementById('cfgAutoFillBgOnMeal')?.checked;
-      serverConfig.dexcomBridgeUrl = document.getElementById('cfgDexcomBridgeUrl')?.value.trim() || '';
-      serverConfig.emailServiceId = document.getElementById('cfgEmailServiceId')?.value.trim() || '';
-      serverConfig.emailTemplateId = document.getElementById('cfgEmailTemplateId')?.value.trim() || '';
-      serverConfig.emailPublicKey = document.getElementById('cfgEmailPublicKey')?.value.trim() || '';
-      serverConfig.emailWebhookUrl = document.getElementById('cfgEmailWebhookUrl')?.value.trim() || '';
-      serverConfig.geminiModel = document.getElementById('cfgGeminiModel')?.value || 'gemini-2.5-pro';
-      serverConfig.geminiApiKey = document.getElementById('cfgGeminiApiKey')?.value.trim() || '';
       persistStateLocally();
       if (!keepOpen) {
         closeServerModal();
-        showToast('succeed', 'success', 800);
+        showToast(tMsg('toastSaved'));
       }
       if (serverConfig.jsonServerUrl) {
         saveCurrentDayToServer(true);
@@ -4254,26 +4444,20 @@ export default {
     async function testGeminiAndTranslateExisting() {
       saveServerConfig(true);
       if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        showToast('404', 'warn', 800);
+        showToast(tMsg('toastOffline'), 'warn');
         return;
       }
-      // Test with a sample food first if no custom foods exist yet
       const testRes = await translateCustomTextWithStatus('نان سنگک و کباب');
       await translateAllCustomFoodsNow();
       renderMeals();
       renderFoodImpactTab();
       if (testRes.status === 'succeed') {
-        showToast('succeed', 'success', 800);
-      } else if (testRes.status === '404') {
-        showToast('404', 'warn', 800);
+        showToast(tMsg('toastTransOk'));
       } else {
-        showToast('fail', 'warn', 800);
+        showToast(tMsg('toastTransFail'), 'info');
       }
     }
 
-    /********************************************************************
-     * DELETE SPECIFIC DATE RECORD (CLEAN UP ACCIDENTAL TEST DATA)
-     ********************************************************************/
     function openDeleteDateModal(preselectDate = '') {
       const modal = document.getElementById('deleteDateModal');
       const sel = document.getElementById('deleteDateSelect');
@@ -4284,7 +4468,7 @@ export default {
       sel.innerHTML = dates.map(d => {
         const day = allDaysStore[d];
         const m = calculateDaySummaryMetrics(day);
-        return `<option value="${d}" ${d === target ? 'selected' : ''}>📅 ${d} (血糖点: ${m.totalBgPts} | 胰岛素: ${m.sumReg + m.sumNph}U)</option>`;
+        return `<option value="${d}" ${d === target ? 'selected' : ''}>📅 ${d} (BG: ${m.totalBgPts} | Ins: ${m.sumReg + m.sumNph}U)</option>`;
       }).join('');
       modal.classList.remove('hidden');
     }
@@ -4296,18 +4480,15 @@ export default {
     async function confirmDeleteSelectedDate() {
       const sel = document.getElementById('deleteDateSelect');
       const targetDate = sel ? sel.value : '';
-      if (!targetDate) {
-        showToast('fail', 'warn', 800);
-        return;
-      }
+      if (!targetDate) return;
       await deleteSpecificDateRecord(targetDate);
       closeDeleteDateModal();
     }
 
     async function deleteSpecificDateRecord(dateStr) {
       if (!dateStr) return;
+      deletedDatesMap[dateStr] = Date.now();
       delete allDaysStore[dateStr];
-      // If the deleted date was the currently active date, re-initialize a fresh blank day or switch to latest remaining date
       const remainingDates = Object.keys(allDaysStore).sort().reverse();
       if (dateStr === activeDate) {
         if (remainingDates.length > 0) {
@@ -4315,6 +4496,7 @@ export default {
           const picker = document.getElementById('activeDatePicker');
           if (picker) picker.value = activeDate;
         } else {
+          delete deletedDatesMap[activeDate];
           allDaysStore[activeDate] = createDefaultDay(activeDate);
         }
       }
@@ -4328,12 +4510,10 @@ export default {
       renderWeeklyReport();
       renderFoodImpactTab();
       await saveCurrentDayToServer(true);
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastSaved'));
     }
 
-    /********************************************************************
-     * FOOD AVERAGE GLYCEMIC IMPACT ENGINE (ΔBG = Post2h - PreMeal)
-     ********************************************************************/
+    // Upgraded Food Glycemic Impact Tab: Excludes Hypo Rescue Meals (<80 mg/dL) & Shows Avg Paired Insulin
     function renderFoodImpactTab() {
       const tbody = document.getElementById('foodImpactTableBody');
       const kpiGrid = document.getElementById('foodImpactKpiGrid');
@@ -4341,6 +4521,7 @@ export default {
       const t = UI_TEXT[currentLang] || UI_TEXT.zh;
       const catFilter = document.getElementById('impactCategoryFilter')?.value || 'all';
       const sortMode = document.getElementById('impactSortSelect')?.value || 'spikeAsc';
+      const excludeHypo = document.getElementById('impactExcludeHypoChk') ? document.getElementById('impactExcludeHypoChk').checked : true;
 
       const foodStatsMap = {};
       let analyzedMealsCount = 0;
@@ -4355,22 +4536,28 @@ export default {
           const post = Number(md.postBg);
           if (!md.preBg || !md.postBg || isNaN(pre) || isNaN(post) || pre < 20 || post < 20) return;
 
+          // Exclude Hypo Rescue meals if checkbox is active
+          const isHypoMeal = pre < 80 || (md.selectedFoods || []).includes('FOOD_SUGAR_HYPO') || (md.selectedFoods || []).includes('FOOD_JUICE_HYPO');
+          if (excludeHypo && isHypoMeal) return;
+
           const delta = post - pre;
           const hasAnyFood = (md.selectedFoods && md.selectedFoods.length > 0) || (md.customFoods && md.customFoods.length > 0);
           if (!hasAnyFood) return;
           analyzedMealsCount++;
 
-          (md.selectedFoods || []).forEach(fid => {
-            const fMeta = FOOD_ID_MAP[fid];
-            if (!fMeta) return;
-            if (!foodStatsMap[fid]) {
-              const catObj = FOOD_CATEGORIES.find(c => c.catId === fMeta.catId);
-              foodStatsMap[fid] = {
-                key: fid,
-                name: `${fMeta.emoji} ${fMeta[currentLang] || fMeta.zh}`,
-                catId: fMeta.catId,
-                catName: catObj ? `${catObj.emoji} ${catObj.name[currentLang] || catObj.name.zh}` : fMeta.catId,
+          const regU = md.insStatus === 'done' ? (Number(md.regUnits) || 0) : 0;
+          const nphU = md.insStatus === 'done' ? (Number(md.nphUnits) || 0) : 0;
+
+          const recordStat = (fKey, name, catId, catName) => {
+            if (!foodStatsMap[fKey]) {
+              foodStatsMap[fKey] = {
+                key: fKey,
+                name,
+                catId,
+                catName,
                 count: 0,
+                sumReg: 0,
+                sumNph: 0,
                 sumPre: 0,
                 sumPost: 0,
                 sumDelta: 0,
@@ -4379,48 +4566,47 @@ export default {
                 dates: new Set()
               };
             }
-            const st = foodStatsMap[fid];
+            const st = foodStatsMap[fKey];
             st.count++;
+            st.sumReg += regU;
+            st.sumNph += nphU;
             st.sumPre += pre;
             st.sumPost += post;
             st.sumDelta += delta;
             st.minDelta = Math.min(st.minDelta, delta);
             st.maxDelta = Math.max(st.maxDelta, delta);
             st.dates.add(dStr);
+          };
+
+          (md.selectedFoods || []).forEach(fid => {
+            const fMeta = FOOD_ID_MAP[fid];
+            if (!fMeta) return;
+            const catObj = FOOD_CATEGORIES.find(c => c.catId === fMeta.catId);
+            recordStat(
+              fid,
+              `${fMeta.emoji} ${fMeta[currentLang] || fMeta.zh}`,
+              fMeta.catId,
+              catObj ? `${catObj.emoji} ${catObj.name[currentLang] || catObj.name.zh}` : fMeta.catId
+            );
           });
 
           (md.customFoods || []).forEach(cf => {
             const cKey = `CUSTOM_${cf.catId}_${cf.raw}`;
-            if (!foodStatsMap[cKey]) {
-              const catObj = FOOD_CATEGORIES.find(c => c.catId === cf.catId);
-              foodStatsMap[cKey] = {
-                key: cKey,
-                name: `✍️ ${formatCustomFoodDisplay(cf, currentLang)}`,
-                catId: cf.catId,
-                catName: catObj ? `${catObj.emoji} ${catObj.name[currentLang] || catObj.name.zh}` : cf.catId,
-                count: 0,
-                sumPre: 0,
-                sumPost: 0,
-                sumDelta: 0,
-                minDelta: Infinity,
-                maxDelta: -Infinity,
-                dates: new Set()
-              };
-            }
-            const st = foodStatsMap[cKey];
-            st.count++;
-            st.sumPre += pre;
-            st.sumPost += post;
-            st.sumDelta += delta;
-            st.minDelta = Math.min(st.minDelta, delta);
-            st.maxDelta = Math.max(st.maxDelta, delta);
-            st.dates.add(dStr);
+            const catObj = FOOD_CATEGORIES.find(c => c.catId === cf.catId);
+            recordStat(
+              cKey,
+              `✍️ ${formatCustomFoodDisplay(cf, currentLang)}`,
+              cf.catId,
+              catObj ? `${catObj.emoji} ${catObj.name[currentLang] || catObj.name.zh}` : cf.catId
+            );
           });
         });
       });
 
       let list = Object.values(foodStatsMap).map(item => ({
         ...item,
+        avgReg: Math.round((item.sumReg / item.count) * 10) / 10,
+        avgNph: Math.round((item.sumNph / item.count) * 10) / 10,
         avgPre: Math.round(item.sumPre / item.count),
         avgPost: Math.round(item.sumPost / item.count),
         avgDelta: Math.round(item.sumDelta / item.count),
@@ -4439,7 +4625,6 @@ export default {
         list.sort((a, b) => b.count - a.count);
       }
 
-      // KPI Summary Cards
       const allSortedBySpike = [...list].sort((a, b) => a.avgDelta - b.avgDelta);
       const bestFood = allSortedBySpike[0];
       const worstFood = allSortedBySpike[allSortedBySpike.length - 1];
@@ -4461,7 +4646,7 @@ export default {
       `;
 
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="py-8 px-4 text-center text-slate-400 break-words">${t.impEmptyRow}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="py-8 px-4 text-center text-slate-400 break-words">${t.impEmptyRow}</td></tr>`;
         return;
       }
 
@@ -4469,11 +4654,15 @@ export default {
         const badgeCls = item.avgDelta <= 25
           ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
           : (item.avgDelta <= 50 ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-rose-100 text-rose-800 border-rose-300');
+        const insDisplay = (item.avgReg > 0 || item.avgNph > 0)
+          ? `🟡${item.avgReg}U + 🟢${item.avgNph}U`
+          : `⭕ 0U`;
         return `
           <tr class="hover:bg-slate-50">
             <td class="py-2.5 px-3 font-bold text-slate-800 break-words">${item.name}</td>
             <td class="py-2.5 px-3 text-slate-600 whitespace-nowrap">${item.catName}</td>
             <td class="py-2.5 px-3 font-mono font-bold text-slate-700">${item.count}</td>
+            <td class="py-2.5 px-3 font-mono text-xs text-slate-700 whitespace-nowrap">${insDisplay}</td>
             <td class="py-2.5 px-3 font-mono text-slate-700">${item.avgPre} mg/dL</td>
             <td class="py-2.5 px-3 font-mono font-bold ${item.avgPost <= 160 && item.avgPost >= 80 ? 'text-emerald-700' : 'text-amber-800'}">${item.avgPost} mg/dL</td>
             <td class="py-2.5 px-3 font-mono">
@@ -4489,7 +4678,7 @@ export default {
     function updateLiveBgManually(val, fromAutoSync = false) {
       const numVal = Number(val);
       if (!val || isNaN(numVal) || numVal < 20 || numVal > 600) {
-        if (!fromAutoSync) showToast('fail', 'warn', 800);
+        if (!fromAutoSync) showToast(tMsg('toastInvalidBg'), 'warn');
         return;
       }
       liveDexcomState.bg = numVal;
@@ -4518,18 +4707,10 @@ export default {
       if (agoEl) {
         agoEl.textContent = formatLocalizedDexcomTimeAgo();
       }
-
-      if (!fromAutoSync) {
-        showToast('succeed', 'success', 800);
-      }
     }
 
     function updateLiveTrendManually(arrow) {
       liveDexcomState.trend = arrow || '→';
-      const selEl = document.getElementById('manualTrendSelect');
-      if (selEl && ['→', '↗', '↑', '↘', '↓'].includes(arrow)) {
-        selEl.value = arrow;
-      }
       const trEl = document.getElementById('liveBgTrend');
       if (trEl) trEl.textContent = liveDexcomState.trend;
     }
@@ -4558,7 +4739,12 @@ export default {
         uiKoreaLabel: t.koreaLabel,
         uiDexcomLiveLabel: t.dexcomLiveLabel,
         uiRefreshBtn: t.refreshBtn,
-        // Desktop Sidebar
+        uiHypoRescueBtn: t.hypoRescueBtn,
+        uiHypoBannerTitle: t.hypoBannerTitle,
+        uiHypoBannerDesc: t.hypoBannerDesc,
+        uiHypoRecheckBtn: t.hypoRecheckBtn,
+        uiHypoUndoBtn: t.hypoUndoBtn,
+        uiJumpTodayBtn: t.jumpTodayBtn,
         uiSideNavHeader: t.sideNavHeader,
         uiSideSupp: t.sideSupp,
         uiSideMeal0: t.sideMeal0,
@@ -4569,7 +4755,6 @@ export default {
         uiSideMeal5: t.sideMeal5,
         uiSideMeal6: t.sideMeal6,
         uiSideTop: t.sideTop,
-        // Mobile Bottom Nav
         uiMobSupp: t.mobSupp,
         uiMobMeal0: t.mobMeal0,
         uiMobMeal1: t.mobMeal1,
@@ -4578,7 +4763,6 @@ export default {
         uiMobMeal4: t.mobMeal4,
         uiMobMeal5: t.mobMeal5,
         uiMobMeal6: t.mobMeal6,
-        // Top Steady State Cards
         uiTirLabel: t.tirLabel,
         uiTirSub1: t.tirSub1,
         uiTotalInsulinLabel: t.totalInsulinLabel,
@@ -4592,7 +4776,6 @@ export default {
         optQuadRU: t.quadRU,
         optQuadLL: t.quadLL,
         optQuadRL: t.quadRL,
-        // Main Tabs
         uiTabDaily: t.tabDaily,
         uiTabFoodImpact: t.tabFoodImpact,
         uiTabHistory: t.tabHistory,
@@ -4604,7 +4787,6 @@ export default {
         uiResetBtnText: t.resetBtnText,
         uiSyncBtnText: t.syncBtnText,
         uiPullBtnText: t.pullBtnText,
-        // Module 1
         uiMod2Title: t.mod2Title,
         uiMod2Sub: t.mod2Sub,
         uiWakeUpLabel: t.wakeUpLabel,
@@ -4623,7 +4805,6 @@ export default {
         uiKondoshSub: t.kondoshSub,
         uiWalkTitle: t.walkTitle,
         uiWalkSub: t.walkSub,
-        // Module 2 (Diet Log)
         uiMod3Title: t.mod3Title,
         uiMod3Sub: t.mod3Sub,
         uiJump0: t.jump0,
@@ -4633,9 +4814,9 @@ export default {
         uiJump4: t.jump4,
         uiJump5: t.jump5,
         uiJump6: t.jump6,
-        // Food Impact Tab
         uiImpactTitle: t.impactTitle,
         uiImpactSub: t.impactSub,
+        uiImpExcludeHypo: t.impExcludeHypo,
         optImpCatAll: t.optImpCatAll,
         optImpCatGood: t.optImpCatGood,
         optImpCatProt: t.optImpCatProt,
@@ -4649,16 +4830,17 @@ export default {
         thImpFood: t.thImpFood,
         thImpCat: t.thImpCat,
         thImpCount: t.thImpCount,
+        thImpAvgIns: t.thImpAvgIns,
         thImpAvgPre: t.thImpAvgPre,
         thImpAvgPost: t.thImpAvgPost,
         thImpAvgDelta: t.thImpAvgDelta,
         thImpRange: t.thImpRange,
         thImpDates: t.thImpDates,
-        // History Tab
         uiHistTitle: t.histTitle,
         uiHistSub: t.histSub,
         uiExportCsvBtn: t.exportCsvBtn,
         uiFilterDateLabel: t.filterDateLabel,
+        optHistAll: t.optHistAll,
         optHist7Days: t.optHist7Days,
         optHistToday: t.optHistToday,
         optHistYesterday: t.optHistYesterday,
@@ -4680,13 +4862,11 @@ export default {
         thHistDetail: t.thHistDetail,
         thHistBg: t.thHistBg,
         thHistAction: t.thHistAction,
-        // Daily Report Tab
         uiRepDayTitle: t.repDayTitle,
         uiRepDaySub: t.repDaySub,
         uiBtnTransNow: t.btnTransNow,
         uiBtnCopyDay: t.btnCopyDay,
         uiBtnSendDay: t.btnSendDay,
-        // Weekly Report Tab
         uiEmailCenterTitle: t.emailCenterTitle,
         uiEmailCenterSub: t.emailCenterSub,
         uiAutoSendLabel: t.autoSendLabel,
@@ -4705,7 +4885,6 @@ export default {
         thWeekMeals: t.thWeekMeals,
         thWeekFamo: t.thWeekFamo,
         thWeekAction: t.thWeekAction,
-        // Delete Date Modal
         uiDelModalTitle: t.delModalTitle,
         uiDelModalDesc: t.delModalDesc,
         uiDelSelectLabel: t.delSelectLabel,
@@ -4732,7 +4911,6 @@ export default {
       renderFoodImpactTab();
       highlightActiveSectionButtons(currentActiveSectionId);
       setTimeout(updateSidebarStickyOffset, 20);
-      // Automatically ensure any previously entered custom foods have 4-language translations
       ensureExistingCustomFoodsTranslated();
     }
 
@@ -4767,6 +4945,7 @@ export default {
       }
     }
 
+    // Fixed: Complete date range filtering (All, 7days, Today, Yesterday, Custom) + stores filtered rows for CSV export
     function applyHistoryFilters() {
       const tbody = document.getElementById('historyTableBody');
       if (!tbody) return;
@@ -4787,15 +4966,27 @@ export default {
         return `🇮🇷 ${irHm} / 🇰🇷 ${krHm}`;
       };
 
+      const yesterdayStr = shiftDateString(activeDate, -1);
+      const sevenDaysAgoStr = shiftDateString(activeDate, -6);
+      const customStart = document.getElementById('histStartDate')?.value || '';
+      const customEnd = document.getElementById('histEndDate')?.value || '';
+
       const rowsHtml = [];
+      currentFilteredHistoryRows = [];
       const sortedDates = Object.keys(allDaysStore).sort().reverse();
 
       sortedDates.forEach(dStr => {
         if (preset === 'today' && dStr !== activeDate) return;
+        if (preset === 'yesterday' && dStr !== yesterdayStr) return;
+        if (preset === '7days' && (dStr < sevenDaysAgoStr || dStr > activeDate)) return;
+        if (preset === 'custom') {
+          if (customStart && dStr < customStart) return;
+          if (customEnd && dStr > customEnd) return;
+        }
+
         const day = ensureDaySchemaIntegrity(allDaysStore[dStr]);
         if (!day) return;
 
-        // Supplements rows
         if (catFilter === 'all' || catFilter === 'supp') {
           SUPPLEMENTS_DICT.forEach(supp => {
             const st = day.supplements?.[supp.id];
@@ -4804,14 +4995,17 @@ export default {
               const sTag = supp.timingTag[currentLang] || supp.timingTag.zh;
               const detail = `${sName} (${t.thWeekFamo}: ${day.famotidineDose})`;
               if (keyword && !detail.toLowerCase().includes(keyword)) return;
+              const tzStr = formatTz(st.timeIr || day.wakeTime);
+              const bgCell = supp.hasFastingBg && day.fastingBg ? `${t.fastingBgLabel} ${day.fastingBg} mg/dL` : '-';
+              currentFilteredHistoryRows.push([dStr, tzStr, t.catTagSupp, sTag, detail, bgCell]);
               rowsHtml.push(`
                 <tr class="hover:bg-slate-50">
                   <td class="py-2.5 px-3 font-mono font-bold text-slate-700">${dStr}</td>
-                  <td class="py-2.5 px-3 font-mono text-slate-600">${formatTz(st.timeIr || day.wakeTime)}</td>
+                  <td class="py-2.5 px-3 font-mono text-slate-600">${tzStr}</td>
                   <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-teal-100 text-teal-800 font-bold">${t.catTagSupp}</span></td>
                   <td class="py-2.5 px-3 font-bold text-slate-800">${sTag}</td>
                   <td class="py-2.5 px-3 text-slate-700">${detail}</td>
-                  <td class="py-2.5 px-3 font-mono text-emerald-700">${supp.hasFastingBg && day.fastingBg ? `${t.fastingBgLabel} ${day.fastingBg} mg/dL` : '-'}</td>
+                  <td class="py-2.5 px-3 font-mono text-emerald-700">${bgCell}</td>
                   <td class="py-2.5 px-3 whitespace-nowrap">
                     <button type="button" onclick="openDeleteDateModal('${dStr}')" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-[11px] transition">${t.deleteRowBtn}</button>
                   </td>
@@ -4821,7 +5015,6 @@ export default {
           });
         }
 
-        // Meal & Insulin rows
         MEAL_NODES_META.forEach(meta => {
           const md = day.meals?.[meta.key];
           if (!md) return;
@@ -4841,16 +5034,21 @@ export default {
 
           if (keyword && !combinedDetail.toLowerCase().includes(keyword) && !bgText.toLowerCase().includes(keyword)) return;
 
+          const tzStr = formatTz(md.time);
+          const catBadge = hasIns ? t.catTagMealIns : t.catTagMeal;
+          const nodeTitle = `${meta.icon} ${meta.title[currentLang] || meta.title.zh}`;
+          currentFilteredHistoryRows.push([dStr, tzStr, catBadge, nodeTitle, combinedDetail, bgText]);
+
           rowsHtml.push(`
             <tr class="hover:bg-slate-50">
               <td class="py-2.5 px-3 font-mono font-bold text-slate-700">${dStr}</td>
-              <td class="py-2.5 px-3 font-mono text-slate-600">${formatTz(md.time)}</td>
-              <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">${hasIns ? t.catTagMealIns : t.catTagMeal}</span></td>
-              <td class="py-2.5 px-3 font-bold text-slate-800">${meta.icon} ${meta.title[currentLang] || meta.title.zh}</td>
+              <td class="py-2.5 px-3 font-mono text-slate-600">${tzStr}</td>
+              <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">${catBadge}</span></td>
+              <td class="py-2.5 px-3 font-bold text-slate-800">${nodeTitle}</td>
               <td class="py-2.5 px-3 text-slate-700">${combinedDetail}</td>
               <td class="py-2.5 px-3 font-mono font-bold text-slate-800">${bgText}</td>
               <td class="py-2.5 px-3 whitespace-nowrap">
-                <button type="button" onclick="openDeleteDateModal('${dStr}')" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-[11px] transition">${t.deleteRowBtn}</button>
+                <button type="button" onclick="openDeleteDateModal('${dStr}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-[11px] transition">${t.deleteRowBtn}</button>
               </td>
             </tr>
           `);
@@ -5043,21 +5241,19 @@ export default {
     }
 
     function copyDailyReportText() {
-      copyTextToClipboard(buildPlainTextReport('daily'), '📋 已复制全中文每日报告到剪贴板！');
+      copyTextToClipboard(buildPlainTextReport('daily'), '📋 已复制每日报告到剪贴板！');
     }
 
     function copyWeeklyReportText() {
-      copyTextToClipboard(buildPlainTextReport('weekly'), '📋 已复制本周 7 天汇总周报到剪贴板！');
+      copyTextToClipboard(buildPlainTextReport('weekly'), '📋 已复制本周汇总周报到剪贴板！');
     }
 
     async function translateAllCustomFoodsNow() {
       if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        showToast('404', 'warn', 800);
+        showToast(tMsg('toastOffline'), 'warn');
         return false;
       }
       const dates = Object.keys(allDaysStore);
-      let anyFailed = false;
-      let anyOffline = false;
       for (const d of dates) {
         const day = allDaysStore[d];
         if (!day || !day.meals) continue;
@@ -5067,8 +5263,6 @@ export default {
             const res = await translateCustomTextWithStatus(cf.raw);
             cf.zhDisplay = res.text;
             if (res.translations) cf.translations = res.translations;
-            if (res.status === '404') anyOffline = true;
-            else if (res.status === 'fail') anyFailed = true;
           }
         }
       }
@@ -5077,15 +5271,7 @@ export default {
       renderDailyReport();
       renderWeeklyReport();
       renderFoodImpactTab();
-      if (anyOffline) {
-        showToast('404', 'warn', 800);
-        return false;
-      }
-      if (anyFailed) {
-        showToast('fail', 'warn', 800);
-        return false;
-      }
-      showToast('succeed', 'success', 800);
+      showToast(tMsg('toastTransOk'));
       return true;
     }
 
@@ -5109,25 +5295,51 @@ export default {
 
     async function sendReportEmailNow(reportType = 'daily', isAuto = false) {
       if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        showToast('404', 'warn', 800);
+        if (!isAuto) showToast(tMsg('toastOffline'), 'warn');
         return;
       }
       await translateAllCustomFoodsNow();
       const recipients = getSelectedRecipientEmails();
-      if (recipients.length === 0) {
-        showToast('fail', 'warn', 800);
-        return;
-      }
+      if (recipients.length === 0) return;
+
       const t = UI_TEXT[currentLang] || UI_TEXT.zh;
+      const { irDateStr } = getFormattedDualClocks();
+      // When auto-sending at 10:00 AM KST, send yesterday's completed report by default
+      const defaultReportDate = isAuto ? shiftDateString(irDateStr, -1) : activeDate;
       const targetDate = reportType === 'daily'
-        ? (document.getElementById('dailyReportDateSelect')?.value || activeDate)
+        ? (document.getElementById('dailyReportDateSelect')?.value || defaultReportDate)
         : activeDate;
       const subject = reportType === 'daily'
         ? `${t.emailSubjDaily} ${targetDate}`
         : `${t.emailSubjWeekly} ${targetDate}`;
       const bodyText = buildPlainTextReport(reportType);
 
-      // 1. Direct EmailJS REST API silent automatic dispatch (if configured)
+      // 1. 优先通过 Cloudflare Worker 云端网关发信
+      const workerUrl = (serverConfig.dexcomBridgeUrl || DEFAULT_WORKER_URL).trim();
+      if (workerUrl && workerUrl.includes('workers.dev')) {
+        try {
+          const wMailRes = await fetch(workerUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'send_email',
+              to: recipients.join(', '),
+              subject: subject,
+              message: bodyText,
+              reportDate: targetDate
+            })
+          });
+          if (wMailRes.ok) {
+            const wMailData = await wMailRes.json();
+            if (wMailData && wMailData.ok) {
+              showToast('📨 报告已通过加密云端发送至双邮箱！');
+              return;
+            }
+          }
+        } catch (e) {}
+      }
+
+      // 2. 备用直连 EmailJS
       if (serverConfig.emailServiceId && serverConfig.emailTemplateId && serverConfig.emailPublicKey) {
         try {
           const ejsRes = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
@@ -5141,24 +5353,17 @@ export default {
                 to_email: recipients.join(', '),
                 subject: subject,
                 message: bodyText,
-                report_date: activeDate
+                report_date: targetDate
               }
             })
           });
           if (ejsRes.ok) {
-            showToast('succeed', 'success', 800);
-            return;
-          } else {
-            showToast('fail', 'warn', 800);
+            showToast('📨 报告已成功发送至双邮箱！');
             return;
           }
-        } catch (err) {
-          showToast('404', 'warn', 800);
-          return;
-        }
+        } catch (err) {}
       }
 
-      // 2. Custom Webhook URL fallback (if configured)
       if (serverConfig.emailWebhookUrl) {
         try {
           const whRes = await fetch(serverConfig.emailWebhookUrl, {
@@ -5167,26 +5372,22 @@ export default {
             body: JSON.stringify({ to: recipients, subject, text: bodyText, reportType, timestamp: new Date().toISOString() })
           });
           if (whRes.ok) {
-            showToast('succeed', 'success', 800);
-          } else {
-            showToast('fail', 'warn', 800);
+            showToast('📨 报告已通过 Webhook 发送成功！');
           }
           return;
-        } catch (err) {
-          showToast('404', 'warn', 800);
-          return;
-        }
+        } catch (err) {}
       }
 
-      // 3. If neither EmailJS nor Webhook is configured yet
-      if (isAuto) return;
-      showToast('fail', 'warn', 800);
+      if (!isAuto) {
+        showToast('请先在右上角 ⚙️ 设置中配置 EmailJS 或 Webhook 参数', 'warn');
+      }
     }
 
     function toggleAutoEmailSchedule(enabled) {
       serverConfig.autoSendEnabled = enabled;
+      persistStateLocally();
       updateNext10AmCountdown();
-      showToast(enabled ? '⏰ 已开启每日 10:00 / 周日 10:00 自动报告推送' : '已暂停自动定时发送', 'info');
+      showToast(enabled ? '⏰ 已开启每日 10:00 自动报告推送' : '已暂停自动定时发送', 'info');
     }
 
     function downloadCSVFile(filename, rows) {
@@ -5204,7 +5405,7 @@ export default {
     }
 
     function exportWeeklySummaryCSV() {
-      const headers = ['日期', '起床时间(伊朗)', '起床时间(韩国)', '80-160稳态达标率(%)', '最低血糖', '最高血糖', '黄瓶Regular累计(U)', '绿瓶NPH累计(U)', '法莫替丁(粒)', '腹部轮换区', '全天六大餐饮与额外摄入明细(中文)'];
+      const headers = ['日期', '起床时间(伊朗)', '起床时间(韩国)', '80-160稳态达标率(%)', '最低血糖', '最高血糖', '黄瓶Regular累计(U)', '绿瓶NPH累计(U)', '法莫替丁(粒)', '腹部轮换区', '全天7大餐饮与额外摄入明细(中文)'];
       const rows = [headers];
       Object.keys(allDaysStore).sort().reverse().forEach(d => {
         const day = allDaysStore[d];
@@ -5219,8 +5420,14 @@ export default {
       showToast('📥 周报 CSV (Excel) 导出成功！');
     }
 
+    // Fixed: Exports the exact filtered history rows instead of duplicating the weekly summary CSV
     function exportFilteredHistoryCSV() {
-      exportWeeklySummaryCSV();
+      applyHistoryFilters();
+      const t = UI_TEXT[currentLang] || UI_TEXT.zh;
+      const headers = [t.thHistDate, t.thHistTime, t.thHistCat, t.thHistNode, t.thHistDetail, t.thHistBg];
+      const rows = [headers, ...currentFilteredHistoryRows];
+      downloadCSVFile(`历史筛选明细_${activeDate}.csv`, rows);
+      showToast('📥 当前筛选历史明细 CSV (Excel) 导出成功！');
     }
 
     function switchTab(tabKey) {
@@ -5270,15 +5477,17 @@ export default {
     function switchActiveDate(newDate) {
       if (!newDate) return;
       activeDate = newDate;
+      const picker = document.getElementById('activeDatePicker');
+      if (picker && picker.value !== newDate) picker.value = newDate;
       renderModule2();
       renderMeals();
       updateTopSteadyStateDashboard();
-      showToast(`已切换至日期: ${newDate}`);
+      showToast(`📅 ${newDate}`);
     }
 
     function copyDexcomBridgeCode() {
       const code = document.getElementById('dexcomBridgeCodeBlock')?.textContent || '';
-      copyTextToClipboard(code, '📋 20 行 Dexcom Share 桥接代码已复制！');
+      copyTextToClipboard(code, '📋 升级版 Cloudflare Worker 代码已复制！');
     }
 
     function downloadFullJsonBackup() {
@@ -5292,7 +5501,7 @@ export default {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showToast('💾 含双时区时间戳的全量 JSON 备份文件已下载！');
+      showToast('💾 全量 JSON 备份文件已下载！');
     }
 
     function importFullJsonBackup(event) {
@@ -5303,9 +5512,11 @@ export default {
         try {
           const parsed = JSON.parse(e.target.result);
           Object.assign(allDaysStore, parsed);
+          persistStateLocally();
           renderModule2();
           renderMeals();
           updateTopSteadyStateDashboard();
+          renderFoodImpactTab();
           closeServerModal();
           showToast('📂 JSON 数据文件导入成功！');
         } catch (err) {
@@ -5316,8 +5527,8 @@ export default {
     }
 
     window.onload = function () {
-      seedInitial7DaysData();
       loadPersistedState();
+      seedInitial7DaysData();
       Object.keys(allDaysStore).forEach(k => ensureDaySchemaIntegrity(allDaysStore[k]));
       if (liveDexcomState.bg) {
         updateLiveBgManually(liveDexcomState.bg, true);
@@ -5338,13 +5549,21 @@ export default {
       if (headerEl && typeof ResizeObserver !== 'undefined') {
         new ResizeObserver(() => updateSidebarStickyOffset()).observe(headerEl);
       }
-      // Auto pull latest cloud JSON & Dexcom live BG on startup
+
+      // Auto-sync when user switches back to this tab on mobile/desktop
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          if (serverConfig.jsonServerUrl) fetchFromJsonServer(true);
+          if (serverConfig.dexcomUser || serverConfig.dexcomBridgeUrl) syncDexcomNow(true);
+        }
+      });
+
       if (serverConfig.jsonServerUrl) {
         fetchFromJsonServer(true);
       }
       if (serverConfig.dexcomUser || serverConfig.dexcomBridgeUrl) {
         syncDexcomNow(true);
-        setInterval(() => syncDexcomNow(true), 300000); // Auto sync Dexcom every 5 mins
+        setInterval(() => syncDexcomNow(true), 300000);
       }
     };
   </script>
