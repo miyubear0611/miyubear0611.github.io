@@ -322,15 +322,33 @@
       <div id="uiPwaGuideContainer" class="space-y-3 text-xs text-slate-700 leading-relaxed">
         <!-- Dynamically populated in zh / ko / fa / en -->
       </div>
-      <!-- Always-visible 1-Click Install / Desktop App Generator Button -->
-      <div class="pt-1">
-        <button id="btnTopOneClickApp" onclick="triggerNativePwaInstall()" class="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white text-sm font-extrabold shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
-          <span>📲</span>
-          <span id="uiTopOneClickText">立即一键安装 / 生成桌面 App (앱 생성)</span>
+      <!-- 100% Unblocked Desktop App Shortcut Command Copy & Icon Download -->
+      <div class="p-3.5 rounded-2xl bg-pink-50 border-2 border-pink-300 space-y-2.5">
+        <div class="text-xs font-extrabold text-pink-950">
+          ✨ 10秒放到桌面且永不被拦截（100% 以独立 App 窗口打开）：
+        </div>
+        <div class="text-xs text-slate-700 leading-relaxed space-y-1">
+          <div>1️⃣ 点击下方 <b>【📋 第一步：一键复制 App 启动命令】</b>；</div>
+          <div>2️⃣ 回到电脑桌面空白处 <b>鼠标右键 ➔ 新建 (새로 만들기) ➔ 快捷方式 (바로 가기)</b>；</div>
+          <div>3️⃣ 按 <b>Ctrl + V</b> 粘贴刚刚复制的命令 ➔ 点击<b>下一步</b> ➔ 输入名称<b>「饮食参考菜谱」</b> ➔ 点击<b>完成</b>！</div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+          <button type="button" onclick="copyDesktopAppCommand('chrome')" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer">
+            <span>📋</span>
+            <span>第一步：复制 Chrome App 命令</span>
+          </button>
+          <button type="button" onclick="copyDesktopAppCommand('edge')" class="py-2.5 px-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-extrabold shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer">
+            <span>📋</span>
+            <span>复制 Edge 浏览器 App 命令</span>
+          </button>
+        </div>
+        <button type="button" onclick="downloadPinkBowlIcon()" class="w-full py-2 px-3 rounded-xl bg-white hover:bg-pink-100 text-pink-900 border border-pink-300 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+          <span>🥣</span>
+          <span>（可选）下载淡粉色小碗图标文件 (.ico) 用于更换图标</span>
         </button>
       </div>
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
-        <button id="btnNativePwaPrompt" onclick="triggerNativePwaInstall()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm cursor-pointer">📲 立即一键安装到桌面</button>
+        <button id="btnNativePwaPrompt" onclick="triggerNativePwaInstall()" class="hidden px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm cursor-pointer">📲 浏览器原生安装</button>
         <button id="uiPwaCloseBtn" onclick="closePwaInstallModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer">知道了</button>
       </div>
     </div>
@@ -3817,6 +3835,7 @@
         const iconUri = 'data:image/png;base64,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';
         const startUrl = window.location.href.startsWith('http') ? window.location.href : './';
         const manifestObj = {
+          id: '/diet-recipe-app-' + (window.location.pathname.replace(/[^a-zA-Z0-9]/g, '_') || 'main'),
           name: '饮食参考菜谱',
           short_name: '饮食菜谱',
           start_url: startUrl,
@@ -4035,6 +4054,55 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+    }
+
+    
+    function copyDesktopAppCommand(browserType) {
+      const currentUrl = window.location.href.split('#')[0];
+      let cmd = '';
+      if (browserType === 'edge') {
+        cmd = `"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe" --app="${currentUrl}"`;
+      } else {
+        cmd = `"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" --app="${currentUrl}"`;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(cmd).then(() => {
+          showToast('✅ 已复制 App 启动命令！去桌面右键 ➔ 新建快捷方式 ➔ Ctrl+V 粘贴即可', 'success', 4500);
+        }).catch(() => {
+          fallbackCopyCmd(cmd);
+        });
+      } else {
+        fallbackCopyCmd(cmd);
+      }
+    }
+
+    function fallbackCopyCmd(cmd) {
+      const ta = document.createElement('textarea');
+      ta.value = cmd;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('✅ 已复制 App 启动命令！去桌面右键 ➔ 新建快捷方式 ➔ Ctrl+V 粘贴即可', 'success', 4500);
+    }
+
+    function downloadPinkBowlIcon() {
+      const byteCharacters = atob(EMBEDDED_ICO_B64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'image/x-icon' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '饮食参考菜谱图标.ico';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('🥣 已下载粉色小碗图标 (.ico)！右键桌面快捷方式 ➔ 属性 ➔ 更改图标即可选用', 'success', 4500);
     }
 
     async function triggerNativePwaInstall() {
