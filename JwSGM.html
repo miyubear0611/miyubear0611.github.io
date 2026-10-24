@@ -49,6 +49,24 @@ body {
 [dir="rtl"] {
   font-family: "Tahoma", "Geeza Pro", "Noto Sans Arabic", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
+[dir="rtl"] * {
+  letter-spacing: 0 !important;
+  word-break: normal !important;
+}
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+[dir="rtl"] .text-right {
+  text-align: left;
+}
+[dir="rtl"] .ml-auto {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+[dir="rtl"] .font-mono {
+  direction: ltr;
+  unicode-bidi: embed;
+}
 hr {
   height: 0;
   color: inherit;
@@ -263,7 +281,7 @@ svg, img, video, canvas {
 .border-white\/40 { border-color: rgba(255, 255, 255, 0.4); }
 .border-white\/90 { border-color: rgba(255, 255, 255, 0.9); }
 .bottom-0 { bottom: 0px; }
-.break-words { overflow-wrap: break-word; word-break: break-word; }
+.break-words { overflow-wrap: break-word; word-break: normal; }
 .col-span-2 { grid-column: span 2 / span 2; }
 .cursor-pointer { cursor: pointer; }
 .divide-slate-100 > :not([hidden]) ~ :not([hidden]) { border-color: rgb(241, 245, 249); }
@@ -607,7 +625,7 @@ svg, img, video, canvas {
     <div class="max-w-7xl mx-auto px-2.5 sm:px-6 py-2">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <!-- Brand Title with Green Heart -->
-        <div class="flex items-center gap-2 min-w-0">
+        <div class="flex items-center gap-2 min-w-[170px] flex-1">
           <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shadow-sm shrink-0">
             <svg class="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500 fill-current" viewBox="0 0 24 24">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -702,18 +720,18 @@ svg, img, video, canvas {
     <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-2.5">
       <!-- 1. Dexcom Follow Style Live BG Card + 1-Tap Hypo Rescue Button -->
       <div class="col-span-2 lg:col-span-1 flex flex-col justify-between bg-gradient-to-br from-emerald-50/95 to-teal-50/90 border border-emerald-200/90 rounded-xl px-3 py-2 overflow-hidden shadow-sm">
-        <div class="flex items-center justify-between gap-1.5">
-          <div class="flex items-center gap-1.5 min-w-0">
+        <div class="flex flex-wrap items-center justify-between gap-1.5">
+          <div class="flex items-center gap-1.5">
             <span id="dexcomStatusDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse-soft shrink-0"></span>
-            <span id="uiDexcomLiveLabel" class="text-xs font-bold text-emerald-950 break-words leading-snug">Dexcom 实时血糖</span>
+            <span id="uiDexcomLiveLabel" class="text-xs font-bold text-emerald-950 leading-snug">Dexcom 实时血糖</span>
           </div>
-          <div class="flex items-center gap-1 shrink-0">
+          <div class="flex flex-wrap items-center gap-1 shrink-0">
             <button onclick="triggerOneTapHypoRescue()" id="uiHypoRescueBtn" class="text-[10px] px-2 py-0.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold transition whitespace-nowrap shadow-sm" title="15-15 Rule Hypo Rescue">🚨 急救15g</button>
             <button onclick="syncDexcomNow(false)" id="uiRefreshBtn" class="text-[11px] px-2 py-0.5 rounded-lg bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold transition whitespace-nowrap shadow-sm">🔄 刷新</button>
           </div>
         </div>
 
-        <div class="flex items-center justify-between gap-2 mt-1.5">
+        <div class="flex flex-wrap items-center justify-between gap-2 mt-1.5">
           <!-- Dexcom Follow Circle / Pill Badge -->
           <div class="flex items-center gap-2">
             <div id="followCircleBadge" class="px-2.5 py-1 rounded-2xl bg-slate-200 text-slate-600 flex items-baseline gap-1 shadow-inner transition-colors">
@@ -4099,7 +4117,7 @@ svg, img, video, canvas {
                 </div>
                 ${supp.hasFastingBg ? `
                   <div class="p-2 rounded-xl bg-emerald-50/80 border border-emerald-200/90 space-y-1.5">
-                    <div class="flex items-center justify-between gap-1">
+                    <div class="flex flex-wrap items-center justify-between gap-1">
                       <span class="text-emerald-900 font-bold text-[11px]">${t.fastingBgLabel}</span>
                       <button type="button" onclick="fillFastingBgFromDexcom()" class="px-2 py-0.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-[10px] shadow-sm transition">${t.autoFillDexcom}</button>
                     </div>
@@ -4272,7 +4290,7 @@ svg, img, video, canvas {
 
                 ${md.insStatus !== 'none' ? `
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-                    <div class="bg-white/90 p-2 rounded-xl border border-amber-200 flex items-center justify-between">
+                    <div class="bg-white/90 p-2 rounded-xl border border-amber-200 flex flex-wrap items-center justify-between gap-1.5">
                       <span class="text-xs font-bold text-amber-900">${t.yellowBottle}</span>
                       <div class="flex items-center gap-1">
                         <button type="button" onclick="adjustInsulinDose('${meta.key}', 'regUnits', -1)" class="w-6 h-6 rounded-lg bg-amber-100 text-amber-900 font-bold">-</button>
@@ -4281,7 +4299,7 @@ svg, img, video, canvas {
                         <span class="text-[11px] font-mono text-slate-500">U</span>
                       </div>
                     </div>
-                    <div class="bg-white/90 p-2 rounded-xl border border-emerald-200 flex items-center justify-between">
+                    <div class="bg-white/90 p-2 rounded-xl border border-emerald-200 flex flex-wrap items-center justify-between gap-1.5">
                       <span class="text-xs font-bold text-emerald-900">${t.greenBottle}</span>
                       <div class="flex items-center gap-1">
                         <button type="button" onclick="adjustInsulinDose('${meta.key}', 'nphUnits', -1)" class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-900 font-bold">-</button>
@@ -5943,7 +5961,7 @@ svg, img, video, canvas {
         const st = day.supplements?.[supp.id];
         const sName = supp.name[currentLang] || supp.name.zh;
         return `
-          <div class="px-3 py-2 rounded-xl border ${st?.checked ? 'bg-emerald-50/70 border-emerald-200 text-emerald-950' : 'bg-slate-50 border-slate-200 text-slate-400'} flex items-center justify-between text-xs">
+          <div class="px-3 py-2 rounded-xl border ${st?.checked ? 'bg-emerald-50/70 border-emerald-200 text-emerald-950' : 'bg-slate-50 border-slate-200 text-slate-400'} flex flex-wrap items-center justify-between gap-1.5 text-xs">
             <span class="font-bold break-words">${supp.icon} ${sName}</span>
             <span class="font-mono shrink-0">${st?.checked ? `✅ 🇮🇷${st.timeIr} / 🇰🇷${iranTimeToKoreaTime(st.timeIr)}` : t.repUnchecked}</span>
           </div>
