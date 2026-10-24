@@ -3222,16 +3222,11 @@ svg, img, video, canvas {
       // 优先通过您的安全 Cloudflare Worker 翻译通道 (默认调用旗舰高精度 gemini-2.5-pro)
       if (workerUrl) {
         try {
-          const wRes = await fetch(workerUrl, {
-            method: 'POST',
-            headers: getWorkerAuthHeaders(),
-            body: JSON.stringify({
-              action: 'translate',
-              text,
-              authToken: getWorkerPin(),
-              geminiModel: (serverConfig && serverConfig.geminiModel) ? serverConfig.geminiModel : 'gemini-2.5-pro',
-              geminiApiKey: (serverConfig && serverConfig.geminiApiKey) ? serverConfig.geminiApiKey.trim() : ''
-            })
+          const wRes = await postToWorkerResilient(workerUrl, {
+            action: 'translate',
+            text,
+            geminiModel: (serverConfig && serverConfig.geminiModel) ? serverConfig.geminiModel : 'gemini-2.5-pro',
+            geminiApiKey: (serverConfig && serverConfig.geminiApiKey) ? serverConfig.geminiApiKey.trim() : ''
           });
           if (wRes.ok) {
             const wData = await wRes.json();
@@ -3366,6 +3361,25 @@ svg, img, video, canvas {
         'Content-Type': 'application/json',
         'X-Auth-Token': getWorkerPin()
       };
+    }
+
+    // 防 Failed to fetch 双通道请求器：优先带 X-Auth-Token 头发送；若因旧版 Worker 或代理拦截 OPTIONS 预检导致 Failed to fetch，
+    // 自动无缝降级为免预检 Simple Request (text/plain + body 内置 authToken)
+    async function postToWorkerResilient(url, payloadObj) {
+      const bodyStr = JSON.stringify({ ...payloadObj, authToken: getWorkerPin() });
+      try {
+        return await fetch(url, {
+          method: 'POST',
+          headers: getWorkerAuthHeaders(),
+          body: bodyStr
+        });
+      } catch (firstErr) {
+        return await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: bodyStr
+        });
+      }
     }
 
     let autoSyncTimer = null;
@@ -4866,17 +4880,13 @@ svg, img, video, canvas {
         if (!silent) appendDexcomDiagLog(`正在请求您的 Cloudflare Worker: ${workerUrl}`, 'text-slate-300');
 
         try {
-          const res = await fetch(workerUrl, {
-            method: 'POST',
-            headers: getWorkerAuthHeaders(),
-            body: JSON.stringify({
-              authToken: getWorkerPin(),
-              accountName: (serverConfig.dexcomUser || '').trim(),
-              password: serverConfig.dexcomPass || '',
-              region: serverConfig.dexcomRegion || 'ous',
-              sessionId: liveDexcomState.cachedSessionId || '',
-              sessionRegion: liveDexcomState.cachedRegion || serverConfig.dexcomRegion || 'ous'
-            })
+          const res = await postToWorkerResilient(workerUrl, {
+            action: 'dexcom',
+            accountName: (serverConfig.dexcomUser || '').trim(),
+            password: serverConfig.dexcomPass || '',
+            region: serverConfig.dexcomRegion || 'ous',
+            sessionId: liveDexcomState.cachedSessionId || '',
+            sessionRegion: liveDexcomState.cachedRegion || serverConfig.dexcomRegion || 'ous'
           });
           if (res.status === 401) {
             if (!silent) {
@@ -5016,16 +5026,11 @@ svg, img, video, canvas {
           const isWorkerGateway = serverConfig.jsonProvider === 'worker' || targetUrl.includes('workers.dev');
 
           if (isWorkerGateway) {
-            const wRes = await fetch(targetUrl, {
-              method: 'POST',
-              headers: getWorkerAuthHeaders(),
-              body: JSON.stringify({
-                action: 'json_save',
-                authToken: getWorkerPin(),
-                store: allDaysStore,
-                deletedDatesMap: deletedDatesMap,
-                reportSnapshots: buildReportSnapshots()
-              })
+            const wRes = await postToWorkerResilient(targetUrl, {
+              action: 'json_save',
+              store: allDaysStore,
+              deletedDatesMap: deletedDatesMap,
+              reportSnapshots: buildReportSnapshots()
             });
             if (wRes.status === 401) {
               if (statusText) statusText.textContent = '🔒 口令错误 · 仅存本地';
@@ -5117,10 +5122,8 @@ svg, img, video, canvas {
         let data = null;
 
         if (isWorkerGateway) {
-          const wRes = await fetch(targetUrl, {
-            method: 'POST',
-            headers: getWorkerAuthHeaders(),
-            body: JSON.stringify({ action: 'json_get', authToken: getWorkerPin() })
+          const wRes = await postToWorkerResilient(targetUrl, {
+            action: 'json_get'
           });
           if (wRes.status === 401) {
             if (!silent) showToast(tMsg('toastAuthFail'), 'warn', 3500);
@@ -6222,25 +6225,20 @@ svg, img, video, canvas {
       const workerUrl = (serverConfig.dexcomBridgeUrl || DEFAULT_WORKER_URL).trim();
       if (workerUrl) {
         try {
-          const wMailRes = await fetch(workerUrl, {
-            method: 'POST',
-            headers: getWorkerAuthHeaders(),
-            body: JSON.stringify({
-              action: 'send_email',
-              authToken: getWorkerPin(),
-              emailLangMode: mode,
-              to: recipients.join(', '),
-              recipientsList: recipients,
-              subject: subjectAll,
-              subjectZh: subjectZh,
-              subjectEnFa: subjectEnFa,
-              message: textAll,
-              messageZh: textZh,
-              messageEnFa: textEnFa,
-              reportDate: targetDate,
-              reportType: reportType,
-              auto: !!isAuto
-            })
+          const wMailRes = await postToWorkerResilient(workerUrl, {
+            action: 'send_email',
+            emailLangMode: mode,
+            to: recipients.join(', '),
+            recipientsList: recipients,
+            subject: subjectAll,
+            subjectZh: subjectZh,
+            subjectEnFa: subjectEnFa,
+            message: textAll,
+            messageZh: textZh,
+            messageEnFa: textEnFa,
+            reportDate: targetDate,
+            reportType: reportType,
+            auto: !!isAuto
           });
           if (wMailRes.status === 401) {
             if (!isAuto) showToast(tMsg('toastAuthFail'), 'warn', 3500);
