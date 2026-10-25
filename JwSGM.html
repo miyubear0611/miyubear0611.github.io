@@ -1194,6 +1194,15 @@ svg, img, video, canvas {
             <button onclick="copyDailyReportText()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition flex items-center gap-1">
               <span>📋</span> <span id="uiBtnCopyDay">一键复制日报</span>
             </button>
+            <select id="emailLangModeSelectDay" onchange="updateEmailLangMode(this.value)" translate="no" class="email-lang-mode-select notranslate text-xs font-bold bg-emerald-50 border border-emerald-300 text-emerald-950 rounded-xl px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="split_tailored">🎯 默认分箱 (Miyu中 / Arsan英波)</option>
+              <option value="all_in_one">🌍 四语全合一 (中+波+英+韩)</option>
+              <option value="only_zh">🇨🇳 仅发纯中文版</option>
+              <option value="only_en_fa">🇬🇧+🇮🇷 仅发英+波版</option>
+              <option value="only_fa">🇮🇷 仅发纯波斯语版</option>
+              <option value="only_en">🇬🇧 仅发纯英文版</option>
+              <option value="only_ko">🇰🇷 仅发纯韩语版</option>
+            </select>
             <button onclick="sendReportEmailNow('daily')" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1">
               <span>🚀</span> <span id="uiBtnSendDay">立即发送日报至双邮箱</span>
             </button>
@@ -1249,17 +1258,14 @@ svg, img, video, canvas {
             </div>
             <div class="flex flex-wrap items-center gap-2 pt-1">
               <span id="uiEmailLangModeLabel" class="text-xs font-bold text-emerald-900">🌐 邮件语言投递方式：</span>
-              <select id="emailLangModeSelect" onchange="updateEmailLangMode(this.value)" translate="no" class="notranslate flex-1 min-w-[240px] px-3 py-1.5 rounded-xl border border-emerald-300 bg-emerald-50/70 text-xs font-bold text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                <option value="split_tailored" id="optMailSplit">🎯 自动/默认分箱：Miyu 仅收中文 / Arsan 仅收英+波</option>
-                <option value="all_in_one" id="optMailAll">🌍 四语全合一 (1封)：中文 + 波斯语 + 英文 + 韩语</option>
-                <option value="only_zh" id="optMailOnlyZh">🇨🇳 仅发送【纯中文版】 (1封)</option>
-                <option value="only_en_fa" id="optMailOnlyEnFa">🇬🇧+🇮🇷 仅发送【英文 + 波斯语版】 (1封)</option>
-                <option value="only_fa" id="optMailOnlyFa">🇮🇷 仅发送【纯波斯语版 فارسی】 (1封)</option>
-                <option value="only_en" id="optMailOnlyEn">🇬🇧 仅发送【纯英文版 English】 (1封)</option>
-                <option value="only_ko" id="optMailOnlyKo">🇰🇷 仅发送【纯韩语版 한국어】 (1封)</option>
-              </select>
-                <option value="split_tailored" id="optMailSplit">🎯 分邮箱定制：miyubear 收中文版 / arsanbear 收英文+波斯语版 (推荐)</option>
-                <option value="all_in_one" id="optMailAll">🌍 全语言合一：一封邮件同时包含 中文 + 波斯语 + 英文 + 韩语 四语全文</option>
+              <select id="emailLangModeSelect" onchange="updateEmailLangMode(this.value)" translate="no" class="email-lang-mode-select notranslate flex-1 min-w-[240px] px-3 py-1.5 rounded-xl border border-emerald-300 bg-emerald-50/70 text-xs font-bold text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <option value="split_tailored" id="optMailSplit">🎯 默认分箱 (自动邮件默认)：Miyu 仅收中文 / Arsan 仅收英+波</option>
+                <option value="all_in_one" id="optMailAll">🌍 四语全合一 (仅发1封)：中文 + 波斯语 + 英文 + 韩语</option>
+                <option value="only_zh" id="optMailOnlyZh">🇨🇳 仅发【纯中文版】 (仅发1封)</option>
+                <option value="only_en_fa" id="optMailOnlyEnFa">🇬🇧+🇮🇷 仅发【英文 + 波斯语版】 (仅发1封)</option>
+                <option value="only_fa" id="optMailOnlyFa">🇮🇷 仅发【纯波斯语版 فارسی】 (仅发1封)</option>
+                <option value="only_en" id="optMailOnlyEn">🇬🇧 仅发【纯英文版 English】 (仅发1封)</option>
+                <option value="only_ko" id="optMailOnlyKo">🇰🇷 仅发【纯韩语版 한국어】 (仅发1封)</option>
               </select>
             </div>
             <div class="flex flex-wrap items-center gap-2 pt-1">
@@ -1720,15 +1726,14 @@ svg, img, video, canvas {
             <option value="weekly">📊 本周7天总表 (Weekly)</option>
             <option value="allHistory">🏥 全部历史医生报告 (All History)</option>
           </select>
-          <select id="previewEmailLangSelect" onchange="renderEmailPreviewModalContent()" class="text-xs font-bold bg-white border border-slate-200 text-slate-700 rounded-xl px-2.5 py-1.5">
-<option value="split_tailored" id="optMailSplit">🎯 自动/默认分箱：Miyu 仅收中文 / Arsan 仅收英+波</option>
-                <option value="all_in_one" id="optMailAll">🌍 四语全合一 (1封)：中文 + 波斯语 + 英文 + 韩语</option>
-                <option value="only_zh" id="optMailOnlyZh">🇨🇳 仅发送【纯中文版】 (1封)</option>
-                <option value="only_en_fa" id="optMailOnlyEnFa">🇬🇧+🇮🇷 仅发送【英文 + 波斯语版】 (1封)</option>
-                <option value="only_fa" id="optMailOnlyFa">🇮🇷 仅发送【纯波斯语版 فارسی】 (1封)</option>
-                <option value="only_en" id="optMailOnlyEn">🇬🇧 仅发送【纯英文版 English】 (1封)</option>
-                <option value="only_ko" id="optMailOnlyKo">🇰🇷 仅发送【纯韩语版 한국어】 (1封)</option>
-              </select>
+          <select id="previewEmailLangSelect" onchange="renderEmailPreviewModalContent()" translate="no" class="notranslate text-xs font-bold bg-white border border-slate-200 text-slate-700 rounded-xl px-2.5 py-1.5">
+            <option value="zh">🇨🇳 纯中文版 (Miyu)</option>
+            <option value="en_fa">🇬🇧 EN + 🇮🇷 فارسی (Arsan)</option>
+            <option value="all">🌍 四语全合一 (中+波+英+韩)</option>
+            <option value="fa">🇮🇷 纯波斯语版 (فارسی)</option>
+            <option value="en">🇬🇧 纯英文版 (English)</option>
+            <option value="ko">🇰🇷 纯韩语版 (한국어)</option>
+          </select>
           <button onclick="closeEmailPreviewModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700">✕</button>
         </div>
       </div>
@@ -2093,8 +2098,13 @@ svg, img, video, canvas {
         lblFamoShort: '法莫替丁:',
         lblPillUnit: '粒',
         emailLangModeLabel: '🌐 邮件语言投递方式：',
-        optMailSplit: '🎯 分邮箱定制：miyubear 收中文版 / arsanbear 收英文+波斯语版 (推荐)',
-        optMailAll: '🌍 全语言合一：一封邮件同时包含 中文 + 波斯语 + 英文 + 韩语 四语全文',
+        optMailSplit: '🎯 默认分箱 (自动邮件默认)：Miyu 仅收中文 / Arsan 仅收英+波',
+        optMailAll: '🌍 四语全合一 (仅发1封)：中文 + 波斯语 + 英文 + 韩语',
+        optMailOnlyZh: '🇨🇳 仅发【纯中文版】 (仅发1封)',
+        optMailOnlyEnFa: '🇬🇧+🇮🇷 仅发【英文 + 波斯语版】 (仅发1封)',
+        optMailOnlyFa: '🇮🇷 仅发【纯波斯语版 فارسی】 (仅发1封)',
+        optMailOnlyEn: '🇬🇧 仅发【纯英文版 English】 (仅发1封)',
+        optMailOnlyKo: '🇰🇷 仅发【纯韩语版 한국어】 (仅发1封)',
         docSec1Title: '【一、医生临床总览摘要 (Clinical Executive Summary)】',
         docLoggedDays: '累计记录天数',
         docTirRate: '80–160 mg/dL 稳态达标率 (TIR)',
@@ -2476,8 +2486,13 @@ svg, img, video, canvas {
         lblFamoShort: '파모티딘:',
         lblPillUnit: '정',
         emailLangModeLabel: '🌐 이메일 언어 발송 방식:',
-        optMailSplit: '🎯 수신자별 맞춤: miyubear 중국어판 / arsanbear 영어+페르시아어판 (권장)',
-        optMailAll: '🌍 4개 국어 통합본: 한 이메일에 중국어 + 페르시아어 + 영어 + 한국어 전체 포함',
+        optMailSplit: '🎯 기본 맞춤 분배 (자동 발송 기본값): Miyu 중국어만 / Arsan 영어+페르시아어만',
+        optMailAll: '🌍 4개 국어 통합본 (1통 발송): 중국어 + 페르시아어 + 영어 + 한국어',
+        optMailOnlyZh: '🇨🇳 【중국어판】만 단독 발송 (1통)',
+        optMailOnlyEnFa: '🇬🇧+🇮🇷 【영어 + 페르시아어판】만 단독 발송 (1통)',
+        optMailOnlyFa: '🇮🇷 【페르시아어판 فارسی】만 단독 발송 (1통)',
+        optMailOnlyEn: '🇬🇧 【영어판 English】만 단독 발송 (1통)',
+        optMailOnlyKo: '🇰🇷 【한국어판 한국어】만 단독 발송 (1통)',
         docSec1Title: '【I. 의료진 임상 요약 (Clinical Executive Summary)】',
         docLoggedDays: '누적 기록 일수',
         docTirRate: '80–160 mg/dL 목표 유지율 (TIR)',
@@ -2859,8 +2874,13 @@ svg, img, video, canvas {
         lblFamoShort: 'فاموتیدین:',
         lblPillUnit: 'عدد',
         emailLangModeLabel: '🌐 حالت زبان ارسال ایمیل:',
-        optMailSplit: '🎯 اختصاصی هر ایمیل: نسخه چینی برای miyubear / نسخه انگلیسی+فارسی برای arsanbear (پیشنهادی)',
-        optMailAll: '🌍 چهار زبان در یک ایمیل: شامل متن کامل چینی + فارسی + انگلیسی + کره‌ای',
+        optMailSplit: '🎯 تفکیک خودکار (پیش‌فرض): Miyu فقط چینی / Arsan فقط انگلیسی+فارسی',
+        optMailAll: '🌍 چهار زبان در ۱ ایمیل: چینی + فارسی + انگلیسی + کره‌ای',
+        optMailOnlyZh: '🇨🇳 ارسال فقط【نسخه چینی】 (۱ ایمیل)',
+        optMailOnlyEnFa: '🇬🇧+🇮🇷 ارسال فقط【نسخه انگلیسی + فارسی】 (۱ ایمیل)',
+        optMailOnlyFa: '🇮🇷 ارسال فقط【نسخه فارسی】 (۱ ایمیل)',
+        optMailOnlyEn: '🇬🇧 ارسال فقط【نسخه انگلیسی】 (۱ ایمیل)',
+        optMailOnlyKo: '🇰🇷 ارسال فقط【نسخه کره‌ای】 (۱ ایمیل)',
         docSec1Title: '【I. خلاصه جامع بالینی ویژه پزشک (Clinical Executive Summary)】',
         docLoggedDays: 'تعداد روزهای ثبت‌شده',
         docTirRate: 'درصد ثبات قند در بازه ۸۰ تا ۱۶۰ (TIR)',
@@ -3242,8 +3262,13 @@ svg, img, video, canvas {
         lblFamoShort: 'Famotidine:',
         lblPillUnit: 'pill(s)',
         emailLangModeLabel: '🌐 Email Language Routing Mode:',
-        optMailSplit: '🎯 Tailored per Recipient: Chinese to miyubear / EN+Persian to arsanbear (Recommended)',
-        optMailAll: '🌍 All 4 Languages in One Email: Chinese + Persian + English + Korean',
+        optMailSplit: '🎯 Auto Split (Default): Miyu Chinese Only / Arsan EN+Persian Only',
+        optMailAll: '🌍 All 4 Languages (1 Email): Chinese + Persian + English + Korean',
+        optMailOnlyZh: '🇨🇳 Send [Chinese Only] (1 Email)',
+        optMailOnlyEnFa: '🇬🇧+🇮🇷 Send [English + Persian Only] (1 Email)',
+        optMailOnlyFa: '🇮🇷 Send [Persian Only / فارسی] (1 Email)',
+        optMailOnlyEn: '🇬🇧 Send [English Only] (1 Email)',
+        optMailOnlyKo: '🇰🇷 Send [Korean Only / 한국어] (1 Email)',
         docSec1Title: '【I. Clinical Executive Summary (For Physician)】',
         docLoggedDays: 'Total Logged Days',
         docTirRate: '80–160 mg/dL Target Rate (TIR)',
@@ -5878,9 +5903,9 @@ svg, img, video, canvas {
           const textZh = useHtml ? buildHtmlReport('daily', d, 'zh') : buildPlainTextReport('daily', d, 'zh');
           const textEnFa = useHtml ? buildHtmlReport('daily', d, 'en_fa') : buildPlainTextReport('daily', d, 'en_fa');
           out.daily[d] = {
-            subject: `${tZh.emailSubjDaily} / ${tEn.emailSubjDaily} ${d}`,
+            subject: `${tZh.emailSubjDaily} ｜ ${tEn.emailSubjDaily} ${d}`,
             subjectZh: `${tZh.emailSubjDaily} ${d}`,
-            subjectEnFa: `${tEn.emailSubjDaily} / ${tFa.emailSubjDaily} ${d}`,
+            subjectEnFa: `${tEn.emailSubjDaily} ｜ ${tFa.emailSubjDaily} ${d}`,
             text: textZh,
             textZh: textZh,
             textEnFa: textEnFa,
@@ -5892,9 +5917,9 @@ svg, img, video, canvas {
           const wZh = useHtml ? buildHtmlReport('weekly', d0, 'zh') : buildPlainTextReport('weekly', d0, 'zh');
           const wEnFa = useHtml ? buildHtmlReport('weekly', d0, 'en_fa') : buildPlainTextReport('weekly', d0, 'en_fa');
           out.weekly = {
-            subject: `${tZh.emailSubjWeekly} / ${tEn.emailSubjWeekly} ${d0}`,
+            subject: `${tZh.emailSubjWeekly} ｜ ${tEn.emailSubjWeekly} ${d0}`,
             subjectZh: `${tZh.emailSubjWeekly} ${d0}`,
-            subjectEnFa: `${tEn.emailSubjWeekly} / ${tFa.emailSubjWeekly} ${d0}`,
+            subjectEnFa: `${tEn.emailSubjWeekly} ｜ ${tFa.emailSubjWeekly} ${d0}`,
             text: wZh,
             textZh: wZh,
             textEnFa: wEnFa,
@@ -6594,6 +6619,11 @@ svg, img, video, canvas {
         uiEmailLangModeLabel: t.emailLangModeLabel,
         optMailSplit: t.optMailSplit,
         optMailAll: t.optMailAll,
+        optMailOnlyZh: t.optMailOnlyZh,
+        optMailOnlyEnFa: t.optMailOnlyEnFa,
+        optMailOnlyFa: t.optMailOnlyFa,
+        optMailOnlyEn: t.optMailOnlyEn,
+        optMailOnlyKo: t.optMailOnlyKo,
         uiEmailFormatLabel: t.emailFormatLabel,
         optFormatHtml: t.optFormatHtml,
         optFormatText: t.optFormatText,
@@ -6755,6 +6785,9 @@ svg, img, video, canvas {
       if (cfgDesc3 && t.cfgSec3Sub) cfgDesc3.innerHTML = t.cfgSec3Sub;
       const tipBraceEl = document.getElementById('uiEmailJsTripleBraceTip');
       if (tipBraceEl && t.emailJsTripleBraceTip) tipBraceEl.innerHTML = t.emailJsTripleBraceTip;
+      document.querySelectorAll('.email-lang-mode-select').forEach(sel => {
+        if (serverConfig && serverConfig.emailLangMode) sel.value = serverConfig.emailLangMode;
+      });
       if (Array.isArray(t.monthsList)) {
         t.monthsList.forEach((mLabel, idx) => {
           const mId = 'optAnnM' + String(idx + 1).padStart(2, '0');
@@ -7263,7 +7296,11 @@ svg, img, video, canvas {
     }
 
     function updateEmailLangMode(mode) {
-      serverConfig.emailLangMode = mode || 'split_tailored';
+      const cleanMode = mode || 'split_tailored';
+      serverConfig.emailLangMode = cleanMode;
+      document.querySelectorAll('.email-lang-mode-select').forEach(sel => {
+        if (sel.value !== cleanMode) sel.value = cleanMode;
+      });
       persistStateLocally();
       scheduleAutoSync('切换邮件多语投递模式');
       showToast(tMsg('toastSaved'));
@@ -7280,6 +7317,21 @@ svg, img, video, canvas {
       const modal = document.getElementById('emailPreviewModal');
       const typeSel = document.getElementById('previewEmailTypeSelect');
       if (typeSel && defaultType) typeSel.value = defaultType;
+      const prevLangSel = document.getElementById('previewEmailLangSelect');
+      if (prevLangSel && serverConfig.emailLangMode) {
+        const mapToPreview = {
+          split_tailored: 'zh',
+          all_in_one: 'all',
+          only_zh: 'zh',
+          only_en_fa: 'en_fa',
+          only_fa: 'fa',
+          only_en: 'en',
+          only_ko: 'ko'
+        };
+        if (mapToPreview[serverConfig.emailLangMode]) {
+          prevLangSel.value = mapToPreview[serverConfig.emailLangMode];
+        }
+      }
       if (modal) modal.classList.remove('hidden');
       renderEmailPreviewModalContent();
     }
@@ -7316,7 +7368,8 @@ svg, img, video, canvas {
 
     async function sendFromPreviewModalNow() {
       const repType = document.getElementById('previewEmailTypeSelect')?.value || 'daily';
-      await sendReportEmailNow(repType, false);
+      const previewLang = document.getElementById('previewEmailLangSelect')?.value || '';
+      await sendReportEmailNow(repType, false, previewLang);
       closeEmailPreviewModal();
     }
 
@@ -7645,7 +7698,7 @@ svg, img, video, canvas {
       return ejsRes.ok;
     }
 
-async function dispatchOneEmailSmart(toEmailStr, subjStr, bodyContent, plainFallback, repDateStr, reportType, isAuto) {
+    async function dispatchOneEmailSmart(toEmailStr, subjStr, bodyContent, plainFallback, repDateStr, reportType, isAuto) {
       const workerUrl = (serverConfig.dexcomBridgeUrl || DEFAULT_WORKER_URL).trim();
       const bodyBytes = getUtf8ByteLength(bodyContent);
       const safeBody = bodyBytes <= 45000 ? bodyContent : plainFallback;
@@ -7715,15 +7768,10 @@ async function dispatchOneEmailSmart(toEmailStr, subjStr, bodyContent, plainFall
         ? (isAuto ? defaultReportDate : (document.getElementById('dailyReportDateSelect')?.value || defaultReportDate))
         : activeDate;
 
-      // 自动邮件强制默认使用 split_tailored (Miyu 仅中文 / Arsan 仅英+波)；手动发送实时读取下拉框当前选中项！
-      const domLangMode = document.getElementById('emailLangModeSelect')?.value;
+      // 自动邮件强制默认使用 split_tailored (Miyu 仅中文 / Arsan 仅英+波)；手动发送实时读取您当前选中的语言模式！
       const mode = isAuto
         ? 'split_tailored'
-        : (overrideLangMode || domLangMode || serverConfig.emailLangMode || 'split_tailored');
-      if (!isAuto && domLangMode) {
-        serverConfig.emailLangMode = domLangMode;
-        persistStateLocally();
-      }
+        : (overrideLangMode || serverConfig.emailLangMode || document.getElementById('emailLangModeSelect')?.value || 'split_tailored');
 
       const domFmtMode = document.getElementById('emailFormatSelect')?.value;
       const fmtMode = domFmtMode || serverConfig.emailFormatMode || 'html_card';
@@ -7751,7 +7799,7 @@ async function dispatchOneEmailSmart(toEmailStr, subjStr, bodyContent, plainFall
         plain: buildPlainTextReport(reportType, targetDate, langCode)
       });
 
-      // 模式 1：分邮箱定制（自动邮件默认 & 手动默认）—— Miyu 100%仅收中文，Arsan 100%仅收英+波，绝不互相拼接！
+      // 模式 1：默认分箱模式（自动邮件默认 & 手动第一项）—— Miyu 100%仅收纯中文，Arsan 100%仅收纯英+波，互不拼接！
       if (mode === 'split_tailored') {
         const miyuList = recipients.filter(e => e.toLowerCase().includes('miyubear'));
         const arsanList = recipients.filter(e => e.toLowerCase().includes('arsanbear'));
@@ -7778,7 +7826,7 @@ async function dispatchOneEmailSmart(toEmailStr, subjStr, bodyContent, plainFall
         return false;
       }
 
-      // 模式 2 ~ 7：按您选定的单一模式或四语合一模式，仅发送 1 封邮件！
+      // 模式 2 ~ 7：按您选定的单一语言或四语全合一模式，严格只发 1 封邮件！
       const singleModeMap = {
         all_in_one: { lang: 'all', subj: subjectAll4 },
         all:        { lang: 'all', subj: subjectAll4 },
@@ -8757,10 +8805,9 @@ async function dispatchOneEmailSmart(toEmailStr, subjStr, bodyContent, plainFall
     window.onload = function () {
       initPwaAndPersistentStorage();
       loadPersistedState();
-      const modeSel = document.getElementById('emailLangModeSelect');
-      if (modeSel && serverConfig.emailLangMode) {
-        modeSel.value = serverConfig.emailLangMode;
-      }
+      document.querySelectorAll('.email-lang-mode-select').forEach(sel => {
+        if (serverConfig && serverConfig.emailLangMode) sel.value = serverConfig.emailLangMode;
+      });
       const fmtSel = document.getElementById('emailFormatSelect');
       if (fmtSel && serverConfig.emailFormatMode) {
         fmtSel.value = serverConfig.emailFormatMode;
