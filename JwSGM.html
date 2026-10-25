@@ -1185,6 +1185,9 @@ svg, img, video, canvas {
             <button onclick="translateAllCustomFoodsNow()" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition flex items-center gap-1">
               <span>🌐</span> <span id="uiBtnTransNow">刷新云端中文翻译</span>
             </button>
+            <button onclick="openEmailPreviewModal('daily')" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm transition flex items-center gap-1">
+              <span>👁️</span> <span id="uiBtnPreviewDayEmail">预览精美邮件</span>
+            </button>
             <button onclick="copyDailyReportText()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition flex items-center gap-1">
               <span>📋</span> <span id="uiBtnCopyDay">一键复制日报</span>
             </button>
@@ -1246,9 +1249,22 @@ svg, img, video, canvas {
                 <option value="all_in_one" id="optMailAll">🌍 全语言合一：一封邮件同时包含 中文 + 波斯语 + 英文 + 韩语 四语全文</option>
               </select>
             </div>
+            <div class="flex flex-wrap items-center gap-2 pt-1">
+              <span id="uiEmailFormatLabel" class="text-xs font-bold text-emerald-900">🎨 邮件视觉排版样式：</span>
+              <select id="emailFormatSelect" onchange="updateEmailFormatMode(this.value)" class="flex-1 min-w-[240px] px-3 py-1.5 rounded-xl border border-emerald-300 bg-emerald-50/70 text-xs font-bold text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <option value="html_card" id="optFormatHtml" selected>✨ 彩色医疗卡片与表格版 (推荐 · 需在EmailJS填3个括号 {{{message}}})</option>
+                <option value="pretty_text" id="optFormatText">📋 精致框线纯文本版 (兼容EmailJS默认2个括号 {{message}})</option>
+              </select>
+            </div>
+            <div id="uiEmailJsTripleBraceTip" class="px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-950 leading-relaxed">
+              💡 <b>如何让收到的邮件呈现彩色卡片与表格？</b> 只需在 EmailJS 模板编辑框里，把 <code>{{message}}</code> 改成 <b>3个花括号 <code>{{{message}}}</code></b> 并点 Save 保存即可！
+            </div>
           </div>
 
           <div class="lg:col-span-5 flex flex-wrap items-center justify-end gap-2">
+            <button onclick="openEmailPreviewModal('daily')" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+              <span>👁️</span> <span id="uiBtnPreviewWeekEmail">预览精美邮件</span>
+            </button>
             <button onclick="sendReportEmailNow('daily')" class="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
               <span>📨</span> <span id="uiBtnManualDay">手动发送【今日日报】</span>
             </button>
@@ -1337,6 +1353,9 @@ svg, img, video, canvas {
             </button>
             <button onclick="exportAllHistoryDoctorCSV()" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition flex items-center gap-1">
               <span>📥</span> <span id="uiBtnExportAllHistCsv">导出全量医生分析 CSV</span>
+            </button>
+            <button onclick="openEmailPreviewModal('allHistory')" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm transition flex items-center gap-1">
+              <span>👁️</span> <span id="uiBtnPreviewAllHistEmail">预览精美邮件</span>
             </button>
             <button onclick="sendReportEmailNow('allHistory')" class="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
               <span>🏥</span> <span id="uiBtnSendAllHistTop">一键发送【全部历史报告】至双邮箱</span>
@@ -1670,6 +1689,48 @@ svg, img, video, canvas {
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
         <button id="btnNativePwaPrompt" onclick="triggerNativePwaInstall()" class="hidden px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm">📲 立即一键安装到桌面</button>
         <button id="uiPwaCloseBtn" onclick="closePwaInstallModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RICH HTML EMAIL LIVE PREVIEW -->
+  <div id="emailPreviewModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
+    <div class="bg-white rounded-2xl max-w-4xl w-full shadow-2xl border border-emerald-200 p-4 sm:p-6 space-y-3 max-h-[90vh] flex flex-col">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100 shrink-0">
+        <div>
+          <h3 id="uiPreviewModalTitle" class="text-sm sm:text-base font-bold text-slate-800">🎨 彩色医疗卡片邮件实时预览</h3>
+          <p id="uiPreviewModalSub" class="text-[11px] text-slate-500">以下为您和医生在邮箱中收到的真实彩色卡片排版效果（请确保 EmailJS 模板内填写的是 3 个花括号 {{{message}}}）</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-1.5">
+          <select id="previewEmailTypeSelect" onchange="renderEmailPreviewModalContent()" class="text-xs font-bold bg-emerald-50 border border-emerald-300 text-emerald-950 rounded-xl px-2.5 py-1.5">
+            <option value="daily">📄 每日报告 (Daily)</option>
+            <option value="weekly">📊 本周7天总表 (Weekly)</option>
+            <option value="allHistory">🏥 全部历史医生报告 (All History)</option>
+          </select>
+          <select id="previewEmailLangSelect" onchange="renderEmailPreviewModalContent()" class="text-xs font-bold bg-white border border-slate-200 text-slate-700 rounded-xl px-2.5 py-1.5">
+            <option value="zh">🇨🇳 中文版 (Miyu)</option>
+            <option value="en_fa">🇬🇧 EN + 🇮🇷 فارسی (Arsan)</option>
+            <option value="all">🌍 四语全合一</option>
+          </select>
+          <button onclick="closeEmailPreviewModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700">✕</button>
+        </div>
+      </div>
+
+      <!-- Scrollable Rich HTML Email Preview Container -->
+      <div id="emailPreviewRenderBox" class="flex-1 overflow-y-auto custom-scroll bg-slate-100/90 rounded-2xl p-2 sm:p-4 border border-slate-200">
+        <!-- Populated dynamically by renderEmailPreviewModalContent() -->
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 shrink-0">
+        <button type="button" onclick="copyRichHtmlReportFromPreview()" id="uiBtnCopyRichEmail" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition">
+          📋 复制彩色富文本 (可粘贴至邮件/Word)
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="sendFromPreviewModalNow()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition">
+            🚀 立即发送此报告至双邮箱
+          </button>
+          <button type="button" onclick="closeEmailPreviewModal()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">关闭</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2059,7 +2120,16 @@ svg, img, video, canvas {
         toastCopyOk: '📋 已复制到剪贴板！',
         toastCsvOk: '📥 CSV (Excel) 导出成功！',
         toastEmailSent: '📨 报告已通过加密云端发送至双邮箱！',
-        toastAllHistSent: '🏥 全部历史临床报告已发送至双邮箱！'
+        toastAllHistSent: '🏥 全部历史临床报告已发送至双邮箱！',
+        emailFormatLabel: '🎨 邮件视觉排版样式：',
+        optFormatHtml: '✨ 彩色医疗卡片与表格版 (推荐 · 需在EmailJS填3个括号 {{{message}}})',
+        optFormatText: '📋 精致框线纯文本版 (兼容EmailJS默认2个括号 {{message}})',
+        emailJsTripleBraceTip: '💡 <b>如何让收到的邮件呈现彩色卡片与表格？</b> 只需在 EmailJS 模板编辑框里，把 <code>{{message}}</code> 改成 <b>3个花括号 <code>{{{message}}}</code></b> 并点 Save 保存即可！',
+        btnPreviewEmail: '👁️ 预览精美邮件',
+        previewModalTitle: '🎨 彩色医疗卡片邮件实时预览',
+        previewModalSub: '以下为您和医生在邮箱中收到的真实彩色卡片排版效果（请确保 EmailJS 模板内填写的是 3 个花括号 {{{message}}}）',
+        btnCopyRichEmail: '📋 复制彩色富文本 (可粘贴至邮件/Word)',
+        unloggedMealsSummaryLabel: '🕒 尚未录入数据的餐次节点：'
       },
       ko: {
         appTitle: '혈당 건강 체크인 시스템',
@@ -2433,7 +2503,16 @@ svg, img, video, canvas {
         toastCopyOk: '📋 클립보드에 복사되었습니다!',
         toastCsvOk: '📥 CSV (Excel) 내보내기 완료!',
         toastEmailSent: '📨 보고서가 클라우드를 통해 두 이메일로 발송되었습니다!',
-        toastAllHistSent: '🏥 전체 과거 임상 보고서가 두 이메일로 발송되었습니다!'
+        toastAllHistSent: '🏥 전체 과거 임상 보고서가 두 이메일로 발송되었습니다!',
+        emailFormatLabel: '🎨 이메일 시각 디자인 스타일:',
+        optFormatHtml: '✨ 컬러 의료 카드 & 표 디자인 (권장 · EmailJS에 중괄호 3개 {{{message}}} 입력)',
+        optFormatText: '📋 깔끔한 박스형 텍스트 버전 (EmailJS 기본 중괄호 2개 {{message}} 호환)',
+        emailJsTripleBraceTip: '💡 <b>컬러 카드 이메일 설정 팁:</b> EmailJS 템플릿 편집창에서 <code>{{message}}</code>를 <b>중괄호 3개 <code>{{{message}}}</code></b>로 변경 후 Save를 누르면 컬러 카드 디자인이 적용됩니다!',
+        btnPreviewEmail: '👁️ 이메일 디자인 미리보기',
+        previewModalTitle: '🎨 컬러 의료 카드 이메일 미리보기',
+        previewModalSub: '실제 이메일 수신함에 도착하는 컬러 카드 & 표 레이아웃 미리보기입니다 (EmailJS 템플릿에 {{{message}}} 설정 권장)',
+        btnCopyRichEmail: '📋 컬러 서식 복사 (이메일/문서에 붙여넣기 가능)',
+        unloggedMealsSummaryLabel: '🕒 아직 기록되지 않은 식사 노드: '
       },
       fa: {
         appTitle: 'سیستم ثبت سلامت قند خون',
@@ -2807,7 +2886,16 @@ svg, img, video, canvas {
         toastCopyOk: '📋 در حافظه کپی شد!',
         toastCsvOk: '📥 فایل اکسل (CSV) با موفقیت دانلود شد!',
         toastEmailSent: '📨 گزارش با موفقیت به ایمیل‌ها ارسال شد!',
-        toastAllHistSent: '🏥 گزارش جامع تمامی سوابق برای پزشک به ایمیل‌ها ارسال شد!'
+        toastAllHistSent: '🏥 گزارش جامع تمامی سوابق برای پزشک به ایمیل‌ها ارسال شد!',
+        emailFormatLabel: '🎨 سبک طراحی ظاهری ایمیل:',
+        optFormatHtml: '✨ کارت‌های رنگی پزشکی و جدول (پیشنهادی · در EmailJS سه آکولاد {{{message}}} قرار دهید)',
+        optFormatText: '📋 متن ساده کادربندی‌شده (سازگار با دو آکولاد {{message}})',
+        emailJsTripleBraceTip: '💡 <b>نکته زیبایی ایمیل:</b> در تنظیمات قالب EmailJS، عبارت <code>{{message}}</code> را به <b>سه آکولاد <code>{{{message}}}</code></b> تغییر داده و Save کنید تا ایمیل به صورت کارت‌های رنگی زیبا ارسال شود!',
+        btnPreviewEmail: '👁️ پیش‌نمایش ایمیل رنگی',
+        previewModalTitle: '🎨 پیش‌نمایش زنده ایمیل کارت رنگی پزشکی',
+        previewModalSub: 'نمای واقعی ایمیلی که شما و پزشک دریافت خواهید کرد (لطفاً در EmailJS از {{{message}}} استفاده کنید)',
+        btnCopyRichEmail: '📋 کپی گزارش رنگی (قابل الصاق در ایمیل/Word)',
+        unloggedMealsSummaryLabel: '🕒 وعده‌های ثبت‌نشده امروز: '
       },
       en: {
         appTitle: 'BG Health Check-in System',
@@ -3181,7 +3269,16 @@ svg, img, video, canvas {
         toastCopyOk: '📋 Copied to clipboard!',
         toastCsvOk: '📥 CSV (Excel) exported successfully!',
         toastEmailSent: '📨 Report sent to dual emails via cloud!',
-        toastAllHistSent: '🏥 Complete historical clinical report sent to dual emails!'
+        toastAllHistSent: '🏥 Complete historical clinical report sent to dual emails!',
+        emailFormatLabel: '🎨 Email Visual Layout Style:',
+        optFormatHtml: '✨ Colorful Medical Cards & Tables (Recommended · Use {{{message}}} in EmailJS)',
+        optFormatText: '📋 Clean Boxed Plain-Text (Compatible with {{message}} in EmailJS)',
+        emailJsTripleBraceTip: '💡 <b>Pro Tip for Colorful Emails:</b> In your EmailJS template editor, change <code>{{message}}</code> to <b>triple braces <code>{{{message}}}</code></b> and click Save to render full colorful cards & tables!',
+        btnPreviewEmail: '👁️ Preview Rich Email',
+        previewModalTitle: '🎨 Colorful Clinical Card Email Live Preview',
+        previewModalSub: 'Exact preview of the rich HTML card report delivered to your inbox (Use {{{message}}} in EmailJS)',
+        btnCopyRichEmail: '📋 Copy Rich HTML Report',
+        unloggedMealsSummaryLabel: '🕒 Unlogged Meal Nodes Today: '
       }
     };
 
@@ -4002,6 +4099,7 @@ svg, img, video, canvas {
       geminiModel: 'gemini-2.5-pro',
       geminiApiKey: '',
       emailLangMode: 'split_tailored',
+      emailFormatMode: 'html_card',
       autoSendEnabled: true
     };
 
@@ -5744,7 +5842,7 @@ svg, img, video, canvas {
       await syncDexcomNow(false);
     }
 
-    // 预渲染四语全版本 & 分收件人定制版（Miyu中文 / Arsan英文+波斯语）日报与周报，供云端 Cron 10:00 定时发送
+    // 预渲染四语全版本 & 分收件人定制版（含彩色医疗卡片 HTML 与精致纯文本）日报与周报，供云端 Cron 10:00 定时发送
     function buildReportSnapshots() {
       const prevLang = currentLang;
       const selEl = document.getElementById('dailyReportDateSelect');
@@ -5755,12 +5853,14 @@ svg, img, video, canvas {
         const tFa = UI_TEXT.fa;
         const at = Date.now();
         const mode = (serverConfig && serverConfig.emailLangMode) ? serverConfig.emailLangMode : 'split_tailored';
+        const fmtMode = (serverConfig && serverConfig.emailFormatMode) ? serverConfig.emailFormatMode : 'html_card';
+        const useHtml = fmtMode !== 'pretty_text';
         const dates = Object.keys(allDaysStore).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort().reverse();
-        const out = { emailLangMode: mode, daily: {}, weekly: null };
+        const out = { emailLangMode: mode, emailFormatMode: fmtMode, daily: {}, weekly: null };
         dates.slice(0, 10).forEach(d => {
-          const textZh = buildPlainTextReport('daily', d, 'zh');
-          const textEnFa = buildPlainTextReport('daily', d, 'en_fa');
-          const textAll = buildPlainTextReport('daily', d, 'all');
+          const textZh = useHtml ? buildHtmlReport('daily', d, 'zh') : buildPlainTextReport('daily', d, 'zh');
+          const textEnFa = useHtml ? buildHtmlReport('daily', d, 'en_fa') : buildPlainTextReport('daily', d, 'en_fa');
+          const textAll = useHtml ? buildHtmlReport('daily', d, 'all') : buildPlainTextReport('daily', d, 'all');
           out.daily[d] = {
             subject: `${tZh.emailSubjDaily} / ${tEn.emailSubjDaily} ${d}`,
             subjectZh: `${tZh.emailSubjDaily} ${d}`,
@@ -5774,9 +5874,9 @@ svg, img, video, canvas {
         });
         if (dates.length) {
           const d0 = dates[0];
-          const wZh = buildPlainTextReport('weekly', d0, 'zh');
-          const wEnFa = buildPlainTextReport('weekly', d0, 'en_fa');
-          const wAll = buildPlainTextReport('weekly', d0, 'all');
+          const wZh = useHtml ? buildHtmlReport('weekly', d0, 'zh') : buildPlainTextReport('weekly', d0, 'zh');
+          const wEnFa = useHtml ? buildHtmlReport('weekly', d0, 'en_fa') : buildPlainTextReport('weekly', d0, 'en_fa');
+          const wAll = useHtml ? buildHtmlReport('weekly', d0, 'all') : buildPlainTextReport('weekly', d0, 'all');
           out.weekly = {
             subject: `${tZh.emailSubjWeekly} / ${tEn.emailSubjWeekly} ${d0}`,
             subjectZh: `${tZh.emailSubjWeekly} ${d0}`,
@@ -6481,6 +6581,15 @@ svg, img, video, canvas {
         uiEmailLangModeLabel: t.emailLangModeLabel,
         optMailSplit: t.optMailSplit,
         optMailAll: t.optMailAll,
+        uiEmailFormatLabel: t.emailFormatLabel,
+        optFormatHtml: t.optFormatHtml,
+        optFormatText: t.optFormatText,
+        uiBtnPreviewDayEmail: t.btnPreviewEmail,
+        uiBtnPreviewWeekEmail: t.btnPreviewEmail,
+        uiBtnPreviewAllHistEmail: t.btnPreviewEmail,
+        uiPreviewModalTitle: t.previewModalTitle,
+        uiPreviewModalSub: t.previewModalSub,
+        uiBtnCopyRichEmail: t.btnCopyRichEmail,
         uiCfgModalTitle: t.cfgModalTitle,
         uiCfgSec1Title: t.cfgSec1Title,
         uiCfgAutoSyncChk: t.cfgAutoSyncChk,
@@ -6631,6 +6740,8 @@ svg, img, video, canvas {
       if (cfgDesc1 && t.cfgSec1Desc) cfgDesc1.innerHTML = t.cfgSec1Desc;
       const cfgDesc3 = document.getElementById('uiCfgSec3Sub');
       if (cfgDesc3 && t.cfgSec3Sub) cfgDesc3.innerHTML = t.cfgSec3Sub;
+      const tipBraceEl = document.getElementById('uiEmailJsTripleBraceTip');
+      if (tipBraceEl && t.emailJsTripleBraceTip) tipBraceEl.innerHTML = t.emailJsTripleBraceTip;
       if (Array.isArray(t.monthsList)) {
         t.monthsList.forEach((mLabel, idx) => {
           const mId = 'optAnnM' + String(idx + 1).padStart(2, '0');
@@ -6877,17 +6988,484 @@ svg, img, video, canvas {
       `;
     }
 
+    function stripLeadingEmoji(str) {
+      if (!str) return '';
+      return String(str).replace(/^[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}\s]+/u, '').trim();
+    }
+
+    function escapeHtmlSafe(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function renderEmailBgBadgeHtml(val, showUnit = true) {
+      const unitStr = showUnit ? ' mg/dL' : '';
+      if (val === undefined || val === null || val === '' || val === '--' || val === '-') {
+        return `<span style="display:inline-block;padding:2px 8px;border-radius:999px;background-color:#f1f5f9;color:#94a3b8;font-family:monospace;font-size:12px;font-weight:700;">--</span>`;
+      }
+      const n = Number(val);
+      if (isNaN(n)) {
+        return `<span style="display:inline-block;padding:2px 8px;border-radius:999px;background-color:#f1f5f9;color:#64748b;font-family:monospace;font-size:12px;font-weight:700;">${escapeHtmlSafe(val)}</span>`;
+      }
+      if (n < 80) {
+        return `<span style="display:inline-block;padding:2px 9px;border-radius:999px;background-color:#ffe4e6;color:#be123c;border:1px solid #fda4af;font-family:monospace;font-size:12px;font-weight:800;">🔻 ${n}${unitStr}</span>`;
+      }
+      if (n <= 160) {
+        return `<span style="display:inline-block;padding:2px 9px;border-radius:999px;background-color:#d1fae5;color:#047857;border:1px solid #6ee7b7;font-family:monospace;font-size:12px;font-weight:800;">✓ ${n}${unitStr}</span>`;
+      }
+      return `<span style="display:inline-block;padding:2px 9px;border-radius:999px;background-color:#fef3c7;color:#b45309;border:1px solid #fcd34d;font-family:monospace;font-size:12px;font-weight:800;">🔺 ${n}${unitStr}</span>`;
+    }
+
+    function renderEmailFoodChipsHtml(md, lang) {
+      const t = UI_TEXT[lang] || UI_TEXT.zh;
+      if (!md) return `<span style="color:#94a3b8;font-size:12px;">${escapeHtmlSafe(t.repNoFood)}</span>`;
+      const chips = [];
+      const portionTrans = { '少量': t.portionSmall, '中量': t.portionMed, '多量': t.portionLarge };
+      (md.selectedFoods || []).forEach(fid => {
+        const item = FOOD_ID_MAP[fid];
+        if (item) {
+          const locName = item[lang] || item.zh;
+          const pTxt = portionTrans[md.torshiPortion || '少量'] || md.torshiPortion;
+          const label = fid === 'FOOD_TORSHI' ? `${item.emoji} ${locName} (${pTxt})` : `${item.emoji} ${locName}`;
+          chips.push(`<span style="display:inline-block;margin:2px 4px 2px 0;padding:3px 9px;border-radius:8px;background-color:#f8fafc;border:1px solid #cbd5e1;color:#1e293b;font-size:12px;font-weight:600;">${escapeHtmlSafe(label)}</span>`);
+        }
+      });
+      (md.customFoods || []).forEach(cf => {
+        const disp = formatCustomFoodDisplay(cf, lang);
+        chips.push(`<span style="display:inline-block;margin:2px 4px 2px 0;padding:3px 9px;border-radius:8px;background-color:#f0fdf4;border:1px solid #86efac;color:#065f46;font-size:12px;font-weight:700;">✍️ ${escapeHtmlSafe(disp)}</span>`);
+      });
+      return chips.length > 0 ? chips.join('') : `<span style="color:#94a3b8;font-size:12px;">${escapeHtmlSafe(t.repNoFood)}</span>`;
+    }
+
+    function buildMultiLangHtmlReport(reportType = 'daily', overrideDate, langList = ['zh', 'fa', 'en', 'ko']) {
+      const bannerMap = {
+        zh: '🇨🇳 中文临床报告 (Chinese Clinical Report)',
+        fa: '🇮🇷 گزارش بالینی فارسی (Persian Clinical Report)',
+        en: '🇬🇧 English Clinical Report',
+        ko: '🇰🇷 한국어 임상 보고서 (Korean Clinical Report)'
+      };
+      const sections = langList.map(lg => {
+        const isRtl = lg === 'fa';
+        return `
+          <div style="margin-bottom:28px;">
+            <div dir="${isRtl ? 'rtl' : 'ltr'}" style="margin-bottom:8px;padding:6px 14px;background-color:#0f172a;color:#ffffff;border-radius:10px;font-size:12px;font-weight:800;letter-spacing:0.03em;text-align:${isRtl ? 'right' : 'left'};">
+              ${bannerMap[lg] || lg}
+            </div>
+            ${buildHtmlReport(reportType, overrideDate, lg)}
+          </div>
+        `;
+      });
+      return `<div style="background-color:#f1f5f9;padding:12px 6px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',Tahoma,sans-serif;">${sections.join('')}</div>`;
+    }
+
+    function buildHtmlReport(reportType = 'daily', overrideDate, forceLang) {
+      if (forceLang === 'en_fa') {
+        return buildMultiLangHtmlReport(reportType, overrideDate, ['en', 'fa']);
+      }
+      if (forceLang === 'all') {
+        return buildMultiLangHtmlReport(reportType, overrideDate, ['zh', 'fa', 'en', 'ko']);
+      }
+      const prevLang = currentLang;
+      if (forceLang && UI_TEXT[forceLang]) currentLang = forceLang;
+      try {
+        const lang = currentLang;
+        const isRtl = lang === 'fa';
+        const dirAttr = isRtl ? 'rtl' : 'ltr';
+        const alignLeft = isRtl ? 'right' : 'left';
+        const alignRight = isRtl ? 'left' : 'right';
+        const t = UI_TEXT[lang] || UI_TEXT.zh;
+
+        if (reportType === 'daily') {
+          const selDate = overrideDate || document.getElementById('dailyReportDateSelect')?.value || activeDate;
+          const day = ensureDaySchemaIntegrity(allDaysStore[selDate] || createDefaultDay(selDate));
+          const m = calculateDaySummaryMetrics(day);
+          const wakeKr = iranTimeToKoreaTime(day.wakeTime);
+
+          const suppRowsHtml = SUPPLEMENTS_DICT.map((supp, idx) => {
+            const st = day.supplements?.[supp.id];
+            const sName = supp.name[lang] || supp.name.zh;
+            const sTag = supp.timingTag[lang] || supp.timingTag.zh;
+            const bgRow = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+            const statusPill = st?.checked
+              ? `<span style="display:inline-block;padding:3px 10px;border-radius:999px;background-color:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-family:monospace;font-size:11px;font-weight:800;">✅ 🇮🇷 ${st.timeIr} / 🇰🇷 ${iranTimeToKoreaTime(st.timeIr)}</span>`
+              : `<span style="display:inline-block;padding:3px 10px;border-radius:999px;background-color:#f1f5f9;color:#94a3b8;font-size:11px;font-weight:600;">⏳ ${escapeHtmlSafe(t.repUnchecked)}</span>`;
+            return `
+              <tr style="background-color:${bgRow};">
+                <td style="padding:9px 12px;border-bottom:1px solid #f1f5f9;font-size:13px;font-weight:700;color:#1e293b;">
+                  ${supp.icon} ${escapeHtmlSafe(sName)}
+                  <span style="display:inline-block;margin-${alignLeft}:6px;padding:1px 6px;border-radius:6px;background-color:#ccfbf1;color:#115e59;font-size:10px;font-weight:700;">${escapeHtmlSafe(sTag)}</span>
+                </td>
+                <td style="padding:9px 12px;border-bottom:1px solid #f1f5f9;text-align:${alignRight};white-space:nowrap;">
+                  ${statusPill}
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          const activeMealRows = [];
+          const unloggedMealTitles = [];
+
+          MEAL_NODES_META.forEach(meta => {
+            const md = day.meals?.[meta.key];
+            if (!md) return;
+            const hasFood = (md.selectedFoods && md.selectedFoods.length > 0) || (md.customFoods && md.customFoods.length > 0);
+            const hasIns = md.insStatus && md.insStatus !== 'none' && (Number(md.regUnits) > 0 || Number(md.nphUnits) > 0);
+            const hasBg = (md.preBg !== '' && md.preBg !== null && md.preBg !== undefined) || (md.postBg !== '' && md.postBg !== null && md.postBg !== undefined);
+
+            const mTitle = meta.title[lang] || meta.title.zh;
+            if (!hasFood && !hasIns && !hasBg) {
+              unloggedMealTitles.push(`${meta.icon} ${mTitle.split('(')[0].trim()}`);
+              return;
+            }
+
+            let deltaPill = '';
+            if (md.preBg && md.postBg && !isNaN(Number(md.preBg)) && !isNaN(Number(md.postBg))) {
+              const dVal = Number(md.postBg) - Number(md.preBg);
+              const dSign = dVal > 0 ? `+${dVal}` : `${dVal}`;
+              const dBg = dVal <= 25 ? '#ecfdf5' : (dVal <= 50 ? '#fffbeb' : '#fff1f2');
+              const dCol = dVal <= 25 ? '#047857' : (dVal <= 50 ? '#b45309' : '#be123c');
+              deltaPill = `<div style="margin-top:4px;"><span style="display:inline-block;padding:1px 7px;border-radius:6px;background-color:${dBg};color:${dCol};font-family:monospace;font-size:11px;font-weight:800;">ΔBG: ${dSign} mg/dL</span></div>`;
+            }
+
+            const insBadge = hasIns
+              ? `<span style="display:inline-block;padding:2px 8px;border-radius:8px;background-color:#fef3c7;color:#92400e;border:1px solid #fde68a;font-family:monospace;font-size:11px;font-weight:800;margin-right:3px;">🟡 ${md.regUnits}U</span><span style="display:inline-block;padding:2px 8px;border-radius:8px;background-color:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-family:monospace;font-size:11px;font-weight:800;">🟢 ${md.nphUnits}U</span>`
+              : `<span style="display:inline-block;padding:2px 8px;border-radius:8px;background-color:#f1f5f9;color:#64748b;font-size:11px;font-weight:600;">${escapeHtmlSafe(t.repNoShot)}</span>`;
+
+            activeMealRows.push(`
+              <tr style="background-color:#ffffff;">
+                <td style="padding:12px;border-bottom:1px solid #e2e8f0;vertical-align:top;width:28%;">
+                  <div style="font-size:13px;font-weight:800;color:#0f172a;">${meta.icon} ${escapeHtmlSafe(mTitle)}</div>
+                  <div style="margin-top:4px;display:inline-block;padding:2px 7px;border-radius:6px;background-color:#f1f5f9;color:#475569;font-family:monospace;font-size:11px;font-weight:700;">
+                    🇮🇷 ${md.time} / 🇰🇷 ${iranTimeToKoreaTime(md.time)}
+                  </div>
+                </td>
+                <td style="padding:12px;border-bottom:1px solid #e2e8f0;vertical-align:top;width:28%;white-space:nowrap;">
+                  <div>${renderEmailBgBadgeHtml(md.preBg, false)} <span style="color:#94a3b8;font-weight:bold;">➔</span> ${renderEmailBgBadgeHtml(md.postBg, true)}</div>
+                  ${deltaPill}
+                </td>
+                <td style="padding:12px;border-bottom:1px solid #e2e8f0;vertical-align:top;width:18%;white-space:nowrap;">
+                  ${insBadge}
+                </td>
+                <td style="padding:12px;border-bottom:1px solid #e2e8f0;vertical-align:top;">
+                  ${renderEmailFoodChipsHtml(md, lang)}
+                </td>
+              </tr>
+            `);
+          });
+
+          const unloggedFooterRow = unloggedMealTitles.length > 0 ? `
+            <tr style="background-color:#f8fafc;">
+              <td colspan="4" style="padding:10px 14px;color:#64748b;font-size:12px;line-height:1.5;">
+                <b>${escapeHtmlSafe(t.unloggedMealsSummaryLabel)}</b> ${escapeHtmlSafe(unloggedMealTitles.join(' 、 '))}
+              </td>
+            </tr>
+          ` : '';
+
+          return `
+            <div dir="${dirAttr}" style="max-width:680px;margin:0 auto;background-color:#ffffff;border:1px solid #a7f3d0;border-radius:18px;overflow:hidden;box-shadow:0 4px 16px rgba(5,150,105,0.08);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',Tahoma,sans-serif;color:#1e293b;text-align:${alignLeft};">
+              <!-- Top Gradient Header -->
+              <div style="background:linear-gradient(135deg,#059669 0%,#0d9488 100%);background-color:#059669;color:#ffffff;padding:20px 22px;">
+                <div style="font-size:18px;font-weight:900;letter-spacing:-0.01em;">💚 ${escapeHtmlSafe(t.appTitle)} · ${escapeHtmlSafe(day.date)}</div>
+                <div style="font-size:12px;color:#d1fae5;margin-top:4px;">${escapeHtmlSafe(t.appSubtitle)}</div>
+                <div style="margin-top:12px;">
+                  <span style="display:inline-block;padding:4px 10px;border-radius:999px;background-color:rgba(255,255,255,0.18);color:#ffffff;font-family:monospace;font-size:12px;font-weight:700;margin-right:6px;">📅 ${day.date}</span>
+                  <span style="display:inline-block;padding:4px 10px;border-radius:999px;background-color:rgba(255,255,255,0.18);color:#ffffff;font-family:monospace;font-size:12px;font-weight:700;margin-right:6px;">⏰ 🇮🇷 ${day.wakeTime} / 🇰🇷 ${wakeKr}</span>
+                  <span style="display:inline-block;padding:4px 10px;border-radius:999px;background-color:rgba(255,255,255,0.18);color:#ffffff;font-family:monospace;font-size:12px;font-weight:700;">🔄 ${escapeHtmlSafe(day.quadrant || 'LU')}</span>
+                </div>
+              </div>
+
+              <div style="padding:18px 20px;">
+                <!-- 2x2 Clinical KPI Cards -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;border-spacing:8px;margin-bottom:14px;">
+                  <tr>
+                    <td width="50%" style="background-color:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:12px 14px;vertical-align:top;">
+                      <div style="font-size:11px;font-weight:800;color:#065f46;margin-bottom:6px;">🩸 ${escapeHtmlSafe(stripLeadingEmoji(t.fastingBgLabel))}</div>
+                      <div>${renderEmailBgBadgeHtml(day.fastingBg, true)}</div>
+                      <div style="font-size:11px;color:#64748b;margin-top:5px;">⏰ 🇮🇷 ${day.wakeTime} (🇰🇷 ${wakeKr})</div>
+                    </td>
+                    <td width="50%" style="background-color:#f0fdfa;border:1px solid #99f6e4;border-radius:14px;padding:12px 14px;vertical-align:top;">
+                      <div style="font-size:11px;font-weight:800;color:#115e59;margin-bottom:4px;">🎯 ${escapeHtmlSafe(stripLeadingEmoji(t.repTirLabel))}</div>
+                      <div style="font-size:16px;font-weight:900;color:#0f766e;font-family:monospace;">
+                        ${m.totalBgPts > 0 ? `${m.tir}% <span style="font-size:12px;font-weight:700;color:#475569;">(${m.inRange}/${m.totalBgPts})</span>` : escapeHtmlSafe(t.repNoBg)}
+                      </div>
+                      <div style="width:100%;height:7px;background-color:#ccfbf1;border-radius:999px;overflow:hidden;margin-top:6px;">
+                        <div style="width:${m.totalBgPts > 0 ? m.tir : 0}%;height:7px;background-color:#10b981;border-radius:999px;"></div>
+                      </div>
+                      <div style="font-size:11px;color:#64748b;margin-top:4px;font-family:monospace;">${escapeHtmlSafe(t.weekRangeText)} ${m.minBg} ~ ${m.maxBg} mg/dL</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="50%" style="background-color:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:12px 14px;vertical-align:top;">
+                      <div style="font-size:11px;font-weight:800;color:#92400e;margin-bottom:6px;">💉 ${escapeHtmlSafe(stripLeadingEmoji(t.repTotalIns))}</div>
+                      <div>
+                        <span style="display:inline-block;padding:2px 8px;border-radius:8px;background-color:#fef3c7;color:#92400e;border:1px solid #fcd34d;font-family:monospace;font-size:12px;font-weight:800;margin-right:4px;">🟡 ${escapeHtmlSafe(t.yellowShort)}: ${m.sumReg}U</span>
+                        <span style="display:inline-block;padding:2px 8px;border-radius:8px;background-color:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-family:monospace;font-size:12px;font-weight:800;">🟢 ${escapeHtmlSafe(t.greenShort)}: ${m.sumNph}U</span>
+                      </div>
+                      <div style="font-size:11px;color:#78350f;margin-top:5px;font-weight:700;">∑ = ${m.sumReg + m.sumNph} U</div>
+                    </td>
+                    <td width="50%" style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:12px 14px;vertical-align:top;">
+                      <div style="font-size:11px;font-weight:800;color:#334155;margin-bottom:6px;">💊 ${escapeHtmlSafe(stripLeadingEmoji(t.repFamoQuad))}</div>
+                      <div>
+                        <span style="display:inline-block;padding:2px 9px;border-radius:999px;background-color:${String(day.famotidineDose) === '0' ? '#d1fae5' : '#fef3c7'};color:${String(day.famotidineDose) === '0' ? '#065f46' : '#92400e'};font-size:12px;font-weight:800;">
+                          💊 ${String(day.famotidineDose) === '0' ? escapeHtmlSafe(t.famo0) : day.famotidineDose}
+                        </span>
+                        <span style="display:inline-block;padding:2px 9px;border-radius:999px;background-color:#e0f2fe;color:#0369a1;font-family:monospace;font-size:12px;font-weight:800;margin-left:4px;">
+                          🔄 ${escapeHtmlSafe(day.quadrant || 'LU')}
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- Supplements Table -->
+                <div style="margin-top:16px;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;">
+                  <div style="background-color:#f0fdf4;padding:10px 14px;border-bottom:1px solid #dcfce7;font-size:13px;font-weight:800;color:#065f46;">
+                    ${escapeHtmlSafe(t.repSuppHeader)}
+                  </div>
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+                    ${suppRowsHtml}
+                  </table>
+                </div>
+
+                <!-- Meals & BG Fluctuation Table -->
+                <div style="margin-top:18px;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;">
+                  <div style="background-color:#f0fdfa;padding:10px 14px;border-bottom:1px solid #ccfbf1;font-size:13px;font-weight:800;color:#115e59;">
+                    ${escapeHtmlSafe(t.repMealsHeader)}
+                  </div>
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+                    <thead>
+                      <tr style="background-color:#f8fafc;border-bottom:1px solid #e2e8f0;font-size:11px;font-weight:800;color:#475569;">
+                        <th style="padding:8px 12px;text-align:${alignLeft};">${escapeHtmlSafe(t.thHistNode)}</th>
+                        <th style="padding:8px 12px;text-align:${alignLeft};">${escapeHtmlSafe(t.thHistBg)}</th>
+                        <th style="padding:8px 12px;text-align:${alignLeft};">${escapeHtmlSafe(t.lblInsulinShort)}</th>
+                        <th style="padding:8px 12px;text-align:${alignLeft};">${escapeHtmlSafe(t.lblMealFoods)}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${activeMealRows.length > 0 ? activeMealRows.join('') : `<tr><td colspan="4" style="padding:16px;text-align:center;color:#94a3b8;font-size:12px;">${escapeHtmlSafe(t.weekNoMeals)}</td></tr>`}
+                      ${unloggedFooterRow}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        // Weekly or All-History Clinical Report HTML
+        const allDates = Object.keys(allDaysStore).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort().reverse();
+        const targetDates = reportType === 'weekly' ? allDates.slice(0, 7) : allDates;
+        const dateRangeStr = targetDates.length > 0 ? `${targetDates[targetDates.length - 1]} ~ ${targetDates[0]}` : activeDate;
+
+        let totalBgCount = 0, totalInRange = 0, sumAllBg = 0, minAllBg = Infinity, maxAllBg = -Infinity;
+        let hypoCount = 0, hyperCount = 0;
+        let sumFasting = 0, cntFasting = 0, sumPre = 0, cntPre = 0, sumPost = 0, cntPost = 0;
+        let sumRegAll = 0, sumNphAll = 0, famoZeroDays = 0;
+        const foodAgg = {};
+
+        targetDates.forEach(dStr => {
+          const day = ensureDaySchemaIntegrity(allDaysStore[dStr]);
+          if (!day) return;
+          if (String(day.famotidineDose || '0') === '0') famoZeroDays++;
+          const fBg = Number(day.fastingBg);
+          if (day.fastingBg && !isNaN(fBg) && fBg >= 20) {
+            sumFasting += fBg; cntFasting++;
+            totalBgCount++; sumAllBg += fBg;
+            if (fBg >= 80 && fBg <= 160) totalInRange++;
+            if (fBg < 80) hypoCount++;
+            if (fBg > 180) hyperCount++;
+            minAllBg = Math.min(minAllBg, fBg); maxAllBg = Math.max(maxAllBg, fBg);
+          }
+          MEAL_NODES_META.forEach(meta => {
+            const md = day.meals?.[meta.key];
+            if (!md) return;
+            if (md.insStatus === 'done') {
+              sumRegAll += Number(md.regUnits) || 0;
+              sumNphAll += Number(md.nphUnits) || 0;
+            }
+            const pre = Number(md.preBg), post = Number(md.postBg);
+            const validPre = md.preBg && !isNaN(pre) && pre >= 20;
+            const validPost = md.postBg && !isNaN(post) && post >= 20;
+            if (validPre) {
+              sumPre += pre; cntPre++;
+              totalBgCount++; sumAllBg += pre;
+              if (pre >= 80 && pre <= 160) totalInRange++;
+              if (pre < 80) hypoCount++;
+              if (pre > 180) hyperCount++;
+              minAllBg = Math.min(minAllBg, pre); maxAllBg = Math.max(maxAllBg, pre);
+            }
+            if (validPost) {
+              sumPost += post; cntPost++;
+              totalBgCount++; sumAllBg += post;
+              if (post >= 80 && post <= 160) totalInRange++;
+              if (post < 80) hypoCount++;
+              if (post > 180) hyperCount++;
+              minAllBg = Math.min(minAllBg, post); maxAllBg = Math.max(maxAllBg, post);
+            }
+            if (validPre && validPost) {
+              const delta = post - pre;
+              (md.selectedFoods || []).forEach(fid => {
+                const fm = FOOD_ID_MAP[fid];
+                if (!fm) return;
+                const fn = `${fm.emoji} ${fm[lang] || fm.zh}`;
+                if (!foodAgg[fid]) foodAgg[fid] = { name: fn, cnt: 0, sumPre: 0, sumPost: 0, sumDelta: 0 };
+                foodAgg[fid].cnt++; foodAgg[fid].sumPre += pre; foodAgg[fid].sumPost += post; foodAgg[fid].sumDelta += delta;
+              });
+            }
+          });
+        });
+
+        const overallTir = totalBgCount > 0 ? Math.round((totalInRange / totalBgCount) * 100) : 0;
+        const avgAllBg = totalBgCount > 0 ? Math.round(sumAllBg / totalBgCount) : '--';
+        const avgFast = cntFasting > 0 ? Math.round(sumFasting / cntFasting) : '--';
+        const avgPreBg = cntPre > 0 ? Math.round(sumPre / cntPre) : '--';
+        const avgPostBg = cntPost > 0 ? Math.round(sumPost / cntPost) : '--';
+        const avgRegDay = targetDates.length > 0 ? Math.round((sumRegAll / targetDates.length) * 10) / 10 : 0;
+        const avgNphDay = targetDates.length > 0 ? Math.round((sumNphAll / targetDates.length) * 10) / 10 : 0;
+        const famoZeroPct = targetDates.length > 0 ? Math.round((famoZeroDays / targetDates.length) * 100) : 0;
+
+        const foodArr = Object.values(foodAgg).sort((a, b) => (a.sumDelta / a.cnt) - (b.sumDelta / b.cnt));
+        const foodRankingHtml = foodArr.length > 0 ? `
+          <div style="margin-top:18px;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;">
+            <div style="background-color:#f0fdf4;padding:10px 14px;border-bottom:1px solid #dcfce7;font-size:13px;font-weight:800;color:#065f46;">
+              ${escapeHtmlSafe(t.docSec2Title)}
+            </div>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+              <thead>
+                <tr style="background-color:#f8fafc;border-bottom:1px solid #e2e8f0;font-size:11px;font-weight:800;color:#475569;">
+                  <th style="padding:8px 12px;text-align:${alignLeft};">${escapeHtmlSafe(t.thImpFood)}</th>
+                  <th style="padding:8px 12px;text-align:center;">${escapeHtmlSafe(t.thImpCount)}</th>
+                  <th style="padding:8px 12px;text-align:${alignLeft};">${escapeHtmlSafe(t.lblPreMeal)} ➔ ${escapeHtmlSafe(t.lblPost2h)}</th>
+                  <th style="padding:8px 12px;text-align:${alignRight};">ΔBG</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${foodArr.map((f, idx) => {
+                  const aPre = Math.round(f.sumPre / f.cnt);
+                  const aPost = Math.round(f.sumPost / f.cnt);
+                  const aDelta = Math.round(f.sumDelta / f.cnt);
+                  const dSign = aDelta > 0 ? `+${aDelta}` : `${aDelta}`;
+                  const dBg = aDelta <= 25 ? '#d1fae5' : (aDelta <= 50 ? '#fef3c7' : '#ffe4e6');
+                  const dCol = aDelta <= 25 ? '#065f46' : (aDelta <= 50 ? '#92400e' : '#be123c');
+                  return `
+                    <tr style="background-color:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};border-bottom:1px solid #f1f5f9;">
+                      <td style="padding:8px 12px;font-size:12px;font-weight:700;color:#1e293b;">${escapeHtmlSafe(f.name)}</td>
+                      <td style="padding:8px 12px;text-align:center;font-family:monospace;font-size:12px;font-weight:700;color:#475569;">x${f.cnt}</td>
+                      <td style="padding:8px 12px;font-family:monospace;font-size:12px;">${renderEmailBgBadgeHtml(aPre, false)} ➔ ${renderEmailBgBadgeHtml(aPost, true)}</td>
+                      <td style="padding:8px 12px;text-align:${alignRight};">
+                        <span style="display:inline-block;padding:2px 9px;border-radius:999px;background-color:${dBg};color:${dCol};font-family:monospace;font-size:12px;font-weight:800;">${dSign} mg/dL</span>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        ` : '';
+
+        const dayCardsHtml = targetDates.map(dStr => {
+          const day = ensureDaySchemaIntegrity(allDaysStore[dStr]);
+          const m = calculateDaySummaryMetrics(day);
+          const mealItemsHtml = MEAL_NODES_META.map(meta => {
+            const md = day.meals?.[meta.key];
+            if (!md) return '';
+            const hasFood = (md.selectedFoods && md.selectedFoods.length > 0) || (md.customFoods && md.customFoods.length > 0);
+            const hasIns = md.insStatus && md.insStatus !== 'none' && (Number(md.regUnits) > 0 || Number(md.nphUnits) > 0);
+            const hasBg = md.preBg || md.postBg;
+            if (!hasFood && !hasIns && !hasBg) return '';
+            const insTag = hasIns ? `<span style="display:inline-block;padding:1px 6px;border-radius:6px;background-color:#fef3c7;color:#92400e;font-family:monospace;font-size:11px;font-weight:700;">🟡${md.regUnits}U+🟢${md.nphUnits}U</span>` : '';
+            return `
+              <div style="padding:6px 0;border-top:1px dashed #e2e8f0;font-size:12px;">
+                <span style="font-weight:800;color:#0f172a;">${meta.icon} ${escapeHtmlSafe((meta.title[lang] || meta.title.zh).split('(')[0].trim())} (${md.time}):</span>
+                ${renderEmailBgBadgeHtml(md.preBg, false)} ➔ ${renderEmailBgBadgeHtml(md.postBg, true)}
+                ${insTag}
+                <div style="margin-top:3px;">${renderEmailFoodChipsHtml(md, lang)}</div>
+              </div>
+            `;
+          }).filter(Boolean).join('');
+
+          return `
+            <div style="margin-top:10px;border:1px solid #cbd5e1;border-radius:12px;background-color:#ffffff;overflow:hidden;">
+              <div style="background-color:#f8fafc;padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:12px;font-weight:800;color:#1e293b;">
+                📅 <span style="font-family:monospace;">${dStr}</span>
+                ｜ ⏰ 🇮🇷${day.wakeTime}/🇰🇷${iranTimeToKoreaTime(day.wakeTime)}
+                ｜ 🩸 ${escapeHtmlSafe(stripLeadingEmoji(t.fastingBgLabel))} ${renderEmailBgBadgeHtml(day.fastingBg, false)}
+                ｜ 🎯 TIR: <span style="color:#059669;font-family:monospace;">${m.totalBgPts > 0 ? m.tir + '%' : '--'}</span>
+                ｜ 💉 <span style="font-family:monospace;">🟡${m.sumReg}U+🟢${m.sumNph}U</span>
+                ｜ 💊 ${day.famotidineDose}
+              </div>
+              <div style="padding:6px 12px;">
+                ${mealItemsHtml || `<div style="color:#94a3b8;font-size:11px;padding:4px 0;">${escapeHtmlSafe(t.weekNoMeals)}</div>`}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        const hdrTitle = reportType === 'allHistory' ? t.emailSubjAllHistory : t.emailSubjWeekly;
+
+        return `
+          <div dir="${dirAttr}" style="max-width:680px;margin:0 auto;background-color:#ffffff;border:1px solid #a7f3d0;border-radius:18px;overflow:hidden;box-shadow:0 4px 16px rgba(5,150,105,0.08);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',Tahoma,sans-serif;color:#1e293b;text-align:${alignLeft};">
+            <div style="background:linear-gradient(135deg,#059669 0%,#0f766e 100%);background-color:#059669;color:#ffffff;padding:20px 22px;">
+              <div style="font-size:17px;font-weight:900;">🏥 ${escapeHtmlSafe(hdrTitle)}</div>
+              <div style="font-size:12px;color:#d1fae5;margin-top:4px;font-family:monospace;">📅 ${escapeHtmlSafe(dateRangeStr)} (${targetDates.length} ${escapeHtmlSafe(t.annDaysUnit)})</div>
+            </div>
+            <div style="padding:18px 20px;">
+              <!-- Executive Summary KPI Grid -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;border-spacing:8px;">
+                <tr>
+                  <td width="50%" style="background-color:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:12px 14px;vertical-align:top;">
+                    <div style="font-size:11px;font-weight:800;color:#065f46;">🎯 ${escapeHtmlSafe(t.docTirRate)}</div>
+                    <div style="font-size:18px;font-weight:900;color:#047857;font-family:monospace;margin-top:4px;">${overallTir}% <span style="font-size:12px;color:#475569;">(${totalInRange}/${totalBgCount})</span></div>
+                    <div style="width:100%;height:7px;background-color:#dcfce7;border-radius:999px;overflow:hidden;margin-top:6px;">
+                      <div style="width:${overallTir}%;height:7px;background-color:#10b981;border-radius:999px;"></div>
+                    </div>
+                  </td>
+                  <td width="50%" style="background-color:#f0fdfa;border:1px solid #99f6e4;border-radius:14px;padding:12px 14px;vertical-align:top;">
+                    <div style="font-size:11px;font-weight:800;color:#115e59;">🩸 ${escapeHtmlSafe(t.docFastingPrePost)}</div>
+                    <div style="font-size:15px;font-weight:900;color:#0f766e;font-family:monospace;margin-top:4px;">${avgFast} / ${avgPreBg} / ${avgPostBg} <span style="font-size:11px;">mg/dL</span></div>
+                    <div style="font-size:11px;color:#64748b;margin-top:4px;font-family:monospace;">${escapeHtmlSafe(t.docMeanBg)}: ${avgAllBg} (${minAllBg === Infinity ? '--' : minAllBg}~${maxAllBg === -Infinity ? '--' : maxAllBg})</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="50%" style="background-color:#fff1f2;border:1px solid #fecdd3;border-radius:14px;padding:12px 14px;vertical-align:top;">
+                    <div style="font-size:11px;font-weight:800;color:#9f1239;">⚠️ ${escapeHtmlSafe(t.docHypoHyper)}</div>
+                    <div style="font-size:15px;font-weight:900;color:#be123c;font-family:monospace;margin-top:4px;">🔻 ${hypoCount} ｜ 🔺 ${hyperCount}</div>
+                  </td>
+                  <td width="50%" style="background-color:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:12px 14px;vertical-align:top;">
+                    <div style="font-size:11px;font-weight:800;color:#92400e;">💉 ${escapeHtmlSafe(t.docAvgDailyIns)} & 💊 ${escapeHtmlSafe(t.thWeekFamo)}</div>
+                    <div style="font-size:14px;font-weight:900;color:#78350f;font-family:monospace;margin-top:4px;">🟡${avgRegDay}U + 🟢${avgNphDay}U ｜ 0-Pill: ${famoZeroPct}%</div>
+                  </td>
+                </tr>
+              </table>
+
+              ${foodRankingHtml}
+
+              <div style="margin-top:18px;">
+                <div style="font-size:13px;font-weight:800;color:#0f172a;margin-bottom:6px;">${escapeHtmlSafe(t.docSec3Title)} (${targetDates.length} ${escapeHtmlSafe(t.annDaysUnit)})</div>
+                ${dayCardsHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      } finally {
+        currentLang = prevLang;
+      }
+    }
+
     function buildMultiLangPlainTextReport(reportType = 'daily', overrideDate, langList = ['zh', 'fa', 'en', 'ko']) {
       const sections = langList.map(lg => {
         const headerMap = {
-          zh: '【🇨🇳 中文版报告 (Chinese Version)】',
-          fa: '【🇮🇷 گزارش فارسی (Persian Version)】',
-          en: '【🇬🇧 English Version】',
-          ko: '【🇰🇷 한국어 버전 (Korean Version)】'
+          zh: '┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ 🇨🇳 中文版临床报告 (Chinese Version)       ┃\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛',
+          fa: '┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ 🇮🇷 گزارش فارسی (Persian Version)          ┃\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛',
+          en: '┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ 🇬🇧 English Clinical Version              ┃\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛',
+          ko: '┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ 🇰🇷 한국어 임상 보고서 (Korean Version)     ┃\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛'
         };
         return `${headerMap[lg] || ''}\n${buildPlainTextReport(reportType, overrideDate, lg)}`;
       });
-      return sections.join('\n\n==================================================\n\n');
+      return sections.join('\n\n');
     }
 
     function updateEmailLangMode(mode) {
@@ -6895,6 +7473,57 @@ svg, img, video, canvas {
       persistStateLocally();
       scheduleAutoSync('切换邮件多语投递模式');
       showToast(tMsg('toastSaved'));
+    }
+
+    function updateEmailFormatMode(fmtMode) {
+      serverConfig.emailFormatMode = fmtMode || 'html_card';
+      persistStateLocally();
+      scheduleAutoSync('切换邮件视觉排版模式');
+      showToast(tMsg('toastSaved'));
+    }
+
+    function openEmailPreviewModal(defaultType = 'daily') {
+      const modal = document.getElementById('emailPreviewModal');
+      const typeSel = document.getElementById('previewEmailTypeSelect');
+      if (typeSel && defaultType) typeSel.value = defaultType;
+      if (modal) modal.classList.remove('hidden');
+      renderEmailPreviewModalContent();
+    }
+
+    function closeEmailPreviewModal() {
+      document.getElementById('emailPreviewModal')?.classList.add('hidden');
+    }
+
+    function renderEmailPreviewModalContent() {
+      const box = document.getElementById('emailPreviewRenderBox');
+      if (!box) return;
+      const repType = document.getElementById('previewEmailTypeSelect')?.value || 'daily';
+      const langMode = document.getElementById('previewEmailLangSelect')?.value || 'zh';
+      const selDate = repType === 'daily' ? (document.getElementById('dailyReportDateSelect')?.value || activeDate) : activeDate;
+      box.innerHTML = buildHtmlReport(repType, selDate, langMode);
+    }
+
+    function copyRichHtmlReportFromPreview() {
+      const box = document.getElementById('emailPreviewRenderBox');
+      if (!box) return;
+      try {
+        const range = document.createRange();
+        range.selectNodeContents(box);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand('copy');
+        sel.removeAllRanges();
+        showToast(tMsg('toastCopyOk'));
+      } catch (e) {
+        copyTextToClipboard(box.innerText || '', tMsg('toastCopyOk'));
+      }
+    }
+
+    async function sendFromPreviewModalNow() {
+      const repType = document.getElementById('previewEmailTypeSelect')?.value || 'daily';
+      await sendReportEmailNow(repType, false);
+      closeEmailPreviewModal();
     }
 
     function buildPlainTextReport(reportType = 'daily', overrideDate, forceLang) {
@@ -6913,26 +7542,46 @@ svg, img, video, canvas {
         const day = ensureDaySchemaIntegrity(allDaysStore[selDate] || createDefaultDay(selDate));
         const m = calculateDaySummaryMetrics(day);
         const lines = [
-          `${t.emailSubjDaily} ${day.date}`,
-          `====================================`,
-          `⏰ ${t.repDateWake}: 🇮🇷 ${day.wakeTime} (🇰🇷 ${iranTimeToKoreaTime(day.wakeTime)}) | 🩸 ${t.fastingBgLabel} ${day.fastingBg || '--'} mg/dL`,
-          `🎯 ${t.repTirLabel}: ${m.totalBgPts > 0 ? `${m.tir}% (${m.inRange}/${m.totalBgPts}, ${m.minBg}~${m.maxBg} mg/dL)` : t.repNoBg}`,
-          `💉 ${t.repTotalIns}: 🟡 ${t.yellowShort} ${m.sumReg}U + 🟢 ${t.greenShort} ${m.sumNph}U (=${m.sumReg + m.sumNph}U)`,
-          `💊 ${t.famoTitle}: ${day.famotidineDose} | 🔄 ${t.quadrantLabel}: ${day.quadrant}`,
+          `┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`,
+          `┃ 💚 ${t.emailSubjDaily} ${day.date}`,
+          `┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫`,
+          `┃ ⏰ ${stripLeadingEmoji(t.repDateWake)}: 🇮🇷 ${day.wakeTime} (🇰🇷 ${iranTimeToKoreaTime(day.wakeTime)})`,
+          `┃ 🩸 ${stripLeadingEmoji(t.fastingBgLabel)} ${day.fastingBg || '--'} mg/dL`,
+          `┃ 🎯 ${stripLeadingEmoji(t.repTirLabel)}: ${m.totalBgPts > 0 ? `${m.tir}% (${m.inRange}/${m.totalBgPts} | ${m.minBg}~${m.maxBg} mg/dL)` : t.repNoBg}`,
+          `┃ 💉 ${stripLeadingEmoji(t.repTotalIns)}: 🟡 ${t.yellowShort} ${m.sumReg}U + 🟢 ${t.greenShort} ${m.sumNph}U (=${m.sumReg + m.sumNph}U)`,
+          `┃ 💊 ${stripLeadingEmoji(t.famoTitle)}: ${day.famotidineDose} ｜ 🔄 ${stripLeadingEmoji(t.quadrantLabel)}: ${day.quadrant}`,
+          `┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`,
           ``,
-          `${t.repSuppHeader}`
+          `🌅 【${stripLeadingEmoji(t.repSuppHeader)}】`
         ];
         SUPPLEMENTS_DICT.forEach(supp => {
           const st = day.supplements?.[supp.id];
-          lines.push(`- ${supp.name[currentLang] || supp.name.zh}: ${st?.checked ? `✅ 🇮🇷${st.timeIr} / 🇰🇷${iranTimeToKoreaTime(st.timeIr)}` : t.repUnchecked}`);
+          lines.push(`  ${st?.checked ? '✅' : '⬜'} ${supp.name[currentLang] || supp.name.zh}: ${st?.checked ? `🇮🇷${st.timeIr} / 🇰🇷${iranTimeToKoreaTime(st.timeIr)}` : t.repUnchecked}`);
         });
-        lines.push(``, `${t.repMealsHeader}`);
+        lines.push(``, `🍽️ 【${stripLeadingEmoji(t.repMealsHeader)}】`);
+        const unloggedNames = [];
         MEAL_NODES_META.forEach(meta => {
           const md = day.meals?.[meta.key];
           if (!md) return;
-          const insStr = md.insStatus !== 'none' ? `🟡${md.regUnits}U + 🟢${md.nphUnits}U` : t.repNoShot;
-          lines.push(`- ${meta.title[currentLang] || meta.title.zh} (🇮🇷${md.time}/🇰🇷${iranTimeToKoreaTime(md.time)}): [${md.preBg || '--'}→${md.postBg || '--'} mg/dL] | ${insStr} | ${formatFoodListLocalized(md)}`);
+          const foodStr = formatFoodListLocalized(md);
+          const hasFood = foodStr !== t.repNoFood;
+          const hasIns = md.insStatus && md.insStatus !== 'none' && (Number(md.regUnits) > 0 || Number(md.nphUnits) > 0);
+          const hasBg = md.preBg || md.postBg;
+          const mTitle = meta.title[currentLang] || meta.title.zh;
+          if (!hasFood && !hasIns && !hasBg) {
+            unloggedNames.push(mTitle.split('(')[0].trim());
+            return;
+          }
+          const insStr = hasIns ? `💉 🟡${md.regUnits}U + 🟢${md.nphUnits}U` : t.repNoShot;
+          const dVal = (md.preBg && md.postBg) ? (Number(md.postBg) - Number(md.preBg)) : null;
+          const dStr = (dVal !== null && !isNaN(dVal)) ? ` (ΔBG ${dVal > 0 ? '+' + dVal : dVal})` : '';
+          lines.push(`  ▸ ${meta.icon} ${mTitle} (🇮🇷${md.time}/🇰🇷${iranTimeToKoreaTime(md.time)})`);
+          lines.push(`    🩸 [ ${md.preBg || '--'} ➔ ${md.postBg || '--'} mg/dL ]${dStr} ｜ ${insStr}`);
+          lines.push(`    🍱 ${foodStr}`);
         });
+        if (unloggedNames.length > 0) {
+          lines.push(`  🕒 ${t.unloggedMealsSummaryLabel} ${unloggedNames.join(' 、 ')}`);
+        }
         return lines.join('\n');
       } else if (reportType === 'allHistory') {
         const dates = Object.keys(allDaysStore).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort().reverse();
@@ -7005,16 +7654,17 @@ svg, img, video, canvas {
         const famoZeroPct = dates.length > 0 ? Math.round((famoZeroDays / dates.length) * 100) : 0;
 
         const lines = [
-          `${t.emailSubjAllHistory} (${dateRangeStr})`,
-          `====================================================`,
+          `┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`,
+          `┃ 🏥 ${t.emailSubjAllHistory} (${dateRangeStr})`,
+          `┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`,
           `${t.docSec1Title}`,
-          `• ${t.docLoggedDays}: ${dates.length} ${t.annDaysUnit} (${dateRangeStr})`,
-          `• ${t.docTirRate}: ${overallTir}% (${totalInRange}/${totalBgCount} ${t.annTimesUnit})`,
-          `• ${t.docMeanBg}: ${avgAllBg} mg/dL (${t.docRangeWord}: ${minAllBg === Infinity ? '--' : minAllBg} ~ ${maxAllBg === -Infinity ? '--' : maxAllBg} mg/dL)`,
-          `• ${t.docFastingPrePost}: ${avgFast} / ${avgPreBg} / ${avgPostBg} mg/dL`,
-          `• ${t.docHypoHyper}: <80: ${hypoCount} ${t.annTimesUnit} | >180: ${hyperCount} ${t.annTimesUnit}`,
-          `• ${t.docAvgDailyIns}: 🟡 ${t.yellowShort} ${avgRegDay}U + 🟢 ${t.greenShort} ${avgNphDay}U`,
-          `• ${t.docFamoZeroRate}: ${famoZeroPct}% (${famoZeroDays}/${dates.length} ${t.annDaysUnit})`,
+          `  • ${t.docLoggedDays}: ${dates.length} ${t.annDaysUnit} (${dateRangeStr})`,
+          `  • ${t.docTirRate}: ${overallTir}% (${totalInRange}/${totalBgCount} ${t.annTimesUnit})`,
+          `  • ${t.docMeanBg}: ${avgAllBg} mg/dL (${t.docRangeWord}: ${minAllBg === Infinity ? '--' : minAllBg} ~ ${maxAllBg === -Infinity ? '--' : maxAllBg} mg/dL)`,
+          `  • ${t.docFastingPrePost}: ${avgFast} / ${avgPreBg} / ${avgPostBg} mg/dL`,
+          `  • ${t.docHypoHyper}: <80: ${hypoCount} ${t.annTimesUnit} | >180: ${hyperCount} ${t.annTimesUnit}`,
+          `  • ${t.docAvgDailyIns}: 🟡 ${t.yellowShort} ${avgRegDay}U + 🟢 ${t.greenShort} ${avgNphDay}U`,
+          `  • ${t.docFamoZeroRate}: ${famoZeroPct}% (${famoZeroDays}/${dates.length} ${t.annDaysUnit})`,
           ``
         ];
 
@@ -7025,7 +7675,7 @@ svg, img, video, canvas {
             const aPre = Math.round(f.sumPre / f.cnt);
             const aPost = Math.round(f.sumPost / f.cnt);
             const aDelta = Math.round(f.sumDelta / f.cnt);
-            lines.push(`- ${f.name} (x${f.cnt}): ${t.lblPreMeal} ${aPre} ➔ ${t.lblPost2h} ${aPost} mg/dL (ΔBG: ${aDelta > 0 ? '+' + aDelta : aDelta} mg/dL)`);
+            lines.push(`  ▸ ${f.name} (x${f.cnt}): ${t.lblPreMeal} ${aPre} ➔ ${t.lblPost2h} ${aPost} mg/dL (ΔBG: ${aDelta > 0 ? '+' + aDelta : aDelta} mg/dL)`);
           });
           lines.push(``);
         }
@@ -7034,8 +7684,8 @@ svg, img, video, canvas {
         dates.forEach(dStr => {
           const day = ensureDaySchemaIntegrity(allDaysStore[dStr]);
           const m = calculateDaySummaryMetrics(day);
-          lines.push(`----------------------------------------------------`);
-          lines.push(`📅 ${dStr} | ⏰ 🇮🇷${day.wakeTime}/🇰🇷${iranTimeToKoreaTime(day.wakeTime)} | 🩸 ${t.fastingBgLabel} ${day.fastingBg || '--'} mg/dL | 🎯 80-160: ${m.totalBgPts > 0 ? m.tir + '% (' + m.inRange + '/' + m.totalBgPts + ')' : '--'} | 💉 🟡${m.sumReg}U+🟢${m.sumNph}U | 💊 ${t.thWeekFamo}: ${day.famotidineDose} | 🔄 ${day.quadrant}`);
+          lines.push(`────────────────────────────────────────────`);
+          lines.push(`📅 ${dStr} ｜ ⏰ 🇮🇷${day.wakeTime}/🇰🇷${iranTimeToKoreaTime(day.wakeTime)} ｜ 🩸 ${stripLeadingEmoji(t.fastingBgLabel)} ${day.fastingBg || '--'} mg/dL ｜ 🎯 80-160: ${m.totalBgPts > 0 ? m.tir + '% (' + m.inRange + '/' + m.totalBgPts + ')' : '--'} ｜ 💉 🟡${m.sumReg}U+🟢${m.sumNph}U ｜ 💊 ${t.thWeekFamo}: ${day.famotidineDose} ｜ 🔄 ${day.quadrant}`);
           const suppDone = SUPPLEMENTS_DICT.filter(s => day.supplements?.[s.id]?.checked).map(s => `${s.icon}${(s.name[currentLang] || s.name.zh).split(' ')[0]}(${day.supplements[s.id].timeIr})`).join(' 、 ');
           if (suppDone) lines.push(`   ${t.docSuppPrefix}: ${suppDone}`);
           MEAL_NODES_META.forEach(meta => {
@@ -7044,20 +7694,22 @@ svg, img, video, canvas {
             const foodStr = formatFoodListLocalized(md);
             if (foodStr === t.repNoFood && !md.preBg && !md.postBg && md.insStatus === 'none') return;
             const insTag = md.insStatus !== 'none' ? `💉🟡${md.regUnits}U+🟢${md.nphUnits}U` : t.repNoShot;
-            lines.push(`   • ${meta.title[currentLang] || meta.title.zh} (🇮🇷${md.time}/🇰🇷${iranTimeToKoreaTime(md.time)}): [🩸 ${md.preBg || '--'} ➔ ${md.postBg || '--'} mg/dL] | ${insTag} | ${foodStr}`);
+            lines.push(`   • ${meta.title[currentLang] || meta.title.zh} (🇮🇷${md.time}/🇰🇷${iranTimeToKoreaTime(md.time)}): [🩸 ${md.preBg || '--'} ➔ ${md.postBg || '--'} mg/dL] ｜ ${insTag} ｜ ${foodStr}`);
           });
         });
         return lines.join('\n');
       } else {
         const dates = Object.keys(allDaysStore).sort().reverse();
         const lines = [
-          `${t.emailSubjWeekly} ${overrideDate || activeDate}`,
-          `====================================`
+          `┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓`,
+          `┃ 📊 ${t.emailSubjWeekly} ${overrideDate || activeDate}`,
+          `┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`
         ];
         dates.forEach(dStr => {
           const day = ensureDaySchemaIntegrity(allDaysStore[dStr]);
           const m = calculateDaySummaryMetrics(day);
-          lines.push(`📅 ${dStr} | ⏰ 🇮🇷${day.wakeTime}/🇰🇷${iranTimeToKoreaTime(day.wakeTime)} | 🎯 80-160: ${m.totalBgPts > 0 ? m.tir + '%' : '--'} | 💉 🟡${m.sumReg}U+🟢${m.sumNph}U | 💊 ${day.famotidineDose}`);
+          lines.push(`────────────────────────────────────────────`);
+          lines.push(`📅 ${dStr} ｜ ⏰ 🇮🇷${day.wakeTime}/🇰🇷${iranTimeToKoreaTime(day.wakeTime)} ｜ 🎯 80-160: ${m.totalBgPts > 0 ? m.tir + '%' : '--'} ｜ 💉 🟡${m.sumReg}U+🟢${m.sumNph}U ｜ 💊 ${day.famotidineDose}`);
           MEAL_NODES_META.forEach(meta => {
             const md = day.meals?.[meta.key];
             if (!md) return;
@@ -7213,12 +7865,26 @@ svg, img, video, canvas {
           ? `${tZh.emailSubjDaily} / ${tEn.emailSubjDaily} ${targetDate}`
           : `${tZh.emailSubjWeekly} / ${tEn.emailSubjWeekly} ${targetDate}`);
 
-      const textZh = buildPlainTextReport(reportType, targetDate, 'zh');
-      const textEnFa = buildPlainTextReport(reportType, targetDate, 'en_fa');
-      const textAll = buildPlainTextReport(reportType, targetDate, 'all');
+      const fmtMode = (serverConfig && serverConfig.emailFormatMode) ? serverConfig.emailFormatMode : 'html_card';
+      const useHtml = fmtMode !== 'pretty_text';
+
+      const htmlZh = buildHtmlReport(reportType, targetDate, 'zh');
+      const htmlEnFa = buildHtmlReport(reportType, targetDate, 'en_fa');
+      const htmlAll = buildHtmlReport(reportType, targetDate, 'all');
+
+      const plainZh = buildPlainTextReport(reportType, targetDate, 'zh');
+      const plainEnFa = buildPlainTextReport(reportType, targetDate, 'en_fa');
+      const plainAll = buildPlainTextReport(reportType, targetDate, 'all');
+
+      const textZh = useHtml ? htmlZh : plainZh;
+      const textEnFa = useHtml ? htmlEnFa : plainEnFa;
+      const textAll = useHtml ? htmlAll : plainAll;
 
       const subject = mode === 'all_in_one' ? subjectAll : subjectZh;
-      const bodyText = mode === 'all_in_one' ? textAll : `${textZh}\n\n==================================================\n\n${textEnFa}`;
+      const bodyText = mode === 'all_in_one'
+        ? textAll
+        : (useHtml ? `${htmlZh}<div style="height:24px;"></div>${htmlEnFa}` : `${plainZh}\n\n${plainEnFa}`);
+      const bodyHtmlAlways = mode === 'all_in_one' ? htmlAll : `${htmlZh}<div style="height:24px;"></div>${htmlEnFa}`;
 
       // 1. 优先通过 Cloudflare Worker 云端网关发信（支持按收件人自动分发：miyubear 中文 / arsanbear 英文+波斯语，或全语言同封）
       const workerUrl = (serverConfig.dexcomBridgeUrl || DEFAULT_WORKER_URL).trim();
@@ -7227,6 +7893,7 @@ svg, img, video, canvas {
           const wMailRes = await postToWorkerResilient(workerUrl, {
             action: 'send_email',
             emailLangMode: mode,
+            emailFormatMode: fmtMode,
             to: recipients.join(', '),
             recipientsList: recipients,
             name: 'Sugar System (血糖健康打卡系统)',
@@ -7235,10 +7902,13 @@ svg, img, video, canvas {
             subjectZh: subjectZh,
             subjectEnFa: subjectEnFa,
             message: bodyText,
+            html_message: bodyHtmlAlways,
             content: bodyText,
-            text: bodyText,
+            text: plainAll,
             messageZh: textZh,
             messageEnFa: textEnFa,
+            htmlZh: htmlZh,
+            htmlEnFa: htmlEnFa,
             reportDate: reportType === 'allHistory' ? historyRangeLabel : targetDate,
             reportType: reportType,
             auto: !!isAuto
@@ -7275,8 +7945,9 @@ svg, img, video, canvas {
                 from_name: 'Sugar System (血糖健康打卡系统)',
                 subject: subject,
                 message: bodyText,
+                html_message: bodyHtmlAlways,
                 content: bodyText,
-                text: bodyText,
+                text: plainAll,
                 report_date: reportType === 'allHistory' ? historyRangeLabel : targetDate
               }
             })
@@ -8263,6 +8934,10 @@ svg, img, video, canvas {
       const modeSel = document.getElementById('emailLangModeSelect');
       if (modeSel && serverConfig.emailLangMode) {
         modeSel.value = serverConfig.emailLangMode;
+      }
+      const fmtSel = document.getElementById('emailFormatSelect');
+      if (fmtSel && serverConfig.emailFormatMode) {
+        fmtSel.value = serverConfig.emailFormatMode;
       }
       seedInitial7DaysData();
       restoreHypoTimerStateFromStorage();
