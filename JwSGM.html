@@ -691,6 +691,9 @@ svg, img, video, canvas {
           <button onclick="switchTab('reportWeek')" id="tabBtn-reportWeek" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center gap-1 shrink-0">
             <span>📊</span> <span id="uiTabReportWeek">每周报告与双邮箱发送 (周日10:00)</span>
           </button>
+          <button onclick="switchTab('annual')" id="tabBtn-annual" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center gap-1 shrink-0">
+            <span>📉</span> <span id="uiTabAnnual">年度可视化与医生报告</span>
+          </button>
         </nav>
       </div>
     </div>
@@ -1010,6 +1013,47 @@ svg, img, video, canvas {
           <!-- Populated dynamically by renderFoodImpactTab() -->
         </div>
 
+        <!-- Interactive Food Glycemic Fluctuation Line Chart Card -->
+        <div class="mt-4 p-4 rounded-2xl bg-slate-50/90 border border-emerald-200/90 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 id="uiFoodChartTitle" class="text-xs sm:text-sm font-extrabold text-slate-800 flex items-center gap-1.5">
+                <span>📉</span> <span>按食物类型 / 具体食物 / 餐次 血糖波动折线图</span>
+              </h3>
+              <p id="uiFoodChartSub" class="text-[11px] text-slate-500 mt-0.5">直观展示每次进食该类食物时的【餐前血糖 (蓝线) ➔ 餐后2h血糖 (橙红线)】波动轨迹及六大食物类别斜率对比</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <select id="foodChartModeSelect" onchange="renderFoodFluctuationChart()" class="text-xs font-bold bg-white border border-emerald-300 text-emerald-950 rounded-xl px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <option value="timeline" id="optChartModeTimeline">📈 每次进食餐前 vs 餐后2h波动折线图</option>
+                <option value="catCompare" id="optChartModeCatCompare">📊 六大食物类型平均升糖轨迹对比图 (0h➔2h)</option>
+              </select>
+              <select id="foodChartMealSelect" onchange="renderFoodFluctuationChart()" class="text-xs font-semibold bg-white border border-slate-200 text-slate-700 rounded-xl px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <option value="all" id="optChartMealAll">🍽️ 全部餐次节点</option>
+                <option value="pre_breakfast">1. 🥚 早前零食</option>
+                <option value="breakfast">2. 🌅 早餐</option>
+                <option value="breakfast_extra">3. ➕ 早后额外</option>
+                <option value="lunch">4. ☀️ 午餐</option>
+                <option value="lunch_extra">5. ➕ 午后额外</option>
+                <option value="dinner">6. 🌙 晚餐</option>
+                <option value="dinner_extra">7. ➕ 晚后额外</option>
+              </select>
+              <select id="foodChartSpecificSelect" onchange="renderFoodFluctuationChart()" class="text-xs font-semibold bg-white border border-slate-200 text-slate-700 rounded-xl px-2.5 py-1.5 max-w-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <option value="all">🍱 当前分类下全部食物</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- SVG Line Chart Box -->
+          <div id="foodFluctuationChartBox" class="w-full bg-white rounded-xl border border-slate-200/90 p-2 sm:p-3 overflow-x-auto custom-scroll">
+            <!-- Dynamically rendered SVG chart -->
+          </div>
+
+          <!-- Selected / Hovered Point Detail Bar -->
+          <div id="foodChartPointDetail" class="px-3 py-2 rounded-xl bg-emerald-50/80 border border-emerald-200 text-xs text-emerald-950 font-medium break-words">
+            💡 点击折线图上的任意数据圆点，即可在此查看当餐日期、具体食物组合、胰岛素剂量与餐前→餐后2h血糖详情。
+          </div>
+        </div>
+
         <!-- Food Glycemic Impact Table -->
         <div class="mt-4 overflow-x-auto custom-scroll rounded-xl border border-slate-200">
           <table class="w-full text-left border-collapse text-xs">
@@ -1042,9 +1086,14 @@ svg, img, video, canvas {
             <h2 id="uiHistTitle" class="text-base sm:text-lg font-bold text-slate-800">🔍 多维时间与分类筛选器（历史执行明细查询）</h2>
             <p id="uiHistSub" class="text-xs text-slate-500">支持按日期区间、韩国/伊朗时区轴、以及胰岛素/保健品/六大餐饮分类自由组合筛选</p>
           </div>
-          <button onclick="exportFilteredHistoryCSV()" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
-            <span>📥</span> <span id="uiExportCsvBtn">导出当前筛选 CSV (Excel)</span>
-          </button>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="sendReportEmailNow('allHistory')" class="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+              <span>🏥</span> <span id="uiSendAllHistBtn1">发送全部历史报告至邮箱 (医生分析)</span>
+            </button>
+            <button onclick="exportFilteredHistoryCSV()" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+              <span>📥</span> <span id="uiExportCsvBtn">导出当前筛选 CSV (Excel)</span>
+            </button>
+          </div>
         </div>
 
         <!-- Filter Controls Bar -->
@@ -1200,11 +1249,14 @@ svg, img, video, canvas {
           </div>
 
           <div class="lg:col-span-5 flex flex-wrap items-center justify-end gap-2">
-            <button onclick="sendReportEmailNow('daily')" class="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+            <button onclick="sendReportEmailNow('daily')" class="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
               <span>📨</span> <span id="uiBtnManualDay">手动发送【今日日报】</span>
             </button>
-            <button onclick="sendReportEmailNow('weekly')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-md transition flex items-center gap-1.5">
+            <button onclick="sendReportEmailNow('weekly')" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-md transition flex items-center gap-1.5">
               <span>🚀</span> <span id="uiBtnManualWeek">立即手动发送【本周7天总表】</span>
+            </button>
+            <button onclick="sendReportEmailNow('allHistory')" class="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md transition flex items-center gap-1.5">
+              <span>🏥</span> <span id="uiBtnManualAllHistory">发送【全部历史报告 (供医生分析)】</span>
             </button>
           </div>
         </div>
@@ -1243,6 +1295,137 @@ svg, img, video, canvas {
             </thead>
             <tbody id="weeklySummaryTableBody" class="divide-y divide-slate-100 bg-white">
               <!-- Populated by renderWeeklyReport() -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: ANNUAL VISUAL REPORT & DOCTOR FULL-HISTORY ANALYSIS ==================== -->
+    <section id="tabContent-annual" class="hidden space-y-6">
+      <!-- Top Control & Doctor Full-History Dispatch Card -->
+      <div class="glass-card rounded-2xl p-4 sm:p-6 shadow-sm border-2 border-emerald-500/20">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-bold">📉</div>
+            <div>
+              <h2 id="uiAnnualTitle" class="text-base sm:text-lg font-bold text-slate-800">年度可视化报告与医生全量历史分析中心</h2>
+              <p id="uiAnnualSub" class="text-xs text-slate-500">支持按年份/月份可视化查看血糖波动折线图、食物类型升糖曲线，并可一键将全部历史报告发送至邮箱供医生复诊分析</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="annualYearSelect" onchange="renderAnnualReportTab()" class="text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl px-3 py-1.5">
+              <option value="all" id="optAnnualAllYears">📅 全部年份 (All Years)</option>
+            </select>
+            <select id="annualMonthSelect" onchange="renderAnnualReportTab()" class="text-xs font-bold bg-white border border-slate-200 text-slate-700 rounded-xl px-3 py-1.5">
+              <option value="all" id="optAnnualAllMonths">🗓️ 全年 1–12月汇总</option>
+              <option value="01">01月 (Jan)</option>
+              <option value="02">02月 (Feb)</option>
+              <option value="03">03月 (Mar)</option>
+              <option value="04">04月 (Apr)</option>
+              <option value="05">05月 (May)</option>
+              <option value="06">06月 (Jun)</option>
+              <option value="07">07月 (Jul)</option>
+              <option value="08">08月 (Aug)</option>
+              <option value="09">09月 (Sep)</option>
+              <option value="10">10月 (Oct)</option>
+              <option value="11">11月 (Nov)</option>
+              <option value="12">12月 (Dec)</option>
+            </select>
+            <button onclick="copyAllHistoryReportText()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition flex items-center gap-1">
+              <span>📋</span> <span id="uiBtnCopyAllHist">复制全部历史报告</span>
+            </button>
+            <button onclick="exportAllHistoryDoctorCSV()" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition flex items-center gap-1">
+              <span>📥</span> <span id="uiBtnExportAllHistCsv">导出全量医生分析 CSV</span>
+            </button>
+            <button onclick="sendReportEmailNow('allHistory')" class="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+              <span>🏥</span> <span id="uiBtnSendAllHistTop">一键发送【全部历史报告】至双邮箱</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Clinical KPI Cards -->
+        <div id="annualKpiGrid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <!-- Populated by renderAnnualReportTab() -->
+        </div>
+      </div>
+
+      <!-- Visual Chart 1: Daily BG Fluctuation Trend Line Chart (Fasting / Pre-Meal / 2h Post-Meal / Min-Max Band) -->
+      <div class="glass-card rounded-2xl p-4 sm:p-6 shadow-sm space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
+          <div>
+            <h3 id="uiAnnualBgChartTitle" class="text-sm sm:text-base font-bold text-slate-800">📈 全周期每日血糖波动折线图（空腹 vs 餐前均值 vs 餐后2h均值）</h3>
+            <p id="uiAnnualBgChartSub" class="text-xs text-slate-500">绿色背景带为 80–160 mg/dL 稳态目标区，灰色阴影带为当日最低~最高血糖波动范围</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3 text-xs">
+            <label class="inline-flex items-center gap-1.5 font-bold text-emerald-700 cursor-pointer">
+              <input type="checkbox" id="chkChartFasting" checked onchange="renderAnnualReportTab()" class="rounded text-emerald-600" />
+              <span id="uiChkFasting">🟢 空腹血糖</span>
+            </label>
+            <label class="inline-flex items-center gap-1.5 font-bold text-sky-900 cursor-pointer">
+              <input type="checkbox" id="chkChartPre" checked onchange="renderAnnualReportTab()" class="rounded text-emerald-600" />
+              <span id="uiChkPre">🔵 餐前平均血糖</span>
+            </label>
+            <label class="inline-flex items-center gap-1.5 font-bold text-rose-700 cursor-pointer">
+              <input type="checkbox" id="chkChartPost" checked onchange="renderAnnualReportTab()" class="rounded text-emerald-600" />
+              <span id="uiChkPost">🔴 餐后2h平均血糖</span>
+            </label>
+          </div>
+        </div>
+        <div id="annualDailyLineChartBox" class="w-full bg-white rounded-xl border border-slate-200 p-2 sm:p-3 overflow-x-auto custom-scroll">
+          <!-- Populated by renderAnnualReportTab() -->
+        </div>
+        <div id="annualDailyPointDetail" class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 font-medium break-words">
+          💡 点击上方折线图中的任意日期节点，即可查看该日的完整血糖范围、胰岛素总量与达标率详情。
+        </div>
+      </div>
+
+      <!-- Visual Chart 2: Food Category & Specific Food BG Fluctuation Line Chart inside Annual View -->
+      <div class="glass-card rounded-2xl p-4 sm:p-6 shadow-sm space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
+          <div>
+            <h3 id="uiAnnualFoodChartTitle" class="text-sm sm:text-base font-bold text-slate-800">🍽️ 按食物类型筛选的血糖波动折线图（餐前 ➔ 餐后2h 波动与升糖幅度）</h3>
+            <p id="uiAnnualFoodChartSub" class="text-xs text-slate-500">切换不同食物类别，直观对比各类饮食下的餐前与餐后 2 小时血糖波动曲线</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="annualFoodCatSelect" onchange="renderAnnualFoodChart()" class="text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-xl px-3 py-1.5">
+              <option value="all">🗂️ 全部食物类型 (All Categories)</option>
+              <option value="CAT_GOOD">🥗 优选护胃稳糖类</option>
+              <option value="CAT_PROTEIN">🥩 优质蛋白类</option>
+              <option value="CAT_CARB">🌾 温和慢碳主食</option>
+              <option value="CAT_NUTS">🥜 坚果与健康种子</option>
+              <option value="CAT_DRINK">☕ 日常饮品</option>
+              <option value="CAT_SNACK">🍪 休闲零食与甜品</option>
+            </select>
+          </div>
+        </div>
+        <div id="annualFoodLineChartBox" class="w-full bg-white rounded-xl border border-slate-200 p-2 sm:p-3 overflow-x-auto custom-scroll">
+          <!-- Populated by renderAnnualFoodChart() -->
+        </div>
+      </div>
+
+      <!-- Visual Chart 3: Monthly 1-12 Summary Matrix Table -->
+      <div class="glass-card rounded-2xl p-4 sm:p-6 shadow-sm space-y-3">
+        <div>
+          <h3 id="uiAnnualMonthTableTitle" class="text-sm sm:text-base font-bold text-slate-800">📊 月度临床稳态达标率与胰岛素/护胃药减停汇总表</h3>
+          <p id="uiAnnualMonthTableSub" class="text-xs text-slate-500">按月份自动聚合打卡天数、80–160 稳态达标率、空腹/餐前/餐后均值、日均胰岛素与法莫替丁无药天数占比</p>
+        </div>
+        <div class="overflow-x-auto custom-scroll rounded-xl border border-slate-200">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                <th id="thAnnMonth" class="py-2.5 px-3 whitespace-nowrap">月份 (YYYY-MM)</th>
+                <th id="thAnnDays" class="py-2.5 px-3 whitespace-nowrap">记录天数</th>
+                <th id="thAnnTir" class="py-2.5 px-3 min-w-[170px]">80–160 稳态达标率</th>
+                <th id="thAnnFasting" class="py-2.5 px-3 whitespace-nowrap">平均空腹血糖</th>
+                <th id="thAnnPrePost" class="py-2.5 px-3 whitespace-nowrap">平均餐前 → 餐后2h</th>
+                <th id="thAnnHypoHyper" class="py-2.5 px-3 whitespace-nowrap">低血糖(<80) / 高血糖(>180)</th>
+                <th id="thAnnIns" class="py-2.5 px-3 whitespace-nowrap">日均胰岛素 (黄瓶/绿瓶)</th>
+                <th id="thAnnFamo" class="py-2.5 px-3 whitespace-nowrap">法莫替丁0粒断药率</th>
+              </tr>
+            </thead>
+            <tbody id="annualMonthlyTableBody" class="divide-y divide-slate-100 bg-white">
+              <!-- Populated by renderAnnualReportTab() -->
             </tbody>
           </table>
         </div>
@@ -1761,7 +1944,29 @@ svg, img, video, canvas {
         toastTransFail: '⚠️ 在线翻译暂未响应，已保留您输入的原文',
         toastHypoLogged: '🚨 已一键记录 15g 急救快糖并开启 15 分钟复测倒计时！',
         toastHypoUndone: '↩️ 已撤销刚才的低血糖急救误触记录',
-        toastAutoPostBg: '🕒 已自动从 Dexcom 回填餐后 2 小时血糖：'
+        toastAutoPostBg: '🕒 已自动从 Dexcom 回填餐后 2 小时血糖：',
+        tabAnnual: '年度可视化与医生报告',
+        sendAllHistBtn: '🏥 发送【全部历史报告 (供医生分析)】',
+        emailSubjAllHistory: '[JW][血糖健康全量历史临床报告-供医生分析]',
+        annualTitle: '年度可视化报告与医生全量历史分析中心',
+        annualSub: '支持按年份/月份可视化查看血糖波动折线图、食物类型升糖曲线，并可一键将全部历史报告发送至邮箱供医生复诊分析',
+        btnCopyAllHist: '复制全部历史报告',
+        btnExportAllHistCsv: '导出全量医生分析 CSV',
+        btnSendAllHistTop: '一键发送【全部历史报告】至双邮箱',
+        annualBgChartTitle: '📈 全周期每日血糖波动折线图（空腹 vs 餐前均值 vs 餐后2h均值）',
+        annualBgChartSub: '绿色背景带为 80–160 mg/dL 稳态目标区，浅灰阴影带为当日最低~最高血糖波动范围',
+        chkFasting: '🟢 空腹血糖',
+        chkPre: '🔵 餐前平均血糖',
+        chkPost: '🔴 餐后2h平均血糖',
+        annualFoodChartTitle: '🍽️ 按食物类型筛选的血糖波动折线图（餐前 ➔ 餐后2h 波动与升糖幅度）',
+        annualFoodChartSub: '切换不同食物类别，直观对比各类饮食下的餐前与餐后 2 小时血糖波动曲线',
+        annualMonthTableTitle: '📊 月度临床稳态达标率与胰岛素/护胃药减停汇总表',
+        annualMonthTableSub: '按月份自动聚合打卡天数、80–160 稳态达标率、空腹/餐前/餐后均值、日均胰岛素与法莫替丁无药天数占比',
+        foodChartTitle: '📉 按食物类型 / 具体食物 / 餐次 血糖波动折线图',
+        foodChartSub: '直观展示每次进食该类食物时的【餐前血糖 (蓝线) ➔ 餐后2h血糖 (红线)】波动轨迹及六大食物类别斜率对比',
+        optChartModeTimeline: '📈 每次进食餐前 vs 餐后2h波动折线图',
+        optChartModeCatCompare: '📊 六大食物类型平均升糖轨迹对比图 (0h➔2h)',
+        optChartMealAll: '🍽️ 全部餐次节点'
       },
       ko: {
         appTitle: '혈당 건강 체크인 시스템',
@@ -2019,7 +2224,29 @@ svg, img, video, canvas {
         toastTransFail: '⚠️ 번역 서버 응답 지연으로 원문이 유지됩니다',
         toastHypoLogged: '🚨 응급 당분 15g 기록 및 15분 재측정 타이머가 시작되었습니다!',
         toastHypoUndone: '↩️ 방금 기록된 저혈당 응급 기록이 취소되었습니다',
-        toastAutoPostBg: '🕒 Dexcom에서 식후 2시간 혈당을 자동 입력했습니다: '
+        toastAutoPostBg: '🕒 Dexcom에서 식후 2시간 혈당을 자동 입력했습니다: ',
+        tabAnnual: '연간 시각화 & 의료진 보고서',
+        sendAllHistBtn: '🏥 【전체 과거 기록 보고서 (의료진 분석용)】 발송',
+        emailSubjAllHistory: '[JW][혈당 건강 전체 기록 임상 보고서 - 의료진 분석용]',
+        annualTitle: '연간 시각화 보고서 및 의료진 전체 기록 분석 센터',
+        annualSub: '연도/월별 혈당 변동 꺾은선 그래프와 음식 종류별 혈당 곡선을 확인하고, 전체 기록을 이메일로 즉시 발송합니다',
+        btnCopyAllHist: '전체 기록 보고서 복사',
+        btnExportAllHistCsv: '의료진 분석용 전체 CSV 내보내기',
+        btnSendAllHistTop: '【전체 기록 보고서】 이메일 즉시 발송',
+        annualBgChartTitle: '📈 일별 혈당 변동 추이 꺾은선 그래프 (공복 vs 식전 평균 vs 식후 2h 평균)',
+        annualBgChartSub: '초록색 영역은 80–160 mg/dL 목표 구간이며, 회색 음영은 당일 최저~최고 혈당 범위입니다',
+        chkFasting: '🟢 공복 혈당',
+        chkPre: '🔵 식전 평균 혈당',
+        chkPost: '🔴 식후 2h 평균 혈당',
+        annualFoodChartTitle: '🍽️ 식품 분류별 혈당 변동 꺾은선 그래프 (식전 ➔ 식후 2h)',
+        annualFoodChartSub: '식품 분류를 전환하여 각 식단별 식전·식후 2시간 혈당 변동 곡선을 비교하세요',
+        annualMonthTableTitle: '📊 월별 80–160 목표 유지율 및 인슐린/위장약 감량 종합표',
+        annualMonthTableSub: '월별 기록 일수, 80–160 유지율, 공복/식전/식후 평균 혈당, 일평균 인슐린 및 파모티딘 단약 비율 요약',
+        foodChartTitle: '📉 식품 분류 / 세부 음식 / 끼니별 혈당 변동 꺾은선 그래프',
+        foodChartSub: '섭취 시마다 [식전 혈당(파란선) ➔ 식후 2h 혈당(빨간선)] 변동 궤적 및 6대 식품군 평균 상승 기울기 비교',
+        optChartModeTimeline: '📈 섭취별 식전 vs 식후 2h 혈당 변동 그래프',
+        optChartModeCatCompare: '📊 6대 식품군 평균 혈당 상승 궤적 비교 (0h➔2h)',
+        optChartMealAll: '🍽️ 전체 식사 노드'
       },
       fa: {
         appTitle: 'سیستم ثبت سلامت قند خون',
@@ -2277,7 +2504,29 @@ svg, img, video, canvas {
         toastTransFail: '⚠️ عدم پاسخ سرور ترجمه؛ متن اصلی شما ذخیره شد',
         toastHypoLogged: '🚨 ۱۵ گرم قند سریع ثبت شد و تایمر ۱۵ دقیقه‌ای فعال گردید!',
         toastHypoUndone: '↩️ ثبت اورژانس افت قند لغو شد و به حالت قبل بازگشت',
-        toastAutoPostBg: '🕒 قند ۲ ساعت بعد از غذا به صورت خودکار از Dexcom ثبت شد: '
+        toastAutoPostBg: '🕒 قند ۲ ساعت بعد از غذا به صورت خودکار از Dexcom ثبت شد: ',
+        tabAnnual: 'گزارش سالانه و نمودارهای تحلیلی پزشک',
+        sendAllHistBtn: '🏥 ارسال [تمامی سوابق تاریخی (ویژه تحلیل پزشک)]',
+        emailSubjAllHistory: '[JW][گزارش جامع بالینی تمامی سوابق قند خون - ویژه پزشک]',
+        annualTitle: 'مرکز گزارش تصویری سالانه و تحلیل جامع سوابق برای پزشک',
+        annualSub: 'نمایش نمودار خطی نوسانات قند خون بر اساس ماه و نوع غذا + ارسال یکجای تمام سوابق به ایمیل جهت بررسی پزشک',
+        btnCopyAllHist: 'کپی کل سوابق تاریخی',
+        btnExportAllHistCsv: 'دانلود اکسل جامع پزشک (CSV)',
+        btnSendAllHistTop: 'ارسال فوری [تمام سوابق تاریخی] به ایمیل‌ها',
+        annualBgChartTitle: '📈 نمودار خطی نوسانات روزانه قند خون (ناشتا، میانگین قبل غذا و ۲ ساعت بعد)',
+        annualBgChartSub: 'نوار سبز بازه هدف ۸۰ تا ۱۶۰ و سایه خاکستری حداقل تا حداکثر قند روزانه را نشان می‌دهد',
+        chkFasting: '🟢 قند ناشتا',
+        chkPre: '🔵 میانگین قبل از غذا',
+        chkPost: '🔴 میانگین ۲ ساعت بعد',
+        annualFoodChartTitle: '🍽️ نمودار خطی نوسان قند خون بر اساس دسته غذایی (قبل غذا ← ۲ ساعت بعد)',
+        annualFoodChartSub: 'مقایسه تصویری تاثیر هر گروه غذایی بر نوسان قند خون',
+        annualMonthTableTitle: '📊 جدول خلاصه ماهانه ثبات قند خون، انسولین و کاهش فاموتیدین',
+        annualMonthTableSub: 'خلاصه عملکرد ماهانه شامل تعداد روزهای ثبت‌شده، درصد ثبات ۸۰–۱۶۰ و میانگین دوز انسولین',
+        foodChartTitle: '📉 نمودار خطی نوسان قند خون بر اساس نوع غذا و وعده',
+        foodChartSub: 'نمایش دقیق تغییر قند قبل از غذا (خط آبی) تا ۲ ساعت بعد از غذا (خط قرمز) و مقایسه ۶ گروه غذایی',
+        optChartModeTimeline: '📈 نمودار نوسان قند در هر وعده (قبل ← ۲ ساعت بعد)',
+        optChartModeCatCompare: '📊 مقایسه شیب افزایش قند در ۶ گروه غذایی (0h➔2h)',
+        optChartMealAll: '🍽️ همه وعده‌های غذایی'
       },
       en: {
         appTitle: 'BG Health Check-in System',
@@ -2535,7 +2784,29 @@ svg, img, video, canvas {
         toastTransFail: '⚠️ Translation service busy; kept original text',
         toastHypoLogged: '🚨 Logged 15g fast carbs & started 15-min re-check timer!',
         toastHypoUndone: '↩️ Accidental hypo rescue log undone',
-        toastAutoPostBg: '🕒 Auto-filled 2h Post-Meal BG from Dexcom: '
+        toastAutoPostBg: '🕒 Auto-filled 2h Post-Meal BG from Dexcom: ',
+        tabAnnual: 'Annual Visuals & Doctor Report',
+        sendAllHistBtn: '🏥 Send [All Historical Reports (For Doctor)]',
+        emailSubjAllHistory: '[JW][Complete Historical Clinical BG Report - For Physician]',
+        annualTitle: 'Annual Visual Report & Complete Physician History Center',
+        annualSub: 'Interactive BG fluctuation line charts by month & food type + 1-click email dispatch of all historical logs for your doctor',
+        btnCopyAllHist: 'Copy All History Report',
+        btnExportAllHistCsv: 'Export Doctor CSV',
+        btnSendAllHistTop: 'Send [All History Report] to Emails',
+        annualBgChartTitle: '📈 Daily BG Fluctuation Line Chart (Fasting vs Pre-Meal Avg vs 2h Post-Meal Avg)',
+        annualBgChartSub: 'Green band shows 80–160 mg/dL target zone; shaded band shows daily Min–Max BG range',
+        chkFasting: '🟢 Fasting BG',
+        chkPre: '🔵 Pre-Meal Avg BG',
+        chkPost: '🔴 2h Post-Meal Avg BG',
+        annualFoodChartTitle: '🍽️ BG Fluctuation Line Chart by Food Category (Pre-Meal ➔ 2h Post-Meal)',
+        annualFoodChartSub: 'Switch food categories to visually compare pre-meal and 2h post-meal BG curves',
+        annualMonthTableTitle: '📊 Monthly 80–160 TIR %, Insulin & Famotidine Taper Summary Table',
+        annualMonthTableSub: 'Monthly breakdown of logged days, 80–160 target rate, fasting/pre/post averages & daily insulin',
+        foodChartTitle: '📉 BG Fluctuation Line Chart by Food Type / Item / Meal',
+        foodChartSub: 'Visualizes [Pre-Meal BG (Blue) ➔ 2h Post-Meal BG (Red)] across meals & compares 6 food categories',
+        optChartModeTimeline: '📈 Meal-by-Meal Pre vs 2h Post BG Line Chart',
+        optChartModeCatCompare: '📊 6 Food Categories Avg Spike Trajectory (0h➔2h)',
+        optChartMealAll: '🍽️ All Meal Nodes'
       }
     };
 
@@ -3349,9 +3620,9 @@ svg, img, video, canvas {
       dexcomPass: '',
       autoFillBgOnMeal: true,
       dexcomBridgeUrl: DEFAULT_WORKER_URL,
-      emailServiceId: '',
-      emailTemplateId: '',
-      emailPublicKey: '',
+      emailServiceId: 'SGM001',
+      emailTemplateId: 'template_s01',
+      emailPublicKey: 'c_X54-vJ033YblKHU',
       emailWebhookUrl: '',
       geminiModel: 'gemini-2.5-pro',
       geminiApiKey: '',
@@ -5455,6 +5726,7 @@ svg, img, video, canvas {
       renderDailyReport();
       renderWeeklyReport();
       renderFoodImpactTab();
+      renderAnnualReportTab();
       await saveCurrentDayToServer(true);
       showToast(tMsg('toastSaved'));
     }
@@ -5633,6 +5905,8 @@ svg, img, video, canvas {
         </div>
       `;
 
+      populateFoodChartSpecificDropdown(list);
+      renderFoodFluctuationChart();
       if (list.length === 0) {
         tbody.innerHTML = `<tr><td colspan="9" class="py-8 px-4 text-center text-slate-400 break-words">${t.impEmptyRow}</td></tr>`;
         return;
@@ -5781,6 +6055,28 @@ svg, img, video, canvas {
         uiTabHistory: t.tabHistory,
         uiTabReportDay: t.tabReportDay,
         uiTabReportWeek: t.tabReportWeek,
+        uiTabAnnual: t.tabAnnual,
+        uiSendAllHistBtn1: t.sendAllHistBtn,
+        uiBtnManualAllHistory: t.sendAllHistBtn,
+        uiAnnualTitle: t.annualTitle,
+        uiAnnualSub: t.annualSub,
+        uiBtnCopyAllHist: t.btnCopyAllHist,
+        uiBtnExportAllHistCsv: t.btnExportAllHistCsv,
+        uiBtnSendAllHistTop: t.btnSendAllHistTop,
+        uiAnnualBgChartTitle: t.annualBgChartTitle,
+        uiAnnualBgChartSub: t.annualBgChartSub,
+        uiChkFasting: t.chkFasting,
+        uiChkPre: t.chkPre,
+        uiChkPost: t.chkPost,
+        uiAnnualFoodChartTitle: t.annualFoodChartTitle,
+        uiAnnualFoodChartSub: t.annualFoodChartSub,
+        uiAnnualMonthTableTitle: t.annualMonthTableTitle,
+        uiAnnualMonthTableSub: t.annualMonthTableSub,
+        uiFoodChartTitle: t.foodChartTitle,
+        uiFoodChartSub: t.foodChartSub,
+        optChartModeTimeline: t.optChartModeTimeline,
+        optChartModeCatCompare: t.optChartModeCatCompare,
+        optChartMealAll: t.optChartMealAll,
         autoSyncStatusText: t.autoSyncOn,
         uiCurrentDateLabel: t.currentDateLabel,
         uiDeleteDateBtnText: t.deleteDateBtnText,
@@ -6197,6 +6493,120 @@ svg, img, video, canvas {
           lines.push(`- ${meta.title[currentLang] || meta.title.zh} (🇮🇷${md.time}/🇰🇷${iranTimeToKoreaTime(md.time)}): [${md.preBg || '--'}→${md.postBg || '--'} mg/dL] | ${insStr} | ${formatFoodListLocalized(md)}`);
         });
         return lines.join('\n');
+      } else if (reportType === 'allHistory') {
+        const dates = Object.keys(allDaysStore).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort().reverse();
+        const dateRangeStr = dates.length > 0 ? `${dates[dates.length - 1]} ~ ${dates[0]}` : activeDate;
+        let totalBgCount = 0, totalInRange = 0, sumAllBg = 0, minAllBg = Infinity, maxAllBg = -Infinity;
+        let hypoCount = 0, hyperCount = 0;
+        let sumFasting = 0, cntFasting = 0, sumPre = 0, cntPre = 0, sumPost = 0, cntPost = 0;
+        let sumRegAll = 0, sumNphAll = 0, famoZeroDays = 0;
+        const foodAgg = {};
+
+        dates.forEach(dStr => {
+          const day = ensureDaySchemaIntegrity(allDaysStore[dStr]);
+          if (!day) return;
+          if (String(day.famotidineDose || '0') === '0') famoZeroDays++;
+          const fBg = Number(day.fastingBg);
+          if (day.fastingBg && !isNaN(fBg) && fBg >= 20) {
+            sumFasting += fBg; cntFasting++;
+            totalBgCount++; sumAllBg += fBg;
+            if (fBg >= 80 && fBg <= 160) totalInRange++;
+            if (fBg < 80) hypoCount++;
+            if (fBg > 180) hyperCount++;
+            minAllBg = Math.min(minAllBg, fBg); maxAllBg = Math.max(maxAllBg, fBg);
+          }
+          MEAL_NODES_META.forEach(meta => {
+            const md = day.meals?.[meta.key];
+            if (!md) return;
+            if (md.insStatus === 'done') {
+              sumRegAll += Number(md.regUnits) || 0;
+              sumNphAll += Number(md.nphUnits) || 0;
+            }
+            const pre = Number(md.preBg), post = Number(md.postBg);
+            const validPre = md.preBg && !isNaN(pre) && pre >= 20;
+            const validPost = md.postBg && !isNaN(post) && post >= 20;
+            if (validPre) {
+              sumPre += pre; cntPre++;
+              totalBgCount++; sumAllBg += pre;
+              if (pre >= 80 && pre <= 160) totalInRange++;
+              if (pre < 80) hypoCount++;
+              if (pre > 180) hyperCount++;
+              minAllBg = Math.min(minAllBg, pre); maxAllBg = Math.max(maxAllBg, pre);
+            }
+            if (validPost) {
+              sumPost += post; cntPost++;
+              totalBgCount++; sumAllBg += post;
+              if (post >= 80 && post <= 160) totalInRange++;
+              if (post < 80) hypoCount++;
+              if (post > 180) hyperCount++;
+              minAllBg = Math.min(minAllBg, post); maxAllBg = Math.max(maxAllBg, post);
+            }
+            if (validPre && validPost) {
+              const delta = post - pre;
+              (md.selectedFoods || []).forEach(fid => {
+                const fm = FOOD_ID_MAP[fid];
+                if (!fm) return;
+                const fn = `${fm.emoji}${fm[currentLang] || fm.zh}`;
+                if (!foodAgg[fid]) foodAgg[fid] = { name: fn, cnt: 0, sumPre: 0, sumPost: 0, sumDelta: 0 };
+                foodAgg[fid].cnt++; foodAgg[fid].sumPre += pre; foodAgg[fid].sumPost += post; foodAgg[fid].sumDelta += delta;
+              });
+            }
+          });
+        });
+
+        const overallTir = totalBgCount > 0 ? Math.round((totalInRange / totalBgCount) * 100) : 0;
+        const avgAllBg = totalBgCount > 0 ? Math.round(sumAllBg / totalBgCount) : '--';
+        const avgFast = cntFasting > 0 ? Math.round(sumFasting / cntFasting) : '--';
+        const avgPreBg = cntPre > 0 ? Math.round(sumPre / cntPre) : '--';
+        const avgPostBg = cntPost > 0 ? Math.round(sumPost / cntPost) : '--';
+        const avgRegDay = dates.length > 0 ? Math.round((sumRegAll / dates.length) * 10) / 10 : 0;
+        const avgNphDay = dates.length > 0 ? Math.round((sumNphAll / dates.length) * 10) / 10 : 0;
+        const famoZeroPct = dates.length > 0 ? Math.round((famoZeroDays / dates.length) * 100) : 0;
+
+        const lines = [
+          `${t.emailSubjAllHistory || '[JW][血糖健康全量历史临床报告]'} (${dateRangeStr})`,
+          `====================================================`,
+          `【I. Clinical Executive Summary / 医生临床总览摘要】`,
+          `• Logged Days (累计记录天数): ${dates.length} days (${dateRangeStr})`,
+          `• 80–160 mg/dL Target Rate (稳态达标率 TIR): ${overallTir}% (${totalInRange}/${totalBgCount} pts)`,
+          `• Overall Mean BG (全周期平均血糖): ${avgAllBg} mg/dL (Range: ${minAllBg === Infinity ? '--' : minAllBg} ~ ${maxAllBg === -Infinity ? '--' : maxAllBg} mg/dL)`,
+          `• Mean Fasting / Pre-Meal / 2h Post-Meal BG (空腹/餐前/餐后2h均值): ${avgFast} / ${avgPreBg} / ${avgPostBg} mg/dL`,
+          `• Hypo (<80 mg/dL) & Hyper (>180 mg/dL) Events (低血糖/高血糖次数): <80: ${hypoCount} times | >180: ${hyperCount} times`,
+          `• Avg Daily Insulin (日均胰岛素): 🟡 Regular ${avgRegDay}U/day + 🟢 NPH ${avgNphDay}U/day`,
+          `• Famotidine 0-Pill Taper Rate (法莫替丁0粒无药天数占比): ${famoZeroPct}% (${famoZeroDays}/${dates.length} days)`,
+          ``
+        ];
+
+        const foodArr = Object.values(foodAgg).sort((a, b) => (a.sumDelta / a.cnt) - (b.sumDelta / b.cnt));
+        if (foodArr.length > 0) {
+          lines.push(`【II. Food Glycemic Impact Ranking / 食物升糖影响统计 (Pre ➔ 2h Post ΔBG)】`);
+          foodArr.forEach(f => {
+            const aPre = Math.round(f.sumPre / f.cnt);
+            const aPost = Math.round(f.sumPost / f.cnt);
+            const aDelta = Math.round(f.sumDelta / f.cnt);
+            lines.push(`- ${f.name} (x${f.cnt}): Pre ${aPre} ➔ 2h Post ${aPost} mg/dL (Avg ΔBG: ${aDelta > 0 ? '+' + aDelta : aDelta} mg/dL)`);
+          });
+          lines.push(``);
+        }
+
+        lines.push(`【III. Complete Day-by-Day Historical Logs / 逐日完整临床执行明细 (${dates.length} Days)】`);
+        dates.forEach(dStr => {
+          const day = ensureDaySchemaIntegrity(allDaysStore[dStr]);
+          const m = calculateDaySummaryMetrics(day);
+          lines.push(`----------------------------------------------------`);
+          lines.push(`📅 ${dStr} | ⏰ Wake: 🇮🇷${day.wakeTime}/🇰🇷${iranTimeToKoreaTime(day.wakeTime)} | 🩸 Fasting: ${day.fastingBg || '--'} mg/dL | 🎯 TIR(80-160): ${m.totalBgPts > 0 ? m.tir + '% (' + m.inRange + '/' + m.totalBgPts + ')' : '--'} | 💉 🟡${m.sumReg}U+🟢${m.sumNph}U | 💊 Famotidine: ${day.famotidineDose} | 🔄 Quad: ${day.quadrant}`);
+          const suppDone = SUPPLEMENTS_DICT.filter(s => day.supplements?.[s.id]?.checked).map(s => `${s.icon}${(s.name[currentLang] || s.name.zh).split(' ')[0]}(${day.supplements[s.id].timeIr})`).join('、');
+          if (suppDone) lines.push(`   💊 Supplements: ${suppDone}`);
+          MEAL_NODES_META.forEach(meta => {
+            const md = day.meals?.[meta.key];
+            if (!md) return;
+            const foodStr = formatFoodListLocalized(md);
+            if (foodStr === t.repNoFood && !md.preBg && !md.postBg && md.insStatus === 'none') return;
+            const insTag = md.insStatus !== 'none' ? `💉🟡${md.regUnits}U+🟢${md.nphUnits}U` : t.repNoShot;
+            lines.push(`   • ${meta.title[currentLang] || meta.title.zh} (🇮🇷${md.time}/🇰🇷${iranTimeToKoreaTime(md.time)}): [🩸 ${md.preBg || '--'} ➔ ${md.postBg || '--'} mg/dL] | ${insTag} | ${foodStr}`);
+          });
+        });
+        return lines.join('\n');
       } else {
         const dates = Object.keys(allDaysStore).sort().reverse();
         const lines = [
@@ -6345,13 +6755,22 @@ svg, img, video, canvas {
         : activeDate;
 
       const mode = (serverConfig && serverConfig.emailLangMode) ? serverConfig.emailLangMode : 'split_tailored';
-      const subjectZh = reportType === 'daily' ? `${tZh.emailSubjDaily} ${targetDate}` : `${tZh.emailSubjWeekly} ${targetDate}`;
-      const subjectEnFa = reportType === 'daily'
-        ? `${tEn.emailSubjDaily} / ${tFa.emailSubjDaily} ${targetDate}`
-        : `${tEn.emailSubjWeekly} / ${tFa.emailSubjWeekly} ${targetDate}`;
-      const subjectAll = reportType === 'daily'
-        ? `${tZh.emailSubjDaily} / ${tEn.emailSubjDaily} ${targetDate}`
-        : `${tZh.emailSubjWeekly} / ${tEn.emailSubjWeekly} ${targetDate}`;
+      const allDatesSorted = Object.keys(allDaysStore).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort();
+      const historyRangeLabel = allDatesSorted.length > 0 ? `${allDatesSorted[0]}_${allDatesSorted[allDatesSorted.length - 1]}` : targetDate;
+
+      const subjectZh = reportType === 'allHistory'
+        ? `${tZh.emailSubjAllHistory} (${historyRangeLabel})`
+        : (reportType === 'daily' ? `${tZh.emailSubjDaily} ${targetDate}` : `${tZh.emailSubjWeekly} ${targetDate}`);
+      const subjectEnFa = reportType === 'allHistory'
+        ? `${tEn.emailSubjAllHistory} / ${tFa.emailSubjAllHistory} (${historyRangeLabel})`
+        : (reportType === 'daily'
+          ? `${tEn.emailSubjDaily} / ${tFa.emailSubjDaily} ${targetDate}`
+          : `${tEn.emailSubjWeekly} / ${tFa.emailSubjWeekly} ${targetDate}`);
+      const subjectAll = reportType === 'allHistory'
+        ? `${tZh.emailSubjAllHistory} / ${tEn.emailSubjAllHistory} (${historyRangeLabel})`
+        : (reportType === 'daily'
+          ? `${tZh.emailSubjDaily} / ${tEn.emailSubjDaily} ${targetDate}`
+          : `${tZh.emailSubjWeekly} / ${tEn.emailSubjWeekly} ${targetDate}`);
 
       const textZh = buildPlainTextReport(reportType, targetDate, 'zh');
       const textEnFa = buildPlainTextReport(reportType, targetDate, 'en_fa');
@@ -6369,13 +6788,17 @@ svg, img, video, canvas {
             emailLangMode: mode,
             to: recipients.join(', '),
             recipientsList: recipients,
+            name: 'Sugar System (血糖健康打卡系统)',
+            from_name: 'Sugar System (血糖健康打卡系统)',
             subject: subjectAll,
             subjectZh: subjectZh,
             subjectEnFa: subjectEnFa,
-            message: textAll,
+            message: bodyText,
+            content: bodyText,
+            text: bodyText,
             messageZh: textZh,
             messageEnFa: textEnFa,
-            reportDate: targetDate,
+            reportDate: reportType === 'allHistory' ? historyRangeLabel : targetDate,
             reportType: reportType,
             auto: !!isAuto
           });
@@ -6387,7 +6810,7 @@ svg, img, video, canvas {
             const wMailData = await wMailRes.json();
             if (wMailData && wMailData.ok) {
               if (!wMailData.skipped) {
-                showToast('📨 报告已通过加密云端发送至双邮箱！');
+                showToast(reportType === 'allHistory' ? '🏥 全部历史临床报告已发送至双邮箱！' : '📨 报告已通过加密云端发送至双邮箱！');
               }
               return true;
             }
@@ -6407,9 +6830,13 @@ svg, img, video, canvas {
               user_id: serverConfig.emailPublicKey,
               template_params: {
                 to_email: recipients.join(', '),
+                name: 'Sugar System (血糖健康打卡系统)',
+                from_name: 'Sugar System (血糖健康打卡系统)',
                 subject: subject,
                 message: bodyText,
-                report_date: targetDate
+                content: bodyText,
+                text: bodyText,
+                report_date: reportType === 'allHistory' ? historyRangeLabel : targetDate
               }
             })
           });
@@ -6489,7 +6916,7 @@ svg, img, video, canvas {
     }
 
     function switchTab(tabKey) {
-      ['daily', 'foodImpact', 'history', 'reportDay', 'reportWeek'].forEach(k => {
+      ['daily', 'foodImpact', 'history', 'reportDay', 'reportWeek', 'annual'].forEach(k => {
         const sec = document.getElementById(`tabContent-${k}`);
         const btn = document.getElementById(`tabBtn-${k}`);
         if (sec) sec.classList.toggle('hidden', k !== tabKey);
@@ -6530,6 +6957,613 @@ svg, img, video, canvas {
         renderDailyReport();
       }
       if (tabKey === 'reportWeek') renderWeeklyReport();
+      if (tabKey === 'annual') renderAnnualReportTab();
+    }
+
+    // ==================== INTERACTIVE SVG CHARTS & ANNUAL CLINICAL REPORT ====================
+    let cachedFoodChartEvents = [];
+    let cachedAnnualDayPoints = [];
+
+    function populateFoodChartSpecificDropdown(foodStatsList) {
+      const sel = document.getElementById('foodChartSpecificSelect');
+      if (!sel) return;
+      const prevVal = sel.value || 'all';
+      const allLabelMap = {
+        zh: '🍱 当前分类下全部食物',
+        ko: '🍱 현재 분류 내 전체 음식',
+        fa: '🍱 همه غذاهای این دسته',
+        en: '🍱 All Foods in Category'
+      };
+      const opts = [`<option value="all">${allLabelMap[currentLang] || allLabelMap.zh}</option>`];
+      (foodStatsList || []).forEach(item => {
+        opts.push(`<option value="${item.key}" ${item.key === prevVal ? 'selected' : ''}>${item.name} (x${item.count} | ΔBG ${item.avgDelta > 0 ? '+' + item.avgDelta : item.avgDelta})</option>`);
+      });
+      sel.innerHTML = opts.join('');
+    }
+
+    function collectMealEventsByFoodFilter(catFilter, specificKey, mealKeyFilter, excludeHypo = true, yearFilter = 'all', monthFilter = 'all') {
+      const events = [];
+      Object.keys(allDaysStore).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort().forEach(dStr => {
+        if (yearFilter !== 'all' && !dStr.startsWith(yearFilter)) return;
+        if (monthFilter !== 'all' && dStr.slice(5, 7) !== monthFilter) return;
+        const day = allDaysStore[dStr];
+        if (!day || !day.meals) return;
+
+        MEAL_NODES_META.forEach(meta => {
+          if (mealKeyFilter && mealKeyFilter !== 'all' && meta.key !== mealKeyFilter) return;
+          const md = day.meals[meta.key];
+          if (!md) return;
+          const pre = Number(md.preBg), post = Number(md.postBg);
+          if (!md.preBg || !md.postBg || isNaN(pre) || isNaN(post) || pre < 20 || post < 20) return;
+
+          const isHypo = pre < 80 || (md.selectedFoods || []).includes('FOOD_SUGAR_HYPO') || (md.selectedFoods || []).includes('FOOD_JUICE_HYPO');
+          if (excludeHypo && isHypo) return;
+
+          const matchedFoodNames = [];
+          const allMealFoodNames = [];
+          const catsInMeal = new Set();
+
+          (md.selectedFoods || []).forEach(fid => {
+            const fm = FOOD_ID_MAP[fid];
+            if (!fm) return;
+            const fn = `${fm.emoji}${fm[currentLang] || fm.zh}`;
+            allMealFoodNames.push(fn);
+            catsInMeal.add(fm.catId);
+            const matchCat = (catFilter === 'all' || fm.catId === catFilter);
+            const matchSpec = (!specificKey || specificKey === 'all' || fid === specificKey);
+            if (matchCat && matchSpec) matchedFoodNames.push(fn);
+          });
+
+          (md.customFoods || []).forEach(cf => {
+            const cKey = `CUSTOM_${cf.catId}_${cf.raw}`;
+            const fn = `✍️${formatCustomFoodDisplay(cf, currentLang)}`;
+            allMealFoodNames.push(fn);
+            catsInMeal.add(cf.catId);
+            const matchCat = (catFilter === 'all' || cf.catId === catFilter);
+            const matchSpec = (!specificKey || specificKey === 'all' || cKey === specificKey);
+            if (matchCat && matchSpec) matchedFoodNames.push(fn);
+          });
+
+          if (matchedFoodNames.length === 0) return;
+
+          events.push({
+            date: dStr,
+            time: md.time || meta.defaultTime,
+            mealKey: meta.key,
+            mealIcon: meta.icon,
+            mealTitle: meta.title[currentLang] || meta.title.zh,
+            preBg: pre,
+            postBg: post,
+            deltaBg: post - pre,
+            regUnits: md.insStatus === 'done' ? (Number(md.regUnits) || 0) : 0,
+            nphUnits: md.insStatus === 'done' ? (Number(md.nphUnits) || 0) : 0,
+            matchedFoodsStr: matchedFoodNames.join('、'),
+            allFoodsStr: allMealFoodNames.join('、'),
+            catsInMeal: Array.from(catsInMeal)
+          });
+        });
+      });
+      return events;
+    }
+
+    function buildMealEventsSvgChart(events, clickHandlerName = 'inspectFoodChartPoint') {
+      if (!events || events.length === 0) {
+        const emptyMsg = {
+          zh: '📊 当前筛选条件下暂无同时记录了【餐前血糖 + 餐后2小时血糖 + 食物】的餐次数据。填入餐前与餐后血糖并勾选食物后，此处将自动绘制血糖波动折线图！',
+          ko: '📊 선택한 조건에 해당하는 [식전 혈당 + 식후 2시간 혈당 + 음식] 기록이 아직 없습니다.',
+          fa: '📊 هنوز وعده‌ای با قند قبل و ۲ ساعت بعد برای این فیلتر ثبت نشده است.',
+          en: '📊 No meals with both Pre-Meal BG & 2h Post-Meal BG match this filter yet.'
+        };
+        return `<div class="py-10 text-center text-xs text-slate-400">${emptyMsg[currentLang] || emptyMsg.zh}</div>`;
+      }
+
+      const ptGap = 76;
+      const padL = 48, padR = 32, padT = 28, padB = 54;
+      const width = Math.max(660, padL + padR + Math.max(1, events.length - 1) * ptGap);
+      const height = 270;
+      const plotW = width - padL - padR;
+      const plotH = height - padT - padB;
+
+      const allVals = [];
+      events.forEach(e => { allVals.push(e.preBg, e.postBg); });
+      const minVal = Math.min(60, ...allVals);
+      const maxVal = Math.max(220, ...allVals);
+      const yMin = Math.floor(minVal / 20) * 20;
+      const yMax = Math.ceil((maxVal + 15) / 20) * 20;
+
+      const getX = idx => events.length === 1 ? padL + plotW / 2 : padL + (idx / (events.length - 1)) * plotW;
+      const getY = val => padT + plotH - ((val - yMin) / Math.max(1, yMax - yMin)) * plotH;
+
+      const y160 = getY(160);
+      const y80 = getY(80);
+
+      // Horizontal grid lines
+      const gridLines = [];
+      for (let v = yMin; v <= yMax; v += 40) {
+        const y = getY(v);
+        gridLines.push(`
+          <line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#e2e8f0" stroke-dasharray="3,3" stroke-width="1" />
+          <text x="${padL - 6}" y="${y + 4}" text-anchor="end" font-size="10" fill="#64748b" font-family="monospace">${v}</text>
+        `);
+      }
+
+      const prePoints = events.map((e, i) => `${getX(i)},${getY(e.preBg)}`).join(' ');
+      const postPoints = events.map((e, i) => `${getX(i)},${getY(e.postBg)}`).join(' ');
+
+      const connectorsAndNodes = events.map((e, i) => {
+        const x = getX(i);
+        const yPre = getY(e.preBg);
+        const yPost = getY(e.postBg);
+        const deltaStr = e.deltaBg > 0 ? `+${e.deltaBg}` : `${e.deltaBg}`;
+        const deltaColor = e.deltaBg <= 25 ? '#059669' : (e.deltaBg <= 50 ? '#d97706' : '#e11d48');
+        const shortDate = e.date.slice(5);
+        return `
+          <g class="cursor-pointer" onclick="${clickHandlerName}(${i})">
+            <line x1="${x}" y1="${yPre}" x2="${x}" y2="${yPost}" stroke="${deltaColor}" stroke-width="2" stroke-dasharray="2,2" opacity="0.75" />
+            <circle cx="${x}" cy="${yPre}" r="4.5" fill="#0284c7" stroke="#ffffff" stroke-width="1.5" />
+            <circle cx="${x}" cy="${yPost}" r="5" fill="#e11d48" stroke="#ffffff" stroke-width="1.5" />
+            <text x="${x}" y="${Math.min(yPre, yPost) - 7}" text-anchor="middle" font-size="10" font-weight="bold" fill="${deltaColor}" font-family="monospace">${deltaStr}</text>
+            <text x="${x}" y="${height - 26}" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155" font-family="monospace">${shortDate}</text>
+            <text x="${x}" y="${height - 12}" text-anchor="middle" font-size="10" fill="#64748b">${e.mealIcon}${e.time}</text>
+          </g>
+        `;
+      }).join('');
+
+      return `
+        <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="block mx-auto select-none">
+          <!-- 80-160 Target Safe Zone Band -->
+          <rect x="${padL}" y="${y160}" width="${plotW}" height="${Math.max(2, y80 - y160)}" fill="#10b981" fill-opacity="0.11" />
+          <line x1="${padL}" y1="${y160}" x2="${width - padR}" y2="${y160}" stroke="#10b981" stroke-width="1" stroke-dasharray="4,4" />
+          <line x1="${padL}" y1="${y80}" x2="${width - padR}" y2="${y80}" stroke="#10b981" stroke-width="1" stroke-dasharray="4,4" />
+          <text x="${width - padR - 4}" y="${y160 + 11}" text-anchor="end" font-size="9" font-weight="bold" fill="#059669">🎯 80–160 mg/dL</text>
+          ${gridLines.join('')}
+          <!-- Pre-Meal BG Line (Blue) -->
+          <polyline fill="none" stroke="#0284c7" stroke-width="2.5" points="${prePoints}" />
+          <!-- 2h Post-Meal BG Line (Red) -->
+          <polyline fill="none" stroke="#e11d48" stroke-width="2.5" points="${postPoints}" />
+          ${connectorsAndNodes}
+          <!-- Legend -->
+          <g transform="translate(${padL}, 14)">
+            <circle cx="6" cy="0" r="4" fill="#0284c7" />
+            <text x="14" y="4" font-size="10" font-weight="bold" fill="#0284c7">餐前血糖 (Pre-BG)</text>
+            <circle cx="126" cy="0" r="4" fill="#e11d48" />
+            <text x="134" y="4" font-size="10" font-weight="bold" fill="#e11d48">餐后2h血糖 (2h Post-BG)</text>
+            <text x="275" y="4" font-size="10" font-weight="bold" fill="#059669">数值标注 = 单餐升糖幅度 (ΔBG)</text>
+          </g>
+        </svg>
+      `;
+    }
+
+    function buildCategoryTrajectoryCompareSvg(excludeHypo = true) {
+      const catColors = {
+        CAT_GOOD: '#059669',
+        CAT_PROTEIN: '#0284c7',
+        CAT_CARB: '#d97706',
+        CAT_NUTS: '#92400e',
+        CAT_DRINK: '#9333ea',
+        CAT_SNACK: '#e11d48'
+      };
+      const catSeries = [];
+      FOOD_CATEGORIES.forEach(cat => {
+        const evs = collectMealEventsByFoodFilter(cat.catId, 'all', 'all', excludeHypo);
+        if (evs.length === 0) return;
+        const avgPre = Math.round(evs.reduce((s, e) => s + e.preBg, 0) / evs.length);
+        const avgPost = Math.round(evs.reduce((s, e) => s + e.postBg, 0) / evs.length);
+        const avgMid = Math.round((avgPre + avgPost) / 2 + (avgPost - avgPre) * 0.15);
+        catSeries.push({
+          catId: cat.catId,
+          name: `${cat.emoji} ${(cat.name[currentLang] || cat.name.zh).split(' ')[0]}`,
+          count: evs.length,
+          avgPre,
+          avgMid,
+          avgPost,
+          avgDelta: avgPost - avgPre,
+          color: catColors[cat.catId] || '#059669'
+        });
+      });
+
+      if (catSeries.length === 0) {
+        return `<div class="py-10 text-center text-xs text-slate-400">📊 暂无足够餐次数据绘制六大食物分类升糖轨迹对比图。</div>`;
+      }
+
+      const width = 680, height = 260;
+      const padL = 55, padR = 165, padT = 26, padB = 42;
+      const plotW = width - padL - padR;
+      const plotH = height - padT - padB;
+      const allV = [];
+      catSeries.forEach(c => allV.push(c.avgPre, c.avgMid, c.avgPost));
+      const yMin = Math.floor(Math.min(70, ...allV) / 20) * 20;
+      const yMax = Math.ceil((Math.max(200, ...allV) + 15) / 20) * 20;
+
+      const x0 = padL;
+      const x1 = padL + plotW * 0.5;
+      const x2 = padL + plotW;
+      const getY = v => padT + plotH - ((v - yMin) / Math.max(1, yMax - yMin)) * plotH;
+
+      const y160 = getY(160), y80 = getY(80);
+      const gridLines = [];
+      for (let v = yMin; v <= yMax; v += 30) {
+        const y = getY(v);
+        gridLines.push(`
+          <line x1="${padL}" y1="${y}" x2="${padL + plotW}" y2="${y}" stroke="#e2e8f0" stroke-dasharray="3,3" />
+          <text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#64748b" font-family="monospace">${v}</text>
+        `);
+      }
+
+      const linesHtml = catSeries.map((c, idx) => {
+        const p0 = `${x0},${getY(c.avgPre)}`;
+        const p1 = `${x1},${getY(c.avgMid)}`;
+        const p2 = `${x2},${getY(c.avgPost)}`;
+        const dStr = c.avgDelta > 0 ? `+${c.avgDelta}` : `${c.avgDelta}`;
+        const legY = padT + 14 + idx * 32;
+        return `
+          <g>
+            <polyline fill="none" stroke="${c.color}" stroke-width="3" points="${p0} ${p1} ${p2}" />
+            <circle cx="${x0}" cy="${getY(c.avgPre)}" r="4.5" fill="${c.color}" stroke="#fff" stroke-width="1.5" />
+            <circle cx="${x1}" cy="${getY(c.avgMid)}" r="4" fill="${c.color}" stroke="#fff" stroke-width="1.5" />
+            <circle cx="${x2}" cy="${getY(c.avgPost)}" r="5" fill="${c.color}" stroke="#fff" stroke-width="1.5" />
+            <rect x="${padL + plotW + 14}" y="${legY - 11}" width="142" height="24" rx="6" fill="#f8fafc" stroke="${c.color}" stroke-width="1" />
+            <text x="${padL + plotW + 20}" y="${legY + 4}" font-size="10" font-weight="bold" fill="${c.color}">${c.name} (${dStr} mg/dL)</text>
+          </g>
+        `;
+      }).join('');
+
+      return `
+        <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="block mx-auto select-none">
+          <rect x="${padL}" y="${y160}" width="${plotW}" height="${Math.max(2, y80 - y160)}" fill="#10b981" fill-opacity="0.11" />
+          ${gridLines.join('')}
+          ${linesHtml}
+          <text x="${x0}" y="${height - 14}" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">🩸 餐前 (0h Pre-Meal)</text>
+          <text x="${x1}" y="${height - 14}" text-anchor="middle" font-size="11" font-weight="bold" fill="#64748b">⏱️ 餐后1h轨迹 (1h Est.)</text>
+          <text x="${x2}" y="${height - 14}" text-anchor="middle" font-size="11" font-weight="bold" fill="#e11d48">🕒 餐后2小时 (2h Post-Meal)</text>
+        </svg>
+      `;
+    }
+
+    function renderFoodFluctuationChart() {
+      const box = document.getElementById('foodFluctuationChartBox');
+      if (!box) return;
+      const catFilter = document.getElementById('impactCategoryFilter')?.value || 'all';
+      const mode = document.getElementById('foodChartModeSelect')?.value || 'timeline';
+      const mealFilter = document.getElementById('foodChartMealSelect')?.value || 'all';
+      const specFilter = document.getElementById('foodChartSpecificSelect')?.value || 'all';
+      const excludeHypo = document.getElementById('impactExcludeHypoChk') ? document.getElementById('impactExcludeHypoChk').checked : true;
+
+      if (mode === 'catCompare') {
+        box.innerHTML = buildCategoryTrajectoryCompareSvg(excludeHypo);
+        return;
+      }
+
+      cachedFoodChartEvents = collectMealEventsByFoodFilter(catFilter, specFilter, mealFilter, excludeHypo);
+      box.innerHTML = buildMealEventsSvgChart(cachedFoodChartEvents, 'inspectFoodChartPoint');
+      if (cachedFoodChartEvents.length > 0) {
+        inspectFoodChartPoint(cachedFoodChartEvents.length - 1);
+      }
+    }
+
+    function inspectFoodChartPoint(idx) {
+      const el = document.getElementById('foodChartPointDetail');
+      const ev = cachedFoodChartEvents[idx];
+      if (!el || !ev) return;
+      const dStr = ev.deltaBg > 0 ? `+${ev.deltaBg}` : `${ev.deltaBg}`;
+      const insStr = (ev.regUnits > 0 || ev.nphUnits > 0) ? `💉 🟡${ev.regUnits}U + 🟢${ev.nphUnits}U` : '⭕ 未打针 (0U)';
+      el.innerHTML = `📌 <b>${ev.date} ${ev.mealIcon}${ev.mealTitle} (🇮🇷${ev.time})</b> ｜ 🩸 餐前 <b>${ev.preBg}</b> ➔ 餐后2h <b>${ev.postBg} mg/dL</b>（升糖幅度: <b>${dStr} mg/dL</b>） ｜ ${insStr} ｜ 🍽️ 当餐食物: <b>${ev.allFoodsStr}</b>`;
+    }
+
+    // ==================== ANNUAL & MONTHLY VISUAL CLINICAL REPORT TAB ====================
+    function renderAnnualReportTab() {
+      const kpiGrid = document.getElementById('annualKpiGrid');
+      const dailyChartBox = document.getElementById('annualDailyLineChartBox');
+      const monthTbody = document.getElementById('annualMonthlyTableBody');
+      const yearSel = document.getElementById('annualYearSelect');
+      if (!kpiGrid || !dailyChartBox || !monthTbody || !yearSel) return;
+
+      const allDates = Object.keys(allDaysStore).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort();
+      const yearsSet = new Set(['2026']);
+      allDates.forEach(d => yearsSet.add(d.slice(0, 4)));
+      const prevYear = yearSel.value || 'all';
+      const yearOpts = [`<option value="all" ${prevYear === 'all' ? 'selected' : ''}>📅 全部年份 (All Years)</option>`];
+      Array.from(yearsSet).sort().reverse().forEach(y => {
+        yearOpts.push(`<option value="${y}" ${prevYear === y ? 'selected' : ''}>📅 ${y} 年</option>`);
+      });
+      yearSel.innerHTML = yearOpts.join('');
+
+      const selectedYear = yearSel.value || 'all';
+      const selectedMonth = document.getElementById('annualMonthSelect')?.value || 'all';
+
+      const filteredDates = allDates.filter(d => {
+        if (selectedYear !== 'all' && !d.startsWith(selectedYear)) return false;
+        if (selectedMonth !== 'all' && d.slice(5, 7) !== selectedMonth) return false;
+        return true;
+      });
+
+      let totalBgPts = 0, inRangePts = 0, sumBg = 0, hypoPts = 0, hyperPts = 0;
+      let minBg = Infinity, maxBg = -Infinity;
+      let sumReg = 0, sumNph = 0, famoZeroDays = 0;
+      cachedAnnualDayPoints = [];
+      const monthlyMap = {};
+
+      filteredDates.forEach(dStr => {
+        const day = ensureDaySchemaIntegrity(allDaysStore[dStr]);
+        if (!day) return;
+        const ym = dStr.slice(0, 7);
+        if (!monthlyMap[ym]) {
+          monthlyMap[ym] = { ym, days: 0, bgPts: 0, inRange: 0, sumFast: 0, cntFast: 0, sumPre: 0, cntPre: 0, sumPost: 0, cntPost: 0, hypo: 0, hyper: 0, sumReg: 0, sumNph: 0, famoZero: 0 };
+        }
+        const mStat = monthlyMap[ym];
+        mStat.days++;
+        if (String(day.famotidineDose || '0') === '0') {
+          famoZeroDays++;
+          mStat.famoZero++;
+        }
+
+        const dayBgs = [];
+        const preBgs = [];
+        const postBgs = [];
+        let fastVal = null;
+
+        const fNum = Number(day.fastingBg);
+        if (day.fastingBg && !isNaN(fNum) && fNum >= 20) {
+          fastVal = fNum;
+          dayBgs.push(fNum);
+          mStat.sumFast += fNum; mStat.cntFast++;
+        }
+
+        let dayReg = 0, dayNph = 0;
+        MEAL_NODES_META.forEach(meta => {
+          const md = day.meals?.[meta.key];
+          if (!md) return;
+          if (md.insStatus === 'done') {
+            dayReg += Number(md.regUnits) || 0;
+            dayNph += Number(md.nphUnits) || 0;
+          }
+          const pre = Number(md.preBg), post = Number(md.postBg);
+          if (md.preBg && !isNaN(pre) && pre >= 20) {
+            dayBgs.push(pre); preBgs.push(pre);
+            mStat.sumPre += pre; mStat.cntPre++;
+          }
+          if (md.postBg && !isNaN(post) && post >= 20) {
+            dayBgs.push(post); postBgs.push(post);
+            mStat.sumPost += post; mStat.cntPost++;
+          }
+        });
+
+        sumReg += dayReg; sumNph += dayNph;
+        mStat.sumReg += dayReg; mStat.sumNph += dayNph;
+
+        dayBgs.forEach(v => {
+          totalBgPts++; mStat.bgPts++;
+          sumBg += v;
+          if (v >= 80 && v <= 160) { inRangePts++; mStat.inRange++; }
+          if (v < 80) { hypoPts++; mStat.hypo++; }
+          if (v > 180) { hyperPts++; mStat.hyper++; }
+          minBg = Math.min(minBg, v);
+          maxBg = Math.max(maxBg, v);
+        });
+
+        if (dayBgs.length > 0) {
+          cachedAnnualDayPoints.push({
+            date: dStr,
+            fastingBg: fastVal,
+            avgPreBg: preBgs.length > 0 ? Math.round(preBgs.reduce((a, b) => a + b, 0) / preBgs.length) : null,
+            avgPostBg: postBgs.length > 0 ? Math.round(postBgs.reduce((a, b) => a + b, 0) / postBgs.length) : null,
+            minBg: Math.min(...dayBgs),
+            maxBg: Math.max(...dayBgs),
+            tir: Math.round((dayBgs.filter(v => v >= 80 && v <= 160).length / dayBgs.length) * 100),
+            dayReg,
+            dayNph,
+            famo: day.famotidineDose || '0'
+          });
+        }
+      });
+
+      const tirPct = totalBgPts > 0 ? Math.round((inRangePts / totalBgPts) * 100) : 0;
+      const meanBg = totalBgPts > 0 ? Math.round(sumBg / totalBgPts) : '--';
+      const nDays = Math.max(1, filteredDates.length);
+      const avgRegDay = Math.round((sumReg / nDays) * 10) / 10;
+      const avgNphDay = Math.round((sumNph / nDays) * 10) / 10;
+      const famoZeroPct = filteredDates.length > 0 ? Math.round((famoZeroDays / filteredDates.length) * 100) : 0;
+
+      kpiGrid.innerHTML = `
+        <div class="p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200">
+          <span class="text-[11px] font-bold text-emerald-800 block">📅 累计记录天数 / 测糖总次数</span>
+          <div class="text-base font-black text-emerald-950 font-mono mt-1">${filteredDates.length} 天 / ${totalBgPts} 次</div>
+          <span class="text-[10px] text-slate-500">涵盖完整双时区打卡与血糖监测</span>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-teal-50/90 border border-teal-200">
+          <span class="text-[11px] font-bold text-teal-800 block">🎯 80–160 稳态达标率 / 平均血糖</span>
+          <div class="text-base font-black text-teal-900 font-mono mt-1">${tirPct}% (${inRangePts}/${totalBgPts}) ｜ 均值 ${meanBg}</div>
+          <span class="text-[10px] text-slate-500">波动范围: ${minBg === Infinity ? '--' : minBg} ~ ${maxBg === -Infinity ? '--' : maxBg} mg/dL</span>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-rose-50/90 border border-rose-200">
+          <span class="text-[11px] font-bold text-rose-800 block">⚠️ 低血糖 (<80) / 高血糖 (>180)</span>
+          <div class="text-base font-black text-rose-950 font-mono mt-1">🔻 ${hypoPts} 次 ｜ 🔺 ${hyperPts} 次</div>
+          <span class="text-[10px] text-slate-500">供医生评估基础率与餐前修正剂量</span>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-amber-50/90 border border-amber-200">
+          <span class="text-[11px] font-bold text-amber-900 block">💉 日均胰岛素 & 💊 法莫替丁0粒率</span>
+          <div class="text-base font-black text-amber-950 font-mono mt-1">🟡${avgRegDay}U + 🟢${avgNphDay}U ｜ 断药 ${famoZeroPct}%</div>
+          <span class="text-[10px] text-slate-500">0粒无药天数: ${famoZeroDays}/${filteredDates.length} 天</span>
+        </div>
+      `;
+
+      // Render Daily Multi-Line SVG Chart
+      dailyChartBox.innerHTML = buildAnnualDailySvgChart(cachedAnnualDayPoints);
+      if (cachedAnnualDayPoints.length > 0) {
+        inspectAnnualDayPoint(cachedAnnualDayPoints.length - 1);
+      }
+
+      // Render Food Category Line Chart inside Annual Tab
+      renderAnnualFoodChart();
+
+      // Render Monthly Summary Table
+      const monthsSorted = Object.values(monthlyMap).sort((a, b) => b.ym.localeCompare(a.ym));
+      if (monthsSorted.length === 0) {
+        monthTbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-400">暂无对应月份的历史记录</td></tr>`;
+      } else {
+        monthTbody.innerHTML = monthsSorted.map(m => {
+          const mTir = m.bgPts > 0 ? Math.round((m.inRange / m.bgPts) * 100) : 0;
+          const mFast = m.cntFast > 0 ? Math.round(m.sumFast / m.cntFast) : '--';
+          const mPre = m.cntPre > 0 ? Math.round(m.sumPre / m.cntPre) : '--';
+          const mPost = m.cntPost > 0 ? Math.round(m.sumPost / m.cntPost) : '--';
+          const mReg = Math.round((m.sumReg / m.days) * 10) / 10;
+          const mNph = Math.round((m.sumNph / m.days) * 10) / 10;
+          const mFamoPct = Math.round((m.famoZero / m.days) * 100);
+          return `
+            <tr class="hover:bg-slate-50">
+              <td class="py-2.5 px-3 font-mono font-bold text-slate-800">${m.ym}</td>
+              <td class="py-2.5 px-3 font-mono font-bold text-slate-700">${m.days} 天 (${m.bgPts}次)</td>
+              <td class="py-2.5 px-3">
+                <div class="flex items-center gap-2">
+                  <div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-emerald-500 rounded-full" style="width: ${mTir}%"></div>
+                  </div>
+                  <span class="font-mono font-bold text-emerald-700">${mTir}%</span>
+                </div>
+              </td>
+              <td class="py-2.5 px-3 font-mono text-emerald-800 font-bold">${mFast} mg/dL</td>
+              <td class="py-2.5 px-3 font-mono font-bold text-slate-700">${mPre} → ${mPost} mg/dL</td>
+              <td class="py-2.5 px-3 font-mono"><span class="text-rose-600 font-bold">🔻${m.hypo}</span> / <span class="text-amber-800 font-bold">🔺${m.hyper}</span></td>
+              <td class="py-2.5 px-3 font-mono">🟡${mReg}U + 🟢${mNph}U</td>
+              <td class="py-2.5 px-3 font-mono font-bold text-emerald-700">${mFamoPct}% (${m.famoZero}/${m.days})</td>
+            </tr>
+          `;
+        }).join('');
+      }
+    }
+
+    function buildAnnualDailySvgChart(dayPts) {
+      if (!dayPts || dayPts.length === 0) {
+        return `<div class="py-10 text-center text-xs text-slate-400">📈 当前所选年份/月份暂无已录入血糖的日期节点。</div>`;
+      }
+      const showFast = document.getElementById('chkChartFasting') ? document.getElementById('chkChartFasting').checked : true;
+      const showPre = document.getElementById('chkChartPre') ? document.getElementById('chkChartPre').checked : true;
+      const showPost = document.getElementById('chkChartPost') ? document.getElementById('chkChartPost').checked : true;
+
+      const ptGap = 72;
+      const padL = 48, padR = 32, padT = 28, padB = 46;
+      const width = Math.max(660, padL + padR + Math.max(1, dayPts.length - 1) * ptGap);
+      const height = 270;
+      const plotW = width - padL - padR;
+      const plotH = height - padT - padB;
+
+      const allVals = [];
+      dayPts.forEach(d => {
+        allVals.push(d.minBg, d.maxBg);
+        if (d.fastingBg) allVals.push(d.fastingBg);
+        if (d.avgPreBg) allVals.push(d.avgPreBg);
+        if (d.avgPostBg) allVals.push(d.avgPostBg);
+      });
+      const yMin = Math.floor(Math.min(60, ...allVals) / 20) * 20;
+      const yMax = Math.ceil((Math.max(220, ...allVals) + 15) / 20) * 20;
+
+      const getX = idx => dayPts.length === 1 ? padL + plotW / 2 : padL + (idx / (dayPts.length - 1)) * plotW;
+      const getY = val => padT + plotH - ((val - yMin) / Math.max(1, yMax - yMin)) * plotH;
+
+      const y160 = getY(160), y80 = getY(80);
+      const gridLines = [];
+      for (let v = yMin; v <= yMax; v += 40) {
+        const y = getY(v);
+        gridLines.push(`
+          <line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#e2e8f0" stroke-dasharray="3,3" />
+          <text x="${padL - 6}" y="${y + 4}" text-anchor="end" font-size="10" fill="#64748b" font-family="monospace">${v}</text>
+        `);
+      }
+
+      const buildLine = (field, color) => {
+        const coords = [];
+        dayPts.forEach((d, i) => {
+          if (d[field] !== null && d[field] !== undefined) {
+            coords.push(`${getX(i)},${getY(d[field])}`);
+          }
+        });
+        return coords.length > 1 ? `<polyline fill="none" stroke="${color}" stroke-width="2.5" points="${coords.join(' ')}" />` : '';
+      };
+
+      const nodesHtml = dayPts.map((d, i) => {
+        const x = getX(i);
+        const yTop = getY(d.maxBg);
+        const yBot = getY(d.minBg);
+        return `
+          <g class="cursor-pointer" onclick="inspectAnnualDayPoint(${i})">
+            <line x1="${x}" y1="${yTop}" x2="${x}" y2="${yBot}" stroke="#94a3b8" stroke-width="6" stroke-linecap="round" opacity="0.25" />
+            ${showFast && d.fastingBg ? `<circle cx="${x}" cy="${getY(d.fastingBg)}" r="4.5" fill="#059669" stroke="#fff" stroke-width="1.5" />` : ''}
+            ${showPre && d.avgPreBg ? `<circle cx="${x}" cy="${getY(d.avgPreBg)}" r="4.5" fill="#0284c7" stroke="#fff" stroke-width="1.5" />` : ''}
+            ${showPost && d.avgPostBg ? `<circle cx="${x}" cy="${getY(d.avgPostBg)}" r="5" fill="#e11d48" stroke="#fff" stroke-width="1.5" />` : ''}
+            <text x="${x}" y="${height - 16}" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155" font-family="monospace">${d.date.slice(5)}</text>
+          </g>
+        `;
+      }).join('');
+
+      return `
+        <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="block mx-auto select-none">
+          <rect x="${padL}" y="${y160}" width="${plotW}" height="${Math.max(2, y80 - y160)}" fill="#10b981" fill-opacity="0.11" />
+          <line x1="${padL}" y1="${y160}" x2="${width - padR}" y2="${y160}" stroke="#10b981" stroke-width="1" stroke-dasharray="4,4" />
+          <line x1="${padL}" y1="${y80}" x2="${width - padR}" y2="${y80}" stroke="#10b981" stroke-width="1" stroke-dasharray="4,4" />
+          ${gridLines.join('')}
+          ${showFast ? buildLine('fastingBg', '#059669') : ''}
+          ${showPre ? buildLine('avgPreBg', '#0284c7') : ''}
+          ${showPost ? buildLine('avgPostBg', '#e11d48') : ''}
+          ${nodesHtml}
+        </svg>
+      `;
+    }
+
+    function inspectAnnualDayPoint(idx) {
+      const el = document.getElementById('annualDailyPointDetail');
+      const d = cachedAnnualDayPoints[idx];
+      if (!el || !d) return;
+      el.innerHTML = `📅 <b>${d.date}</b> ｜ 🎯 80–160 稳态率: <b>${d.tir}%</b> ｜ 🩸 空腹: <b>${d.fastingBg ?? '--'}</b> / 餐前均值: <b>${d.avgPreBg ?? '--'}</b> / 餐后2h均值: <b>${d.avgPostBg ?? '--'} mg/dL</b>（全天极值: ${d.minBg}~${d.maxBg} mg/dL） ｜ 💉 胰岛素: 🟡<b>${d.dayReg}U</b> + 🟢<b>${d.dayNph}U</b> ｜ 💊 法莫替丁: <b>${d.famo}粒</b>`;
+    }
+
+    function renderAnnualFoodChart() {
+      const box = document.getElementById('annualFoodLineChartBox');
+      if (!box) return;
+      const catFilter = document.getElementById('annualFoodCatSelect')?.value || 'all';
+      const selectedYear = document.getElementById('annualYearSelect')?.value || 'all';
+      const selectedMonth = document.getElementById('annualMonthSelect')?.value || 'all';
+      const evs = collectMealEventsByFoodFilter(catFilter, 'all', 'all', true, selectedYear, selectedMonth);
+      box.innerHTML = buildMealEventsSvgChart(evs, 'inspectFoodChartPoint');
+    }
+
+    function copyAllHistoryReportText() {
+      copyTextToClipboard(buildPlainTextReport('allHistory'), '📋 已复制全部历史临床报告（供医生分析）到剪贴板！');
+    }
+
+    function exportAllHistoryDoctorCSV() {
+      const headers = ['日期', '起床时间(伊朗)', '起床时间(韩国)', '空腹血糖(mg/dL)', '当日80-160达标率(%)', '全天黄瓶Regular(U)', '全天绿瓶NPH(U)', '法莫替丁(粒)', '餐次节点', '用餐时间(伊朗)', '餐前血糖(mg/dL)', '餐后2h血糖(mg/dL)', '升糖幅度ΔBG(mg/dL)', '本餐黄瓶(U)', '本餐绿瓶(U)', '本餐食物明细(中文)'];
+      const rows = [headers];
+      Object.keys(allDaysStore).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort().reverse().forEach(dStr => {
+        const day = ensureDaySchemaIntegrity(allDaysStore[dStr]);
+        const m = calculateDaySummaryMetrics(day);
+        MEAL_NODES_META.forEach(meta => {
+          const md = day.meals?.[meta.key];
+          if (!md) return;
+          const foodZh = formatFoodListInChinese(md);
+          if (foodZh === '未记录食物' && !md.preBg && !md.postBg && md.insStatus === 'none') return;
+          const delta = (md.preBg && md.postBg) ? (Number(md.postBg) - Number(md.preBg)) : '';
+          rows.push([
+            dStr,
+            day.wakeTime,
+            iranTimeToKoreaTime(day.wakeTime),
+            day.fastingBg || '',
+            m.tir,
+            m.sumReg,
+            m.sumNph,
+            day.famotidineDose,
+            meta.title.zh,
+            md.time,
+            md.preBg || '',
+            md.postBg || '',
+            delta,
+            md.insStatus === 'done' ? md.regUnits : 0,
+            md.insStatus === 'done' ? md.nphUnits : 0,
+            foodZh
+          ]);
+        });
+      });
+      downloadCSVFile(`全量历史临床报告_医生分析版_${activeDate}.csv`, rows);
+      showToast('📥 医生分析版全量历史 CSV (Excel) 导出成功！');
     }
 
     function switchActiveDate(newDate) {
