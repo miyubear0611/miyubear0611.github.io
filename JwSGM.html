@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" dir="ltr">
+<html lang="zh-CN" dir="ltr" translate="no" class="notranslate">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
@@ -1234,14 +1234,16 @@ svg, img, video, canvas {
         <div class="mt-4 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
           <div class="lg:col-span-7 space-y-2.5">
             <label id="uiRecipientLabel" class="text-xs font-bold text-slate-700 block">📬 默认固定收件邮箱（可随时勾选或额外添加其他收件人）：</label>
-            <div class="flex flex-wrap items-center gap-2.5">
-              <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-xs font-bold text-emerald-900 cursor-pointer">
-                <input type="checkbox" id="chkEmail1" value="miyubear0611@gmail.com" checked class="rounded text-emerald-600" />
-                <span>miyubear0611@gmail.com (🇨🇳中文)</span>
+            <div class="flex flex-wrap items-center gap-2.5 notranslate" translate="no">
+              <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-xs font-bold text-emerald-900 cursor-pointer notranslate" translate="no">
+                <input type="checkbox" id="chkEmail1" value="miyubear0611@gmail.com" checked class="rounded text-emerald-600 shrink-0" />
+                <span class="font-mono">miyubear0611@gmail.com</span>
+                <span class="px-1.5 py-0.5 rounded bg-emerald-200/80 text-emerald-950 text-[10px]">🇨🇳 中文版</span>
               </label>
-              <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-xs font-bold text-emerald-900 cursor-pointer">
-                <input type="checkbox" id="chkEmail2" value="arsanbear0503@gmail.com" checked class="rounded text-emerald-600" />
-                <span>arsanbear0503@gmail.com (🇬🇧EN + 🇮🇷فارسی)</span>
+              <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-xs font-bold text-emerald-900 cursor-pointer notranslate" translate="no">
+                <input type="checkbox" id="chkEmail2" value="arsanbear0503@gmail.com" checked class="rounded text-emerald-600 shrink-0" />
+                <span class="font-mono">arsanbear0503@gmail.com</span>
+                <span class="px-1.5 py-0.5 rounded bg-teal-200/80 text-teal-950 text-[10px]">🇬🇧 EN + 🇮🇷 فارسی</span>
               </label>
               <input type="email" id="extraEmailInput" placeholder="+ 附加其他邮箱 (选填, 逗号分隔)" class="flex-1 min-w-[210px] px-3 py-1.5 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
             </div>
@@ -5860,18 +5862,16 @@ svg, img, video, canvas {
         const useHtml = fmtMode !== 'pretty_text';
         const dates = Object.keys(allDaysStore).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort().reverse();
         const out = { emailLangMode: mode, emailFormatMode: fmtMode, daily: {}, weekly: null };
-        dates.slice(0, 10).forEach(d => {
+        dates.slice(0, 3).forEach(d => {
           const textZh = useHtml ? buildHtmlReport('daily', d, 'zh') : buildPlainTextReport('daily', d, 'zh');
           const textEnFa = useHtml ? buildHtmlReport('daily', d, 'en_fa') : buildPlainTextReport('daily', d, 'en_fa');
-          const textAll = useHtml ? buildHtmlReport('daily', d, 'all') : buildPlainTextReport('daily', d, 'all');
           out.daily[d] = {
             subject: `${tZh.emailSubjDaily} / ${tEn.emailSubjDaily} ${d}`,
             subjectZh: `${tZh.emailSubjDaily} ${d}`,
             subjectEnFa: `${tEn.emailSubjDaily} / ${tFa.emailSubjDaily} ${d}`,
-            text: textAll,
+            text: textZh,
             textZh: textZh,
             textEnFa: textEnFa,
-            textAll: textAll,
             at
           };
         });
@@ -5879,15 +5879,13 @@ svg, img, video, canvas {
           const d0 = dates[0];
           const wZh = useHtml ? buildHtmlReport('weekly', d0, 'zh') : buildPlainTextReport('weekly', d0, 'zh');
           const wEnFa = useHtml ? buildHtmlReport('weekly', d0, 'en_fa') : buildPlainTextReport('weekly', d0, 'en_fa');
-          const wAll = useHtml ? buildHtmlReport('weekly', d0, 'all') : buildPlainTextReport('weekly', d0, 'all');
           out.weekly = {
             subject: `${tZh.emailSubjWeekly} / ${tEn.emailSubjWeekly} ${d0}`,
             subjectZh: `${tZh.emailSubjWeekly} ${d0}`,
             subjectEnFa: `${tEn.emailSubjWeekly} / ${tFa.emailSubjWeekly} ${d0}`,
-            text: wAll,
+            text: wZh,
             textZh: wZh,
             textEnFa: wEnFa,
-            textAll: wAll,
             at
           };
         }
@@ -7004,27 +7002,35 @@ svg, img, video, canvas {
         .replace(/"/g, '&quot;');
     }
 
+    function getUtf8ByteLength(str) {
+      try {
+        return new TextEncoder().encode(String(str || '')).length;
+      } catch (e) {
+        return String(str || '').length * 2;
+      }
+    }
+
     function renderEmailBgBadgeHtml(val, showUnit = true) {
-      const unitStr = showUnit ? ' mg/dL' : '';
+      const u = showUnit ? ' mg/dL' : '';
       if (val === undefined || val === null || val === '' || val === '--' || val === '-') {
-        return `<span style="display:inline-block;padding:2px 8px;border-radius:999px;background-color:#f1f5f9;color:#94a3b8;font-family:monospace;font-size:12px;font-weight:700;">--</span>`;
+        return `<span style="padding:2px 7px;border-radius:99px;background:#f1f5f9;color:#94a3b8;font:700 12px monospace">--</span>`;
       }
       const n = Number(val);
       if (isNaN(n)) {
-        return `<span style="display:inline-block;padding:2px 8px;border-radius:999px;background-color:#f1f5f9;color:#64748b;font-family:monospace;font-size:12px;font-weight:700;">${escapeHtmlSafe(val)}</span>`;
+        return `<span style="padding:2px 7px;border-radius:99px;background:#f1f5f9;color:#64748b;font:700 12px monospace">${escapeHtmlSafe(val)}</span>`;
       }
       if (n < 80) {
-        return `<span style="display:inline-block;padding:2px 9px;border-radius:999px;background-color:#ffe4e6;color:#be123c;border:1px solid #fda4af;font-family:monospace;font-size:12px;font-weight:800;">🔻 ${n}${unitStr}</span>`;
+        return `<span style="padding:2px 8px;border-radius:99px;background:#ffe4e6;color:#be123c;font:800 12px monospace">🔻${n}${u}</span>`;
       }
       if (n <= 160) {
-        return `<span style="display:inline-block;padding:2px 9px;border-radius:999px;background-color:#d1fae5;color:#047857;border:1px solid #6ee7b7;font-family:monospace;font-size:12px;font-weight:800;">✓ ${n}${unitStr}</span>`;
+        return `<span style="padding:2px 8px;border-radius:99px;background:#d1fae5;color:#047857;font:800 12px monospace">✓${n}${u}</span>`;
       }
-      return `<span style="display:inline-block;padding:2px 9px;border-radius:999px;background-color:#fef3c7;color:#b45309;border:1px solid #fcd34d;font-family:monospace;font-size:12px;font-weight:800;">🔺 ${n}${unitStr}</span>`;
+      return `<span style="padding:2px 8px;border-radius:99px;background:#fef3c7;color:#b45309;font:800 12px monospace">🔺${n}${u}</span>`;
     }
 
     function renderEmailFoodChipsHtml(md, lang) {
       const t = UI_TEXT[lang] || UI_TEXT.zh;
-      if (!md) return `<span style="color:#94a3b8;font-size:12px;">${escapeHtmlSafe(t.repNoFood)}</span>`;
+      if (!md) return `<span style="color:#94a3b8;font-size:12px">${escapeHtmlSafe(t.repNoFood)}</span>`;
       const chips = [];
       const portionTrans = { '少量': t.portionSmall, '中量': t.portionMed, '多量': t.portionLarge };
       (md.selectedFoods || []).forEach(fid => {
@@ -7032,36 +7038,29 @@ svg, img, video, canvas {
         if (item) {
           const locName = item[lang] || item.zh;
           const pTxt = portionTrans[md.torshiPortion || '少量'] || md.torshiPortion;
-          const label = fid === 'FOOD_TORSHI' ? `${item.emoji} ${locName} (${pTxt})` : `${item.emoji} ${locName}`;
-          chips.push(`<span style="display:inline-block;margin:2px 4px 2px 0;padding:3px 9px;border-radius:8px;background-color:#f8fafc;border:1px solid #cbd5e1;color:#1e293b;font-size:12px;font-weight:600;">${escapeHtmlSafe(label)}</span>`);
+          const label = fid === 'FOOD_TORSHI' ? `${item.emoji}${locName}(${pTxt})` : `${item.emoji}${locName}`;
+          chips.push(`<span style="display:inline-block;margin:1px 3px 1px 0;padding:2px 7px;border-radius:6px;background:#f8fafc;border:1px solid #cbd5e1;font-size:12px">${escapeHtmlSafe(label)}</span>`);
         }
       });
       (md.customFoods || []).forEach(cf => {
         const disp = formatCustomFoodDisplay(cf, lang);
-        chips.push(`<span style="display:inline-block;margin:2px 4px 2px 0;padding:3px 9px;border-radius:8px;background-color:#f0fdf4;border:1px solid #86efac;color:#065f46;font-size:12px;font-weight:700;">✍️ ${escapeHtmlSafe(disp)}</span>`);
+        chips.push(`<span style="display:inline-block;margin:1px 3px 1px 0;padding:2px 7px;border-radius:6px;background:#f0fdf4;border:1px solid #86efac;color:#065f46;font-size:12px;font-weight:700">✍️${escapeHtmlSafe(disp)}</span>`);
       });
-      return chips.length > 0 ? chips.join('') : `<span style="color:#94a3b8;font-size:12px;">${escapeHtmlSafe(t.repNoFood)}</span>`;
+      return chips.length > 0 ? chips.join('') : `<span style="color:#94a3b8;font-size:12px">${escapeHtmlSafe(t.repNoFood)}</span>`;
     }
 
     function buildMultiLangHtmlReport(reportType = 'daily', overrideDate, langList = ['zh', 'fa', 'en', 'ko']) {
       const bannerMap = {
-        zh: '🇨🇳 中文临床报告 (Chinese Clinical Report)',
-        fa: '🇮🇷 گزارش بالینی فارسی (Persian Clinical Report)',
+        zh: '🇨🇳 中文临床报告 (Chinese Version)',
+        fa: '🇮🇷 گزارش بالینی فارسی (Persian Version)',
         en: '🇬🇧 English Clinical Report',
-        ko: '🇰🇷 한국어 임상 보고서 (Korean Clinical Report)'
+        ko: '🇰🇷 한국어 임상 보고서 (Korean Version)'
       };
       const sections = langList.map(lg => {
         const isRtl = lg === 'fa';
-        return `
-          <div style="margin-bottom:28px;">
-            <div dir="${isRtl ? 'rtl' : 'ltr'}" style="margin-bottom:8px;padding:6px 14px;background-color:#0f172a;color:#ffffff;border-radius:10px;font-size:12px;font-weight:800;letter-spacing:0.03em;text-align:${isRtl ? 'right' : 'left'};">
-              ${bannerMap[lg] || lg}
-            </div>
-            ${buildHtmlReport(reportType, overrideDate, lg)}
-          </div>
-        `;
+        return `<div style="margin-bottom:18px"><div dir="${isRtl ? 'rtl' : 'ltr'}" style="max-width:660px;margin:0 auto 6px auto;padding:5px 12px;background:#0f172a;color:#fff;border-radius:8px;font:800 12px sans-serif;text-align:${isRtl ? 'right' : 'left'}">${bannerMap[lg] || lg}</div>${buildHtmlReport(reportType, overrideDate, lg)}</div>`;
       });
-      return `<div style="background-color:#f1f5f9;padding:12px 6px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',Tahoma,sans-serif;">${sections.join('')}</div>`;
+      return `<div style="background:#f1f5f9;padding:8px 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',Tahoma,sans-serif">${sections.join('')}</div>`;
     }
 
     function buildHtmlReport(reportType = 'daily', overrideDate, forceLang) {
@@ -7087,26 +7086,20 @@ svg, img, video, canvas {
           const m = calculateDaySummaryMetrics(day);
           const wakeKr = iranTimeToKoreaTime(day.wakeTime);
 
-          const suppRowsHtml = SUPPLEMENTS_DICT.map((supp, idx) => {
+          const checkedSuppRows = [];
+          const uncheckedSuppNames = [];
+          SUPPLEMENTS_DICT.forEach(supp => {
             const st = day.supplements?.[supp.id];
             const sName = supp.name[lang] || supp.name.zh;
-            const sTag = supp.timingTag[lang] || supp.timingTag.zh;
-            const bgRow = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
-            const statusPill = st?.checked
-              ? `<span style="display:inline-block;padding:3px 10px;border-radius:999px;background-color:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-family:monospace;font-size:11px;font-weight:800;">✅ 🇮🇷 ${st.timeIr} / 🇰🇷 ${iranTimeToKoreaTime(st.timeIr)}</span>`
-              : `<span style="display:inline-block;padding:3px 10px;border-radius:999px;background-color:#f1f5f9;color:#94a3b8;font-size:11px;font-weight:600;">⏳ ${escapeHtmlSafe(t.repUnchecked)}</span>`;
-            return `
-              <tr style="background-color:${bgRow};">
-                <td style="padding:9px 12px;border-bottom:1px solid #f1f5f9;font-size:13px;font-weight:700;color:#1e293b;">
-                  ${supp.icon} ${escapeHtmlSafe(sName)}
-                  <span style="display:inline-block;margin-${alignLeft}:6px;padding:1px 6px;border-radius:6px;background-color:#ccfbf1;color:#115e59;font-size:10px;font-weight:700;">${escapeHtmlSafe(sTag)}</span>
-                </td>
-                <td style="padding:9px 12px;border-bottom:1px solid #f1f5f9;text-align:${alignRight};white-space:nowrap;">
-                  ${statusPill}
-                </td>
-              </tr>
-            `;
-          }).join('');
+            if (st?.checked) {
+              checkedSuppRows.push(`<tr style="border-bottom:1px solid #f1f5f9"><td style="padding:7px 10px;font-size:12px;font-weight:700">${supp.icon} ${escapeHtmlSafe(sName)}</td><td style="padding:7px 10px;text-align:${alignRight};white-space:nowrap"><span style="padding:2px 8px;border-radius:99px;background:#d1fae5;color:#065f46;font:800 11px monospace">✅ 🇮🇷${st.timeIr} / 🇰🇷${iranTimeToKoreaTime(st.timeIr)}</span></td></tr>`);
+            } else {
+              uncheckedSuppNames.push(`${supp.icon}${sName.split('(')[0].trim()}`);
+            }
+          });
+          if (uncheckedSuppNames.length > 0) {
+            checkedSuppRows.push(`<tr style="background:#f8fafc"><td colspan="2" style="padding:7px 10px;color:#64748b;font-size:11px">⏳ <b>${escapeHtmlSafe(t.repUnchecked)}:</b> ${escapeHtmlSafe(uncheckedSuppNames.join(' 、 '))}</td></tr>`);
+          }
 
           const activeMealRows = [];
           const unloggedMealTitles = [];
@@ -7120,7 +7113,7 @@ svg, img, video, canvas {
 
             const mTitle = meta.title[lang] || meta.title.zh;
             if (!hasFood && !hasIns && !hasBg) {
-              unloggedMealTitles.push(`${meta.icon} ${mTitle.split('(')[0].trim()}`);
+              unloggedMealTitles.push(`${meta.icon}${mTitle.split('(')[0].trim()}`);
               return;
             }
 
@@ -7128,137 +7121,25 @@ svg, img, video, canvas {
             if (md.preBg && md.postBg && !isNaN(Number(md.preBg)) && !isNaN(Number(md.postBg))) {
               const dVal = Number(md.postBg) - Number(md.preBg);
               const dSign = dVal > 0 ? `+${dVal}` : `${dVal}`;
-              const dBg = dVal <= 25 ? '#ecfdf5' : (dVal <= 50 ? '#fffbeb' : '#fff1f2');
               const dCol = dVal <= 25 ? '#047857' : (dVal <= 50 ? '#b45309' : '#be123c');
-              deltaPill = `<div style="margin-top:4px;"><span style="display:inline-block;padding:1px 7px;border-radius:6px;background-color:${dBg};color:${dCol};font-family:monospace;font-size:11px;font-weight:800;">ΔBG: ${dSign} mg/dL</span></div>`;
+              deltaPill = `<div style="margin-top:3px;font:800 11px monospace;color:${dCol}">ΔBG: ${dSign}</div>`;
             }
 
             const insBadge = hasIns
-              ? `<span style="display:inline-block;padding:2px 8px;border-radius:8px;background-color:#fef3c7;color:#92400e;border:1px solid #fde68a;font-family:monospace;font-size:11px;font-weight:800;margin-right:3px;">🟡 ${md.regUnits}U</span><span style="display:inline-block;padding:2px 8px;border-radius:8px;background-color:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-family:monospace;font-size:11px;font-weight:800;">🟢 ${md.nphUnits}U</span>`
-              : `<span style="display:inline-block;padding:2px 8px;border-radius:8px;background-color:#f1f5f9;color:#64748b;font-size:11px;font-weight:600;">${escapeHtmlSafe(t.repNoShot)}</span>`;
+              ? `<span style="padding:2px 6px;border-radius:6px;background:#fef3c7;color:#92400e;font:800 11px monospace">🟡${md.regUnits}U</span> <span style="padding:2px 6px;border-radius:6px;background:#d1fae5;color:#065f46;font:800 11px monospace">🟢${md.nphUnits}U</span>`
+              : `<span style="color:#64748b;font-size:11px">${escapeHtmlSafe(t.repNoShot)}</span>`;
 
-            activeMealRows.push(`
-              <tr style="background-color:#ffffff;">
-                <td style="padding:12px;border-bottom:1px solid #e2e8f0;vertical-align:top;width:28%;">
-                  <div style="font-size:13px;font-weight:800;color:#0f172a;">${meta.icon} ${escapeHtmlSafe(mTitle)}</div>
-                  <div style="margin-top:4px;display:inline-block;padding:2px 7px;border-radius:6px;background-color:#f1f5f9;color:#475569;font-family:monospace;font-size:11px;font-weight:700;">
-                    🇮🇷 ${md.time} / 🇰🇷 ${iranTimeToKoreaTime(md.time)}
-                  </div>
-                </td>
-                <td style="padding:12px;border-bottom:1px solid #e2e8f0;vertical-align:top;width:28%;white-space:nowrap;">
-                  <div>${renderEmailBgBadgeHtml(md.preBg, false)} <span style="color:#94a3b8;font-weight:bold;">➔</span> ${renderEmailBgBadgeHtml(md.postBg, true)}</div>
-                  ${deltaPill}
-                </td>
-                <td style="padding:12px;border-bottom:1px solid #e2e8f0;vertical-align:top;width:18%;white-space:nowrap;">
-                  ${insBadge}
-                </td>
-                <td style="padding:12px;border-bottom:1px solid #e2e8f0;vertical-align:top;">
-                  ${renderEmailFoodChipsHtml(md, lang)}
-                </td>
-              </tr>
-            `);
+            activeMealRows.push(`<tr style="border-bottom:1px solid #e2e8f0"><td style="padding:9px 8px;vertical-align:top"><div style="font-size:12px;font-weight:800;color:#0f172a">${meta.icon} ${escapeHtmlSafe(mTitle.split('(')[0].trim())}</div><div style="font:700 11px monospace;color:#475569;margin-top:2px">🇮🇷${md.time}/🇰🇷${iranTimeToKoreaTime(md.time)}</div></td><td style="padding:9px 8px;vertical-align:top;white-space:nowrap"><div>${renderEmailBgBadgeHtml(md.preBg, false)} ➔ ${renderEmailBgBadgeHtml(md.postBg, false)}</div>${deltaPill}</td><td style="padding:9px 8px;vertical-align:top;white-space:nowrap">${insBadge}</td><td style="padding:9px 8px;vertical-align:top">${renderEmailFoodChipsHtml(md, lang)}</td></tr>`);
           });
 
-          const unloggedFooterRow = unloggedMealTitles.length > 0 ? `
-            <tr style="background-color:#f8fafc;">
-              <td colspan="4" style="padding:10px 14px;color:#64748b;font-size:12px;line-height:1.5;">
-                <b>${escapeHtmlSafe(t.unloggedMealsSummaryLabel)}</b> ${escapeHtmlSafe(unloggedMealTitles.join(' 、 '))}
-              </td>
-            </tr>
-          ` : '';
+          const unloggedFooterRow = unloggedMealTitles.length > 0
+            ? `<tr style="background:#f8fafc"><td colspan="4" style="padding:8px 10px;color:#64748b;font-size:11px"><b>${escapeHtmlSafe(t.unloggedMealsSummaryLabel)}</b> ${escapeHtmlSafe(unloggedMealTitles.join(' 、 '))}</td></tr>`
+            : '';
 
-          return `
-            <div dir="${dirAttr}" style="max-width:680px;margin:0 auto;background-color:#ffffff;border:1px solid #a7f3d0;border-radius:18px;overflow:hidden;box-shadow:0 4px 16px rgba(5,150,105,0.08);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',Tahoma,sans-serif;color:#1e293b;text-align:${alignLeft};">
-              <!-- Top Gradient Header -->
-              <div style="background:linear-gradient(135deg,#059669 0%,#0d9488 100%);background-color:#059669;color:#ffffff;padding:20px 22px;">
-                <div style="font-size:18px;font-weight:900;letter-spacing:-0.01em;">💚 ${escapeHtmlSafe(t.appTitle)} · ${escapeHtmlSafe(day.date)}</div>
-                <div style="font-size:12px;color:#d1fae5;margin-top:4px;">${escapeHtmlSafe(t.appSubtitle)}</div>
-                <div style="margin-top:12px;">
-                  <span style="display:inline-block;padding:4px 10px;border-radius:999px;background-color:rgba(255,255,255,0.18);color:#ffffff;font-family:monospace;font-size:12px;font-weight:700;margin-right:6px;">📅 ${day.date}</span>
-                  <span style="display:inline-block;padding:4px 10px;border-radius:999px;background-color:rgba(255,255,255,0.18);color:#ffffff;font-family:monospace;font-size:12px;font-weight:700;margin-right:6px;">⏰ 🇮🇷 ${day.wakeTime} / 🇰🇷 ${wakeKr}</span>
-                  <span style="display:inline-block;padding:4px 10px;border-radius:999px;background-color:rgba(255,255,255,0.18);color:#ffffff;font-family:monospace;font-size:12px;font-weight:700;">🔄 ${escapeHtmlSafe(day.quadrant || 'LU')}</span>
-                </div>
-              </div>
-
-              <div style="padding:18px 20px;">
-                <!-- 2x2 Clinical KPI Cards -->
-                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;border-spacing:8px;margin-bottom:14px;">
-                  <tr>
-                    <td width="50%" style="background-color:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:12px 14px;vertical-align:top;">
-                      <div style="font-size:11px;font-weight:800;color:#065f46;margin-bottom:6px;">🩸 ${escapeHtmlSafe(stripLeadingEmoji(t.fastingBgLabel))}</div>
-                      <div>${renderEmailBgBadgeHtml(day.fastingBg, true)}</div>
-                      <div style="font-size:11px;color:#64748b;margin-top:5px;">⏰ 🇮🇷 ${day.wakeTime} (🇰🇷 ${wakeKr})</div>
-                    </td>
-                    <td width="50%" style="background-color:#f0fdfa;border:1px solid #99f6e4;border-radius:14px;padding:12px 14px;vertical-align:top;">
-                      <div style="font-size:11px;font-weight:800;color:#115e59;margin-bottom:4px;">🎯 ${escapeHtmlSafe(stripLeadingEmoji(t.repTirLabel))}</div>
-                      <div style="font-size:16px;font-weight:900;color:#0f766e;font-family:monospace;">
-                        ${m.totalBgPts > 0 ? `${m.tir}% <span style="font-size:12px;font-weight:700;color:#475569;">(${m.inRange}/${m.totalBgPts})</span>` : escapeHtmlSafe(t.repNoBg)}
-                      </div>
-                      <div style="width:100%;height:7px;background-color:#ccfbf1;border-radius:999px;overflow:hidden;margin-top:6px;">
-                        <div style="width:${m.totalBgPts > 0 ? m.tir : 0}%;height:7px;background-color:#10b981;border-radius:999px;"></div>
-                      </div>
-                      <div style="font-size:11px;color:#64748b;margin-top:4px;font-family:monospace;">${escapeHtmlSafe(t.weekRangeText)} ${m.minBg} ~ ${m.maxBg} mg/dL</div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td width="50%" style="background-color:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:12px 14px;vertical-align:top;">
-                      <div style="font-size:11px;font-weight:800;color:#92400e;margin-bottom:6px;">💉 ${escapeHtmlSafe(stripLeadingEmoji(t.repTotalIns))}</div>
-                      <div>
-                        <span style="display:inline-block;padding:2px 8px;border-radius:8px;background-color:#fef3c7;color:#92400e;border:1px solid #fcd34d;font-family:monospace;font-size:12px;font-weight:800;margin-right:4px;">🟡 ${escapeHtmlSafe(t.yellowShort)}: ${m.sumReg}U</span>
-                        <span style="display:inline-block;padding:2px 8px;border-radius:8px;background-color:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-family:monospace;font-size:12px;font-weight:800;">🟢 ${escapeHtmlSafe(t.greenShort)}: ${m.sumNph}U</span>
-                      </div>
-                      <div style="font-size:11px;color:#78350f;margin-top:5px;font-weight:700;">∑ = ${m.sumReg + m.sumNph} U</div>
-                    </td>
-                    <td width="50%" style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:12px 14px;vertical-align:top;">
-                      <div style="font-size:11px;font-weight:800;color:#334155;margin-bottom:6px;">💊 ${escapeHtmlSafe(stripLeadingEmoji(t.repFamoQuad))}</div>
-                      <div>
-                        <span style="display:inline-block;padding:2px 9px;border-radius:999px;background-color:${String(day.famotidineDose) === '0' ? '#d1fae5' : '#fef3c7'};color:${String(day.famotidineDose) === '0' ? '#065f46' : '#92400e'};font-size:12px;font-weight:800;">
-                          💊 ${String(day.famotidineDose) === '0' ? escapeHtmlSafe(t.famo0) : day.famotidineDose}
-                        </span>
-                        <span style="display:inline-block;padding:2px 9px;border-radius:999px;background-color:#e0f2fe;color:#0369a1;font-family:monospace;font-size:12px;font-weight:800;margin-left:4px;">
-                          🔄 ${escapeHtmlSafe(day.quadrant || 'LU')}
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                </table>
-
-                <!-- Supplements Table -->
-                <div style="margin-top:16px;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;">
-                  <div style="background-color:#f0fdf4;padding:10px 14px;border-bottom:1px solid #dcfce7;font-size:13px;font-weight:800;color:#065f46;">
-                    ${escapeHtmlSafe(t.repSuppHeader)}
-                  </div>
-                  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
-                    ${suppRowsHtml}
-                  </table>
-                </div>
-
-                <!-- Meals & BG Fluctuation Table -->
-                <div style="margin-top:18px;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;">
-                  <div style="background-color:#f0fdfa;padding:10px 14px;border-bottom:1px solid #ccfbf1;font-size:13px;font-weight:800;color:#115e59;">
-                    ${escapeHtmlSafe(t.repMealsHeader)}
-                  </div>
-                  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
-                    <thead>
-                      <tr style="background-color:#f8fafc;border-bottom:1px solid #e2e8f0;font-size:11px;font-weight:800;color:#475569;">
-                        <th style="padding:8px 12px;text-align:${alignLeft};">${escapeHtmlSafe(t.thHistNode)}</th>
-                        <th style="padding:8px 12px;text-align:${alignLeft};">${escapeHtmlSafe(t.thHistBg)}</th>
-                        <th style="padding:8px 12px;text-align:${alignLeft};">${escapeHtmlSafe(t.lblInsulinShort)}</th>
-                        <th style="padding:8px 12px;text-align:${alignLeft};">${escapeHtmlSafe(t.lblMealFoods)}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      ${activeMealRows.length > 0 ? activeMealRows.join('') : `<tr><td colspan="4" style="padding:16px;text-align:center;color:#94a3b8;font-size:12px;">${escapeHtmlSafe(t.weekNoMeals)}</td></tr>`}
-                      ${unloggedFooterRow}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          `;
+          return `<div dir="${dirAttr}" style="max-width:660px;margin:0 auto;background:#fff;border:1px solid #a7f3d0;border-radius:16px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1e293b;text-align:${alignLeft}"><div style="background:linear-gradient(135deg,#059669,#0d9488);background-color:#059669;color:#fff;padding:15px 18px"><div style="font-size:16px;font-weight:900">💚 ${escapeHtmlSafe(t.appTitle)} · ${escapeHtmlSafe(day.date)}</div><div style="font:700 12px monospace;color:#ecfdf5;margin-top:6px">📅 ${day.date} ｜ ⏰ 🇮🇷 ${day.wakeTime} / 🇰🇷 ${wakeKr} ｜ 🔄 ${escapeHtmlSafe(day.quadrant || 'LU')}</div></div><div style="padding:14px"><table width="100%" cellpadding="0" cellspacing="6" border="0" style="margin-bottom:10px"><tr><td width="50%" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:10px;vertical-align:top"><div style="font-size:11px;font-weight:800;color:#065f46;margin-bottom:4px">🩸 ${escapeHtmlSafe(stripLeadingEmoji(t.fastingBgLabel))}</div><div>${renderEmailBgBadgeHtml(day.fastingBg, true)}</div></td><td width="50%" style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:10px;vertical-align:top"><div style="font-size:11px;font-weight:800;color:#115e59;margin-bottom:3px">🎯 ${escapeHtmlSafe(stripLeadingEmoji(t.repTirLabel))}</div><div style="font:900 14px monospace;color:#0f766e">${m.totalBgPts > 0 ? `${m.tir}% (${m.inRange}/${m.totalBgPts}) <span style="font-size:11px;color:#64748b">${m.minBg}~${m.maxBg}</span>` : escapeHtmlSafe(t.repNoBg)}</div></td></tr><tr><td width="50%" style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:10px;vertical-align:top"><div style="font-size:11px;font-weight:800;color:#92400e;margin-bottom:4px">💉 ${escapeHtmlSafe(stripLeadingEmoji(t.repTotalIns))}</div><div style="font:800 12px monospace;color:#78350f">🟡 ${m.sumReg}U + 🟢 ${m.sumNph}U (=${m.sumReg + m.sumNph}U)</div></td><td width="50%" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:10px;vertical-align:top"><div style="font-size:11px;font-weight:800;color:#334155;margin-bottom:4px">💊 ${escapeHtmlSafe(stripLeadingEmoji(t.repFamoQuad))}</div><div style="font-size:12px;font-weight:800;color:#065f46">💊 ${String(day.famotidineDose) === '0' ? escapeHtmlSafe(t.famo0) : day.famotidineDose} ｜ 🔄 ${escapeHtmlSafe(day.quadrant || 'LU')}</div></td></tr></table><div style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:12px"><div style="background:#f0fdf4;padding:7px 10px;border-bottom:1px solid #dcfce7;font-size:12px;font-weight:800;color:#065f46">${escapeHtmlSafe(t.repSuppHeader)}</div><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse">${checkedSuppRows.join('')}</table></div><div style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden"><div style="background:#f0fdfa;padding:7px 10px;border-bottom:1px solid #ccfbf1;font-size:12px;font-weight:800;color:#115e59">${escapeHtmlSafe(t.repMealsHeader)}</div><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr style="background:#f8fafc;border-bottom:1px solid #e2e8f0;font-size:11px;font-weight:800;color:#475569"><th style="padding:6px 8px;text-align:${alignLeft}">${escapeHtmlSafe(t.thHistNode)}</th><th style="padding:6px 8px;text-align:${alignLeft}">${escapeHtmlSafe(t.thHistBg)}</th><th style="padding:6px 8px;text-align:${alignLeft}">${escapeHtmlSafe(t.lblInsulinShort)}</th><th style="padding:6px 8px;text-align:${alignLeft}">${escapeHtmlSafe(t.lblMealFoods)}</th></tr>${activeMealRows.length > 0 ? activeMealRows.join('') : `<tr><td colspan="4" style="padding:12px;text-align:center;color:#94a3b8;font-size:12px">${escapeHtmlSafe(t.weekNoMeals)}</td></tr>`}${unloggedFooterRow}</table></div></div></div>`;
         }
 
-        // Weekly or All-History Clinical Report HTML
+        // Weekly or All-History Compact Clinical HTML Report
         const allDates = Object.keys(allDaysStore).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort().reverse();
         const targetDates = reportType === 'weekly' ? allDates.slice(0, 7) : allDates;
         const dateRangeStr = targetDates.length > 0 ? `${targetDates[targetDates.length - 1]} ~ ${targetDates[0]}` : activeDate;
@@ -7313,7 +7194,7 @@ svg, img, video, canvas {
               (md.selectedFoods || []).forEach(fid => {
                 const fm = FOOD_ID_MAP[fid];
                 if (!fm) return;
-                const fn = `${fm.emoji} ${fm[lang] || fm.zh}`;
+                const fn = `${fm.emoji}${fm[lang] || fm.zh}`;
                 if (!foodAgg[fid]) foodAgg[fid] = { name: fn, cnt: 0, sumPre: 0, sumPost: 0, sumDelta: 0 };
                 foodAgg[fid].cnt++; foodAgg[fid].sumPre += pre; foodAgg[fid].sumPost += post; foodAgg[fid].sumDelta += delta;
               });
@@ -7331,128 +7212,26 @@ svg, img, video, canvas {
         const famoZeroPct = targetDates.length > 0 ? Math.round((famoZeroDays / targetDates.length) * 100) : 0;
 
         const foodArr = Object.values(foodAgg).sort((a, b) => (a.sumDelta / a.cnt) - (b.sumDelta / b.cnt));
-        const foodRankingHtml = foodArr.length > 0 ? `
-          <div style="margin-top:18px;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;">
-            <div style="background-color:#f0fdf4;padding:10px 14px;border-bottom:1px solid #dcfce7;font-size:13px;font-weight:800;color:#065f46;">
-              ${escapeHtmlSafe(t.docSec2Title)}
-            </div>
-            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
-              <thead>
-                <tr style="background-color:#f8fafc;border-bottom:1px solid #e2e8f0;font-size:11px;font-weight:800;color:#475569;">
-                  <th style="padding:8px 12px;text-align:${alignLeft};">${escapeHtmlSafe(t.thImpFood)}</th>
-                  <th style="padding:8px 12px;text-align:center;">${escapeHtmlSafe(t.thImpCount)}</th>
-                  <th style="padding:8px 12px;text-align:${alignLeft};">${escapeHtmlSafe(t.lblPreMeal)} ➔ ${escapeHtmlSafe(t.lblPost2h)}</th>
-                  <th style="padding:8px 12px;text-align:${alignRight};">ΔBG</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${foodArr.map((f, idx) => {
-                  const aPre = Math.round(f.sumPre / f.cnt);
-                  const aPost = Math.round(f.sumPost / f.cnt);
-                  const aDelta = Math.round(f.sumDelta / f.cnt);
-                  const dSign = aDelta > 0 ? `+${aDelta}` : `${aDelta}`;
-                  const dBg = aDelta <= 25 ? '#d1fae5' : (aDelta <= 50 ? '#fef3c7' : '#ffe4e6');
-                  const dCol = aDelta <= 25 ? '#065f46' : (aDelta <= 50 ? '#92400e' : '#be123c');
-                  return `
-                    <tr style="background-color:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};border-bottom:1px solid #f1f5f9;">
-                      <td style="padding:8px 12px;font-size:12px;font-weight:700;color:#1e293b;">${escapeHtmlSafe(f.name)}</td>
-                      <td style="padding:8px 12px;text-align:center;font-family:monospace;font-size:12px;font-weight:700;color:#475569;">x${f.cnt}</td>
-                      <td style="padding:8px 12px;font-family:monospace;font-size:12px;">${renderEmailBgBadgeHtml(aPre, false)} ➔ ${renderEmailBgBadgeHtml(aPost, true)}</td>
-                      <td style="padding:8px 12px;text-align:${alignRight};">
-                        <span style="display:inline-block;padding:2px 9px;border-radius:999px;background-color:${dBg};color:${dCol};font-family:monospace;font-size:12px;font-weight:800;">${dSign} mg/dL</span>
-                      </td>
-                    </tr>
-                  `;
-                }).join('')}
-              </tbody>
-            </table>
-          </div>
-        ` : '';
+        const foodRankingHtml = foodArr.length > 0 ? `<div style="margin-top:12px;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden"><div style="background:#f0fdf4;padding:7px 10px;border-bottom:1px solid #dcfce7;font-size:12px;font-weight:800;color:#065f46">${escapeHtmlSafe(t.docSec2Title)}</div><table width="100%" cellpadding="6" cellspacing="0" border="0" style="border-collapse:collapse;font-size:11px"><tr style="background:#f8fafc;border-bottom:1px solid #e2e8f0;font-weight:800;color:#475569"><th align="${alignLeft}">${escapeHtmlSafe(t.thImpFood)}</th><th>#</th><th align="${alignLeft}">${escapeHtmlSafe(t.lblPreMeal)}➔${escapeHtmlSafe(t.lblPost2h)}</th><th align="${alignRight}">ΔBG</th></tr>${foodArr.map(f => { const aPre = Math.round(f.sumPre / f.cnt); const aPost = Math.round(f.sumPost / f.cnt); const aDelta = Math.round(f.sumDelta / f.cnt); const dSign = aDelta > 0 ? `+${aDelta}` : `${aDelta}`; const dCol = aDelta <= 25 ? '#065f46' : (aDelta <= 50 ? '#92400e' : '#be123c'); return `<tr style="border-bottom:1px solid #f1f5f9"><td style="font-weight:700">${escapeHtmlSafe(f.name)}</td><td align="center" style="font-family:monospace">x${f.cnt}</td><td style="font-family:monospace">${aPre} ➔ ${aPost}</td><td align="${alignRight}" style="font:800 11px monospace;color:${dCol}">${dSign} mg/dL</td></tr>`; }).join('')}</table></div>` : '';
 
-        const dayCardsHtml = targetDates.map(dStr => {
+        const dayRowsHtml = targetDates.map(dStr => {
           const day = ensureDaySchemaIntegrity(allDaysStore[dStr]);
           const m = calculateDaySummaryMetrics(day);
-          const mealItemsHtml = MEAL_NODES_META.map(meta => {
+          const mealBriefs = MEAL_NODES_META.map(meta => {
             const md = day.meals?.[meta.key];
             if (!md) return '';
-            const hasFood = (md.selectedFoods && md.selectedFoods.length > 0) || (md.customFoods && md.customFoods.length > 0);
-            const hasIns = md.insStatus && md.insStatus !== 'none' && (Number(md.regUnits) > 0 || Number(md.nphUnits) > 0);
-            const hasBg = md.preBg || md.postBg;
-            if (!hasFood && !hasIns && !hasBg) return '';
-            const insTag = hasIns ? `<span style="display:inline-block;padding:1px 6px;border-radius:6px;background-color:#fef3c7;color:#92400e;font-family:monospace;font-size:11px;font-weight:700;">🟡${md.regUnits}U+🟢${md.nphUnits}U</span>` : '';
-            return `
-              <div style="padding:6px 0;border-top:1px dashed #e2e8f0;font-size:12px;">
-                <span style="font-weight:800;color:#0f172a;">${meta.icon} ${escapeHtmlSafe((meta.title[lang] || meta.title.zh).split('(')[0].trim())} (${md.time}):</span>
-                ${renderEmailBgBadgeHtml(md.preBg, false)} ➔ ${renderEmailBgBadgeHtml(md.postBg, true)}
-                ${insTag}
-                <div style="margin-top:3px;">${renderEmailFoodChipsHtml(md, lang)}</div>
-              </div>
-            `;
+            const foodStr = formatFoodListLocalized(md);
+            if (foodStr === t.repNoFood && !md.preBg && !md.postBg && md.insStatus === 'none') return '';
+            const insStr = (md.insStatus && md.insStatus !== 'none') ? ` 💉🟡${md.regUnits}U+🟢${md.nphUnits}U` : '';
+            return `<div style="margin-top:2px"><b>${meta.icon}${escapeHtmlSafe((meta.title[lang] || meta.title.zh).split('(')[0].trim())} (${md.time}):</b> [${md.preBg || '-'}➔${md.postBg || '-'}]${insStr} ${escapeHtmlSafe(foodStr)}</div>`;
           }).filter(Boolean).join('');
 
-          return `
-            <div style="margin-top:10px;border:1px solid #cbd5e1;border-radius:12px;background-color:#ffffff;overflow:hidden;">
-              <div style="background-color:#f8fafc;padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:12px;font-weight:800;color:#1e293b;">
-                📅 <span style="font-family:monospace;">${dStr}</span>
-                ｜ ⏰ 🇮🇷${day.wakeTime}/🇰🇷${iranTimeToKoreaTime(day.wakeTime)}
-                ｜ 🩸 ${escapeHtmlSafe(stripLeadingEmoji(t.fastingBgLabel))} ${renderEmailBgBadgeHtml(day.fastingBg, false)}
-                ｜ 🎯 TIR: <span style="color:#059669;font-family:monospace;">${m.totalBgPts > 0 ? m.tir + '%' : '--'}</span>
-                ｜ 💉 <span style="font-family:monospace;">🟡${m.sumReg}U+🟢${m.sumNph}U</span>
-                ｜ 💊 ${day.famotidineDose}
-              </div>
-              <div style="padding:6px 12px;">
-                ${mealItemsHtml || `<div style="color:#94a3b8;font-size:11px;padding:4px 0;">${escapeHtmlSafe(t.weekNoMeals)}</div>`}
-              </div>
-            </div>
-          `;
+          return `<tr style="border-bottom:1px solid #e2e8f0"><td style="padding:7px 8px;vertical-align:top;white-space:nowrap;font:700 11px monospace">${dStr}<br><span style="color:#64748b">🇮🇷${day.wakeTime}</span></td><td style="padding:7px 8px;vertical-align:top;white-space:nowrap;font:700 11px monospace">🩸${day.fastingBg || '--'}<br><span style="color:#059669">🎯${m.totalBgPts > 0 ? m.tir + '%' : '--'}</span></td><td style="padding:7px 8px;vertical-align:top;white-space:nowrap;font:700 11px monospace">🟡${m.sumReg}U+🟢${m.sumNph}U<br>💊${day.famotidineDose}</td><td style="padding:7px 8px;vertical-align:top;font-size:11px">${mealBriefs || `<span style="color:#94a3b8">${escapeHtmlSafe(t.weekNoMeals)}</span>`}</td></tr>`;
         }).join('');
 
         const hdrTitle = reportType === 'allHistory' ? t.emailSubjAllHistory : t.emailSubjWeekly;
 
-        return `
-          <div dir="${dirAttr}" style="max-width:680px;margin:0 auto;background-color:#ffffff;border:1px solid #a7f3d0;border-radius:18px;overflow:hidden;box-shadow:0 4px 16px rgba(5,150,105,0.08);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',Tahoma,sans-serif;color:#1e293b;text-align:${alignLeft};">
-            <div style="background:linear-gradient(135deg,#059669 0%,#0f766e 100%);background-color:#059669;color:#ffffff;padding:20px 22px;">
-              <div style="font-size:17px;font-weight:900;">🏥 ${escapeHtmlSafe(hdrTitle)}</div>
-              <div style="font-size:12px;color:#d1fae5;margin-top:4px;font-family:monospace;">📅 ${escapeHtmlSafe(dateRangeStr)} (${targetDates.length} ${escapeHtmlSafe(t.annDaysUnit)})</div>
-            </div>
-            <div style="padding:18px 20px;">
-              <!-- Executive Summary KPI Grid -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;border-spacing:8px;">
-                <tr>
-                  <td width="50%" style="background-color:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:12px 14px;vertical-align:top;">
-                    <div style="font-size:11px;font-weight:800;color:#065f46;">🎯 ${escapeHtmlSafe(t.docTirRate)}</div>
-                    <div style="font-size:18px;font-weight:900;color:#047857;font-family:monospace;margin-top:4px;">${overallTir}% <span style="font-size:12px;color:#475569;">(${totalInRange}/${totalBgCount})</span></div>
-                    <div style="width:100%;height:7px;background-color:#dcfce7;border-radius:999px;overflow:hidden;margin-top:6px;">
-                      <div style="width:${overallTir}%;height:7px;background-color:#10b981;border-radius:999px;"></div>
-                    </div>
-                  </td>
-                  <td width="50%" style="background-color:#f0fdfa;border:1px solid #99f6e4;border-radius:14px;padding:12px 14px;vertical-align:top;">
-                    <div style="font-size:11px;font-weight:800;color:#115e59;">🩸 ${escapeHtmlSafe(t.docFastingPrePost)}</div>
-                    <div style="font-size:15px;font-weight:900;color:#0f766e;font-family:monospace;margin-top:4px;">${avgFast} / ${avgPreBg} / ${avgPostBg} <span style="font-size:11px;">mg/dL</span></div>
-                    <div style="font-size:11px;color:#64748b;margin-top:4px;font-family:monospace;">${escapeHtmlSafe(t.docMeanBg)}: ${avgAllBg} (${minAllBg === Infinity ? '--' : minAllBg}~${maxAllBg === -Infinity ? '--' : maxAllBg})</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td width="50%" style="background-color:#fff1f2;border:1px solid #fecdd3;border-radius:14px;padding:12px 14px;vertical-align:top;">
-                    <div style="font-size:11px;font-weight:800;color:#9f1239;">⚠️ ${escapeHtmlSafe(t.docHypoHyper)}</div>
-                    <div style="font-size:15px;font-weight:900;color:#be123c;font-family:monospace;margin-top:4px;">🔻 ${hypoCount} ｜ 🔺 ${hyperCount}</div>
-                  </td>
-                  <td width="50%" style="background-color:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:12px 14px;vertical-align:top;">
-                    <div style="font-size:11px;font-weight:800;color:#92400e;">💉 ${escapeHtmlSafe(t.docAvgDailyIns)} & 💊 ${escapeHtmlSafe(t.thWeekFamo)}</div>
-                    <div style="font-size:14px;font-weight:900;color:#78350f;font-family:monospace;margin-top:4px;">🟡${avgRegDay}U + 🟢${avgNphDay}U ｜ 0-Pill: ${famoZeroPct}%</div>
-                  </td>
-                </tr>
-              </table>
-
-              ${foodRankingHtml}
-
-              <div style="margin-top:18px;">
-                <div style="font-size:13px;font-weight:800;color:#0f172a;margin-bottom:6px;">${escapeHtmlSafe(t.docSec3Title)} (${targetDates.length} ${escapeHtmlSafe(t.annDaysUnit)})</div>
-                ${dayCardsHtml}
-              </div>
-            </div>
-          </div>
-        `;
+        return `<div dir="${dirAttr}" style="max-width:660px;margin:0 auto;background:#fff;border:1px solid #a7f3d0;border-radius:16px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1e293b;text-align:${alignLeft}"><div style="background:linear-gradient(135deg,#059669,#0f766e);background-color:#059669;color:#fff;padding:15px 18px"><div style="font-size:16px;font-weight:900">🏥 ${escapeHtmlSafe(hdrTitle)}</div><div style="font:700 11px monospace;color:#d1fae5;margin-top:4px">📅 ${escapeHtmlSafe(dateRangeStr)} (${targetDates.length} ${escapeHtmlSafe(t.annDaysUnit)})</div></div><div style="padding:14px"><table width="100%" cellpadding="0" cellspacing="6" border="0"><tr><td width="50%" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:9px"><div style="font-size:11px;font-weight:800;color:#065f46">🎯 ${escapeHtmlSafe(t.docTirRate)}</div><div style="font:900 15px monospace;color:#047857;margin-top:3px">${overallTir}% (${totalInRange}/${totalBgCount})</div></td><td width="50%" style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:9px"><div style="font-size:11px;font-weight:800;color:#115e59">🩸 ${escapeHtmlSafe(t.docFastingPrePost)}</div><div style="font:900 13px monospace;color:#0f766e;margin-top:3px">${avgFast} / ${avgPreBg} / ${avgPostBg} mg/dL</div></td></tr><tr><td width="50%" style="background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:9px"><div style="font-size:11px;font-weight:800;color:#9f1239">⚠️ ${escapeHtmlSafe(t.docHypoHyper)}</div><div style="font:900 13px monospace;color:#be123c;margin-top:3px">🔻 ${hypoCount} ｜ 🔺 ${hyperCount}</div></td><td width="50%" style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:9px"><div style="font-size:11px;font-weight:800;color:#92400e">💉 ${escapeHtmlSafe(t.docAvgDailyIns)} & 💊 ${escapeHtmlSafe(t.thWeekFamo)}</div><div style="font:900 12px monospace;color:#78350f;margin-top:3px">🟡${avgRegDay}U+🟢${avgNphDay}U ｜ 0-Pill:${famoZeroPct}%</div></td></tr></table>${foodRankingHtml}<div style="margin-top:12px;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden"><div style="background:#f0fdfa;padding:7px 10px;border-bottom:1px solid #ccfbf1;font-size:12px;font-weight:800;color:#115e59">${escapeHtmlSafe(t.docSec3Title)}</div><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse">${dayRowsHtml}</table></div></div></div>`;
       } finally {
         currentLang = prevLang;
       }
@@ -7832,6 +7611,28 @@ svg, img, video, canvas {
       await sendReportEmailNow('daily', false);
     }
 
+    async function sendSingleDirectEmailJS(toEmail, subj, msgBody, repDateStr) {
+      const ejsRes = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          service_id: serverConfig.emailServiceId,
+          template_id: serverConfig.emailTemplateId,
+          user_id: serverConfig.emailPublicKey,
+          template_params: {
+            to_email: toEmail,
+            name: 'Sugar System (血糖健康打卡系统)',
+            from_name: 'Sugar System (血糖健康打卡系统)',
+            subject: subj,
+            message: msgBody,
+            time: repDateStr,
+            report_date: repDateStr
+          }
+        })
+      });
+      return ejsRes.ok;
+    }
+
     async function sendReportEmailNow(reportType = 'daily', isAuto = false) {
       if (typeof navigator !== 'undefined' && navigator.onLine === false) {
         if (!isAuto) showToast(tMsg('toastOffline'), 'warn');
@@ -7853,6 +7654,7 @@ svg, img, video, canvas {
       const mode = (serverConfig && serverConfig.emailLangMode) ? serverConfig.emailLangMode : 'split_tailored';
       const allDatesSorted = Object.keys(allDaysStore).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort();
       const historyRangeLabel = allDatesSorted.length > 0 ? `${allDatesSorted[0]}_${allDatesSorted[allDatesSorted.length - 1]}` : targetDate;
+      const repDateLabel = reportType === 'allHistory' ? historyRangeLabel : targetDate;
 
       const subjectZh = reportType === 'allHistory'
         ? `${tZh.emailSubjAllHistory} (${historyRangeLabel})`
@@ -7879,15 +7681,21 @@ svg, img, video, canvas {
       const plainEnFa = buildPlainTextReport(reportType, targetDate, 'en_fa');
       const plainAll = buildPlainTextReport(reportType, targetDate, 'all');
 
-      const textZh = useHtml ? htmlZh : plainZh;
-      const textEnFa = useHtml ? htmlEnFa : plainEnFa;
-      const textAll = useHtml ? htmlAll : plainAll;
+      // 智能防超限保护：EmailJS 单封邮件总上限 50KB (50,000 bytes)。
+      // 若旧版 Worker 将 message 重复填入 4 个字段，单份双语总字节需控制在 11,500 bytes 内；若超限则自动转为精致框线版确保 100% 送达
+      const combinedHtmlBytes = getUtf8ByteLength(htmlZh) + getUtf8ByteLength(htmlEnFa);
+      const safeForWorkerHtml = useHtml && (combinedHtmlBytes <= 11200);
+
+      const workerTextZh = safeForWorkerHtml ? htmlZh : plainZh;
+      const workerTextEnFa = safeForWorkerHtml ? htmlEnFa : plainEnFa;
+      const workerTextAll = (useHtml && getUtf8ByteLength(htmlAll) <= 11200) ? htmlAll : plainAll;
+
+      const directTextZh = (useHtml && getUtf8ByteLength(htmlZh) <= 44000) ? htmlZh : plainZh;
+      const directTextEnFa = (useHtml && getUtf8ByteLength(htmlEnFa) <= 44000) ? htmlEnFa : plainEnFa;
+      const directTextAll = (useHtml && getUtf8ByteLength(htmlAll) <= 44000) ? htmlAll : plainAll;
 
       const subject = mode === 'all_in_one' ? subjectAll : subjectZh;
-      const bodyText = mode === 'all_in_one'
-        ? textAll
-        : (useHtml ? `${htmlZh}<div style="height:24px;"></div>${htmlEnFa}` : `${plainZh}\n\n${plainEnFa}`);
-      const bodyHtmlAlways = mode === 'all_in_one' ? htmlAll : `${htmlZh}<div style="height:24px;"></div>${htmlEnFa}`;
+      const workerBodyText = mode === 'all_in_one' ? workerTextAll : `${workerTextZh}\n\n${workerTextEnFa}`;
 
       // 1. 优先通过 Cloudflare Worker 云端网关发信（支持按收件人自动分发：miyubear 中文 / arsanbear 英文+波斯语，或全语言同封）
       const workerUrl = (serverConfig.dexcomBridgeUrl || DEFAULT_WORKER_URL).trim();
@@ -7904,15 +7712,10 @@ svg, img, video, canvas {
             subject: subjectAll,
             subjectZh: subjectZh,
             subjectEnFa: subjectEnFa,
-            message: bodyText,
-            html_message: bodyHtmlAlways,
-            content: bodyText,
-            text: plainAll,
-            messageZh: textZh,
-            messageEnFa: textEnFa,
-            htmlZh: htmlZh,
-            htmlEnFa: htmlEnFa,
-            reportDate: reportType === 'allHistory' ? historyRangeLabel : targetDate,
+            message: workerBodyText,
+            messageZh: workerTextZh,
+            messageEnFa: workerTextEnFa,
+            reportDate: repDateLabel,
             reportType: reportType,
             auto: !!isAuto
           });
@@ -7932,32 +7735,42 @@ svg, img, video, canvas {
         } catch (e) {}
       }
 
-      // 2. 备用直连 EmailJS
+      // 2. 备用直连 EmailJS（仅发送单字段 message，零冗余体积，同样支持分邮箱定制投递！）
       if (serverConfig.emailServiceId && serverConfig.emailTemplateId && serverConfig.emailPublicKey) {
         try {
-          const ejsRes = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              service_id: serverConfig.emailServiceId,
-              template_id: serverConfig.emailTemplateId,
-              user_id: serverConfig.emailPublicKey,
-              template_params: {
-                to_email: recipients.join(', '),
-                name: 'Sugar System (血糖健康打卡系统)',
-                from_name: 'Sugar System (血糖健康打卡系统)',
-                subject: subject,
-                message: bodyText,
-                html_message: bodyHtmlAlways,
-                content: bodyText,
-                text: plainAll,
-                report_date: reportType === 'allHistory' ? historyRangeLabel : targetDate
+          if (mode === 'all_in_one') {
+            const okAll = await sendSingleDirectEmailJS(recipients.join(', '), subjectAll, directTextAll, repDateLabel);
+            if (okAll) {
+              showToast(reportType === 'allHistory' ? tMsg('toastAllHistSent') : tMsg('toastEmailSent'));
+              return true;
+            }
+          } else {
+            const miyuList = recipients.filter(e => e.toLowerCase().includes('miyubear'));
+            const arsanList = recipients.filter(e => e.toLowerCase().includes('arsanbear'));
+            const otherList = recipients.filter(e => !e.toLowerCase().includes('miyubear') && !e.toLowerCase().includes('arsanbear'));
+            const directTasks = [];
+            if (miyuList.length > 0) {
+              const combinedMiyu = (getUtf8ByteLength(directTextZh) + getUtf8ByteLength(directTextEnFa) <= 44000)
+                ? `${directTextZh}<div style="height:18px"></div>${directTextEnFa}`
+                : directTextZh;
+              directTasks.push(sendSingleDirectEmailJS(miyuList.join(', '), subjectZh, combinedMiyu, repDateLabel));
+            }
+            if (arsanList.length > 0) {
+              const combinedArsan = (getUtf8ByteLength(directTextEnFa) + getUtf8ByteLength(directTextZh) <= 44000)
+                ? `${directTextEnFa}<div style="height:18px"></div>${directTextZh}`
+                : directTextEnFa;
+              directTasks.push(sendSingleDirectEmailJS(arsanList.join(', '), subjectEnFa, combinedArsan, repDateLabel));
+            }
+            if (otherList.length > 0) {
+              directTasks.push(sendSingleDirectEmailJS(otherList.join(', '), subjectAll, directTextAll, repDateLabel));
+            }
+            if (directTasks.length > 0) {
+              const results = await Promise.all(directTasks);
+              if (results.some(Boolean)) {
+                showToast(reportType === 'allHistory' ? tMsg('toastAllHistSent') : tMsg('toastEmailSent'));
+                return true;
               }
-            })
-          });
-          if (ejsRes.ok) {
-            showToast(tMsg('toastEmailSent'));
-            return true;
+            }
           }
         } catch (err) {}
       }
@@ -7967,7 +7780,7 @@ svg, img, video, canvas {
           const whRes = await fetch(serverConfig.emailWebhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ to: recipients, subject, text: bodyText, reportType, timestamp: new Date().toISOString() })
+            body: JSON.stringify({ to: recipients, subject, text: workerBodyText, reportType, timestamp: new Date().toISOString() })
           });
           if (whRes.ok) {
             showToast('📨 报告已通过 Webhook 发送成功！');
