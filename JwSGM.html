@@ -3394,6 +3394,9 @@ svg, img, video, canvas {
     function createDefaultMealNode(defaultTime, reg = 0, nph = 0) {
       return {
         time: defaultTime,
+        mealStartUtcMs: 0,
+        manualTimeLock: false,
+        postBgManualLock: false,
         preBg: '',
         postBg: '',
         insStatus: 'none',
@@ -3439,6 +3442,25 @@ svg, img, video, canvas {
       });
     }
 
+    function sanitizePrematurePostMealBg(day) {
+      if (!day || !day.meals) return;
+      const { irDateStr, irHm } = getFormattedDualClocks();
+      if (day.date !== irDateStr) return;
+      const [curH, curM] = irHm.split(':').map(Number);
+      const curTotalMin = curH * 60 + curM;
+      MEAL_NODES_META.forEach(meta => {
+        const md = day.meals[meta.key];
+        if (!md || !md.postBg || md.postBgManualLock) return;
+        const [mh, mm] = (md.time || '').split(':').map(Number);
+        if (isNaN(mh) || isNaN(mm)) return;
+        const elapsedMin = curTotalMin - (mh * 60 + mm);
+        // 若当前时间距离用餐开始时间尚未满 115 分钟（即餐后2小时应测时间还没到），自动清除误填的餐后血糖
+        if (elapsedMin < 115) {
+          md.postBg = '';
+        }
+      });
+    }
+
     function ensureDaySchemaIntegrity(day) {
       if (!day) return day;
       if (typeof day.updatedAt !== 'number') day.updatedAt = 0;
@@ -3446,8 +3468,14 @@ svg, img, video, canvas {
       MEAL_NODES_META.forEach(meta => {
         if (!day.meals[meta.key]) {
           day.meals[meta.key] = createDefaultMealNode(meta.defaultTime, meta.defaultReg, meta.defaultNph);
+        } else {
+          const md = day.meals[meta.key];
+          if (typeof md.mealStartUtcMs !== 'number') md.mealStartUtcMs = 0;
+          if (typeof md.manualTimeLock !== 'boolean') md.manualTimeLock = false;
+          if (typeof md.postBgManualLock !== 'boolean') md.postBgManualLock = false;
         }
       });
+      sanitizePrematurePostMealBg(day);
       if (!day.supplements) day.supplements = {};
       delete day.supplements.SUPP_BIOTIN;
       SUPPLEMENTS_DICT.forEach(s => {
@@ -3523,6 +3551,9 @@ svg, img, video, canvas {
       if (irEl) irEl.textContent = irFull;
       if (krEl) krEl.textContent = krFull;
       updateNext10AmCountdown();
+      if (krDateObj.getSeconds() === 0) {
+        autoBackfillPostMealBgFromDexcom();
+      }
 
       // 双保险自动补发机制：韩国时间 >= 10:30（给云端 10:00 Cron 留足 30 分钟先行发送窗口）且已完成首次云端拉取后，才检查是否需要补发
       if (
@@ -4398,21 +4429,57 @@ svg, img, video, canvas {
       }, 1200);
     }
 
-    function autoFillPreBgIfEmpty(mealObj) {
+    // 当录入或修改餐前数据（餐前血糖、胰岛素剂量、食物）时，自动以最后一次填入数值的时间作为本餐最终开始时间，
+    // 并确保在距离最终开始时间未满 2 小时前绝不提前填入餐后血糖
+    function syncMealStartTimeOnPreMealAction(day, mealObj, isDirectPreBgOrTimeReset = false) {
+      if (!day || !mealObj) return;
+      const { irDateStr, irHm } = getFormattedDualClocks();
       if (serverConfig.autoFillBgOnMeal && (!mealObj.preBg || mealObj.preBg === '') && liveDexcomState.bg) {
         mealObj.preBg = liveDexcomState.bg;
       }
+      if (day.date !== irDateStr) return;
+
+      const nowMs = Date.now();
+      const [curH, curM] = irHm.split(':').map(Number);
+      const curTotalMin = curH * 60 + curM;
+
+      // 判断是否处于本餐记录窗口（尚未满2小时或直接校准餐前血糖/点击设为当前）
+      const withinActiveLoggingWindow =
+        isDirectPreBgOrTimeReset ||
+        !mealObj.mealStartUtcMs ||
+        (nowMs - mealObj.mealStartUtcMs < 110 * 60 * 1000);
+
+      if (!mealObj.manualTimeLock && withinActiveLoggingWindow) {
+        mealObj.time = irHm;
+        mealObj.mealStartUtcMs = nowMs;
+        if (!mealObj.postBgManualLock) {
+          mealObj.postBg = '';
+        }
+      } else if (mealObj.time) {
+        const [mh, mm] = mealObj.time.split(':').map(Number);
+        if (!isNaN(mh) && !isNaN(mm) && (curTotalMin - (mh * 60 + mm)) < 115 && !mealObj.postBgManualLock) {
+          mealObj.postBg = '';
+        }
+      }
     }
 
-    // Automatic 2h Post-Meal BG backfill from Dexcom live reading or history curve
+    function autoFillPreBgIfEmpty(mealObj) {
+      const day = getCurrentDayData();
+      syncMealStartTimeOnPreMealAction(day, mealObj, false);
+    }
+
+    // Automatic 2h Post-Meal BG backfill from Dexcom live reading or history curve (ONLY after 2 full hours have elapsed!)
     function autoBackfillPostMealBgFromDexcom() {
       if (!serverConfig.autoFillBgOnMeal) return;
       const { irDateStr, irHm } = getFormattedDualClocks();
       const day = allDaysStore[irDateStr];
       if (!day || !day.meals) return;
 
+      sanitizePrematurePostMealBg(day);
+
       const [curH, curM] = irHm.split(':').map(Number);
       const curTotalMin = curH * 60 + curM;
+      const nowMs = Date.now();
       let filledAny = false;
       let filledValue = '';
 
@@ -4422,25 +4489,33 @@ svg, img, video, canvas {
         const hasActivity = (md.selectedFoods && md.selectedFoods.length > 0) || (md.customFoods && md.customFoods.length > 0) || md.preBg || md.insStatus === 'done';
         if (!hasActivity || !md.time) return;
 
+        // 必须已经真正记录过本餐开始时间（或手动设定过时间），防止未打卡的默认占位时间触发回填
+        if (!md.mealStartUtcMs && !md.manualTimeLock) return;
+
         const [mh, mm] = md.time.split(':').map(Number);
         if (isNaN(mh) || isNaN(mm)) return;
-        const targetPostMin = (mh * 60 + mm + 120) % 1440;
-        const diffFromNow = curTotalMin - targetPostMin;
+        const mealStartMin = mh * 60 + mm;
+        const elapsedSinceMealMin = curTotalMin - mealStartMin;
 
-        // 1. If current time is within [target2h - 5m, target2h + 25m] and we have live BG
-        if (diffFromNow >= -5 && diffFromNow <= 25 && liveDexcomState.bg) {
+        // 核心保护：距离本餐最终开始时间必须已经满 120 分钟（2小时），未满 2 小时绝不填入！
+        if (elapsedSinceMealMin < 120) return;
+        if (!md.manualTimeLock && md.mealStartUtcMs > 0 && (nowMs - md.mealStartUtcMs) < 115 * 60 * 1000) return;
+
+        const diffAfter2hMin = elapsedSinceMealMin - 120;
+
+        // 1. 刚满 2 小时（应测时间 ~ 应测时间+25分钟内）：直接填入当前最新 Dexcom 实时血糖
+        if (diffAfter2hMin >= 0 && diffAfter2hMin <= 25 && liveDexcomState.bg) {
           md.postBg = liveDexcomState.bg;
           filledValue = liveDexcomState.bg;
           filledAny = true;
           return;
         }
 
-        // 2. Or check Dexcom history array (last 3 hours of readings) for a reading near target2h
-        if (diffFromNow > 25 && Array.isArray(liveDexcomState.history) && liveDexcomState.history.length > 0) {
-          const targetAgoMin = diffFromNow;
-          const targetTsMs = Date.now() - targetAgoMin * 60000;
+        // 2. 若超过应测时间 25 分钟以上才打开网页：从 Dexcom 最近 3 小时历史曲线中精准匹配餐后 2 小时那一刻的读数
+        if (diffAfter2hMin > 25 && Array.isArray(liveDexcomState.history) && liveDexcomState.history.length > 0) {
+          const targetTsMs = nowMs - diffAfter2hMin * 60000;
           let bestReading = null;
-          let bestDiffMs = 15 * 60000; // within 15 minutes tolerance
+          let bestDiffMs = 15 * 60000; // 15分钟容差内匹配最近读数
           liveDexcomState.history.forEach(pt => {
             const ptMs = parseDexcomWT(pt.WT);
             if (ptMs && Math.abs(ptMs - targetTsMs) < bestDiffMs && pt.Value) {
@@ -4585,13 +4660,33 @@ svg, img, video, canvas {
     function confirmMealBg(mealKey, field) {
       const inputEl = document.getElementById(`bgInput-${mealKey}-${field}`);
       const rawVal = inputEl ? inputEl.value.trim() : '';
+      const day = getCurrentDayData();
+      const md = day.meals[mealKey];
+
+      // 允许清空输入框后点“校准”来清除误填的血糖值
+      if (rawVal === '') {
+        md[field] = '';
+        if (field === 'postBg') md.postBgManualLock = false;
+        touchDayTimestamp(day);
+        renderMeals();
+        updateTopSteadyStateDashboard();
+        renderFoodImpactTab();
+        scheduleAutoSync('清空血糖记录');
+        showToast(tMsg('toastSaved'));
+        return;
+      }
+
       const numVal = Number(rawVal);
-      if (!rawVal || isNaN(numVal) || numVal < 20 || numVal > 600) {
+      if (isNaN(numVal) || numVal < 20 || numVal > 600) {
         showToast(tMsg('toastInvalidBg'), 'warn');
         return;
       }
-      const day = getCurrentDayData();
-      day.meals[mealKey][field] = numVal;
+      md[field] = numVal;
+      if (field === 'preBg') {
+        syncMealStartTimeOnPreMealAction(day, md, true);
+      } else if (field === 'postBg') {
+        md.postBgManualLock = true;
+      }
       touchDayTimestamp(day);
       renderMeals();
       updateTopSteadyStateDashboard();
@@ -4610,7 +4705,13 @@ svg, img, video, canvas {
         return;
       }
       const day = getCurrentDayData();
-      day.meals[mealKey][field] = liveDexcomState.bg;
+      const md = day.meals[mealKey];
+      md[field] = liveDexcomState.bg;
+      if (field === 'preBg') {
+        syncMealStartTimeOnPreMealAction(day, md, true);
+      } else if (field === 'postBg') {
+        md.postBgManualLock = true;
+      }
       touchDayTimestamp(day);
       renderMeals();
       updateTopSteadyStateDashboard();
@@ -4624,7 +4725,7 @@ svg, img, video, canvas {
       const md = day.meals[mealKey];
       md.insStatus = status;
       if (status !== 'none') {
-        autoFillPreBgIfEmpty(md);
+        syncMealStartTimeOnPreMealAction(day, md, false);
       }
       if (status !== 'none' && md.regUnits === 0 && md.nphUnits === 0) {
         if (mealKey === 'breakfast' || mealKey === 'dinner') {
@@ -4643,8 +4744,10 @@ svg, img, video, canvas {
 
     function adjustInsulinDose(mealKey, field, delta) {
       const day = getCurrentDayData();
-      const cur = Number(day.meals[mealKey][field]) || 0;
-      day.meals[mealKey][field] = Math.max(0, cur + delta);
+      const md = day.meals[mealKey];
+      const cur = Number(md[field]) || 0;
+      md[field] = Math.max(0, cur + delta);
+      syncMealStartTimeOnPreMealAction(day, md, false);
       touchDayTimestamp(day);
       renderMeals();
       updateTopSteadyStateDashboard();
@@ -4653,7 +4756,9 @@ svg, img, video, canvas {
 
     function setInsulinDose(mealKey, field, val) {
       const day = getCurrentDayData();
-      day.meals[mealKey][field] = Math.max(0, Number(val) || 0);
+      const md = day.meals[mealKey];
+      md[field] = Math.max(0, Number(val) || 0);
+      syncMealStartTimeOnPreMealAction(day, md, false);
       touchDayTimestamp(day);
       renderMeals();
       updateTopSteadyStateDashboard();
@@ -4761,11 +4866,27 @@ svg, img, video, canvas {
         renderMeals();
         return;
       }
+      const { irDateStr, irHm } = getFormattedDualClocks();
       const day = getCurrentDayData();
-      day.meals[mealKey].time = parsed;
+      const md = day.meals[mealKey];
+      md.time = parsed;
+      md.manualTimeLock = true;
+
+      if (day.date === irDateStr) {
+        const [curH, curM] = irHm.split(':').map(Number);
+        const [mh, mm] = parsed.split(':').map(Number);
+        const elapsedMin = (curH * 60 + curM) - (mh * 60 + mm);
+        md.mealStartUtcMs = Date.now() - Math.max(0, elapsedMin) * 60000;
+        md.postBgManualLock = false;
+        md.postBg = '';
+        if (elapsedMin >= 120) {
+          autoBackfillPostMealBgFromDexcom();
+        }
+      }
       touchDayTimestamp(day);
       renderMeals();
       updateTopSteadyStateDashboard();
+      renderFoodImpactTab();
       scheduleAutoSync(`用餐时间 ${parsed}`);
       showToast(tMsg('toastSaved'));
     }
@@ -4773,10 +4894,20 @@ svg, img, video, canvas {
     function setMealTimeNow(mealKey) {
       const { irHm } = getFormattedDualClocks();
       const day = getCurrentDayData();
-      day.meals[mealKey].time = irHm;
+      const md = day.meals[mealKey];
+      md.time = irHm;
+      md.mealStartUtcMs = Date.now();
+      md.manualTimeLock = false;
+      md.postBgManualLock = false;
+      // 设为当前时间代表现在刚开始用餐，餐后2小时尚未到来，清空任何旧的餐后血糖并同步最新餐前血糖
+      md.postBg = '';
+      if (serverConfig.autoFillBgOnMeal && liveDexcomState.bg) {
+        md.preBg = liveDexcomState.bg;
+      }
       touchDayTimestamp(day);
       renderMeals();
       updateTopSteadyStateDashboard();
+      renderFoodImpactTab();
       scheduleAutoSync(`用餐时间设为当前 ${irHm}`);
       showToast(tMsg('toastSaved'));
     }
