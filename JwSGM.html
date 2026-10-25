@@ -1029,13 +1029,13 @@ svg, img, video, canvas {
               </select>
               <select id="foodChartMealSelect" onchange="renderFoodFluctuationChart()" class="text-xs font-semibold bg-white border border-slate-200 text-slate-700 rounded-xl px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 <option value="all" id="optChartMealAll">🍽️ 全部餐次节点</option>
-                <option value="pre_breakfast">1. 🥚 早前零食</option>
-                <option value="breakfast">2. 🌅 早餐</option>
-                <option value="breakfast_extra">3. ➕ 早后额外</option>
-                <option value="lunch">4. ☀️ 午餐</option>
-                <option value="lunch_extra">5. ➕ 午后额外</option>
-                <option value="dinner">6. 🌙 晚餐</option>
-                <option value="dinner_extra">7. ➕ 晚后额外</option>
+                <option value="pre_breakfast" id="optChartMeal0">1. 🥚 早前零食</option>
+                <option value="breakfast" id="optChartMeal1">2. 🌅 早餐</option>
+                <option value="breakfast_extra" id="optChartMeal2">3. ➕ 早后额外</option>
+                <option value="lunch" id="optChartMeal3">4. ☀️ 午餐</option>
+                <option value="lunch_extra" id="optChartMeal4">5. ➕ 午后额外</option>
+                <option value="dinner" id="optChartMeal5">6. 🌙 晚餐</option>
+                <option value="dinner_extra" id="optChartMeal6">7. ➕ 晚后额外</option>
               </select>
               <select id="foodChartSpecificSelect" onchange="renderFoodFluctuationChart()" class="text-xs font-semibold bg-white border border-slate-200 text-slate-700 rounded-xl px-2.5 py-1.5 max-w-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 <option value="all">🍱 当前分类下全部食物</option>
@@ -1319,18 +1319,18 @@ svg, img, video, canvas {
             </select>
             <select id="annualMonthSelect" onchange="renderAnnualReportTab()" class="text-xs font-bold bg-white border border-slate-200 text-slate-700 rounded-xl px-3 py-1.5">
               <option value="all" id="optAnnualAllMonths">🗓️ 全年 1–12月汇总</option>
-              <option value="01">01月 (Jan)</option>
-              <option value="02">02月 (Feb)</option>
-              <option value="03">03月 (Mar)</option>
-              <option value="04">04月 (Apr)</option>
-              <option value="05">05月 (May)</option>
-              <option value="06">06月 (Jun)</option>
-              <option value="07">07月 (Jul)</option>
-              <option value="08">08月 (Aug)</option>
-              <option value="09">09月 (Sep)</option>
-              <option value="10">10月 (Oct)</option>
-              <option value="11">11月 (Nov)</option>
-              <option value="12">12月 (Dec)</option>
+              <option value="01" id="optAnnM01">01月 (Jan)</option>
+              <option value="02" id="optAnnM02">02月 (Feb)</option>
+              <option value="03" id="optAnnM03">03月 (Mar)</option>
+              <option value="04" id="optAnnM04">04月 (Apr)</option>
+              <option value="05" id="optAnnM05">05月 (May)</option>
+              <option value="06" id="optAnnM06">06月 (Jun)</option>
+              <option value="07" id="optAnnM07">07月 (Jul)</option>
+              <option value="08" id="optAnnM08">08月 (Aug)</option>
+              <option value="09" id="optAnnM09">09月 (Sep)</option>
+              <option value="10" id="optAnnM10">10月 (Oct)</option>
+              <option value="11" id="optAnnM11">11月 (Nov)</option>
+              <option value="12" id="optAnnM12">12月 (Dec)</option>
             </select>
             <button onclick="copyAllHistoryReportText()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition flex items-center gap-1">
               <span>📋</span> <span id="uiBtnCopyAllHist">复制全部历史报告</span>
@@ -1389,13 +1389,13 @@ svg, img, video, canvas {
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <select id="annualFoodCatSelect" onchange="renderAnnualFoodChart()" class="text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-xl px-3 py-1.5">
-              <option value="all">🗂️ 全部食物类型 (All Categories)</option>
-              <option value="CAT_GOOD">🥗 优选护胃稳糖类</option>
-              <option value="CAT_PROTEIN">🥩 优质蛋白类</option>
-              <option value="CAT_CARB">🌾 温和慢碳主食</option>
-              <option value="CAT_NUTS">🥜 坚果与健康种子</option>
-              <option value="CAT_DRINK">☕ 日常饮品</option>
-              <option value="CAT_SNACK">🍪 休闲零食与甜品</option>
+              <option value="all" id="optAnnFoodCatAll">🗂️ 全部食物分类</option>
+              <option value="CAT_GOOD" id="optAnnFoodCatGood">🥗 优选护胃稳糖类</option>
+              <option value="CAT_PROTEIN" id="optAnnFoodCatProt">🥩 优质蛋白类</option>
+              <option value="CAT_CARB" id="optAnnFoodCatCarb">🌾 温和慢碳主食</option>
+              <option value="CAT_NUTS" id="optAnnFoodCatNuts">🥜 坚果与健康种子</option>
+              <option value="CAT_DRINK" id="optAnnFoodCatDrink">☕ 日常饮品</option>
+              <option value="CAT_SNACK" id="optAnnFoodCatSnack">🍪 休闲零食与甜品</option>
             </select>
           </div>
         </div>
@@ -1534,7 +1534,7 @@ svg, img, video, canvas {
       <div class="flex items-center justify-between pb-3 border-b border-slate-100">
         <div class="flex items-center gap-2">
           <span class="text-xl">⚙️</span>
-          <h3 class="text-base font-bold text-slate-800">系统连接与自动化设置</h3>
+          <h3 id="uiCfgModalTitle" class="text-base font-bold text-slate-800">系统连接与自动化设置</h3>
         </div>
         <button onclick="closeServerModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-700">✕</button>
       </div>
@@ -1543,29 +1543,29 @@ svg, img, video, canvas {
         <!-- 1. Cloud Gateway & Backup -->
         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <label class="font-bold text-slate-800 text-sm">1. 云端安全网关与本地备份</label>
+            <label id="uiCfgSec1Title" class="font-bold text-slate-800 text-sm">1. 云端安全网关与本地备份</label>
             <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-bold cursor-pointer">
               <input type="checkbox" id="cfgAutoCloudSync" checked class="rounded text-emerald-600" />
-              <span>⚡ 实时自动云端同步</span>
+              <span id="uiCfgAutoSyncChk">⚡ 实时自动云端同步</span>
             </label>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <div class="sm:col-span-2">
-              <label class="text-[11px] font-bold text-slate-600 block mb-1">专属 Cloudflare Worker 加密网关网址 (已内置存储/Dexcom/发信/翻译):</label>
+              <label id="uiCfgWorkerUrlLabel" class="text-[11px] font-bold text-slate-600 block mb-1">专属 Cloudflare Worker 加密网关网址 (已内置存储/Dexcom/发信/翻译):</label>
               <input type="url" id="cfgDexcomBridgeUrl" value="https://late-field-eace.miyubear0611.workers.dev/" placeholder="https://late-field-eace.miyubear0611.workers.dev/" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-mono text-xs" />
             </div>
             <div>
-              <label class="text-[11px] font-bold text-emerald-900 block mb-1">🔐 安全口令 (PIN 码 / X-Auth-Token):</label>
+              <label id="uiCfgPinLabel" class="text-[11px] font-bold text-emerald-900 block mb-1">🔐 安全口令 (PIN 码 / X-Auth-Token):</label>
               <input type="password" id="cfgWorkerAuthToken" value="" placeholder="首次使用请输入 PIN / 口令" class="w-full px-3 py-2 rounded-xl border border-emerald-400 bg-emerald-50/40 font-mono font-bold text-emerald-950 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" />
             </div>
           </div>
-          <p class="text-[11px] text-slate-500 leading-relaxed">🛡️ <b>零裸奔安全防护：</b>前端请求 Worker 时自动在请求头携带 <code>X-Auth-Token</code> 安全口令，Worker 校验通过才允许读写健康数据与触发邮件。</p>
+          <p id="uiCfgSec1Desc" class="text-[11px] text-slate-500 leading-relaxed">🛡️ <b>零裸奔安全防护：</b>前端请求 Worker 时自动在请求头携带 <code>X-Auth-Token</code> 安全口令，Worker 校验通过才允许读写健康数据与触发邮件。</p>
 
           <div class="flex flex-wrap gap-2 pt-1">
-            <button onclick="downloadFullJsonBackup()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-semibold transition">💾 导出全量 JSON 备份 (.json)</button>
+            <button onclick="downloadFullJsonBackup()" id="uiCfgExportJsonBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-semibold transition">💾 导出全量 JSON 备份 (.json)</button>
             <label class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold cursor-pointer transition">
-              📂 导入本地备份 (.json)
+              <span id="uiCfgImportJsonBtn">📂 导入本地备份 (.json)</span>
               <input type="file" accept=".json" onchange="importFullJsonBackup(event)" class="hidden" />
             </label>
           </div>
@@ -1575,41 +1575,41 @@ svg, img, video, canvas {
         <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <label class="font-bold text-emerald-950 text-sm block">2. Dexcom 实时血糖与自动回填设置</label>
-              <span class="text-[11px] text-emerald-800">账号已安全托管于云端网关；仅在未来更换新账号或改密码时需在下方选填覆盖</span>
+              <label id="uiCfgSec2Title" class="font-bold text-emerald-950 text-sm block">2. Dexcom 实时血糖与自动回填设置</label>
+              <span id="uiCfgSec2Sub" class="text-[11px] text-emerald-800">账号已安全托管于云端网关；仅在未来更换新账号或改密码时需在下方选填覆盖</span>
             </div>
-            <button type="button" onclick="testDexcomConnectionNow()" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition">
+            <button type="button" onclick="testDexcomConnectionNow()" id="uiCfgTestDexBtn" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition">
               ⚡ 测试并拉取血糖
             </button>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <div>
-              <label class="text-[11px] font-bold text-emerald-900 block mb-1">服务器区域:</label>
+              <label id="uiCfgDexRegionLabel" class="text-[11px] font-bold text-emerald-900 block mb-1">服务器区域:</label>
               <select id="cfgDexcomRegion" class="w-full px-2.5 py-2 rounded-xl border border-emerald-300 bg-white font-semibold text-xs">
-                <option value="ous" selected>🌏 国际服 (OUS)</option>
-                <option value="us">🇺🇸 美国服 (US)</option>
-                <option value="jp">🇯🇵 亚太服 (JP)</option>
+                <option value="ous" id="optDexRegionOus" selected>🌏 国际服 (OUS)</option>
+                <option value="us" id="optDexRegionUs">🇺🇸 美国服 (US)</option>
+                <option value="jp" id="optDexRegionJp">🇯🇵 亚太服 (JP)</option>
               </select>
             </div>
             <div>
-              <label class="text-[11px] font-bold text-emerald-900 block mb-1">更换账号 (选填):</label>
+              <label id="uiCfgDexUserLabel" class="text-[11px] font-bold text-emerald-900 block mb-1">更换账号 (选填):</label>
               <input type="text" id="cfgDexcomUser" placeholder="默认使用云端内置账号" class="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
             </div>
             <div>
-              <label class="text-[11px] font-bold text-emerald-900 block mb-1">更换密码 (选填):</label>
+              <label id="uiCfgDexPassLabel" class="text-[11px] font-bold text-emerald-900 block mb-1">更换密码 (选填):</label>
               <input type="password" id="cfgDexcomPass" placeholder="默认使用云端内置密码" class="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-white font-mono text-xs" />
             </div>
           </div>
 
           <label class="flex items-center gap-2 cursor-pointer pt-0.5">
             <input type="checkbox" id="cfgAutoFillBgOnMeal" checked class="w-4 h-4 rounded text-emerald-600" />
-            <span class="font-bold text-emerald-900 text-xs">🩸 开启餐前血糖自动填入 & 餐后 2 小时血糖从 Dexcom 自动回填</span>
+            <span id="uiCfgAutoFillBgChk" class="font-bold text-emerald-900 text-xs">🩸 开启餐前血糖自动填入 & 餐后 2 小时血糖从 Dexcom 自动回填</span>
           </label>
 
           <!-- Real-Time Diagnostic Console -->
           <div id="dexcomDiagBox" class="hidden p-3 rounded-xl bg-slate-900 text-slate-200 font-mono text-[11px] space-y-1 max-h-40 overflow-y-auto custom-scroll">
-            <div class="text-emerald-400 font-bold">🔍 实时连接状态:</div>
+            <div class="text-emerald-400 font-bold">🔍 Status:</div>
             <div id="dexcomDiagLogs" class="space-y-1"></div>
           </div>
         </div>
@@ -1618,36 +1618,35 @@ svg, img, video, canvas {
         <div class="bg-purple-50/70 p-4 rounded-xl border border-purple-200 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <label class="font-bold text-purple-950 text-sm block">3. Gemini Pro / Ultra 医疗级四语翻译与发信测试</label>
-              <span class="text-[11px] text-slate-600">默认调用旗舰高精度推理模型 <b>gemini-2.5-pro</b>（精准识别波斯菜名、韩餐与医学术语，绝不生硬机翻）</span>
+              <label id="uiCfgSec3Title" class="font-bold text-purple-950 text-sm block">3. Gemini Pro / Ultra 医疗级四语翻译与发信测试</label>
+              <span id="uiCfgSec3Sub" class="text-[11px] text-slate-600">默认调用旗舰高精度推理模型 <b>gemini-2.5-pro</b>（精准识别波斯菜名、韩餐与医学术语，绝不生硬机翻）</span>
             </div>
             <div class="flex flex-wrap gap-2">
-              <button type="button" onclick="testEmailJsNow()" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-sm transition">📨 测试云端发信</button>
-              <button type="button" onclick="testGeminiAndTranslateExisting()" class="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-sm transition">🌐 测试并刷新四语翻译</button>
+              <button type="button" onclick="testEmailJsNow()" id="uiCfgTestMailBtn" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-sm transition">📨 测试云端发信</button>
+              <button type="button" onclick="testGeminiAndTranslateExisting()" id="uiCfgTestTransBtn" class="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-sm transition">🌐 测试并刷新四语翻译</button>
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <div>
-              <label class="text-[11px] font-bold text-purple-950 block mb-1">👑 翻译大模型档位:</label>
+              <label id="uiCfgModelLabel" class="text-[11px] font-bold text-purple-950 block mb-1">👑 翻译大模型档位:</label>
               <select id="cfgGeminiModel" class="w-full px-2.5 py-2 rounded-xl border border-purple-200 bg-white font-bold text-xs text-purple-950">
-                <option value="gemini-2.5-pro" selected>👑 Gemini 2.5 Pro (最高精度旗舰模型)</option>
-                <option value="gemini-3-pro-preview">🚀 Gemini 3 Pro Preview (新一代旗舰)</option>
-                <option value="gemini-2.5-flash">⚡ Gemini 2.5 Flash (极速轻量)</option>
+                <option value="gemini-2.5-pro" selected>👑 Gemini 2.5 Pro</option>
+                <option value="gemini-3-pro-preview">🚀 Gemini 3 Pro Preview</option>
+                <option value="gemini-2.5-flash">⚡ Gemini 2.5 Flash</option>
               </select>
             </div>
             <div class="sm:col-span-2">
-              <label class="text-[11px] font-bold text-purple-950 block mb-1">🔑 Google AI Studio (Gemini) API Key (可在 Worker 环境变量配置，或在此填入):</label>
-              <input type="password" id="cfgGeminiApiKey" placeholder="AQ... 或 AIzaSy... (若已在 Worker 设置 GEMINI_API_KEY 可留空)" autocomplete="off" class="w-full px-3 py-2 rounded-xl border border-purple-200 bg-white font-mono text-xs" />
+              <label id="uiCfgGeminiKeyLabel" class="text-[11px] font-bold text-purple-950 block mb-1">🔑 Google AI Studio (Gemini) API Key (选填):</label>
+              <input type="password" id="cfgGeminiApiKey" placeholder="AIzaSy... (Optional if set in Worker)" autocomplete="off" class="w-full px-3 py-2 rounded-xl border border-purple-200 bg-white font-mono text-xs" />
             </div>
           </div>
-          <p class="text-[11px] text-slate-600 leading-relaxed">💡 <b>如何获取 Key：</b>使用您购买了会员的 Google 账号登录 <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-emerald-700 underline font-bold">aistudio.google.com/app/apikey</a> 点击 Create API Key，粘贴到上方或 Worker 的 <code>GEMINI_API_KEY</code> 变量中，即可锁定最高精度 Pro/Ultra 级翻译。</p>
         </div>
       </div>
 
       <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
-        <button onclick="closeServerModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">关闭</button>
-        <button onclick="saveServerConfig()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">保存配置</button>
+        <button onclick="closeServerModal()" id="uiCfgCloseBtn" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">关闭</button>
+        <button onclick="saveServerConfig()" id="uiCfgSaveBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">保存配置</button>
       </div>
     </div>
   </div>
@@ -1966,7 +1965,101 @@ svg, img, video, canvas {
         foodChartSub: '直观展示每次进食该类食物时的【餐前血糖 (蓝线) ➔ 餐后2h血糖 (红线)】波动轨迹及六大食物类别斜率对比',
         optChartModeTimeline: '📈 每次进食餐前 vs 餐后2h波动折线图',
         optChartModeCatCompare: '📊 六大食物类型平均升糖轨迹对比图 (0h➔2h)',
-        optChartMealAll: '🍽️ 全部餐次节点'
+        optChartMealAll: '🍽️ 全部餐次节点',
+        foodChartPointHint: '💡 点击折线图上的任意数据圆点，即可在此查看当餐日期、具体食物组合、胰岛素剂量与餐前→餐后2h血糖详情。',
+        svgPreBgLegend: '餐前血糖 (Pre-BG)',
+        svgPostBgLegend: '餐后2h血糖 (2h Post-BG)',
+        svgDeltaNoteLegend: '数值标注 = 单餐升糖幅度 (ΔBG)',
+        svgCatCompareEmpty: '📊 暂无足够餐次数据绘制六大食物分类升糖轨迹对比图。',
+        svgAxis0h: '🩸 餐前 (0h Pre-Meal)',
+        svgAxis1h: '⏱️ 餐后1h轨迹 (1h Est.)',
+        svgAxis2h: '🕒 餐后2小时 (2h Post-Meal)',
+        lblPreMeal: '餐前',
+        lblPost2h: '餐后2h',
+        lblDeltaSpike: '升糖幅度:',
+        lblNoShot0U: '⭕ 未打针 (0U)',
+        lblMealFoods: '当餐食物:',
+        optAnnualAllYears: '📅 全部年份 (All Years)',
+        yearSuffix: '年',
+        optAnnualAllMonths: '🗓️ 全年 1–12月汇总',
+        monthsList: ['01月 (Jan)', '02月 (Feb)', '03月 (Mar)', '04月 (Apr)', '05月 (May)', '06月 (Jun)', '07月 (Jul)', '08月 (Aug)', '09月 (Sep)', '10月 (Oct)', '11月 (Nov)', '12月 (Dec)'],
+        annKpi1Title: '📅 累计记录天数 / 测糖总次数',
+        annDaysUnit: '天',
+        annTimesUnit: '次',
+        annKpi1Sub: '涵盖完整双时区打卡与血糖监测',
+        annKpi2Title: '🎯 80–160 稳态达标率 / 平均血糖',
+        annMeanLabel: '均值',
+        annRangeLabel: '波动范围:',
+        annKpi3Title: '⚠️ 低血糖 (<80) / 高血糖 (>180)',
+        annKpi3Sub: '供医生评估基础率与餐前修正剂量',
+        annKpi4Title: '💉 日均胰岛素 & 💊 法莫替丁0粒率',
+        annTaperLabel: '断药',
+        annZeroPillDaysLabel: '0粒无药天数:',
+        annDailyPointHint: '💡 点击上方折线图中的任意日期节点，即可查看该日的完整血糖范围、胰岛素总量与达标率详情。',
+        annDailyChartEmpty: '📈 当前所选年份/月份暂无已录入血糖的日期节点。',
+        annMonthTableEmpty: '暂无对应月份的历史记录',
+        thAnnMonth: '月份 (YYYY-MM)',
+        thAnnDays: '记录天数',
+        thAnnTir: '80–160 稳态达标率',
+        thAnnFasting: '平均空腹血糖',
+        thAnnPrePost: '平均餐前 → 餐后2h',
+        thAnnHypoHyper: '低血糖(<80) / 高血糖(>180)',
+        thAnnIns: '日均胰岛素 (黄瓶/绿瓶)',
+        thAnnFamo: '法莫替丁0粒断药率',
+        lblDayTir: '80–160 稳态率:',
+        lblFastingShort: '空腹:',
+        lblPreAvgShort: '餐前均值:',
+        lblPostAvgShort: '餐后2h均值:',
+        lblDayExtrema: '全天极值:',
+        lblInsulinShort: '胰岛素:',
+        lblFamoShort: '法莫替丁:',
+        lblPillUnit: '粒',
+        emailLangModeLabel: '🌐 邮件语言投递方式：',
+        optMailSplit: '🎯 分邮箱定制：miyubear 收中文版 / arsanbear 收英文+波斯语版 (推荐)',
+        optMailAll: '🌍 全语言合一：一封邮件同时包含 中文 + 波斯语 + 英文 + 韩语 四语全文',
+        docSec1Title: '【一、医生临床总览摘要 (Clinical Executive Summary)】',
+        docLoggedDays: '累计记录天数',
+        docTirRate: '80–160 mg/dL 稳态达标率 (TIR)',
+        docMeanBg: '全周期平均血糖',
+        docRangeWord: '范围',
+        docFastingPrePost: '空腹 / 餐前 / 餐后2h 平均血糖',
+        docHypoHyper: '低血糖 (<80) 与 高血糖 (>180) 次数',
+        docAvgDailyIns: '日均胰岛素剂量',
+        docFamoZeroRate: '法莫替丁 0 粒无药天数占比',
+        docSec2Title: '【二、食物升糖影响排行 (餐前 ➔ 餐后2h ΔBG)】',
+        docSec3Title: '【三、逐日完整临床执行明细】',
+        docSuppPrefix: '💊 保健品打卡',
+        cfgModalTitle: '系统连接与自动化设置',
+        cfgSec1Title: '1. 云端安全网关与本地备份',
+        cfgAutoSyncChk: '⚡ 实时自动云端同步',
+        cfgWorkerUrlLabel: '专属 Cloudflare Worker 加密网关网址:',
+        cfgPinLabel: '🔐 安全口令 (PIN 码 / X-Auth-Token):',
+        cfgPinPlaceholder: '首次使用请输入 PIN / 口令',
+        cfgSec1Desc: '🛡️ <b>零裸奔安全防护：</b>前端请求自动携带 <code>X-Auth-Token</code> 安全口令，校验通过才允许读写健康数据与发送邮件。',
+        cfgExportJsonBtn: '💾 导出全量 JSON 备份 (.json)',
+        cfgImportJsonBtn: '📂 导入本地备份 (.json)',
+        cfgSec2Title: '2. Dexcom 实时血糖与自动回填设置',
+        cfgSec2Sub: '账号已安全托管于云端网关；仅在未来更换新账号或改密码时需在下方选填覆盖',
+        cfgTestDexBtn: '⚡ 测试并拉取血糖',
+        cfgDexRegionLabel: '服务器区域:',
+        optDexRegionOus: '🌏 国际服 (OUS)',
+        optDexRegionUs: '🇺🇸 美国服 (US)',
+        optDexRegionJp: '🇯🇵 亚太服 (JP)',
+        cfgDexUserLabel: '更换账号 (选填):',
+        cfgDexPassLabel: '更换密码 (选填):',
+        cfgAutoFillBgChk: '🩸 开启餐前血糖自动填入 & 餐后 2 小时血糖从 Dexcom 自动回填',
+        cfgSec3Title: '3. Gemini Pro / Ultra 医疗级四语翻译与发信测试',
+        cfgSec3Sub: '默认调用旗舰高精度推理模型 <b>gemini-2.5-pro</b>（精准识别波斯菜名、韩餐与医学术语）',
+        cfgTestMailBtn: '📨 测试云端发信',
+        cfgTestTransBtn: '🌐 测试并刷新四语翻译',
+        cfgModelLabel: '👑 翻译大模型档位:',
+        cfgGeminiKeyLabel: '🔑 Google AI Studio (Gemini) API Key (选填):',
+        cfgCloseBtn: '关闭',
+        cfgSaveBtn: '保存配置',
+        toastCopyOk: '📋 已复制到剪贴板！',
+        toastCsvOk: '📥 CSV (Excel) 导出成功！',
+        toastEmailSent: '📨 报告已通过加密云端发送至双邮箱！',
+        toastAllHistSent: '🏥 全部历史临床报告已发送至双邮箱！'
       },
       ko: {
         appTitle: '혈당 건강 체크인 시스템',
@@ -2246,7 +2339,101 @@ svg, img, video, canvas {
         foodChartSub: '섭취 시마다 [식전 혈당(파란선) ➔ 식후 2h 혈당(빨간선)] 변동 궤적 및 6대 식품군 평균 상승 기울기 비교',
         optChartModeTimeline: '📈 섭취별 식전 vs 식후 2h 혈당 변동 그래프',
         optChartModeCatCompare: '📊 6대 식품군 평균 혈당 상승 궤적 비교 (0h➔2h)',
-        optChartMealAll: '🍽️ 전체 식사 노드'
+        optChartMealAll: '🍽️ 전체 식사 노드',
+        foodChartPointHint: '💡 그래프의 데이터 점을 클릭하면 해당 식사의 날짜, 섭취 음식 조합, 인슐린 용량 및 식전→식후 2h 혈당 상세 정보를 확인할 수 있습니다.',
+        svgPreBgLegend: '식전 혈당 (Pre-BG)',
+        svgPostBgLegend: '식후 2h 혈당 (2h Post-BG)',
+        svgDeltaNoteLegend: '수치 표시 = 식사별 혈당 상승폭 (ΔBG)',
+        svgCatCompareEmpty: '📊 6대 식품군 혈당 궤적 비교 그래프를 그리기 위한 식사 데이터가 아직 부족합니다.',
+        svgAxis0h: '🩸 식전 (0h Pre-Meal)',
+        svgAxis1h: '⏱️ 식후 1h 궤적 (1h Est.)',
+        svgAxis2h: '🕒 식후 2시간 (2h Post-Meal)',
+        lblPreMeal: '식전',
+        lblPost2h: '식후 2h',
+        lblDeltaSpike: '혈당 변화폭:',
+        lblNoShot0U: '⭕ 주사 안 맞음 (0U)',
+        lblMealFoods: '섭취 음식:',
+        optAnnualAllYears: '📅 전체 연도 (All Years)',
+        yearSuffix: '년',
+        optAnnualAllMonths: '🗓️ 연간 1~12월 전체 요약',
+        monthsList: ['01월 (Jan)', '02월 (Feb)', '03월 (Mar)', '04월 (Apr)', '05월 (May)', '06월 (Jun)', '07월 (Jul)', '08월 (Aug)', '09월 (Sep)', '10월 (Oct)', '11월 (Nov)', '12월 (Dec)'],
+        annKpi1Title: '📅 누적 기록 일수 / 총 혈당 측정 횟수',
+        annDaysUnit: '일',
+        annTimesUnit: '회',
+        annKpi1Sub: '이중 시간대 체크인 및 혈당 모니터링 포함',
+        annKpi2Title: '🎯 80–160 목표 유지율 / 평균 혈당',
+        annMeanLabel: '평균',
+        annRangeLabel: '변동 범위:',
+        annKpi3Title: '⚠️ 저혈당 (<80) / 고혈당 (>180)',
+        annKpi3Sub: '의료진 기초율 및 식전 교정 용량 평가용',
+        annKpi4Title: '💉 일평균 인슐린 & 💊 파모티딘 단약률',
+        annTaperLabel: '단약',
+        annZeroPillDaysLabel: '0정 미복용 일수:',
+        annDailyPointHint: '💡 위 그래프에서 날짜 포인트를 클릭하면 해당 날짜의 혈당 범위, 총 인슐린 및 목표 달성률 상세 내역을 볼 수 있습니다.',
+        annDailyChartEmpty: '📈 선택한 연도/월에 기록된 혈당 데이터가 없습니다.',
+        annMonthTableEmpty: '해당 월의 과거 기록이 없습니다',
+        thAnnMonth: '월별 (YYYY-MM)',
+        thAnnDays: '기록 일수',
+        thAnnTir: '80–160 목표 유지율',
+        thAnnFasting: '평균 공복 혈당',
+        thAnnPrePost: '평균 식전 → 식후 2h',
+        thAnnHypoHyper: '저혈당(<80) / 고혈당(>180)',
+        thAnnIns: '일평균 인슐린 (노란병/초록병)',
+        thAnnFamo: '파모티딘 0정 단약률',
+        lblDayTir: '80–160 유지율:',
+        lblFastingShort: '공복:',
+        lblPreAvgShort: '식전 평균:',
+        lblPostAvgShort: '식후 2h 평균:',
+        lblDayExtrema: '당일 최저~최고:',
+        lblInsulinShort: '인슐린:',
+        lblFamoShort: '파모티딘:',
+        lblPillUnit: '정',
+        emailLangModeLabel: '🌐 이메일 언어 발송 방식:',
+        optMailSplit: '🎯 수신자별 맞춤: miyubear 중국어판 / arsanbear 영어+페르시아어판 (권장)',
+        optMailAll: '🌍 4개 국어 통합본: 한 이메일에 중국어 + 페르시아어 + 영어 + 한국어 전체 포함',
+        docSec1Title: '【I. 의료진 임상 요약 (Clinical Executive Summary)】',
+        docLoggedDays: '누적 기록 일수',
+        docTirRate: '80–160 mg/dL 목표 유지율 (TIR)',
+        docMeanBg: '전체 기간 평균 혈당',
+        docRangeWord: '범위',
+        docFastingPrePost: '공복 / 식전 / 식후 2h 평균 혈당',
+        docHypoHyper: '저혈당 (<80) 및 고혈당 (>180) 횟수',
+        docAvgDailyIns: '일평균 인슐린 투여량',
+        docFamoZeroRate: '파모티딘 0정 미복용 일수 비율',
+        docSec2Title: '【II. 음식별 혈당 상승 영향 순위 (식전 ➔ 식후 2h ΔBG)】',
+        docSec3Title: '【III. 일별 전체 임상 실행 상세 내역】',
+        docSuppPrefix: '💊 영양제 복용',
+        cfgModalTitle: '시스템 연결 및 자동화 설정',
+        cfgSec1Title: '1. 클라우드 보안 게이트웨이 및 로컬 백업',
+        cfgAutoSyncChk: '⚡ 실시간 자동 클라우드 동기화',
+        cfgWorkerUrlLabel: '전용 Cloudflare Worker 보안 게이트웨이 주소:',
+        cfgPinLabel: '🔐 보안 PIN 코드 (X-Auth-Token):',
+        cfgPinPlaceholder: '최초 사용 시 PIN 코드를 입력하세요',
+        cfgSec1Desc: '🛡️ <b>보안 보호:</b> 모든 요청 헤더에 <code>X-Auth-Token</code> 보안 PIN을 포함하여 인증된 기기만 데이터를 읽고 쓸 수 있습니다.',
+        cfgExportJsonBtn: '💾 전체 JSON 백업 내보내기 (.json)',
+        cfgImportJsonBtn: '📂 로컬 백업 불러오기 (.json)',
+        cfgSec2Title: '2. Dexcom 실시간 혈당 및 자동 입력 설정',
+        cfgSec2Sub: '계정은 클라우드 게이트웨이에 안전하게 보관되어 있습니다. 계정 변경 시에만 아래에 입력하세요.',
+        cfgTestDexBtn: '⚡ 연결 테스트 및 혈당 불러오기',
+        cfgDexRegionLabel: '서버 지역:',
+        optDexRegionOus: '🌏 국제 서버 (OUS)',
+        optDexRegionUs: '🇺🇸 미국 서버 (US)',
+        optDexRegionJp: '🇯🇵 아시아·태평양 (JP)',
+        cfgDexUserLabel: '계정 변경 (선택):',
+        cfgDexPassLabel: '비밀번호 변경 (선택):',
+        cfgAutoFillBgChk: '🩸 식전 혈당 자동 입력 & 식후 2시간 혈당 Dexcom 자동 백필 켜기',
+        cfgSec3Title: '3. Gemini Pro / Ultra 의료급 4개 국어 번역 및 이메일 테스트',
+        cfgSec3Sub: '기본으로 고정밀 플래그십 모델 <b>gemini-2.5-pro</b>를 호출합니다',
+        cfgTestMailBtn: '📨 클라우드 이메일 테스트',
+        cfgTestTransBtn: '🌐 4개 국어 번역 테스트 및 새로고침',
+        cfgModelLabel: '👑 번역 AI 모델 등급:',
+        cfgGeminiKeyLabel: '🔑 Google AI Studio (Gemini) API Key (선택):',
+        cfgCloseBtn: '닫기',
+        cfgSaveBtn: '설정 저장',
+        toastCopyOk: '📋 클립보드에 복사되었습니다!',
+        toastCsvOk: '📥 CSV (Excel) 내보내기 완료!',
+        toastEmailSent: '📨 보고서가 클라우드를 통해 두 이메일로 발송되었습니다!',
+        toastAllHistSent: '🏥 전체 과거 임상 보고서가 두 이메일로 발송되었습니다!'
       },
       fa: {
         appTitle: 'سیستم ثبت سلامت قند خون',
@@ -2526,7 +2713,101 @@ svg, img, video, canvas {
         foodChartSub: 'نمایش دقیق تغییر قند قبل از غذا (خط آبی) تا ۲ ساعت بعد از غذا (خط قرمز) و مقایسه ۶ گروه غذایی',
         optChartModeTimeline: '📈 نمودار نوسان قند در هر وعده (قبل ← ۲ ساعت بعد)',
         optChartModeCatCompare: '📊 مقایسه شیب افزایش قند در ۶ گروه غذایی (0h➔2h)',
-        optChartMealAll: '🍽️ همه وعده‌های غذایی'
+        optChartMealAll: '🍽️ همه وعده‌های غذایی',
+        foodChartPointHint: '💡 روی هر نقطه از نمودار کلیک کنید تا تاریخ، ترکیب غذاها، دوز انسولین و قند قبل و ۲ ساعت بعد آن وعده را ببینید.',
+        svgPreBgLegend: 'قند قبل غذا (Pre-BG)',
+        svgPostBgLegend: 'قند ۲ ساعت بعد (2h Post-BG)',
+        svgDeltaNoteLegend: 'عدد روی نمودار = میزان افزایش قند (ΔBG)',
+        svgCatCompareEmpty: '📊 هنوز داده کافی برای رسم نمودار مقایسه ۶ گروه غذایی ثبت نشده است.',
+        svgAxis0h: '🩸 قبل غذا (0h Pre-Meal)',
+        svgAxis1h: '⏱️ مسیر ۱ ساعت بعد (1h Est.)',
+        svgAxis2h: '🕒 ۲ ساعت بعد (2h Post-Meal)',
+        lblPreMeal: 'قبل غذا',
+        lblPost2h: '۲ ساعت بعد',
+        lblDeltaSpike: 'تغییر قند:',
+        lblNoShot0U: '⭕ بدون تزریق (0U)',
+        lblMealFoods: 'غذاهای این وعده:',
+        optAnnualAllYears: '📅 همه سال‌ها (All Years)',
+        yearSuffix: '',
+        optAnnualAllMonths: '🗓️ کل سال (ماه‌های ۱ تا ۱۲)',
+        monthsList: ['۰۱ - ژانویه (Jan)', '۰۲ - فوریه (Feb)', '۰۳ - مارس (Mar)', '۰۴ - آوریل (Apr)', '۰۵ - مه (May)', '۰۶ - ژوئن (Jun)', '۰۷ - ژوئیه (Jul)', '۰۸ - اوت (Aug)', '۰۹ - سپتامبر (Sep)', '۱۰ - اکتبر (Oct)', '۱۱ - نوامبر (Nov)', '۱۲ - دسامبر (Dec)'],
+        annKpi1Title: '📅 مجموع روزهای ثبت‌شده / دفعات تست قند',
+        annDaysUnit: 'روز',
+        annTimesUnit: 'بار',
+        annKpi1Sub: 'شامل ثبت کامل دو زمانه و پایش قند خون',
+        annKpi2Title: '🎯 درصد ثبات ۸۰–۱۶۰ / میانگین کل قند',
+        annMeanLabel: 'میانگین',
+        annRangeLabel: 'بازه نوسان:',
+        annKpi3Title: '⚠️ افت قند (<80) / قند بالا (>180)',
+        annKpi3Sub: 'جهت بررسی پزشک برای تنظیم انسولین پایه و غذایی',
+        annKpi4Title: '💉 میانگین انسولین روزانه و 💊 قطع فاموتیدین',
+        annTaperLabel: 'بدون دارو',
+        annZeroPillDaysLabel: 'روزهای بدون فاموتیدین:',
+        annDailyPointHint: '💡 روی هر تاریخ در نمودار بالا کلیک کنید تا جزئیات کامل قند خون، انسولین و درصد ثبات آن روز نمایش داده شود.',
+        annDailyChartEmpty: '📈 در سال/ماه انتخاب‌شده هنوز عدد قند خونی ثبت نشده است.',
+        annMonthTableEmpty: 'هیچ رکوردی برای این ماه یافت نشد',
+        thAnnMonth: 'ماه (YYYY-MM)',
+        thAnnDays: 'روزهای ثبت‌شده',
+        thAnnTir: 'درصد ثبات ۸۰–۱۶۰',
+        thAnnFasting: 'میانگین قند ناشتا',
+        thAnnPrePost: 'میانگین قبل ← ۲ ساعت بعد',
+        thAnnHypoHyper: 'افت قند(<80) / قند بالا(>180)',
+        thAnnIns: 'میانگین انسولین روزانه (زرد/سبز)',
+        thAnnFamo: 'درصد روزهای بدون فاموتیدین',
+        lblDayTir: 'ثبات ۸۰–۱۶۰:',
+        lblFastingShort: 'ناشتا:',
+        lblPreAvgShort: 'میانگین قبل غذا:',
+        lblPostAvgShort: 'میانگین ۲ ساعت بعد:',
+        lblDayExtrema: 'حداقل~حداکثر روز:',
+        lblInsulinShort: 'انسولین:',
+        lblFamoShort: 'فاموتیدین:',
+        lblPillUnit: 'عدد',
+        emailLangModeLabel: '🌐 حالت زبان ارسال ایمیل:',
+        optMailSplit: '🎯 اختصاصی هر ایمیل: نسخه چینی برای miyubear / نسخه انگلیسی+فارسی برای arsanbear (پیشنهادی)',
+        optMailAll: '🌍 چهار زبان در یک ایمیل: شامل متن کامل چینی + فارسی + انگلیسی + کره‌ای',
+        docSec1Title: '【I. خلاصه جامع بالینی ویژه پزشک (Clinical Executive Summary)】',
+        docLoggedDays: 'تعداد روزهای ثبت‌شده',
+        docTirRate: 'درصد ثبات قند در بازه ۸۰ تا ۱۶۰ (TIR)',
+        docMeanBg: 'میانگین کل قند خون',
+        docRangeWord: 'بازه',
+        docFastingPrePost: 'میانگین قند ناشتا / قبل غذا / ۲ ساعت بعد',
+        docHypoHyper: 'تعداد دفعات افت قند (<80) و قند بالا (>180)',
+        docAvgDailyIns: 'میانگین انسولین روزانه',
+        docFamoZeroRate: 'درصد روزهای بدون مصرف فاموتیدین (۰ عدد)',
+        docSec2Title: '【II. رتبه‌بندی تاثیر قند غذاها (قبل غذا ➔ ۲ ساعت بعد ΔBG)】',
+        docSec3Title: '【III. جزئیات کامل روزانه تمامی سوابق ثبت‌شده】',
+        docSuppPrefix: '💊 مکمل‌های مصرفی',
+        cfgModalTitle: 'تنظیمات اتصال سیستم و اتوماسیون ابری',
+        cfgSec1Title: '۱. درگاه امن ابری و پشتیبان‌گیری',
+        cfgAutoSyncChk: '⚡ همگام‌سازی خودکار ابری',
+        cfgWorkerUrlLabel: 'آدرس درگاه اختصاصی Cloudflare Worker:',
+        cfgPinLabel: '🔐 رمز امنیتی (PIN / X-Auth-Token):',
+        cfgPinPlaceholder: 'لطفاً رمز امنیتی (PIN) را وارد کنید',
+        cfgSec1Desc: '🛡️ <b>حفاظت امنیتی:</b> تمام درخواست‌ها با رمز امنیتی <code>X-Auth-Token</code> ارسال می‌شوند تا اطلاعات سلامت شما کاملاً محفوظ بماند.',
+        cfgExportJsonBtn: '💾 دانلود فایل پشتیبان (.json)',
+        cfgImportJsonBtn: '📂 بارگذاری فایل پشتیبان (.json)',
+        cfgSec2Title: '۲. تنظیمات قند لحظه‌ای Dexcom و ثبت خودکار',
+        cfgSec2Sub: 'حساب Dexcom در سرور ابری ذخیره شده است؛ فقط در صورت تغییر رمز در کادر زیر وارد کنید.',
+        cfgTestDexBtn: '⚡ تست اتصال و دریافت قند',
+        cfgDexRegionLabel: 'منطقه سرور:',
+        optDexRegionOus: '🌏 سرور بین‌المللی (OUS)',
+        optDexRegionUs: '🇺🇸 سرور آمریکا (US)',
+        optDexRegionJp: '🇯🇵 سرور آسیا و ژاپن (JP)',
+        cfgDexUserLabel: 'تغییر نام کاربری (اختیاری):',
+        cfgDexPassLabel: 'تغییر رمز عبور (اختیاری):',
+        cfgAutoFillBgChk: '🩸 فعال‌سازی درج خودکار قند قبل از غذا و قند ۲ ساعت بعد از Dexcom',
+        cfgSec3Title: '۳. ترجمه هوشمند ۴ زبانه Gemini Pro و تست ارسال ایمیل',
+        cfgSec3Sub: 'استفاده پیش‌فرض از مدل دقیق <b>gemini-2.5-pro</b> برای ترجمه دقیق غذاهای ایرانی و اصطلاحات پزشکی',
+        cfgTestMailBtn: '📨 تست ارسال ایمیل ابری',
+        cfgTestTransBtn: '🌐 تست و بروزرسانی ترجمه ۴ زبانه',
+        cfgModelLabel: '👑 مدل هوش مصنوعی مترجم:',
+        cfgGeminiKeyLabel: '🔑 کلید API جمینای (اختیاری):',
+        cfgCloseBtn: 'بستن',
+        cfgSaveBtn: 'ذخیره تنظیمات',
+        toastCopyOk: '📋 در حافظه کپی شد!',
+        toastCsvOk: '📥 فایل اکسل (CSV) با موفقیت دانلود شد!',
+        toastEmailSent: '📨 گزارش با موفقیت به ایمیل‌ها ارسال شد!',
+        toastAllHistSent: '🏥 گزارش جامع تمامی سوابق برای پزشک به ایمیل‌ها ارسال شد!'
       },
       en: {
         appTitle: 'BG Health Check-in System',
@@ -2806,7 +3087,101 @@ svg, img, video, canvas {
         foodChartSub: 'Visualizes [Pre-Meal BG (Blue) ➔ 2h Post-Meal BG (Red)] across meals & compares 6 food categories',
         optChartModeTimeline: '📈 Meal-by-Meal Pre vs 2h Post BG Line Chart',
         optChartModeCatCompare: '📊 6 Food Categories Avg Spike Trajectory (0h➔2h)',
-        optChartMealAll: '🍽️ All Meal Nodes'
+        optChartMealAll: '🍽️ All Meal Nodes',
+        foodChartPointHint: '💡 Click any data point on the line chart to inspect that meal's date, food combination, insulin dose & Pre→2h Post BG details.',
+        svgPreBgLegend: 'Pre-Meal BG',
+        svgPostBgLegend: '2h Post-Meal BG',
+        svgDeltaNoteLegend: 'Label = Meal Glycemic Spike (ΔBG)',
+        svgCatCompareEmpty: '📊 Not enough meal records yet to plot the 6-category glycemic trajectory comparison.',
+        svgAxis0h: '🩸 Pre-Meal (0h)',
+        svgAxis1h: '⏱️ 1h Trajectory (Est.)',
+        svgAxis2h: '🕒 2h Post-Meal (2h)',
+        lblPreMeal: 'Pre-Meal',
+        lblPost2h: '2h Post',
+        lblDeltaSpike: 'ΔBG Spike:',
+        lblNoShot0U: '⭕ No Shot (0U)',
+        lblMealFoods: 'Foods:',
+        optAnnualAllYears: '📅 All Years',
+        yearSuffix: '',
+        optAnnualAllMonths: '🗓️ All 12 Months Summary',
+        monthsList: ['01 - Jan', '02 - Feb', '03 - Mar', '04 - Apr', '05 - May', '06 - Jun', '07 - Jul', '08 - Aug', '09 - Sep', '10 - Oct', '11 - Nov', '12 - Dec'],
+        annKpi1Title: '📅 Logged Days / Total BG Checks',
+        annDaysUnit: 'days',
+        annTimesUnit: 'pts',
+        annKpi1Sub: 'Covers dual-timezone check-ins & BG monitoring',
+        annKpi2Title: '🎯 80–160 Target Rate / Mean BG',
+        annMeanLabel: 'Mean',
+        annRangeLabel: 'Range:',
+        annKpi3Title: '⚠️ Hypo (<80) / Hyper (>180)',
+        annKpi3Sub: 'For physician basal & pre-meal bolus evaluation',
+        annKpi4Title: '💉 Avg Daily Insulin & 💊 Famotidine 0-Pill %',
+        annTaperLabel: '0-Pill',
+        annZeroPillDaysLabel: '0-Pill Days:',
+        annDailyPointHint: '💡 Click any date node on the chart above to inspect that day's full BG range, total insulin & target rate.',
+        annDailyChartEmpty: '📈 No BG readings logged for the selected year/month yet.',
+        annMonthTableEmpty: 'No historical records for this month',
+        thAnnMonth: 'Month (YYYY-MM)',
+        thAnnDays: 'Logged Days',
+        thAnnTir: '80–160 Target Rate',
+        thAnnFasting: 'Avg Fasting BG',
+        thAnnPrePost: 'Avg Pre → 2h Post',
+        thAnnHypoHyper: 'Hypo(<80) / Hyper(>180)',
+        thAnnIns: 'Avg Daily Insulin (Reg/NPH)',
+        thAnnFamo: 'Famotidine 0-Pill Rate',
+        lblDayTir: '80–160 TIR:',
+        lblFastingShort: 'Fasting:',
+        lblPreAvgShort: 'Pre-Meal Avg:',
+        lblPostAvgShort: '2h Post Avg:',
+        lblDayExtrema: 'Daily Min~Max:',
+        lblInsulinShort: 'Insulin:',
+        lblFamoShort: 'Famotidine:',
+        lblPillUnit: 'pill(s)',
+        emailLangModeLabel: '🌐 Email Language Routing Mode:',
+        optMailSplit: '🎯 Tailored per Recipient: Chinese to miyubear / EN+Persian to arsanbear (Recommended)',
+        optMailAll: '🌍 All 4 Languages in One Email: Chinese + Persian + English + Korean',
+        docSec1Title: '【I. Clinical Executive Summary (For Physician)】',
+        docLoggedDays: 'Total Logged Days',
+        docTirRate: '80–160 mg/dL Target Rate (TIR)',
+        docMeanBg: 'Overall Mean BG',
+        docRangeWord: 'Range',
+        docFastingPrePost: 'Mean Fasting / Pre-Meal / 2h Post-Meal BG',
+        docHypoHyper: 'Hypo (<80 mg/dL) & Hyper (>180 mg/dL) Events',
+        docAvgDailyIns: 'Avg Daily Insulin Dose',
+        docFamoZeroRate: 'Famotidine 0-Pill Taper Rate',
+        docSec2Title: '【II. Food Glycemic Impact Ranking (Pre ➔ 2h Post ΔBG)】',
+        docSec3Title: '【III. Complete Day-by-Day Clinical Execution Logs】',
+        docSuppPrefix: '💊 Supplements',
+        cfgModalTitle: 'System Connection & Cloud Automation Settings',
+        cfgSec1Title: '1. Secure Cloud Gateway & Local Backup',
+        cfgAutoSyncChk: '⚡ Real-Time Auto Cloud Sync',
+        cfgWorkerUrlLabel: 'Dedicated Cloudflare Worker Secure Gateway URL:',
+        cfgPinLabel: '🔐 Security PIN (X-Auth-Token):',
+        cfgPinPlaceholder: 'Enter PIN code once on this device',
+        cfgSec1Desc: '🛡️ <b>Zero-Exposure Security:</b> Every request carries your <code>X-Auth-Token</code> PIN header to protect your health records.',
+        cfgExportJsonBtn: '💾 Export Full JSON Backup (.json)',
+        cfgImportJsonBtn: '📂 Import Local Backup (.json)',
+        cfgSec2Title: '2. Dexcom Live BG & Auto-Backfill Settings',
+        cfgSec2Sub: 'Credentials are safely hosted in your Cloud Worker; only fill below if changing account/password.',
+        cfgTestDexBtn: '⚡ Test & Pull Live BG',
+        cfgDexRegionLabel: 'Server Region:',
+        optDexRegionOus: '🌏 International (OUS)',
+        optDexRegionUs: '🇺🇸 United States (US)',
+        optDexRegionJp: '🇯🇵 Asia-Pacific (JP)',
+        cfgDexUserLabel: 'Override Account (Optional):',
+        cfgDexPassLabel: 'Override Password (Optional):',
+        cfgAutoFillBgChk: '🩸 Auto-fill Pre-Meal BG & auto-backfill 2h Post-Meal BG from Dexcom',
+        cfgSec3Title: '3. Gemini Pro / Ultra 4-Language AI Translation & Email Test',
+        cfgSec3Sub: 'Defaults to flagship <b>gemini-2.5-pro</b> for accurate Persian/Korean/Chinese culinary & medical translation',
+        cfgTestMailBtn: '📨 Test Cloud Email',
+        cfgTestTransBtn: '🌐 Test & Refresh 4-Lang Translation',
+        cfgModelLabel: '👑 AI Model Tier:',
+        cfgGeminiKeyLabel: '🔑 Google AI Studio (Gemini) API Key (Optional):',
+        cfgCloseBtn: 'Close',
+        cfgSaveBtn: 'Save Settings',
+        toastCopyOk: '📋 Copied to clipboard!',
+        toastCsvOk: '📥 CSV (Excel) exported successfully!',
+        toastEmailSent: '📨 Report sent to dual emails via cloud!',
+        toastAllHistSent: '🏥 Complete historical clinical report sent to dual emails!'
       }
     };
 
@@ -6077,6 +6452,59 @@ svg, img, video, canvas {
         optChartModeTimeline: t.optChartModeTimeline,
         optChartModeCatCompare: t.optChartModeCatCompare,
         optChartMealAll: t.optChartMealAll,
+        optChartMeal0: `1. ${t.jump0}`,
+        optChartMeal1: `2. ${t.jump1}`,
+        optChartMeal2: `3. ${t.jump2}`,
+        optChartMeal3: `4. ${t.jump3}`,
+        optChartMeal4: `5. ${t.jump4}`,
+        optChartMeal5: `6. ${t.jump5}`,
+        optChartMeal6: `7. ${t.jump6}`,
+        foodChartPointDetail: t.foodChartPointHint,
+        optAnnualAllYears: t.optAnnualAllYears,
+        optAnnualAllMonths: t.optAnnualAllMonths,
+        annualDailyPointDetail: t.annDailyPointHint,
+        optAnnFoodCatAll: t.optImpCatAll,
+        optAnnFoodCatGood: t.optImpCatGood,
+        optAnnFoodCatProt: t.optImpCatProt,
+        optAnnFoodCatCarb: t.optImpCatCarb,
+        optAnnFoodCatNuts: t.optImpCatNuts,
+        optAnnFoodCatDrink: t.optImpCatDrink,
+        optAnnFoodCatSnack: t.optImpCatSnack,
+        thAnnMonth: t.thAnnMonth,
+        thAnnDays: t.thAnnDays,
+        thAnnTir: t.thAnnTir,
+        thAnnFasting: t.thAnnFasting,
+        thAnnPrePost: t.thAnnPrePost,
+        thAnnHypoHyper: t.thAnnHypoHyper,
+        thAnnIns: t.thAnnIns,
+        thAnnFamo: t.thAnnFamo,
+        uiEmailLangModeLabel: t.emailLangModeLabel,
+        optMailSplit: t.optMailSplit,
+        optMailAll: t.optMailAll,
+        uiCfgModalTitle: t.cfgModalTitle,
+        uiCfgSec1Title: t.cfgSec1Title,
+        uiCfgAutoSyncChk: t.cfgAutoSyncChk,
+        uiCfgWorkerUrlLabel: t.cfgWorkerUrlLabel,
+        uiCfgPinLabel: t.cfgPinLabel,
+        uiCfgExportJsonBtn: t.cfgExportJsonBtn,
+        uiCfgImportJsonBtn: t.cfgImportJsonBtn,
+        uiCfgSec2Title: t.cfgSec2Title,
+        uiCfgSec2Sub: t.cfgSec2Sub,
+        uiCfgTestDexBtn: t.cfgTestDexBtn,
+        uiCfgDexRegionLabel: t.cfgDexRegionLabel,
+        optDexRegionOus: t.optDexRegionOus,
+        optDexRegionUs: t.optDexRegionUs,
+        optDexRegionJp: t.optDexRegionJp,
+        uiCfgDexUserLabel: t.cfgDexUserLabel,
+        uiCfgDexPassLabel: t.cfgDexPassLabel,
+        uiCfgAutoFillBgChk: t.cfgAutoFillBgChk,
+        uiCfgSec3Title: t.cfgSec3Title,
+        uiCfgTestMailBtn: t.cfgTestMailBtn,
+        uiCfgTestTransBtn: t.cfgTestTransBtn,
+        uiCfgModelLabel: t.cfgModelLabel,
+        uiCfgGeminiKeyLabel: t.cfgGeminiKeyLabel,
+        uiCfgCloseBtn: t.cfgCloseBtn,
+        uiCfgSaveBtn: t.cfgSaveBtn,
         autoSyncStatusText: t.autoSyncOn,
         uiCurrentDateLabel: t.currentDateLabel,
         uiDeleteDateBtnText: t.deleteDateBtnText,
@@ -6197,6 +6625,19 @@ svg, img, video, canvas {
       if (searchInput && t.filterSearchPlaceholder) searchInput.placeholder = t.filterSearchPlaceholder;
       const extraEmailEl = document.getElementById('extraEmailInput');
       if (extraEmailEl && t.extraEmailPlaceholder) extraEmailEl.placeholder = t.extraEmailPlaceholder;
+      const pinInput = document.getElementById('cfgWorkerAuthToken');
+      if (pinInput && t.cfgPinPlaceholder) pinInput.placeholder = t.cfgPinPlaceholder;
+      const cfgDesc1 = document.getElementById('uiCfgSec1Desc');
+      if (cfgDesc1 && t.cfgSec1Desc) cfgDesc1.innerHTML = t.cfgSec1Desc;
+      const cfgDesc3 = document.getElementById('uiCfgSec3Sub');
+      if (cfgDesc3 && t.cfgSec3Sub) cfgDesc3.innerHTML = t.cfgSec3Sub;
+      if (Array.isArray(t.monthsList)) {
+        t.monthsList.forEach((mLabel, idx) => {
+          const mId = 'optAnnM' + String(idx + 1).padStart(2, '0');
+          const mEl = document.getElementById(mId);
+          if (mEl) mEl.textContent = mLabel;
+        });
+      }
 
       renderModule2();
       renderMeals();
@@ -6564,39 +7005,39 @@ svg, img, video, canvas {
         const famoZeroPct = dates.length > 0 ? Math.round((famoZeroDays / dates.length) * 100) : 0;
 
         const lines = [
-          `${t.emailSubjAllHistory || '[JW][血糖健康全量历史临床报告]'} (${dateRangeStr})`,
+          `${t.emailSubjAllHistory} (${dateRangeStr})`,
           `====================================================`,
-          `【I. Clinical Executive Summary / 医生临床总览摘要】`,
-          `• Logged Days (累计记录天数): ${dates.length} days (${dateRangeStr})`,
-          `• 80–160 mg/dL Target Rate (稳态达标率 TIR): ${overallTir}% (${totalInRange}/${totalBgCount} pts)`,
-          `• Overall Mean BG (全周期平均血糖): ${avgAllBg} mg/dL (Range: ${minAllBg === Infinity ? '--' : minAllBg} ~ ${maxAllBg === -Infinity ? '--' : maxAllBg} mg/dL)`,
-          `• Mean Fasting / Pre-Meal / 2h Post-Meal BG (空腹/餐前/餐后2h均值): ${avgFast} / ${avgPreBg} / ${avgPostBg} mg/dL`,
-          `• Hypo (<80 mg/dL) & Hyper (>180 mg/dL) Events (低血糖/高血糖次数): <80: ${hypoCount} times | >180: ${hyperCount} times`,
-          `• Avg Daily Insulin (日均胰岛素): 🟡 Regular ${avgRegDay}U/day + 🟢 NPH ${avgNphDay}U/day`,
-          `• Famotidine 0-Pill Taper Rate (法莫替丁0粒无药天数占比): ${famoZeroPct}% (${famoZeroDays}/${dates.length} days)`,
+          `${t.docSec1Title}`,
+          `• ${t.docLoggedDays}: ${dates.length} ${t.annDaysUnit} (${dateRangeStr})`,
+          `• ${t.docTirRate}: ${overallTir}% (${totalInRange}/${totalBgCount} ${t.annTimesUnit})`,
+          `• ${t.docMeanBg}: ${avgAllBg} mg/dL (${t.docRangeWord}: ${minAllBg === Infinity ? '--' : minAllBg} ~ ${maxAllBg === -Infinity ? '--' : maxAllBg} mg/dL)`,
+          `• ${t.docFastingPrePost}: ${avgFast} / ${avgPreBg} / ${avgPostBg} mg/dL`,
+          `• ${t.docHypoHyper}: <80: ${hypoCount} ${t.annTimesUnit} | >180: ${hyperCount} ${t.annTimesUnit}`,
+          `• ${t.docAvgDailyIns}: 🟡 ${t.yellowShort} ${avgRegDay}U + 🟢 ${t.greenShort} ${avgNphDay}U`,
+          `• ${t.docFamoZeroRate}: ${famoZeroPct}% (${famoZeroDays}/${dates.length} ${t.annDaysUnit})`,
           ``
         ];
 
         const foodArr = Object.values(foodAgg).sort((a, b) => (a.sumDelta / a.cnt) - (b.sumDelta / b.cnt));
         if (foodArr.length > 0) {
-          lines.push(`【II. Food Glycemic Impact Ranking / 食物升糖影响统计 (Pre ➔ 2h Post ΔBG)】`);
+          lines.push(`${t.docSec2Title}`);
           foodArr.forEach(f => {
             const aPre = Math.round(f.sumPre / f.cnt);
             const aPost = Math.round(f.sumPost / f.cnt);
             const aDelta = Math.round(f.sumDelta / f.cnt);
-            lines.push(`- ${f.name} (x${f.cnt}): Pre ${aPre} ➔ 2h Post ${aPost} mg/dL (Avg ΔBG: ${aDelta > 0 ? '+' + aDelta : aDelta} mg/dL)`);
+            lines.push(`- ${f.name} (x${f.cnt}): ${t.lblPreMeal} ${aPre} ➔ ${t.lblPost2h} ${aPost} mg/dL (ΔBG: ${aDelta > 0 ? '+' + aDelta : aDelta} mg/dL)`);
           });
           lines.push(``);
         }
 
-        lines.push(`【III. Complete Day-by-Day Historical Logs / 逐日完整临床执行明细 (${dates.length} Days)】`);
+        lines.push(`${t.docSec3Title} (${dates.length} ${t.annDaysUnit})`);
         dates.forEach(dStr => {
           const day = ensureDaySchemaIntegrity(allDaysStore[dStr]);
           const m = calculateDaySummaryMetrics(day);
           lines.push(`----------------------------------------------------`);
-          lines.push(`📅 ${dStr} | ⏰ Wake: 🇮🇷${day.wakeTime}/🇰🇷${iranTimeToKoreaTime(day.wakeTime)} | 🩸 Fasting: ${day.fastingBg || '--'} mg/dL | 🎯 TIR(80-160): ${m.totalBgPts > 0 ? m.tir + '% (' + m.inRange + '/' + m.totalBgPts + ')' : '--'} | 💉 🟡${m.sumReg}U+🟢${m.sumNph}U | 💊 Famotidine: ${day.famotidineDose} | 🔄 Quad: ${day.quadrant}`);
-          const suppDone = SUPPLEMENTS_DICT.filter(s => day.supplements?.[s.id]?.checked).map(s => `${s.icon}${(s.name[currentLang] || s.name.zh).split(' ')[0]}(${day.supplements[s.id].timeIr})`).join('、');
-          if (suppDone) lines.push(`   💊 Supplements: ${suppDone}`);
+          lines.push(`📅 ${dStr} | ⏰ 🇮🇷${day.wakeTime}/🇰🇷${iranTimeToKoreaTime(day.wakeTime)} | 🩸 ${t.fastingBgLabel} ${day.fastingBg || '--'} mg/dL | 🎯 80-160: ${m.totalBgPts > 0 ? m.tir + '% (' + m.inRange + '/' + m.totalBgPts + ')' : '--'} | 💉 🟡${m.sumReg}U+🟢${m.sumNph}U | 💊 ${t.thWeekFamo}: ${day.famotidineDose} | 🔄 ${day.quadrant}`);
+          const suppDone = SUPPLEMENTS_DICT.filter(s => day.supplements?.[s.id]?.checked).map(s => `${s.icon}${(s.name[currentLang] || s.name.zh).split(' ')[0]}(${day.supplements[s.id].timeIr})`).join(' 、 ');
+          if (suppDone) lines.push(`   ${t.docSuppPrefix}: ${suppDone}`);
           MEAL_NODES_META.forEach(meta => {
             const md = day.meals?.[meta.key];
             if (!md) return;
@@ -6684,11 +7125,11 @@ svg, img, video, canvas {
     }
 
     function copyDailyReportText() {
-      copyTextToClipboard(buildPlainTextReport('daily'), '📋 已复制每日报告到剪贴板！');
+      copyTextToClipboard(buildPlainTextReport('daily'), tMsg('toastCopyOk'));
     }
 
     function copyWeeklyReportText() {
-      copyTextToClipboard(buildPlainTextReport('weekly'), '📋 已复制本周汇总周报到剪贴板！');
+      copyTextToClipboard(buildPlainTextReport('weekly'), tMsg('toastCopyOk'));
     }
 
     async function translateAllCustomFoodsNow() {
@@ -6810,7 +7251,7 @@ svg, img, video, canvas {
             const wMailData = await wMailRes.json();
             if (wMailData && wMailData.ok) {
               if (!wMailData.skipped) {
-                showToast(reportType === 'allHistory' ? '🏥 全部历史临床报告已发送至双邮箱！' : '📨 报告已通过加密云端发送至双邮箱！');
+                showToast(reportType === 'allHistory' ? tMsg('toastAllHistSent') : tMsg('toastEmailSent'));
               }
               return true;
             }
@@ -6841,7 +7282,7 @@ svg, img, video, canvas {
             })
           });
           if (ejsRes.ok) {
-            showToast('📨 报告已成功发送至双邮箱！');
+            showToast(tMsg('toastEmailSent'));
             return true;
           }
         } catch (err) {}
@@ -6902,7 +7343,7 @@ svg, img, video, canvas {
         rows.push([d, day.wakeTime, iranTimeToKoreaTime(day.wakeTime), m.tir, m.minBg, m.maxBg, m.sumReg, m.sumNph, day.famotidineDose, day.quadrant, mealStr]);
       });
       downloadCSVFile(`80-160血糖稳态周报_${activeDate}.csv`, rows);
-      showToast('📥 周报 CSV (Excel) 导出成功！');
+      showToast(tMsg('toastCsvOk'));
     }
 
     // Fixed: Exports the exact filtered history rows instead of duplicating the weekly summary CSV
@@ -6912,7 +7353,7 @@ svg, img, video, canvas {
       const headers = [t.thHistDate, t.thHistTime, t.thHistCat, t.thHistNode, t.thHistDetail, t.thHistBg];
       const rows = [headers, ...currentFilteredHistoryRows];
       downloadCSVFile(`历史筛选明细_${activeDate}.csv`, rows);
-      showToast('📥 当前筛选历史明细 CSV (Excel) 导出成功！');
+      showToast(tMsg('toastCsvOk'));
     }
 
     function switchTab(tabKey) {
@@ -7125,10 +7566,10 @@ svg, img, video, canvas {
           <!-- Legend -->
           <g transform="translate(${padL}, 14)">
             <circle cx="6" cy="0" r="4" fill="#0284c7" />
-            <text x="14" y="4" font-size="10" font-weight="bold" fill="#0284c7">餐前血糖 (Pre-BG)</text>
-            <circle cx="126" cy="0" r="4" fill="#e11d48" />
-            <text x="134" y="4" font-size="10" font-weight="bold" fill="#e11d48">餐后2h血糖 (2h Post-BG)</text>
-            <text x="275" y="4" font-size="10" font-weight="bold" fill="#059669">数值标注 = 单餐升糖幅度 (ΔBG)</text>
+            <text x="14" y="4" font-size="10" font-weight="bold" fill="#0284c7">${tMsg('svgPreBgLegend')}</text>
+            <circle cx="145" cy="0" r="4" fill="#e11d48" />
+            <text x="153" y="4" font-size="10" font-weight="bold" fill="#e11d48">${tMsg('svgPostBgLegend')}</text>
+            <text x="310" y="4" font-size="10" font-weight="bold" fill="#059669">${tMsg('svgDeltaNoteLegend')}</text>
           </g>
         </svg>
       `;
@@ -7163,7 +7604,7 @@ svg, img, video, canvas {
       });
 
       if (catSeries.length === 0) {
-        return `<div class="py-10 text-center text-xs text-slate-400">📊 暂无足够餐次数据绘制六大食物分类升糖轨迹对比图。</div>`;
+        return `<div class="py-10 text-center text-xs text-slate-400">${tMsg('svgCatCompareEmpty')}</div>`;
       }
 
       const width = 680, height = 260;
@@ -7213,9 +7654,9 @@ svg, img, video, canvas {
           <rect x="${padL}" y="${y160}" width="${plotW}" height="${Math.max(2, y80 - y160)}" fill="#10b981" fill-opacity="0.11" />
           ${gridLines.join('')}
           ${linesHtml}
-          <text x="${x0}" y="${height - 14}" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">🩸 餐前 (0h Pre-Meal)</text>
-          <text x="${x1}" y="${height - 14}" text-anchor="middle" font-size="11" font-weight="bold" fill="#64748b">⏱️ 餐后1h轨迹 (1h Est.)</text>
-          <text x="${x2}" y="${height - 14}" text-anchor="middle" font-size="11" font-weight="bold" fill="#e11d48">🕒 餐后2小时 (2h Post-Meal)</text>
+          <text x="${x0}" y="${height - 14}" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">${tMsg('svgAxis0h')}</text>
+          <text x="${x1}" y="${height - 14}" text-anchor="middle" font-size="11" font-weight="bold" fill="#64748b">${tMsg('svgAxis1h')}</text>
+          <text x="${x2}" y="${height - 14}" text-anchor="middle" font-size="11" font-weight="bold" fill="#e11d48">${tMsg('svgAxis2h')}</text>
         </svg>
       `;
     }
@@ -7245,9 +7686,10 @@ svg, img, video, canvas {
       const el = document.getElementById('foodChartPointDetail');
       const ev = cachedFoodChartEvents[idx];
       if (!el || !ev) return;
+      const t = UI_TEXT[currentLang] || UI_TEXT.zh;
       const dStr = ev.deltaBg > 0 ? `+${ev.deltaBg}` : `${ev.deltaBg}`;
-      const insStr = (ev.regUnits > 0 || ev.nphUnits > 0) ? `💉 🟡${ev.regUnits}U + 🟢${ev.nphUnits}U` : '⭕ 未打针 (0U)';
-      el.innerHTML = `📌 <b>${ev.date} ${ev.mealIcon}${ev.mealTitle} (🇮🇷${ev.time})</b> ｜ 🩸 餐前 <b>${ev.preBg}</b> ➔ 餐后2h <b>${ev.postBg} mg/dL</b>（升糖幅度: <b>${dStr} mg/dL</b>） ｜ ${insStr} ｜ 🍽️ 当餐食物: <b>${ev.allFoodsStr}</b>`;
+      const insStr = (ev.regUnits > 0 || ev.nphUnits > 0) ? `💉 🟡${ev.regUnits}U + 🟢${ev.nphUnits}U` : t.lblNoShot0U;
+      el.innerHTML = `📌 <b>${ev.date} ${ev.mealIcon}${ev.mealTitle} (🇮🇷${ev.time})</b> ｜ 🩸 ${t.lblPreMeal} <b>${ev.preBg}</b> ➔ ${t.lblPost2h} <b>${ev.postBg} mg/dL</b>（${t.lblDeltaSpike} <b>${dStr} mg/dL</b>） ｜ ${insStr} ｜ 🍽️ ${t.lblMealFoods} <b>${ev.allFoodsStr}</b>`;
     }
 
     // ==================== ANNUAL & MONTHLY VISUAL CLINICAL REPORT TAB ====================
@@ -7258,13 +7700,14 @@ svg, img, video, canvas {
       const yearSel = document.getElementById('annualYearSelect');
       if (!kpiGrid || !dailyChartBox || !monthTbody || !yearSel) return;
 
+      const t = UI_TEXT[currentLang] || UI_TEXT.zh;
       const allDates = Object.keys(allDaysStore).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort();
       const yearsSet = new Set(['2026']);
       allDates.forEach(d => yearsSet.add(d.slice(0, 4)));
       const prevYear = yearSel.value || 'all';
-      const yearOpts = [`<option value="all" ${prevYear === 'all' ? 'selected' : ''}>📅 全部年份 (All Years)</option>`];
+      const yearOpts = [`<option value="all" ${prevYear === 'all' ? 'selected' : ''}>${t.optAnnualAllYears}</option>`];
       Array.from(yearsSet).sort().reverse().forEach(y => {
-        yearOpts.push(`<option value="${y}" ${prevYear === y ? 'selected' : ''}>📅 ${y} 年</option>`);
+        yearOpts.push(`<option value="${y}" ${prevYear === y ? 'selected' : ''}>📅 ${y}${t.yearSuffix ? ' ' + t.yearSuffix : ''}</option>`);
       });
       yearSel.innerHTML = yearOpts.join('');
 
@@ -7366,24 +7809,24 @@ svg, img, video, canvas {
 
       kpiGrid.innerHTML = `
         <div class="p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200">
-          <span class="text-[11px] font-bold text-emerald-800 block">📅 累计记录天数 / 测糖总次数</span>
-          <div class="text-base font-black text-emerald-950 font-mono mt-1">${filteredDates.length} 天 / ${totalBgPts} 次</div>
-          <span class="text-[10px] text-slate-500">涵盖完整双时区打卡与血糖监测</span>
+          <span class="text-[11px] font-bold text-emerald-800 block">${t.annKpi1Title}</span>
+          <div class="text-base font-black text-emerald-950 font-mono mt-1">${filteredDates.length} ${t.annDaysUnit} / ${totalBgPts} ${t.annTimesUnit}</div>
+          <span class="text-[10px] text-slate-500">${t.annKpi1Sub}</span>
         </div>
         <div class="p-3.5 rounded-2xl bg-teal-50/90 border border-teal-200">
-          <span class="text-[11px] font-bold text-teal-800 block">🎯 80–160 稳态达标率 / 平均血糖</span>
-          <div class="text-base font-black text-teal-900 font-mono mt-1">${tirPct}% (${inRangePts}/${totalBgPts}) ｜ 均值 ${meanBg}</div>
-          <span class="text-[10px] text-slate-500">波动范围: ${minBg === Infinity ? '--' : minBg} ~ ${maxBg === -Infinity ? '--' : maxBg} mg/dL</span>
+          <span class="text-[11px] font-bold text-teal-800 block">${t.annKpi2Title}</span>
+          <div class="text-base font-black text-teal-900 font-mono mt-1">${tirPct}% (${inRangePts}/${totalBgPts}) ｜ ${t.annMeanLabel} ${meanBg}</div>
+          <span class="text-[10px] text-slate-500">${t.annRangeLabel} ${minBg === Infinity ? '--' : minBg} ~ ${maxBg === -Infinity ? '--' : maxBg} mg/dL</span>
         </div>
         <div class="p-3.5 rounded-2xl bg-rose-50/90 border border-rose-200">
-          <span class="text-[11px] font-bold text-rose-800 block">⚠️ 低血糖 (<80) / 高血糖 (>180)</span>
-          <div class="text-base font-black text-rose-950 font-mono mt-1">🔻 ${hypoPts} 次 ｜ 🔺 ${hyperPts} 次</div>
-          <span class="text-[10px] text-slate-500">供医生评估基础率与餐前修正剂量</span>
+          <span class="text-[11px] font-bold text-rose-800 block">${t.annKpi3Title}</span>
+          <div class="text-base font-black text-rose-950 font-mono mt-1">🔻 ${hypoPts} ${t.annTimesUnit} ｜ 🔺 ${hyperPts} ${t.annTimesUnit}</div>
+          <span class="text-[10px] text-slate-500">${t.annKpi3Sub}</span>
         </div>
         <div class="p-3.5 rounded-2xl bg-amber-50/90 border border-amber-200">
-          <span class="text-[11px] font-bold text-amber-900 block">💉 日均胰岛素 & 💊 法莫替丁0粒率</span>
-          <div class="text-base font-black text-amber-950 font-mono mt-1">🟡${avgRegDay}U + 🟢${avgNphDay}U ｜ 断药 ${famoZeroPct}%</div>
-          <span class="text-[10px] text-slate-500">0粒无药天数: ${famoZeroDays}/${filteredDates.length} 天</span>
+          <span class="text-[11px] font-bold text-amber-900 block">${t.annKpi4Title}</span>
+          <div class="text-base font-black text-amber-950 font-mono mt-1">🟡${avgRegDay}U + 🟢${avgNphDay}U ｜ ${t.annTaperLabel} ${famoZeroPct}%</div>
+          <span class="text-[10px] text-slate-500">${t.annZeroPillDaysLabel} ${famoZeroDays}/${filteredDates.length} ${t.annDaysUnit}</span>
         </div>
       `;
 
@@ -7399,7 +7842,7 @@ svg, img, video, canvas {
       // Render Monthly Summary Table
       const monthsSorted = Object.values(monthlyMap).sort((a, b) => b.ym.localeCompare(a.ym));
       if (monthsSorted.length === 0) {
-        monthTbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-400">暂无对应月份的历史记录</td></tr>`;
+        monthTbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-400">${t.annMonthTableEmpty}</td></tr>`;
       } else {
         monthTbody.innerHTML = monthsSorted.map(m => {
           const mTir = m.bgPts > 0 ? Math.round((m.inRange / m.bgPts) * 100) : 0;
@@ -7412,7 +7855,7 @@ svg, img, video, canvas {
           return `
             <tr class="hover:bg-slate-50">
               <td class="py-2.5 px-3 font-mono font-bold text-slate-800">${m.ym}</td>
-              <td class="py-2.5 px-3 font-mono font-bold text-slate-700">${m.days} 天 (${m.bgPts}次)</td>
+              <td class="py-2.5 px-3 font-mono font-bold text-slate-700">${m.days} ${t.annDaysUnit} (${m.bgPts} ${t.annTimesUnit})</td>
               <td class="py-2.5 px-3">
                 <div class="flex items-center gap-2">
                   <div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -7434,7 +7877,7 @@ svg, img, video, canvas {
 
     function buildAnnualDailySvgChart(dayPts) {
       if (!dayPts || dayPts.length === 0) {
-        return `<div class="py-10 text-center text-xs text-slate-400">📈 当前所选年份/月份暂无已录入血糖的日期节点。</div>`;
+        return `<div class="py-10 text-center text-xs text-slate-400">${tMsg('annDailyChartEmpty')}</div>`;
       }
       const showFast = document.getElementById('chkChartFasting') ? document.getElementById('chkChartFasting').checked : true;
       const showPre = document.getElementById('chkChartPre') ? document.getElementById('chkChartPre').checked : true;
@@ -7513,7 +7956,8 @@ svg, img, video, canvas {
       const el = document.getElementById('annualDailyPointDetail');
       const d = cachedAnnualDayPoints[idx];
       if (!el || !d) return;
-      el.innerHTML = `📅 <b>${d.date}</b> ｜ 🎯 80–160 稳态率: <b>${d.tir}%</b> ｜ 🩸 空腹: <b>${d.fastingBg ?? '--'}</b> / 餐前均值: <b>${d.avgPreBg ?? '--'}</b> / 餐后2h均值: <b>${d.avgPostBg ?? '--'} mg/dL</b>（全天极值: ${d.minBg}~${d.maxBg} mg/dL） ｜ 💉 胰岛素: 🟡<b>${d.dayReg}U</b> + 🟢<b>${d.dayNph}U</b> ｜ 💊 法莫替丁: <b>${d.famo}粒</b>`;
+      const t = UI_TEXT[currentLang] || UI_TEXT.zh;
+      el.innerHTML = `📅 <b>${d.date}</b> ｜ 🎯 ${t.lblDayTir} <b>${d.tir}%</b> ｜ 🩸 ${t.lblFastingShort} <b>${d.fastingBg ?? '--'}</b> / ${t.lblPreAvgShort} <b>${d.avgPreBg ?? '--'}</b> / ${t.lblPostAvgShort} <b>${d.avgPostBg ?? '--'} mg/dL</b>（${t.lblDayExtrema} ${d.minBg}~${d.maxBg} mg/dL） ｜ 💉 ${t.lblInsulinShort} 🟡<b>${d.dayReg}U</b> + 🟢<b>${d.dayNph}U</b> ｜ 💊 ${t.lblFamoShort} <b>${d.famo} ${t.lblPillUnit}</b>`;
     }
 
     function renderAnnualFoodChart() {
@@ -7527,7 +7971,7 @@ svg, img, video, canvas {
     }
 
     function copyAllHistoryReportText() {
-      copyTextToClipboard(buildPlainTextReport('allHistory'), '📋 已复制全部历史临床报告（供医生分析）到剪贴板！');
+      copyTextToClipboard(buildPlainTextReport('allHistory'), tMsg('toastCopyOk'));
     }
 
     function exportAllHistoryDoctorCSV() {
@@ -7563,7 +8007,7 @@ svg, img, video, canvas {
         });
       });
       downloadCSVFile(`全量历史临床报告_医生分析版_${activeDate}.csv`, rows);
-      showToast('📥 医生分析版全量历史 CSV (Excel) 导出成功！');
+      showToast(tMsg('toastCsvOk'));
     }
 
     function switchActiveDate(newDate) {
