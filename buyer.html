@@ -49,7 +49,7 @@
                             <span id="ui-header-title">TCCF 바이어 선정</span>
                         </h1>
                         <p id="ui-header-subtitle" class="text-xs text-slate-400">
-                            바이어별 최근 동향 · 한국 협업 실적(팩트체크 완료) · 임원 선정 및 맞춤형 초청장 시스템
+                            바이어별 최근 동향 · 한국 협업 실적 · 임원 선정 및 맞춤형 초청장 시스템
                         </p>
                     </div>
                 </div>
@@ -107,8 +107,8 @@
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-5">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
                     <div>
-                        <h2 id="ui-kpi-title" class="text-base font-extrabold text-slate-900">📊 TCCF 타깃 바이어 요약 및 대표 한국 협업 사례 (팩트체크 완료)</h2>
-                        <p id="ui-kpi-desc" class="text-xs text-slate-500 mt-0.5">불확실하거나 확인되지 않은 정보는 제외하고, 공식 보도 및 작품 크레딧으로 확인된 실적만 수록했습니다.</p>
+                        <h2 id="ui-kpi-title" class="text-base font-extrabold text-slate-900">📊 TCCF 타깃 바이어 요약 및 대표 한국 협업 사례</h2>
+                        <p id="ui-kpi-desc" class="text-xs text-slate-500 mt-0.5">공식 보도 및 작품 크레딧으로 확인된 바이어별 최근 동향과 한국 협업 실적을 정리했습니다.</p>
                     </div>
                     <button onclick="toggleWorksShowcase()" id="btn-toggle-showcase" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 self-start sm:self-auto px-3 py-1.5 rounded-lg bg-indigo-50">
                         대표 협업 작품 접기 ▲
@@ -123,7 +123,7 @@
                 <!-- 대표 한국 협업 작품 가로 스크롤 -->
                 <div id="works-showcase-wrap" class="space-y-2 pt-1">
                     <div class="flex items-center justify-between">
-                        <span id="ui-works-label" class="text-xs font-bold text-slate-500 uppercase tracking-wider">🎬 바이어별 대표 한국 IP 리메이크 · 배급 · 합작 검증 사례</span>
+                        <span id="ui-works-label" class="text-xs font-bold text-slate-500 uppercase tracking-wider">🎬 바이어별 대표 한국 IP 리메이크 · 배급 · 합작 사례</span>
                         <span id="ui-works-hint" class="text-[11px] text-slate-400">좌우로 스크롤하여 확인하세요</span>
                     </div>
                     <div id="works-container" class="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
@@ -145,9 +145,15 @@
                     </div>
 
                     <!-- 임원용 빠른 선택 버튼 모음 -->
-                    <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-3 flex flex-col gap-1.5 shrink-0">
-                        <div id="ui-boss-quick-title" class="text-[11px] font-extrabold text-amber-900 flex items-center gap-1">
-                            👑 임원 검토 및 바이어 선정 도구 (자동 저장)
+                    <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-3 flex flex-col gap-2 shrink-0">
+                        <div class="flex items-center justify-between gap-2">
+                            <div id="ui-boss-quick-title" class="text-[11px] font-extrabold text-amber-900 flex items-center gap-1">
+                                👑 임원 검토 및 바이어 선정 도구 (실시간 공유)
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="text-[11px] font-bold text-amber-800">👤 검토자:</span>
+                                <input type="text" id="reviewer-name-input" oninput="saveReviewerName(this.value)" placeholder="직함/성함 (예: 대표님)" class="w-28 px-2 py-0.5 bg-white border border-amber-300 rounded text-[11px] font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-500">
+                            </div>
                         </div>
                         <div class="flex flex-wrap gap-1.5">
                             <button onclick="selectPriorityBuyers()" id="btn-sel-priority" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition-all">
@@ -155,6 +161,9 @@
                             </button>
                             <button onclick="switchMainView('selected')" id="btn-go-selected" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all">
                                 ✅ 선정 목록 보기 (<span id="quick-sel-count">0</span>)
+                            </button>
+                            <button onclick="pullFromCloud(false)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 transition-all" title="다른 임원이 체크한 최신 내역 새로고침">
+                                🔄 최신 내역 새로고침
                             </button>
                         </div>
                     </div>
@@ -348,10 +357,10 @@
                         <input type="checkbox" id="chk-T2" onchange="updateModalLetterContent()" class="rounded text-blue-600"> ② 완성작 배급/방영권
                     </label>
                     <label class="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 cursor-pointer">
-                        <input type="checkbox" id="chk-T3" onchange="updateModalLetterContent()" class="rounded text-emerald-600"> ③ 공동투자/합작제작
+                        <input type="checkbox" id="chk-T3" onchange="updateModalLetterContent()" class="rounded text-emerald-600"> ③ 공동투자/공동제작
                     </label>
                     <label class="inline-flex items-center gap-1 text-xs bg-rose-50 text-rose-800 px-2 py-0.5 rounded border border-rose-200 cursor-pointer">
-                        <input type="checkbox" id="chk-T4" onchange="updateModalLetterContent()" class="rounded text-rose-600"> ④ Vamkids 라이선스/팝업
+                        <input type="checkbox" id="chk-T4" onchange="updateModalLetterContent()" class="rounded text-rose-600"> ④ 캐릭터 라이선스/굿즈/팝업
                     </label>
                 </div>
             </div>
@@ -508,12 +517,12 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
     <script>
         // ============================================================================
         // ★ [JSONBin.io 실시간 클라우드 공유 설정] ★
-        // 아래 두 변수에 JSONBin.io의 Bin ID와 API Key를 넣어 GitHub에 올리면
-        // 리더(임원)와 작성자 모두 별도 설정 없이 접속 즉시 실시간 동기화됩니다!
-        // (또는 웹페이지 우측 상단 [☁️ 클라우드 연동 설정] 버튼에서도 설정 가능합니다)
+        // 귀하의 API Key가 기본 탑재되었습니다.
+        // 웹페이지 우측 상단 [☁️ 클라우드 연동 설정] -> [✨ 새 Bin 자동 생성하기]를 한 번 누른 뒤
+        // 생성된 Bin ID를 아래 DEFAULT_JSONBIN_BIN_ID에 넣거나 [🔗 임원용 연동 링크 복사]로 공유하세요!
         // ============================================================================
-        const DEFAULT_JSONBIN_BIN_ID = "";  // 예: "6720a1b2e41b4d34e44a1234"
-        const DEFAULT_JSONBIN_API_KEY = ""; // 예: "$2a$10$..."
+        const DEFAULT_JSONBIN_BIN_ID = "";  // [✨ 새 Bin 자동 생성하기] 클릭 후 나오는 ID를 여기에 넣으면 링크 파라미터 없이도 전원 동기화됩니다.
+        const DEFAULT_JSONBIN_API_KEY = "$2a$10$6ZiDvoZ2MtegwgWEiyBsceT9vi6.eQZucdAo.3HlDCkf3tCpXDk1m";
 
         // 현재 UI 언어 ('KO' 또는 'TC')
         let uiLang = 'KO';
@@ -527,9 +536,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
         // LocalStorage 기반 임원 선정 바이어 ID 목록 및 메모
         let selectedBuyerIds = [];
         let buyerMemos = {};
+        let reviewerName = '';
 
         const STORAGE_KEY_IDS = 'tccf_takeone_selected_ids_v2';
         const STORAGE_KEY_MEMOS = 'tccf_takeone_buyer_memos_v2';
+        const STORAGE_KEY_REVIEWER = 'tccf_takeone_reviewer_name';
         const STORAGE_KEY_CLOUD_BIN = 'tccf_takeone_jsonbin_id';
         const STORAGE_KEY_CLOUD_KEY = 'tccf_takeone_jsonbin_key';
 
@@ -541,13 +552,13 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
         const UI_TEXT = {
             KO: {
                 headerTitle: 'TCCF 바이어 선정',
-                headerSubtitle: '바이어별 최근 동향 · 한국 협업 실적(팩트체크 완료) · 임원 선정 및 5개 국어 초청장 시스템',
+                headerSubtitle: '바이어별 최근 동향 · 한국 협업 실적 · 임원 선정 및 5개 국어 초청장 시스템',
                 tabDir: '바이어 리스트',
                 tabSel: '선정된 바이어',
                 tabTpl: '초청장 템플릿(5개국어)',
-                kpiTitle: '📊 TCCF 타깃 바이어 요약 및 대표 한국 협업 사례 (교차 검증 완료)',
-                kpiDesc: '불확실하거나 확인되지 않은 내용은 모두 삭제하고, 공식 보도 및 크레딧으로 확인된 내용만 반영했습니다.',
-                worksLabel: '🎬 주요 타깃 바이어의 한국 IP 리메이크 · 배급 · 합작 검증 사례',
+                kpiTitle: '📊 TCCF 타깃 바이어 요약 및 대표 한국 협업 사례',
+                kpiDesc: '공식 보도 및 작품 크레딧으로 확인된 바이어별 최근 동향과 한국 협업 실적을 정리했습니다.',
+                worksLabel: '🎬 주요 타깃 바이어의 한국 IP 리메이크 · 배급 · 합작 사례',
                 worksHint: '포스터 검색 클릭 시 이미지 확인 가능',
                 btnShowcaseFold: '대표 협업 작품 접기 ▲',
                 btnShowcaseOpen: '대표 협업 작품 펼치기 ▼',
@@ -555,16 +566,15 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 filterTrack: '2. 사업 라인 및 우선순위 필터 (Track)',
                 filterSearch: '3. 키워드 검색 (Search)',
                 searchPlaceholder: '기업명, 작품명(이태원, 파묘, 굿잡, 사내맞선 등)...',
-                bossQuickTitle: '👑 임원 검토 및 바이어 선정 도구 (자동 저장)',
-                btnSelPriority: '★ 최우선 추천 바이어(8개사) 일괄 선택',
+                bossQuickTitle: '👑 임원 검토 및 바이어 선정 도구 (실시간 공유)',
+                btnSelPriority: '★ 최우선 추천 바이어 일괄 선택',
                 btnGoSelected: '✅ 선정 목록 보기',
                 showingPrefix: '현재 표시 중:',
                 showingSuffix: '개 타깃 바이어 그룹',
                 legendSelect: '카드 우측 상단 <b>[☑ 선정]</b> 버튼을 눌러 미팅 희망 바이어를 체크하세요',
                 legendStar: '★ 최우선 미팅 추천 대상',
                 cardScaleLabel: '🏢 기업 개요 및 최근 동향:',
-                cardKoreaLabel: '🤝 한국 협업 및 배급 실적 (검증 완료):',
-                cardPitchLabel: '🎯 TAKEONE 제안 포인트:',
+                cardKoreaLabel: '🤝 한국 협업 및 관련 실적:',
                 btnSelectOff: '☐ 바이어 선정',
                 btnSelectOn: '☑ 선정 완료',
                 btnOpenLetter: '📩 맞춤형 초청장 (5개국어)',
@@ -578,13 +588,13 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
             },
             TC: {
                 headerTitle: 'TCCF 바이어 선정 (買家選定與情報系統)',
-                headerSubtitle: '買家近期動態 · 韓國合作實績（已嚴格核實） · 長官勾選系統與五語系邀約信',
+                headerSubtitle: '買家近期動態 · 韓國合作實績 · 長官勾選系統與五語系邀約信',
                 tabDir: '買家情報清單',
                 tabSel: '已選定買家',
                 tabTpl: '五語系邀約信模板',
-                kpiTitle: '📊 TCCF 目標買家總覽 ＆ 代表性韓國合作實績（已完成事實查核）',
-                kpiDesc: '已剔除不確定或查無實據之傳聞，僅保留經官方新聞與作品片單確認之合作實績。',
-                worksLabel: '🎬 重點買家之韓國 IP 翻拍 · 發行 · 合製驗證案例',
+                kpiTitle: '📊 TCCF 目標買家總覽 ＆ 代表性韓國合作案例',
+                kpiDesc: '整理經公開新聞與作品資料確認之買家近期動態與韓國合作實績。',
+                worksLabel: '🎬 重點買家之韓國 IP 翻拍 · 發行 · 共同製作案例',
                 worksHint: '點擊可搜尋作品海報',
                 btnShowcaseFold: '收起代表作品 ▲',
                 btnShowcaseOpen: '展開代表作品 ▼',
@@ -592,22 +602,21 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 filterTrack: '2. 選擇業務線與優先級 (Track)',
                 filterSearch: '3. 關鍵字搜尋 (Search)',
                 searchPlaceholder: '搜尋公司名、作品名（梨泰院、破墓、社內相親等）...',
-                bossQuickTitle: '👑 長官審閱與買家勾選工具（自動儲存）',
-                btnSelPriority: '★ 一鍵勾選 8 家最優先推薦買家',
+                bossQuickTitle: '👑 長官審閱與買家勾選工具（即時同步）',
+                btnSelPriority: '★ 一鍵勾選最優先推薦買家',
                 btnGoSelected: '✅ 查看已選定清單',
                 showingPrefix: '目前顯示：',
                 showingSuffix: '家目標買家集團',
                 legendSelect: '點擊卡片右上角 <b>[☑ 選定]</b> 按鈕即可勾選滿意的合作對象',
                 legendStar: '★ 最優先推薦會面對象',
                 cardScaleLabel: '🏢 公司規模與近期動態：',
-                cardKoreaLabel: '🤝 韓國合作與發行實績（已核實）：',
-                cardPitchLabel: '🎯 TAKEONE 破冰與提案重點：',
+                cardKoreaLabel: '🤝 韓國合作與相關實績：',
                 btnSelectOff: '☐ 勾選此買家',
                 btnSelectOn: '☑ 已選定',
                 btnOpenLetter: '📩 客製化邀約信 (韓/日/中/英)',
                 btnQuickCopy: '⚡ 快複製信件',
                 selViewTitle: '✅ 已選定目標買家清單（供長官確認與匯出）',
-                selViewDesc: '勾選之買家會自動保存在瀏覽器中。可填寫備註並一鍵複製文字清單或下載 CSV。',
+                selViewDesc: '勾選之買家會自動保存。可填寫備註並一鍵複製文字清單或下載 CSV。',
                 selPreviewLabel: '📄 分享用文字摘要預覽（可直接複製貼上至通訊軟體或信件）',
                 floatDesc: '請點擊卡片上的 [☑ 勾選此買家] 挑選目標公司，再點擊右側按鈕查看或複製清單。',
                 floatBtnView: '查看選定清單 / 填寫備註',
@@ -630,11 +639,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
         const TRACK_INFO = {
             T1: { code: 'T1', ko: '① 대본·웹툰IP 리메이크', tc: '① 劇本與網漫IP改編', badgeClass: 'bg-purple-100 text-purple-800 border-purple-200' },
             T2: { code: 'T2', ko: '② 완성작 구매·배급', tc: '② 成品買家(OTT/電視/院線)', badgeClass: 'bg-blue-100 text-blue-800 border-blue-200' },
-            T3: { code: 'T3', ko: '③ 공동투자·합작제작', tc: '③ 合資與跨國合拍', badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-            T4: { code: 'T4', ko: '④ Vamkids 굿즈·팝업', tc: '④ Vamkids角色授權/快閃店', badgeClass: 'bg-rose-100 text-rose-800 border-rose-200' }
+            T3: { code: 'T3', ko: '③ 공동투자·공동제작', tc: '③ 共同投資與共同製作', badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+            T4: { code: 'T4', ko: '④ 캐릭터 라이선스·굿즈·팝업', tc: '④ 角色授權·周邊·快閃店', badgeClass: 'bg-rose-100 text-rose-800 border-rose-200' }
         };
 
-        // 대표 한국 협업 작품 (검증 완료된 8대 핵심 레퍼런스)
+        // 바이어별 대표 한국 협업 작품 레퍼런스
         const VERIFIED_WORKS = [
             {
                 titleKo: '이태원 클라쓰', titleTc: '梨泰院Class',
@@ -645,15 +654,15 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
             },
             {
                 titleKo: '굿잡 (Good Job)', titleTc: '絕佳拍檔 Good Job',
-                subKo: '한국 드라마 원작 한·대·싱 합작 리메이크', subTc: '韓劇原作台韓新合製翻拍',
+                subKo: '한국 드라마 원작 한·대·싱 공동제작 리메이크', subTc: '韓劇原作台韓新共同製作翻拍',
                 resultKo: '《你好，我的怪盜老闆》 · 2026.05 크랭크인', resultTc: '《你好，我的怪盜老闆》 · 2026.05 開鏡',
                 buyerKo: '76호 원자 (KT StudioGenie·문책원 공동투자)', buyerTc: '七十六號原子 (KT StudioGenie·文策院合資)',
                 hue: 215
             },
             {
-                titleKo: '사내맞선', titleTc: '社內相親',
+                titleKo: '사내맞선 · 김비서가 왜 그럴까', titleTc: '社內相親 · 金秘書為何那樣',
                 subKo: '한국 웹툰·드라마 원작 홍콩판 리메이크', subTc: '韓國網漫與韓劇原作港版翻拍',
-                resultKo: '홍콩 ViuTV 방영 · 아이돌 MIRROR 주연', resultTc: '香港 ViuTV 播映 · 頂流男團 MIRROR 主演',
+                resultKo: '홍콩 ViuTV 방영 · 아이돌 MIRROR & COLLAR 주연', resultTc: '香港 ViuTV 出品 · 偶像團體 MIRROR & COLLAR 主演',
                 buyerKo: 'MakerVille (ViuTV)', buyerTc: 'MakerVille (ViuTV)',
                 hue: 170
             },
@@ -684,17 +693,10 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 resultKo: '동남아·홍콩·중동 16개국 독점 스트리밍', resultTc: '東南亞、香港、中東 16 國獨家串流',
                 buyerKo: 'Viu (PCCW 그룹)', buyerTc: 'Viu (電訊盈科 PCCW)',
                 hue: 280
-            },
-            {
-                titleKo: 'Unforgotten (언포가튼)', titleTc: 'Unforgotten',
-                subKo: 'BBC 원작 포맷 → TAKEONE 한국판 제작', subTc: 'BBC 原作模式 → TAKEONE 製作韓國版',
-                resultKo: 'TAKEONE 한국판 리메이크 완료 · 글로벌 배급 협력', resultTc: 'TAKEONE 完成韓版翻拍 · 洽談全球發行合作',
-                buyerKo: 'BBC Studios Asia', buyerTc: 'BBC Studios Asia',
-                hue: 145
             }
         ];
 
-        // ==================== 팩트체크 완료 타깃 바이어 데이터베이스 (38개 핵심 그룹) ====================
+        // ==================== 타깃 바이어 데이터베이스 ====================
         const COMPANIES = [
             // --- 🇹🇼 대만 (Taiwan) ---
             {
@@ -704,13 +706,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: true,
                 nameKo: '다무 엔터테인먼트 (大慕影藝 · DaMou)',
                 nameTc: '大慕影藝 / 大慕可可 (DaMou Entertainment)',
-                works: ['이태원 클라쓰', 'CELL'],
+                works: ['이태원 클라쓰'],
                 scaleKo: '대만 최고 프리미엄 드라마 제작사(《인선지인》《우리와 악의 거리》). 2026년 7월 31일 HBO Max 오리지널 시리즈 《來！金來號！(Fired Up!)》 공개.',
                 scaleTc: '台灣頂級精品劇集廠牌（代表作《人選之人》《我們與惡的距離》）。2026年7月31日於 HBO Max 上線年度大劇《來！金來號！(Fired Up!)》。',
                 koreaKo: '카카오웹툰 1위작 《이태원 클라쓰》(작가 광진) 판권을 구매해 대만 현지화 12부작 드라마 《來！金來號！》로 제작·공개 완료.',
                 koreaTc: '購買韓國 Kakao Webtoon 冠軍網漫《梨泰院Class》（作者光진）版權，成功開發製作為 12 集台劇《來！金來號！》並登上 HBO Max。',
-                pitchKo: '카카오/다음 웹툰 1위 및 부산국제영화제 초청작인 《CELL》과 요리×연애 서바이벌 대본 등 60+편 웹툰 IP를 차기 웹툰 원작 드라마로 제안.',
-                pitchTc: '恭喜《來！金來號！》改編 Kakao 網漫熱播！直接推薦同為 Kakao/Daum 排行榜冠軍且入選釜山影展的《CELL》、料理戀愛生存劇本與 60+ 部韓漫作為下一部漫改台劇。',
                 iceKo: '귀사가 카카오웹툰 《이태원 클라쓰》를 원작으로 제작한 HBO Max 《來！金來號！》의 성공적인 공개를 진심으로 축하드립니다.',
                 iceTc: '非常恭喜貴司近期將韓國 Kakao 網漫《梨泰院Class》成功改編為 HBO Max 大劇《來！金來號！》！'
             },
@@ -721,13 +721,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: true,
                 nameKo: '완인 인터내셔널 (網銀國際影視 · Wanin)',
                 nameTc: '網銀國際影視 (Wanin International)',
-                works: ['주처제삼해', '밀례'],
+                works: ['주처제삼해'],
                 scaleKo: '대만 대형 게임·엔터 자본 그룹. 글로벌 흥행작 《주처제삼해(周處除三害)》 메인 투자사(제작은 一種態度). 2024년 6월 대만 1위 극장 체인 威秀影城 지분 35.69%를 인수해 최대주주 등극.',
                 scaleTc: '台灣資金雄厚的遊戲與泛娛樂集團，全球爆款電影《周處除三害》最大出品投資方（製作為一種態度）。2024年6月收購威秀影城 35.69% 股權成為最大股東。',
                 koreaKo: '2025년 2월 《주처제삼해》 한국판 리메이크 확정 보도. 한국 CJ ENM 및 싱가포르 Clover Films와 글로벌 화어 대본 공모전 심사 협업.',
                 koreaTc: '2025年2月確認《周處除三害》韓國版翻拍計畫；並與韓國 CJ ENM、新加坡 Clover Films 合作舉辦華語劇本徵件評審。',
-                pitchKo: '게임+영상+극장 체인을 모두 보유한 핵심 바이어. SF 액션·밀실 서바이벌·범죄 스릴러 대본 리메이크/합작 및 공포영화 《밀례》·K-POP 영화 대만 배급 동시 제안.',
-                pitchTc: '兼具遊戲、影視投資與威秀院線資源！可一信洽談科幻動作、密室生存、懸疑劇本翻拍合製，以及恐怖片《密禮》與 K-POP 電影台灣發行。',
                 iceKo: '귀사가 투자한 《주처제삼해》의 글로벌 흥행과 한국판 리메이크 추진, 그리고 威秀影城 인수를 통한 공격적인 미디어 사업 확장에 깊이 주목하고 있습니다.',
                 iceTc: '我們非常關注貴司出品《周處除三害》推進韓國版翻拍，以及入主威秀影城、聯手 CJ ENM 推動劇本開發的跨國佈局！'
             },
@@ -738,13 +736,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: true,
                 nameKo: '한초문창 (瀚草文創 · GrX Studio)',
                 nameTc: '瀚草文創 (GrX Studio / Greener Grass)',
-                works: ['CELL', '밀례'],
-                scaleKo: '대만 국제 합제 및 장르물 선두 제작사(《모방범》《희생자 게임》). 2024년 10월 부산국제영화제에서 5년간 5천만 달러를 투자해 드라마 15편·공포 및 장르영화 5편을 제작하는 ‘아시아의 봄(Asia’s Spring)’ 발표.',
-                scaleTc: '台灣國際合製與類型片龍頭（《模仿犯》《誰是被害者》）。2024年10月於釜山影展宣布啟動「亞洲之春」計畫，5年投入5,000萬美元開發15部影集與5部恐怖類型電影。',
-                koreaKo: '부산국제영화제(BIFF)에서 ‘아시아의 봄’ 프로젝트 공식 발표 및 한·대 합작 K-POP 오디션 예능 《SCOOL》의 국제 배급 담당.',
-                koreaTc: '於釜山影展發布「亞洲之春」跨國合製計畫，並負責台韓合製男團選秀節目《SCOOL》之國際發行。',
-                pitchKo: '‘아시아의 봄(드라마 15편·공포영화 5편)’ 라인업에 맞춰 웹툰 《CELL》, 학원 퇴마·밀실 서바이벌·스릴러 대본 및 오컬트 공포영화 《밀례》 협업을 직격 제안.',
-                pitchTc: '直接對準其「亞洲之春 15部影集＋5部恐怖片」藍圖，推薦《CELL》、校園驅魔、密室生存、懸疑驚悚劇本，以及恐怖片《密禮》合製或翻拍。',
+                works: ['SCOOL'],
+                scaleKo: '대만 국제 공동제작 및 장르물 선두 제작사(《모방범》《희생자 게임》). 2024년 10월 부산국제영화제에서 5년간 5천만 달러를 투자해 드라마 15편·공포 및 장르영화 5편을 제작하는 ‘아시아의 봄(Asia’s Spring)’ 발표.',
+                scaleTc: '台灣國際共同製作與類型片龍頭（《模仿犯》《誰是被害者》）。2024年10月於釜山影展宣布啟動「亞洲之春」計畫，5年投入5,000萬美元開發15部影集與5部恐怖類型電影。',
+                koreaKo: '부산국제영화제(BIFF)에서 ‘아시아의 봄’ 프로젝트 공식 발표 및 한·대 공동제작 K-POP 오디션 예능 《SCOOL》의 국제 배급 담당.',
+                koreaTc: '於釜山影展發布「亞洲之春」跨國共同製作計畫，並負責台韓共製男團選秀節目《SCOOL》之國際發行。',
                 iceKo: '부산국제영화제에서 발표하신 5천만 달러 규모의 ‘아시아의 봄(드라마 15편·공포영화 5편)’ 글로벌 프로젝트에 큰 감명을 받았습니다.',
                 iceTc: '得知貴司於釜山影展啟動 5,000 萬美元「亞洲之春」計畫（開發 15 部影集與 5 部恐怖類型片），與我們旗下的強類型 IP 高度契合！'
             },
@@ -760,9 +756,7 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 scaleTc: '專注於 IP 投資、跨國改編與類型劇孵化之影視廠牌。2026年5月剛開鏡新劇《你好，我的怪盜老闆》。',
                 koreaKo: '한국 드라마 《굿잡》(정일우·권유리 주연)을 리메이크한 《你好，我的怪盜老闆》 제작 — 한국 KT StudioGenie, 싱가포르 와와영화, 대만 문책원(TAICCA) 공동투자 성사.',
                 koreaTc: '2026年5月開鏡之《你好，我的怪盜老闆》正是翻拍自韓劇《絕佳拍檔 Good Job》，並由韓國 KT StudioGenie、新加坡哇哇映畫與台灣文策院共同投資製作。',
-                pitchKo: '‘한국 IP + 한국 자금 + 대만 제작 + 문책원(TAICCA) 매칭 펀드’ 모델을 방금 성공시킨 교과서적 파트너. 당사 대본·웹툰 60+편으로 차기 한·대 합작 프로젝트 복제 제안.',
-                pitchTc: '剛跑通「韓國 IP＋韓國資金＋台灣製作＋文策院資金」閉環的教科書級夥伴！直接拿劇本庫與 60+ 部網漫找他們複製下一部台韓合資案。',
-                iceKo: '최근 한국 드라마 《굿잡》을 원작으로 KT StudioGenie 및 문책원과 함께 《你好，我的怪盜老闆》 공동투자·제작을 성사시키신 점 깊이 주목하고 있습니다.',
+                iceKo: '최근 한국 드라마 《굿잡》을 원작으로 KT StudioGenie 및 문책원과 함께 《你好，我的怪盜老闆》 공동투자·공동제작을 성사시키신 점 깊이 주목하고 있습니다.',
                 iceTc: '我們非常關注貴司近期與韓國 KT StudioGenie 及文策院合資翻拍韓劇《絕佳拍檔 Good Job》（《你好，我的怪盜老闆》）的成功模式！'
             },
             {
@@ -773,12 +767,10 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 nameKo: '바이위 디지털 (百聿數碼 · Bossdom)',
                 nameTc: '百聿數碼 (Bossdom)',
                 works: [],
-                scaleKo: '넷플릭스 글로벌 히트작 《화등초상(華燈初上)》 및 《차시차각(此時此刻)》을 제작한 대만 상장 드라마 제작사. 자체 후반작업(Post-production) 및 대형 상업작 기획 강점.',
-                scaleTc: 'Netflix 全球熱播台劇《華燈初上》《此時此刻》出品製作公司，具備強大後期製作與大型商業劇集募資能力。',
-                koreaKo: '글로벌 OTT 타깃 대형 장르물 및 아시아 IP 기반 상업 시리즈 기획·제작 지속 확대.',
-                koreaTc: '持續針對全球 OTT 市場開發高預算商業類型劇與跨國 IP 改編項目。',
-                pitchKo: '고예산 상업 시리즈로 제작 가능한 판타지 로맨스, 타임슬립 코미디, 미스터리 스릴러 대본 및 인기 웹툰 IP 제안.',
-                pitchTc: '適合推薦高完成度之奇幻愛情、穿越喜劇、懸疑驚悚原創劇本與人氣網漫 IP 進行旗艦台劇改編或共同投資。'
+                scaleKo: '넷플릭스 글로벌 독점 공개작 《화등초상(華燈初上)》(2021), 《차시차각(此時此刻)》(2023), 《백만인추리(百萬人推理)》 등을 자체 기획·제작한 대만 상장 스튜디오.',
+                scaleTc: '自製出品 Netflix 全球獨播旗艦台劇《華燈初上》（2021）、《此時此刻》（2023）與《百萬人推理》的台灣上市影視製作與後期公司。',
+                koreaKo: '자체 후반작업(Post-production) 인프라를 기반으로 글로벌 OTT향 대형 상업 시리즈를 지속 기획·투자 중.',
+                koreaTc: '具備完整後期製作與國際 OTT 募資實力，持續開發高規格商業類型劇集。'
             },
             {
                 id: 'tw-twm',
@@ -787,13 +779,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: true,
                 nameKo: '타이완모바일 (台灣大哥大 · MyVideo)',
                 nameTc: '台灣大哥大 (Taiwan Mobile / MyVideo)',
-                works: ['Wind Up', 'Whale Star', 'Unforgotten'],
+                works: [],
                 scaleKo: '대만 3대 통신사 중 하나이자 토종 OTT ‘MyVideo’ 운영사. TCCF 공식 어워드 후원사로 누적 50편 이상의 대만 오리지널 영상에 투자한 핵심 자본.',
                 scaleTc: '台灣三大電信巨頭之一，營運本土指標 OTT「MyVideo」，並為 TCCF 官方大獎贊助商，累計投資超過 50 部原創影視作品。',
-                koreaKo: '문책원(TAICCA)과 함께 서울·부산 교류를 지속하며 한국 통신·미디어사(KT StudioGenie, LG U+ 등)와 공동투자 및 한국 드라마·영화 대량 구매 진행.',
-                koreaTc: '多次隨文策院赴首爾與釜山交流，與韓國 KT StudioGenie、LG U+ 等探討共同投資，且 MyVideo 長期採購韓劇、韓影與偶像內容。',
-                pitchKo: '① MyVideo 구매팀에 K-POP 숏드라마/영화 20+편 및 《Whale Star》《Unforgotten》 배급 제안 + ② 투자제작팀에 웹툰/대본 기반 한·대 공동투자 제안.',
-                pitchTc: '一信雙效：① 向 MyVideo 購片部推銷 20+ 部 K-POP 短劇/電影與《鯨星》《Unforgotten》；② 向內容投資部洽談網漫與劇本之台韓合資。'
+                koreaKo: 'MyVideo 플랫폼을 통해 한국 영화·드라마·애니메이션을 상시 구매·서비스하고 있으며, 국제 애니메이션 투자사 나다 홀딩스(智寶國際)의 최대주주로서 글로벌 IP 공동투자를 전개 중.',
+                koreaTc: '旗下 MyVideo 長期採購韓國電影、韓劇與動漫，同時身為國際動畫投資商「智寶國際」之最大股東，積極拓展跨國 IP 投資。'
             },
             {
                 id: 'tw-tv-four',
@@ -802,13 +792,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: false,
                 nameKo: '대만 4대 방송사 (TVBS · EBC 동삼 · SET 삼립 · GTV 팔대)',
                 nameTc: '四大商業電視網 (TVBS · 東森 EBC · 三立 SET · 八大 GTV)',
-                works: ['Whale Star', 'Unforgotten'],
+                works: ['SCOOL'],
                 scaleKo: '대만 상업 드라마 자체제작(自製部)과 해외 드라마 방영권 구매(購片部)를 주도하는 4대 메이저 방송 네트워크.',
                 scaleTc: '主導台灣商業戲劇自製（自製部）與海外韓劇採購播映（購片部）的四大核心電視網。',
-                koreaKo: '한국 SBS·MBC·JTBC 등과 한·대 합작 오디션 예능(《SCOOL》 등) 협업 및 장편 한국 드라마 지속 구매·리메이크.',
-                koreaTc: '近年與韓國電視台（SBS、MBC、JTBC 等）合作台韓合製選秀綜藝（如《SCOOL》），並長年採購長篇韓劇與尋找商業劇本翻拍。',
-                pitchKo: '자체제작부에는 타임슬립 코미디·판타지 로맨스·요리 연애 대본 리메이크를, 구매부에는 《Whale Star》《Unforgotten》 TV 방영권을 동시 제안.',
-                pitchTc: '對自製部主推穿越喜劇、奇幻愛情、料理戀愛劇本與青春網漫翻拍；對購片部主推時代大劇《鯨星》與懸疑劇《Unforgotten》電視播映權。'
+                koreaKo: '한국 SBS Medianet과 대만 측이 공동 제작한 한·대 합작 남단 오디션 예능 《SCOOL》(2024, SEVENTOEIGHT 데뷔)을 삼립(SET)·동삼(EBC)·TVBS에서 방영했으며, 팔대(GTV)·동삼 등은 한국 드라마를 연중 상시 구매·편성.',
+                koreaTc: '三立、東森、TVBS 聯合播映與韓國 SBS Medianet 跨國共製之男團選秀節目《SCOOL》（2024），八大與東森亦長年採購韓劇與開發商業劇本。'
             },
             {
                 id: 'tw-visionfilm',
@@ -817,28 +805,24 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: false,
                 nameKo: '비전 필름 · 화싱 엔터 (威像電影 · 華星娛樂 / 홍의소녀 팀)',
                 nameTc: '威像電影 · 華星娛樂 (紅衣小女孩團隊)',
-                works: ['밀례'],
-                scaleKo: '대만 대표 공포·민속 스릴러 프랜차이즈(《홍의소녀》 3부작, 《여귀교》) 개발·제작사.',
-                scaleTc: '台灣最成功的恐怖驚悚與民俗類型片開發商（代表作《紅衣小女孩》三部曲、《女鬼橋》系列）。',
-                koreaKo: '부천국제판타스틱영화제(BIFAN NAFF 프로젝트 마켓) 상시 참가 등 한국 공포·스릴러 제작진과 긴밀한 교류 보유.',
-                koreaTc: '常年入選並參與韓國富川國際奇幻影展（BIFAN NAFF 創投），與韓國恐怖驚悚片製作團隊交流密切。',
-                pitchKo: '당사의 학원 퇴마, 밀실 서바이벌, 미스터리 스릴러 대본 및 한국 공포영화 《밀례》 공동 프로모션·합작 제안에 최적화된 파트너.',
-                pitchTc: '完美契合 TAKEONE 旗下的「校園驅魔、密室生存、懸疑驚悚」原創劇本，並可探討恐怖片《密禮》合作。'
+                works: [],
+                scaleKo: '대만 대표 공포·민속 스릴러 프랜차이즈(《홍의소녀》 시리즈, 《여귀교》) 개발·제작사.',
+                scaleTc: '台灣代表性恐怖驚悚與民俗類型片開發商（代表作《紅衣小女孩》三部曲、《女鬼橋》系列）。',
+                koreaKo: '대표작 《홍의소녀(紅衣小女孩)》가 2015년 한국 부천국제판타스틱영화제(BIFAN) NAFF 프로젝트 마켓에 입선했으며, VR 외전 《홍의소녀: 마신자》 또한 2018년 부천국제판타스틱영화제에 공식 초청됨.',
+                koreaTc: '代表作《紅衣小女孩》入選 2015 年韓國富川國際奇幻影展（BIFAN）創投項目，VR 外傳《紅衣小女孩：魔神仔》亦入選 2018 年富川奇幻影展。'
             },
             {
                 id: 'tw-producers-pack',
                 region: 'TW',
                 tracks: ['T1', 'T3'],
                 priority: false,
-                nameKo: '양인행 · 결과오락 · mm2 대만 · 화원창 · 경문학',
+                nameKo: '양인행(良人行) · 결과오락 · mm2 대만 · 화원창 · 경문학',
                 nameTc: '良人行影業 · 結果娛樂 · 滿滿額 mm2 · 華文創 · 鏡文學',
-                works: ['CELL'],
-                scaleKo: '넷플릭스 1위 대만 드라마 《영후(影后)》 제작사(양인행), 대만 대표 IP 개발사(경문학·결과오락) 및 상업영화 투자배급사(mm2·화원창).',
-                scaleTc: '涵蓋 Netflix 爆款台劇《影后》製作公司（良人行）、指標故事平台（鏡文學）、整合開發商（結果娛樂）與商業電影投資方（滿滿額、華文創）。',
-                koreaKo: '양인행의 부산국제영화제 아시아콘텐츠포럼 참가, mm2·화원창의 아시아 상업영화 공동투자 및 리메이크 개발 등 활발한 교류.',
-                koreaTc: '良人行曾受邀參與釜山影展論壇，滿滿額與華文創則長期參與亞洲商業類型片投資與劇本改編開發。',
-                pitchKo: '여성 타깃 판타지·요리 로맨스 대본 및 부산영화제 초청 웹툰 《CELL》 등 검증된 상업 원작 IP 패키지 제안.',
-                pitchTc: '主推女性受眾極高的奇幻愛情、料理戀愛劇本，以及釜山影展入選冠軍網漫《CELL》等 60+ 部漫改 IP。'
+                works: [],
+                scaleKo: '넷플릭스 대만 드라마 《영후(影后)》 제작사(양인행), 대만 대표 소설·대본 IP 플랫폼(경문학), 드라마 개발·마케팅사(결과오락) 및 영화 투자배급사(mm2·화원창).',
+                scaleTc: '涵蓋 Netflix 熱門台劇《影后》製作公司（良人行）、指標故事平台（鏡文學）、整合開發商（結果娛樂）與商業電影投資方（滿滿額、華文創）。',
+                koreaKo: '양인행(良人行)이 제작한 넷플릭스 오리지널 시리즈 《영후(影后, Born for the Spotlight)》가 2024년 10월 제29회 부산국제영화제(BIFF)에 공식 초청되어 첫 3화를 월드 프리미어로 상영함.',
+                koreaTc: '良人行影業製作之 Netflix 影集《影后》入選 2024 年第 29 屆釜山國際影展（BIFF），並於釜山全球首映前三集。'
             },
             {
                 id: 'tw-telecom-ott',
@@ -847,13 +831,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: true,
                 nameKo: '중화텔레콤 Hami Video · 원전 friDay影音',
                 nameTc: '中華電信 Hami Video · 遠傳 friDay影音',
-                works: ['Wind Up', 'Whale Star', 'Unforgotten'],
-                scaleKo: '대만 최대 통신사 OTT(Hami Video) 및 대만 내 한류 콘텐츠 구매량 1위 OTT 플랫폼(friDay影音).',
-                scaleTc: '台灣最大電信商旗下 Hami Video 與台灣韓流影視採購量第一名的遠傳 friDay影音。',
-                koreaKo: 'CJ ENM, SBS, MBC, JTBC, KT StudioGenie 등으로부터 한국 드라마·영화·K-POP 예능을 대량 독점 구매하여 유료 가입자 확보.',
-                koreaTc: '長期向 CJ ENM、SBS、MBC、JTBC、KT StudioGenie 等採購獨播韓劇、韓國電影與 K-POP 偶像綜藝。',
-                pitchKo: 'NCT JENO & JAEMIN 주연 《Wind Up》, TWICE 다현, MONSTA X, ZB1 등 20+편 K-POP 숏드라마/영화(가로·세로 이중 규격) 및 대작 《Whale Star》《Unforgotten》 패키지 제안.',
-                pitchTc: '主打 NCT JENO & JAEMIN《Wind Up》、TWICE 多賢、ZB1 等 20+ 部偶像新作（直式短劇＋橫式電影雙規格），並同步推銷長劇《鯨星》與《Unforgotten》！'
+                works: [],
+                scaleKo: '대만 최대 통신사 OTT(Hami Video) 및 대만 내 한류 드라마·예능 최다 스트리밍 플랫폼(friDay影音).',
+                scaleTc: '台灣最大電信商旗下 Hami Video 與台灣韓流影視播映主力平台遠傳 friDay影音。',
+                koreaKo: 'friDay影音은 《재벌집 막내아들》《모범택시》 등 한국 주요 방송사·스튜디오의 드라마·예능을 대량 수급하며, Hami Video는 한국 화제작 드라마 및 《파묘》 등 흥행 한국영화를 독점 스트리밍.',
+                koreaTc: 'friDay影音長期引進《財閥家的小兒子》《模範計程車》等大量韓劇與韓綜；Hami Video 則重金採購熱門韓劇與《破墓》等韓國強檔電影獨播。'
             },
             {
                 id: 'tw-linetv-catchplay-elta',
@@ -862,13 +844,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: false,
                 nameKo: 'LINE TV · CATCHPLAY+ · ELTA(애얼달) · 포트코(杰德)',
                 nameTc: 'LINE TV · CATCHPLAY+ · 愛爾達 (ELTA) · 杰德創意影音',
-                works: ['Wind Up', 'Unforgotten'],
-                scaleKo: '대만 젊은 여성층 1위 플랫폼(LINE TV), 대만·인도네시아 크로스보더 OTT(CATCHPLAY+), 중화텔레콤 MOD 대표 채널(ELTA).',
-                scaleTc: '年輕女性用戶極多的 LINE TV、橫跨台印市場的 CATCHPLAY+，以及中華電信 MOD 龍頭頻道商愛爾達與杰德影音。',
-                koreaKo: 'LINE TV는 한국 웹드라마·아이돌 드라마 상시 편성, CATCHPLAY+는 영국·한국 범죄 스릴러 및 상업영화 구매, ELTA는 스포츠(야구)와 한류 드라마 주력.',
-                koreaTc: 'LINE TV 長期播映韓國青春網劇與偶像劇；CATCHPLAY+ 偏愛高質感英美與韓國犯罪懸疑劇；愛爾達則以棒球轉播與韓劇聞名。',
-                pitchKo: 'LINE TV·ELTA에는 NCT 청춘 야구 드라마 《Wind Up》 등 K-POP 20+편을, CATCHPLAY+에는 BBC 리메이크 범죄 스릴러 《Unforgotten》과 《Whale Star》를 맞춤 제안.',
-                pitchTc: '對 LINE TV 與愛爾達強推 NCT 青春棒球劇《Wind Up》等 20+ 部偶像短劇包；對 CATCHPLAY+ 強推 BBC 翻拍懸疑劇《Unforgotten》與《鯨星》。'
+                works: [],
+                scaleKo: '대만 젊은 층 주력 OTT(LINE TV), 대만·인도네시아 크로스보더 플랫폼(CATCHPLAY+), 중화텔레콤 MOD 대표 채널(ELTA).',
+                scaleTc: '年輕用戶極多的 LINE TV、橫跨台印市場的 CATCHPLAY+，以及中華電信 MOD 龍頭頻道商愛爾達與杰德影音。',
+                koreaKo: 'LINE TV는 한국 드라마·아이돌 출연작을 상시 편성하며, CATCHPLAY+는 《나 혼자만 레벨업》 등 한·일 화제작 및 스릴러 시리즈를 편성, ELTA는 스포츠(야구) 중계와 한국 드라마 전용 채널을 운영.',
+                koreaTc: 'LINE TV 長期播映韓劇與偶像作品；CATCHPLAY+ 上架《我獨自升級》與歐美韓懸疑劇集；愛爾達則以棒球轉播與影劇台韓劇播映聞名。'
             },
             {
                 id: 'tw-vieshow',
@@ -877,13 +857,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: true,
                 nameKo: '비에쇼 필름 (威視電影 · 威秀影城 그룹)',
                 nameTc: '威視電影 / 威秀影城集團 (Vie Vision / Vieshow)',
-                works: ['Wind Up', '밀례'],
+                works: [],
                 scaleKo: '대만 시장점유율 1위 멀티플렉스 체인 ‘威秀影城’ 계열 배급사(2024년 6월 완인 인터내셔널이 지분 35.69% 인수로 최대주주).',
                 scaleTc: '台灣市佔率第一連鎖影城「威秀影城」旗下發行商（2024年6月網銀國際收購 35.69% 股權成為最大股東）。',
-                koreaKo: '대만 내 K-POP 아이돌 콘서트 영화·팬 특별 상영회 및 한국 상업·공포영화 극장 개봉을 가장 활발히 진행하는 극장 배급사.',
-                koreaTc: '台灣引進最多 K-POP 偶像大銀幕電影、粉絲特典場次與韓國商業／恐怖電影的指標院線通路。',
-                pitchKo: 'NCT 《Wind Up》·TWICE 다현·ZB1 등 20+편 가로형 영화의 ‘극장 팬 스페셜 상영회(포토카드 특전 연동)’ 및 한국 공포영화 《밀례》 대만 극장 배급 제안.',
-                pitchTc: '必約頭號院線買家！推銷 NCT《Wind Up》、TWICE 多賢、ZB1 等 20+ 部橫式電影版之「影城粉絲特典場」，以及韓國恐怖片《密禮》院線發行！'
+                koreaKo: '威秀影城를 통해 BTS, SEVENTEEN, Stray Kids 등 한국 최정상 K-POP 그룹의 월드투어 콘서트 극장 중계·실황 영화 및 한국 공포·상업영화를 대만 전역에서 상영.',
+                koreaTc: '威秀影城長期獨家或主力上映 BTS、SEVENTEEN、Stray Kids 等 K-POP 韓團演唱會電影與現場直播，並由威視電影發行多部韓國恐怖與商業片。'
             },
             {
                 id: 'tw-garageplay',
@@ -892,13 +870,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: true,
                 nameKo: '개러지플레이 (車庫娛樂 · GaragePlay)',
                 nameTc: '車庫娛樂 (GaragePlay)',
-                works: ['파묘 (Exhuma)', '밀례'],
+                works: ['파묘 (Exhuma)'],
                 scaleKo: '대만 내 한국영화 최다 구매·배급 1위 기업이자 자체 스트리밍 플랫폼 ‘GP+’ 운영사.',
                 scaleTc: '台灣韓國電影買片量第一名的發行商，並營運自有串流平台「GP+」。',
                 koreaKo: '한국 오컬트 공포 대작 《파묘(破墓)》를 대만에 배급해 흥행 수입 1.12억 대만달러(NT$)를 돌파하며 대만 역대 아시아 공포영화 최고 기록 달성.',
                 koreaTc: '在台獨家發行韓國巫俗恐怖大片《破墓》，創下破 1.12 億台幣票房奇蹟（刷新台灣影史亞洲恐怖片最高紀錄）。',
-                pitchKo: '《파묘》의 대성공으로 한국 오컬트·샤머니즘 공포물에 가장 적극적인 바이어! 신작 공포영화 《밀례(密禮)》 예고편 최우선 시사 및 K-POP 가로형 영화 패키지 제안.',
-                pitchTc: '因《破墓》破億大賣，車庫對韓國巫俗恐怖片極度敏銳！見面首推恐怖片《密禮》預告片，並打包推銷 K-POP 偶像橫式電影。',
                 iceKo: '귀사가 배급한 한국 오컬트 공포영화 《파묘》가 대만에서 1.12억 대만달러를 돌파하며 대기록을 세운 점에 깊은 인상을 받았습니다.',
                 iceTc: '非常佩服貴司在台灣發行韓國恐怖大片《破墓》創下破億票房的驚人實績！'
             },
@@ -909,13 +885,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: false,
                 nameKo: '차이창 인터내셔널 (采昌國際多媒體)',
                 nameTc: '采昌國際多媒體 (Cai Chang International)',
-                works: ['전지적 독자 시점', '밀례'],
+                works: ['전지적 독자 시점'],
                 scaleKo: '대만 3대 일·한 영화 전문 독립 배급사로, SNS 화제성 마케팅과 팬덤 프로모션에 강점 보유.',
                 scaleTc: '台灣排名前三的日韓電影獨立發行商，以極強的社群話題行銷與粉絲特映操作著稱。',
                 koreaKo: '대만 역대 한국영화 흥행 1위 《신과 함께》 배급사이며, 2025년 7월 한국 대작 《전지적 독자 시점(全知讀者視角)》을 대만 개봉(첫날 NT$424만으로 최근 5년 한국영화 오프닝 1위 기록).',
                 koreaTc: '曾締造《與神同行》台灣影史韓片票房冠軍；2025年7月在台盛大發行《全知讀者視角》（首日票房 424 萬台幣創近五年韓片開片冠軍）。',
-                pitchKo: '《전지적 독자 시점》의 성공적인 마케팅 역량을 언급하며, 당사 공포영화 《밀례》와 팬덤 화제성이 높은 K-POP 아이돌 가로형 영화 배급 제안.',
-                pitchTc: '先稱讚其發行《全知讀者視角》首日破紀錄的強大聲量，接著推薦恐怖片《密禮》以及粉絲號召力極強的 K-POP 偶像橫式電影。',
                 iceKo: '최근 한국 영화 《전지적 독자 시점》을 대만에 배급하시어 오프닝 흥행 신기록을 세우신 뛰어난 마케팅 역량에 깊이 감탄했습니다.',
                 iceTc: '非常佩服貴司近期在台發行《全知讀者視角》創下近五年韓片首日票房冠軍的強大行銷實力！'
             },
@@ -926,43 +900,37 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: false,
                 nameKo: '웨이라이(緯來) · 롱화(龍華) · 팔대(八大 구매부)',
                 nameTc: '緯來電視網 (Videoland) · 龍華電視 (LTV) · 八大購片部',
-                works: ['Whale Star', 'Unforgotten'],
+                works: [],
                 scaleKo: '대만 케이블TV 및 MOD 유료방송에서 한국 드라마 편성 비중이 가장 높은 3대 핵심 채널 사업자.',
                 scaleTc: '台灣有線電視與 MOD 數位頻道播映韓劇的三大主力頻道商。',
                 koreaKo: 'KBS·SBS·MBC·tvN·JTBC의 장편 한국 드라마, 시대극, 미스터리 극을 연중 상시 구매하여 대만 전역에 방영.',
-                koreaTc: '長年向韓國無線三台與 tvN、JTBC 採購黃金檔長篇韓劇、時代劇與懸疑劇進行全台播映。',
-                pitchKo: '장편 시대 대작 《Whale Star(고래별)》 및 BBC 원작 미스터리 수사극 《Unforgotten》의 대만 TV 방영권 제안.',
-                pitchTc: '重點推銷時代大劇《鯨星（Whale Star）》與 BBC 翻拍懸疑劇《Unforgotten》之台灣電視播映權。'
+                koreaTc: '長年向韓國無線三台與 tvN、JTBC 採購黃金檔長篇韓劇、時代劇與懸疑劇進行全台播映。'
             },
             {
                 id: 'tw-anime-dist',
                 region: 'TW',
                 tracks: ['T2', 'T4'],
                 priority: false,
-                nameKo: '만디(曼迪) · 목면화(木棉花) · 링방 대만(羚邦) · 회귀선(回歸線)',
-                nameTc: '曼迪傳播 · 木棉花國際 · 羚邦台灣 · 回歸線娛樂',
-                works: [],
-                scaleKo: '대만 및 범아시아 애니메이션 배급과 캐릭터 굿즈·팝업스토어 시장을 주도하는 4대 메이저 에이전시.',
-                scaleTc: '主導台灣與泛亞動畫代理發行及角色快閃店、周邊授權的四大天王。',
-                koreaKo: '《나 혼자만 레벨업》《신의 탑》《갓 오브 하이스쿨》《외모지상주의》 등 한국 웹툰 원작 애니메이션의 대만 배급 및 MD 라이선스 진행.',
-                koreaTc: '曾代理引進《我獨自升級》《神之塔》《高校之神》《外貌協會至上主義》等韓國網漫改編動畫及其周邊商品。',
-                pitchKo: '오리지널 및 단편 애니메이션 시리즈 배급권(T2)과 《ENHYPEN WORLD》 Vamkids 캐릭터 팝업스토어·MD 라이선스(T4) 동시 협의.',
-                pitchTc: '可同時洽談原創動畫系列台灣發行（T2）以及 Vamkids 角色周邊與快閃店授權合作（T4）。'
+                nameKo: '링방 대만(羚邦) · 목면화(木棉花) · 만디(曼迪) · 회귀선(回歸線)',
+                nameTc: '羚邦台灣 (Medialink) · 木棉花國際 · 曼迪傳播 · 回歸線娛樂',
+                works: ['나 혼자만 레벨업'],
+                scaleKo: '대만 및 범아시아 애니메이션 배급과 캐릭터 굿즈·만화박람회 대형 부스 시장을 주도하는 4대 메이저 에이전시.',
+                scaleTc: '主導台灣與泛亞動畫代理發行及角色快閃店、漫博會周邊授權的四大動畫代理商。',
+                koreaKo: '링방(羚邦集團)이 한국 웹툰 원작 애니메이션 《나 혼자만 레벨업(我獨自升級, Solo Leveling)》의 대만·홍콩·동남아 배급 및 2026 타이베이 만화박람회 굿즈 부스를 운영.',
+                koreaTc: '羚邦集團（Medialink）代理發行韓國網漫改編動畫《我獨自升級（Solo Leveling）》，並於 2026 台北漫畫博覽會打造主題展區與周邊販售。'
             },
             {
                 id: 'tw-nada-anim',
                 region: 'TW',
                 tracks: ['T3'],
                 priority: false,
-                nameKo: '나다 홀딩스(智寶國際) · 란서스(冉色斯) · 몽상동화(夢想動畫)',
-                nameTc: '智寶國際 (Nada) · 冉色斯 (Xanthus) · 夢想動畫 · 魯颯颯 · 伊利亞',
-                works: ['CELL'],
-                scaleKo: '국제 애니메이션 제작위원회 설계 1위 기업(나다 홀딩스) 및 대만 대표 3D/2D 애니메이션·VFX 스튜디오 그룹.',
-                scaleTc: '台灣最強國際動畫製作委員會操盤手（智寶國際）與代表性 3D/2D 動畫及視效製作公司群。',
-                koreaKo: '문책원(TAICCA)과 협력하여 일본·한국 웹툰/게임 IP의 글로벌 애니메이션 공동투자 및 제작위원회 결성 추진.',
-                koreaTc: '與文策院深度合作，積極接洽日韓網漫與遊戲 IP 組建跨國動畫製作委員會並推向國際 OTT 平台。',
-                pitchKo: '당사 보유 60+편 웹툰(《CELL》《마왕까지 한 걸음》 등)의 애니메이션화 공동투자 및 오리지널 애니 합작 제작 제안.',
-                pitchTc: '針對 60+ 部網漫（如《CELL》《離魔王只有一步》）改編動畫與原創動畫，洽談組建台韓日跨國動畫製作委員會。'
+                nameKo: '나다 홀딩스(智寶國際) · 상영융창(翔英融創) · 란서스(冉色斯) · 몽상동화',
+                nameTc: '智寶國際 (Nada) · 翔英融創 · 冉色斯 (Xanthus) · 夢想動畫',
+                works: [],
+                scaleKo: '타이완모바일(台灣大哥大)이 최대주주인 대만 대표 국제 애니메이션 제작위원회 투자사(나다 홀딩스) 및 3D/2D 애니메이션·VFX 스튜디오 그룹.',
+                scaleTc: '由台灣大哥大擔任最大股東之國際動畫製作委員會投資商（智寶國際），以及代表性 3D/2D 動畫與視效製作公司群。',
+                koreaKo: '2024년 5월 대만 문책원(TAICCA)과 합자회사 ‘상영융창(翔英融創)’을 설립하여 해외 애니메이션 제작위원회 투자 및 글로벌 공동제작 프로젝트를 추진 중.',
+                koreaTc: '智寶國際於 2024 年 5 月與文策院合資成立「翔英融創」，專門組建跨國動畫製作委員會並推動原創 IP 國際動畫化。'
             },
             {
                 id: 'tw-taicca',
@@ -972,12 +940,10 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 nameKo: '문책원 (TAICCA · 대만문화콘텐츠진흥원 국제합제팀)',
                 nameTc: '文策院 (TAICCA 國際合製投資部門)',
                 works: ['굿잡 (Good Job)'],
-                scaleKo: 'TCCF 주최 기관이자 ‘국제합작투자프로젝트(TICP)’를 통해 대만 측 제작비의 최대 49%까지 지분 투자·지원하는 정부 기관.',
-                scaleTc: 'TCCF 主辦機構，透過「國際合作投資專案計畫（TICP）」提供最高達 49% 之跨國合資資金支持。',
-                koreaKo: '한국 KOCCA, KOFIC, 부산국제영화제(BIFF), KT StudioGenie 등과 MOU 체결 및 다수의 한·대 합작 프로젝트 공동투자 집행.',
-                koreaTc: '已與韓國 KOCCA、KOFIC、釜山影展（BIFF）、KT StudioGenie 等簽署 MOU 並共同投資多部台韓合製作品。',
-                pitchKo: '국제팀 미팅을 통해 대만 현지 합작 파트너 매칭 및 TICP 공동투자 펀드 활용 방안 직접 협의.',
-                pitchTc: '預約文策院國際組，請其媒合台灣合製夥伴並指導申請 TICP 國際合資資金槓桿。'
+                scaleKo: 'TCCF 주최 기관이자 ‘국제합작투자프로젝트(TICP)’를 통해 대만 측 제작비의 최대 49%까지 투자·지원하는 정부 기관.',
+                scaleTc: 'TCCF 主辦機構，透過「國際合作投資專案計畫（TICP）」提供跨國合資資金支持。',
+                koreaKo: 'TCCF에 한국콘텐츠진흥원(KOCCA) 한국관(KBS, MBC, KT StudioGenie 등 참가)을 유치하고, KT StudioGenie가 참여한 《你好，我的怪盜老闆》(한국 드라마 《굿잡》 리메이크) 등에 공동투자를 집행.',
+                koreaTc: '於 TCCF 引進韓國 KOCCA 韓國館（含 KBS、MBC、KT StudioGenie 等參展），並共同投資翻拍自韓劇《Good Job》之台韓共製劇《你好，我的怪盜老闆》。'
             },
             {
                 id: 'tw-fanme',
@@ -989,42 +955,38 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 works: [],
                 scaleKo: '대만 대표 K-POP 공식 MD·앨범·팬사인회·팝업 전문 브랜드. 2025년 7월 콘서트 성지인 ‘타이베이 아레나(台北小巨蛋)’에 대형 상설 매장 오픈.',
                 scaleTc: '台灣最火紅的 K-POP 官方周邊、簽售與快閃店專門品牌。2025年7月於演唱會聖地「台北小巨蛋」開設首家大型常設實體門市。',
-                koreaKo: '(G)I-DLE·MEOVV 대만 팬사인회 및 팝업 주최, 2025년 한국 KPOPMERCH 팝업스토어 타이베이 신트렌드(三創) 도입, 타이베이 아레나 매장에서 ENHYPEN·SEVENTEEN·LE SSERAFIM 특전 포토카드 럭키드로우 운영.',
-                koreaTc: '曾主辦 (G)I-DLE、MEOVV 台灣簽售與快閃活動；2025年引進韓國 KPOPMERCH 快閃店至台北三創；小巨蛋門市更直接設有 ENHYPEN、SEVENTEEN 等特典小卡抽卡機！',
-                pitchKo: 'ENHYPEN 팬덤 구매력과 포토카드 럭키드로우를 가장 잘 아는 파트너! 《ENHYPEN WORLD》 Vamkids 타이베이 팝업 및 ‘인게임 아이템+한정 포토카드 패키지’ 독점 유통 제안.',
-                pitchTc: '100% 精準命中！小巨蛋門市本來就主打 ENHYPEN 抽卡機，直接洽談《ENHYPEN WORLD》Vamkids 快閃店與「遊戲虛寶＋實體特典小卡禮包」全台首發！',
-                iceKo: '2025년 7월 타이베이 아레나(小巨蛋) 상설 매장 오픈과 한국 KPOPMERCH 팝업 및 ENHYPEN 포토카드 이벤트 등을 성공적으로 운영하신 점 깊이 주목하고 있습니다.',
-                iceTc: '看到貴司於台北小巨蛋開設常設店、引進 KPOPMERCH 快閃店並推出 ENHYPEN 特典小卡活動大受歡迎，與我們的手遊角色 IP 完美契合！'
+                koreaKo: '(G)I-DLE·MEOVV 대만 팬사인회 및 팝업 주최, 2025년 한국 KPOPMERCH 팝업스토어 타이베이 신트렌드(三創) 도입, 타이베이 아레나 매장에서 K-POP 아이돌 특전 포토카드 럭키드로우 운영.',
+                koreaTc: '曾主辦 (G)I-DLE、MEOVV 台灣簽售與快閃活動；2025年引進韓國 KPOPMERCH 快閃店至台北三創；小巨蛋門市更設有韓國偶像特典小卡抽卡機。',
+                iceKo: '2025년 7월 타이베이 아레나(小巨蛋) 상설 매장 오픈과 한국 KPOPMERCH 팝업 및 포토카드 이벤트 등을 성공적으로 운영하신 점 깊이 주목하고 있습니다.',
+                iceTc: '看到貴司於台北小巨蛋開設常設店、引進 KPOPMERCH 快閃店並推出韓國偶像特典小卡活動大受歡迎，與我們的角色 IP 及周邊業務高度契合！'
             },
             {
                 id: 'tw-bigart-0percent',
                 region: 'TW',
                 tracks: ['T4'],
                 priority: false,
-                nameKo: 'BIG ART(대예오락) & 0% TAIPEI',
-                nameTc: 'BIG ART (大藝娛樂) & 0% TAIPEI',
+                nameKo: '0% TAIPEI · BIG ART(대예오락)',
+                nameTc: '0% TAIPEI · BIG ART (大藝娛樂)',
                 works: [],
-                scaleKo: '대만 주요 일·한 콘서트 주최사(BIG ART)이자 타이베이 중산구(赤峰街) 핵심 상권의 트렌디 팝업 전용 공간 운영사(0% TAIPEI).',
-                scaleTc: '台灣知名日韓演唱會主辦（大藝娛樂）暨台北中山區赤峰街潮流一級戰區快閃店空間「0% TAIPEI」營運商。',
-                koreaKo: '타이베이 내 다수의 일·한 IP 팝업 운영뿐만 아니라, 2025년 서울 성수·홍대에서 한국 팬덤 플랫폼 b.stage(bemyfriends)와 협력해 아이돌 팝업스토어 진행.',
-                koreaTc: '除在台北營運多檔日韓快閃店外，2025年更於首爾聖水洞／弘大與韓國粉絲平台巨頭 b.stage (bemyfriends) 合作舉辦大型偶像快閃店。',
-                pitchKo: '대만 Z세대 K-POP 팬들의 성지인 0% TAIPEI(중산구)에서 《ENHYPEN WORLD》 Vamkids 테마 팝업스토어 공동 기획·운영 제안.',
-                pitchTc: '0% TAIPEI 位於台灣 Z 世代追星族最愛的中山赤峰商圈，非常適合合作策劃《ENHYPEN WORLD》Vamkids 主題快閃店。'
+                scaleKo: '타이베이 중산구(赤峰街) 및 화산1914 문화창의원구에서 대형 캐릭터·IP 팝업스토어를 운영하는 전문 브랜드(0% TAIPEI) 및 해외 아티스트 공연 주최사(BIG ART).',
+                scaleTc: '於台北中山區赤峰街與華山1914文創園區營運大型 IP 快閃店之專門品牌（0% TAIPEI）暨海外藝人演唱會主辦（大藝娛樂）。',
+                koreaKo: '타이베이 적봉가(赤峰街) 단독 매장과 화산1914·가오슝 보얼예술특구 등에서 《치이카와(吉伊卡哇)》, 《나가노 마켓》, 《카나헤이》 등 대형 해외 캐릭터 팝업스토어와 온라인 정리권·한정 특전 이벤트를 연속 흥행시킴.',
+                koreaTc: '於台北赤峰街與華山文創園區成功操盤《吉伊卡哇》《nagano market》《卡娜赫拉》等現象級海外角色快閃店，熟悉線上整理券預約與滿額特典操作。'
             },
             {
                 id: 'tw-capsule-udesign-beast',
                 region: 'TW',
                 tracks: ['T4'],
                 priority: false,
-                nameKo: 'CAPSULE Taiwan · u.design(유니공창) · 야수국(Beast Kingdom) · HOKI',
-                nameTc: 'CAPSULE Taiwan · 有你共創 (u.design) · 野獸國 · HOKI 鶴奇 · 福福好',
+                nameKo: '야수국(野獸國 Beast Kingdom) · 정탑창의(聚塔創意) · CAPSULE(OU-EN CAFE)',
+                nameTc: '野獸國 (Beast Kingdom) · 聚塔創意 (Tower Torch) · CAPSULE (OU-EN CAFE)',
                 works: [],
-                scaleKo: '대만 백화점·문화단지(화산1914·송산문창) 대형 팝업스토어, 콜라보 카페(OU-EN CAFE) 및 캐릭터 라이선싱·MD 제조 대표 기업군.',
-                scaleTc: '台灣大型文創園區（華山、松菸）、百貨快閃店、主題咖啡廳（OU-EN CAFE）與角色商品化授權龍頭群。',
-                koreaKo: 'Kakao Friends, LINE FRIENDS, 조구만(JOGUMAN), 디노탱(DINOTAENG), 잔망루피 등 한국 인기 캐릭터 대만 팝업스토어 및 K-POP 응원 카페·피규어 유통 다수 진행.',
-                koreaTc: '曾引進 Kakao Friends、LINE FRIENDS、JOGUMAN、DINOTAENG、잔망루피 等韓國現象級角色在台舉辦大型快閃店、開發聯名周邊與主題咖啡廳。',
-                pitchKo: 'Vamkids 대만 지역 상품화 라이선스(MD 현지 제작), 콜라보 테마 카페 및 백화점 순회 팝업스토어 파트너십 제안.',
-                pitchTc: '洽談 Vamkids 台灣區商品化聯名授權（Licensing）、主題咖啡廳與大型百貨巡迴快閃店合作。'
+                scaleKo: '대만 백화점(브리즈 난산·삼창·화산1914) 대형 한국 IP 팝업스토어 주최사(야수국, 정탑창의) 및 타이베이·타이중 콜라보 카페 직영사(CAPSULE).',
+                scaleTc: '台灣大型百貨（微風南山、三創、華山1914）韓國 IP 快閃店主辦商（野獸國、聚塔創意）及主題聯名咖啡廳直營商（CAPSULE）。',
+                koreaKo: '야수국(野獸國)은 2026년 3월 샤이니 태민 공식 캐릭터 IP ‘TAEMori(《TAEMori COZY NEST》)’ 팝업스토어와 2026년 11월 한국 인기 IP ‘우주떡집(宇宙年糕店)’ 팝업스토어를 타이베이 브리즈 난산(微風南山)에서 주최. 정탑창의는 한국 캐릭터 ‘조구만(JOGUMAN)’ 화산1914·삼창 팝업을 주최.',
+                koreaTc: '野獸國於 2026 年 3 月引進韓國藝人泰民個人角色 IP「TAEMori」於台北微風南山舉辦《COZY NEST》快閃店，並於 2026 年 11 月舉辦韓國 IP「宇宙年糕店」微風南山快閃店；聚塔創意則代理主辦韓國文創「JOGUMAN」華山與三創快閃店。',
+                iceKo: '2026년 타이베이 브리즈 난산(微風南山)에서 한국 아티스트 태민의 캐릭터 IP ‘TAEMori’ 팝업스토어와 ‘우주떡집’ 팝업스토어를 성공적으로 주최하신 점 깊이 주목하고 있습니다.',
+                iceTc: '看到貴司於 2026 年引進韓國藝人泰民角色 IP《TAEMori》及《宇宙年糕店》於台北微風南山舉辦大型快閃店非常成功，與我們的角色 IP 與周邊業務高度契合！'
             },
             {
                 id: 'tw-gamania',
@@ -1036,10 +998,8 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 works: [],
                 scaleKo: '대만 최대 게임 퍼블리싱·엔터 상장사(beanfun! 플랫폼, 쇼핑몰 및 영상 투자 펀드 보유).',
                 scaleTc: '台灣最大遊戲代理與泛娛樂上市公司之一，擁有 beanfun! 社群、購物橘子電商及影視文創投資基金。',
-                koreaKo: '한국 Nexon(《메이플스토리》), NCSoft(《리니지》), Kakao Games 등과 20년 이상 깊은 파트너십을 유지하며 대형 오프라인 페스티벌 및 IP 굿즈 커머스 운영.',
-                koreaTc: '代理韓國 Nexon《楓之谷》、NCSoft《天堂》長達 20 餘年，深諳「手遊虛寶＋實體周邊小卡＋線下嘉年華」整合變現。',
-                pitchKo: '모바일 게임 《ENHYPEN WORLD》 대만·홍콩 공동 프로모션 및 ‘인게임 아이템+Vamkids 실물 포토카드 패키지’ 독점 이커머스 판매 제안.',
-                pitchTc: '最適合洽談《ENHYPEN WORLD》手遊台港澳聯合行銷＋獨家販售「Vamkids 周邊＆遊戲虛寶小卡禮包」。'
+                koreaKo: '한국 Nexon(《메이플스토리》), NCSoft(《리니지》) 등 한국 대표 게임 IP를 20년 이상 대만에 퍼블리싱하며 대형 오프라인 유저 페스티벌 및 IP 굿즈 커머스를 운영.',
+                koreaTc: '代理韓國 Nexon《楓之谷》、NCSoft《天堂》長達 20 餘年，深諳「手遊虛寶＋實體周邊小卡＋線下嘉年華」整合變現。'
             },
 
             // --- 🇯🇵 일본 (Japan) ---
@@ -1050,30 +1010,26 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: true,
                 nameKo: 'NTT 도코모 스튜디오 & 라이브 (NTT DOCOMO Studio & Live / Lemino)',
                 nameTc: 'NTT DOCOMO Studio & Live (旗下 Lemino 平台)',
-                works: ['Wind Up', 'Whale Star'],
-                scaleKo: '일본 최대 통신사 NTT 도코모와 요시모토흥업이 설립한 합작법인이자 TCCF 공식 전략 파트너. 일본 메이저 OTT 플랫폼 ‘Lemino’ 운영.',
-                scaleTc: '日本最大電信 NTT DOCOMO 與吉本興業合資成立之娛樂巨頭，為 TCCF 官方戰略合作夥伴，營運串流平台「Lemino」。',
-                koreaKo: 'Lemino 플랫폼을 통해 한국 드라마, K-POP 아이돌 콘텐츠 및 예능(HYBE·SM·CJ ENM 등)을 대량 독점 수급하며 한·일 공동투자·제작을 적극 확대 중.',
-                koreaTc: '透過 Lemino 平台大量引進獨家韓劇、K-POP 偶像綜藝與音樂內容，並積極參與日韓共同投資與合製。',
-                pitchKo: 'NCT 《Wind Up》, TWICE 다현, MONSTA X, ZB1 등 20+편 K-POP 숏드라마·영화의 일본 Lemino 독점 선공개 및 한·일 공동투자 프로젝트 제안.',
-                pitchTc: '主推 NCT《Wind Up》、TWICE 多賢、ZB1 等 20+ 部 K-POP 短劇／電影於日本 Lemino 平台獨播，並洽談日韓共同投資合製。',
-                iceJa: '貴社が展開されている映像配信プラットフォーム「Lemino」における韓国ドラマやK-POPコンテンツの積極的なラインナップ拡充、ならびに日韓共同製作への取り組みに大変注目しております。'
+                works: ['스토브리그'],
+                scaleKo: 'NTT 도코모(66.64%)와 요시모토흥업 계열 FANY(33.36%)가 2023년 5월 설립한 합작법인이자 일본 메이저 OTT 플랫폼 ‘Lemino’ 핵심 제작·수급 파트너.',
+                scaleTc: '由日本最大電信 NTT DOCOMO（66.64%）與吉本興業旗下 FANY（33.36%）於 2023 年 5 月合資成立，負責串流平台「Lemino」之內容製作與採購。',
+                koreaKo: 'Lemino 플랫폼에서 한국 드라마 《스토브리그(Hot Stove League)》 일본 리메이크판(카메나시 카즈야 주연)을 독점 제작·공개하고, BTS 영상 28편 독점 서비스 및 NCT Wish, SMTOWN LIVE(2025-26 후쿠오카) 생중계 등 한국 드라마·K-POP 라인업 집중 전개.',
+                koreaTc: 'Lemino 平台獨家製作播映韓劇《金牌救援（Hot Stove League）》日本翻拍版（龜梨和也主演），並獨家上架 28 部 BTS 影視內容及轉播 NCT Wish、SMTOWN LIVE（2025-26 福岡）等大型韓流活動。',
+                iceJa: '貴社および映像配信プラットフォーム「Lemino」において、韓国ドラマ『ストーブリーグ』日本版リメイクの製作や、K-POPコンテンツの独占配信を積極的に展開されている点に大変注目しております。'
             },
             {
                 id: 'jp-tvtokyo-kadokawa',
                 region: 'JP',
                 tracks: ['T1', 'T2', 'T3'],
                 priority: false,
-                nameKo: 'TV도쿄 (テレビ東京) · TBS · KADOKAWA (카도카와)',
-                nameTc: 'TV Tokyo (東京電視台) · TBS · KADOKAWA (角川集團)',
-                works: ['CELL'],
-                scaleKo: 'TCCF 상시 참가 일본 핵심 지상파 방송사(TV도쿄·TBS) 및 글로벌 출판·애니메이션·IP 미디어 그룹(KADOKAWA).',
-                scaleTc: 'TCCF 常駐日本核心電視台（東京電視台、TBS）與日本跨國出版、動畫製作委員會巨頭（角川集團）。',
-                koreaKo: 'TV도쿄는 한국 CJ ENM·Studio Dragon·Kakao Ent. 등과 협업해 한국 웹툰·대본 원작 드라마를 제작했으며, KADOKAWA는 한국 웹툰 단행본 출판 및 애니화를 활발히 추진.',
-                koreaTc: '東京電視台多次與韓國 CJ ENM、Studio Dragon、Kakao 合作將韓國網漫與劇本改編為深夜日劇；角川則大量引進韓國條漫於日本出版與動畫化。',
-                pitchKo: '웹툰 60+편(부산영화제 초청작 《CELL》, 판타지 로맨스 등)과 미스터리·타임슬립·요리 연애 대본의 일본 심야 드라마 리메이크 및 애니메이션 공동제작 제안.',
-                pitchTc: '推銷 60+ 部韓漫（含《CELL》與奇幻愛情）及懸疑、穿越、料理戀愛劇本改編為日本深夜劇或共同製作日本動畫（Anime）。',
-                iceJa: '貴社が韓国のウェブトゥーンやオリジナル脚本を活用したドラマ化・アニメーション展開、および日韓共同プロジェクトを積極的に推進されている点に深く感銘を受けております。'
+                nameKo: 'TV도쿄 (テレビ東京) · CJ ENM Japan / KADOKAWA (카도카와)',
+                nameTc: 'TV Tokyo (東京電視台) · KADOKAWA (角川集團)',
+                works: ['내 남편과 결혼해줘'],
+                scaleKo: 'TCCF 상시 참가 일본 핵심 지상파 방송사(TV도쿄) 및 글로벌 출판·애니메이션·IP 미디어 그룹(KADOKAWA).',
+                scaleTc: 'TCCF 常駐日本核心電視台（東京電視台）與日本跨國出版、動畫製作委員會巨頭（角川集團）。',
+                koreaKo: 'TV도쿄는 지상파 ‘한류 프리미어’ 시간대를 통해 한국 드라마를 상시 편성하며, 일본 시장에서는 한국 웹툰·드라마 《내 남편과 결혼해줘》 일본판(2025) 및 한·일 공동제작 드라마 《메리 베리 러브》(2026) 등 한국 IP 리메이크·공동제작이 활발히 진행 중.',
+                koreaTc: '東京電視台設有「韓流 Premiere」常規時段播映韓劇，且近年日本市場積極推進韓國網漫《和我老公結婚吧》日版翻拍（2025）與日韓共製劇《Merry Berry Love》（2026）；角川則大量引進韓國條漫出版與動畫化。',
+                iceJa: '貴社における韓国ドラマの積極的な編成や、日本市場における韓国ウェブトゥーン・オリジナル脚本を活用したドラマ化・アニメーション展開の広がりに深く感銘を受けております。'
             },
             {
                 id: 'jp-unext-spo',
@@ -1082,13 +1038,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: false,
                 nameKo: 'U-NEXT · AbemaTV · SPO 엔터테인먼트 · Avex Pictures',
                 nameTc: 'U-NEXT · AbemaTV · SPO Entertainment · Avex Pictures',
-                works: ['Wind Up', 'Whale Star', 'Unforgotten'],
+                works: [],
                 scaleKo: '일본 내 한류 점유율 최상위 토종 OTT(U-NEXT, Abema) 및 일본 대표 한국 드라마·영화 배급·DVD/BD 유통사(SPO, Avex).',
                 scaleTc: '日本韓流市佔率最高的本土串流平台（U-NEXT、Abema）與日本老牌韓流影視發行暨藍光 DVD 代理商（SPO、Avex）。',
                 koreaKo: '한국 주요 방송사·제작사와 다수의 독점 스트리밍 계약을 체결하고 있으며, K-POP 아이돌 주연 작품의 일본 팬덤 유료 결제 및 패키지(DVD/BD) 판매 실적이 매우 높음.',
                 koreaTc: '與韓國各大電視台與製作公司簽有大量獨播合約，且日本粉絲對 K-POP 偶像主演作品之付費點播與藍光 DVD 購買力極強。',
-                pitchKo: '일본 내 팬덤이 막강한 NCT, TWICE 다현, MONSTA X, ZB1, THE BOYZ 주연 20+편 신작과 대작 《Whale Star》《Unforgotten》의 일본 스트리밍 및 DVD/BD 판권 제안.',
-                pitchTc: '針對日本粉絲極度狂熱的 NCT、TWICE 多賢、MONSTA X、ZB1 主演之 20+ 部新作，以及《鯨星》《Unforgotten》，打包推銷日本串流與高利潤 DVD/BD 發行權。',
                 iceJa: '日本市場において韓国ドラマやK-POPアーティスト出演作品の配信・パッケージ展開を牽引されている貴社に、ぜひ弊社の最新ラインナップをご紹介したく存じます。'
             },
             {
@@ -1101,11 +1055,9 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 works: [],
                 scaleKo: '일본 핵심 상권 팝업스토어 운영 백화점(PARCO, SHIBUYA109) 및 일본 최대 K-POP·캐릭터 굿즈 유통망(Tower Records, Animate).',
                 scaleTc: '日本最核心潮流百貨快閃店營運商（PARCO、SHIBUYA109）與日本最大 K-POP 及動漫周邊實體通路（Tower Records、Animate）。',
-                koreaKo: '도쿄·오사카 등지에서 ENHYPEN을 비롯한 한국 최정상 아이돌 팝업스토어 및 럭키드로우 특전 포토카드 캠페인을 상시 운영.',
-                koreaTc: '長年於東京、大阪等地舉辦 ENHYPEN 等韓國頂流男團快閃店與特典小卡銷售活動。',
-                pitchKo: '도쿄 팝업 성공 레퍼런스를 바탕으로 《ENHYPEN WORLD》 Vamkids 일본 주요 도시 순회 팝업스토어 및 게임 연동 포토카드 패키지 유통 제안.',
-                pitchTc: '結合曾在東京成功舉辦快閃店的實績，洽談《ENHYPEN WORLD》Vamkids 日本巡迴快閃店與特典小卡禮包通路銷售。',
-                iceJa: '日本国内にて数々のK-POPアーティストやキャラクターIPのポップアップストア・MD展開を成功させておられる貴社と、ぜひ『ENHYPEN WORLD』公式キャラクターIP「Vamkids」の展開をご相談したく存じます。'
+                koreaKo: '도쿄·오사카 등지에서 한국 최정상 아이돌 그룹의 팝업스토어 및 럭키드로우 특전 포토카드 캠페인을 상시 운영.',
+                koreaTc: '長年於東京、大阪等地舉辦韓國頂流偶像團體快閃店與特典小卡銷售活動。',
+                iceJa: '日本国内にて数々のK-POPアーティストやキャラクターIPのポップアップストア・MD展開を成功させておられる貴社と、ぜひ公式キャラクターIPおよびMDの展開をご相談したく存じます。'
             },
 
             // --- 🌏 동남아 (Southeast Asia) ---
@@ -1116,13 +1068,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: true,
                 nameKo: 'True CJ Creations (정대그룹×CJ 합작) · GMMTV · BEC World (태국)',
                 nameTc: '泰國正大集團 True CJ Creations · GMMTV · BEC World (泰國三台)',
-                works: ['CELL'],
+                works: ['시그널', '보이스', '굿 닥터'],
                 scaleKo: '태국 최대 재벌 정대그룹(CP Group) 산하 TrueVisions와 한국 CJ ENM의 합작사(True CJ), 태국 1위 아이돌 드라마 제작사(GMMTV) 및 태국 3번 채널(BEC).',
                 scaleTc: '泰國首富正大集團（True）與韓國 CJ ENM 合資成立之王牌製作公司（True CJ）、泰國最大青春偶像劇廠牌（GMMTV）與泰國第3電視台。',
                 koreaKo: 'True CJ는 《시그널》《보이스》《굿 닥터》《아는 와이프》 등 한국 드라마를 태국판으로 리메이크해 연속 흥행시켰으며, GMMTV는 한국 청춘·학원·판타지 IP 리메이크에 주력.',
                 koreaTc: 'True CJ 專門將韓劇（《信號》《Voice》《Good Doctor》《認識的妻子》）翻拍為爆款泰劇；GMMTV 則熱衷購買韓國青春校園與奇幻愛情劇本／網漫進行泰版翻拍。',
-                pitchKo: '한국 검증 IP를 태국 드라마로 리메이크하는 핵심 바이어! 학원 퇴마, 밀실 서바이벌, 판타지·요리 로맨스 대본 및 60+편 웹툰 리메이크 패키지 제안.',
-                pitchTc: '專門將韓國好故事翻拍為泰劇的頭號買家！整包推銷校園驅魔、密室生存、穿越喜劇、料理戀愛劇本與 60+ 部韓漫，並向 TrueVisions 推銷韓劇與 K-POP 短劇。',
                 iceEn: 'We greatly admire your outstanding track record in adapting hit Korean IPs and scripts into top-rated Thai series.'
             },
             {
@@ -1132,13 +1082,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: true,
                 nameKo: 'Viu (PCCW 그룹 · 범아시아 한류 OTT)',
                 nameTc: 'Viu (電訊盈科 PCCW 旗下泛亞最大韓流 OTT)',
-                works: ['재벌집 막내아들 · 모범택시2', 'Wind Up', 'Whale Star', 'Unforgotten'],
+                works: ['재벌집 막내아들 · 모범택시2'],
                 scaleKo: '홍콩 PCCW 산하로 동남아(태국·인도네시아·말레이시아·필리핀·싱가포르), 홍콩, 중동 등 16개국에 서비스하는 범아시아 대표 스트리밍 플랫폼.',
                 scaleTc: '電訊盈科（PCCW）旗下泛區域串流巨頭，服務覆蓋東南亞（泰、印、馬、菲、新）、香港與中東等 16 個市場。',
                 koreaKo: '《재벌집 막내아들》(2022) Viu Original 투자·배급 및 《모범택시2》(2023) 16개국 독점 스트리밍 등 한국 텐트폴 드라마와 K-POP 콘텐츠의 최대 구매처.',
                 koreaTc: '曾出品投資 Viu Original 韓劇《財閥家的小兒子》（2022）並於 16 國獨家播映《模範計程車2》（2023），為東南亞韓流內容核心買家。',
-                pitchKo: '20+편 K-POP 아이돌 숏드라마·영화 및 텐트폴 드라마 《Whale Star》《Unforgotten》 범아시아 방영권 판매 + Viu Original 로컬 리메이크용 대본·웹툰 동시 제안.',
-                pitchTc: '一魚兩吃：既銷售 20+ 部 K-POP 偶像短劇／電影與《鯨星》《Unforgotten》泛亞播映權，亦推銷原創劇本與網漫供 Viu Original 開發東南亞本土翻拍劇！',
                 iceEn: 'Recognizing Viu’s powerhouse leadership in bringing tentpole Korean series like <Reborn Rich> and <Taxi Driver 2> across 16 markets, we see tremendous synergy with our new slate.'
             },
             {
@@ -1148,13 +1096,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: false,
                 nameKo: 'Mediacorp (싱가포르 신전매) · Encore Films · Clover Films',
                 nameTc: '新加坡新傳媒 (Mediacorp) · Encore Films · Clover Films',
-                works: ['밀례', 'Wind Up'],
+                works: [],
                 scaleKo: '싱가포르 최대 국영 미디어 그룹이자 TCCF 공식 어워드 후원사(Mediacorp), 그리고 싱가포르·말레이시아·인도네시아 대표 극장 배급사(Encore, Clover).',
                 scaleTc: '新加坡最大國家級傳媒集團暨 TCCF 官方大獎贊助商（Mediacorp），以及新馬印指標院線發行商（Encore、Clover Films）。',
-                koreaKo: 'Mediacorp는 meWATCH 플랫폼에 한국 드라마를 수급하고 아시아 합작을 추진 중이며, Encore·Clover Films는 동남아 극장가에 한국 공포·상업영화를 활발히 배급.',
-                koreaTc: 'Mediacorp 長期採購韓劇登上 meWATCH 並推動亞洲跨國合製；Encore 與 Clover 則是新馬印地區引進韓國恐怖片與商業大片的主力院線商。',
-                pitchKo: 'Mediacorp에는 드라마 배급 및 국제 합작을, Encore·Clover에는 한국 오컬트 공포영화 《밀례》와 K-POP 가로형 영화 동남아 극장 배급을 제안.',
-                pitchTc: '對 Mediacorp 一信洽談劇集採購與跨國合製；對 Encore 與 Clover 重點推銷韓國恐怖片《密禮》與 K-POP 橫式電影之東南亞院線發行。'
+                koreaKo: 'Mediacorp는 meWATCH 플랫폼에 한국 드라마를 수급하고 아시아 공동제작을 추진 중이며, Encore·Clover Films는 동남아 극장가에 한국 공포·상업영화를 활발히 배급.',
+                koreaTc: 'Mediacorp 長期採購韓劇登上 meWATCH 並推動亞洲跨國共製；Encore 與 Clover 則是新馬印地區引進韓國恐怖片與商業大片的主力院線商。'
             },
             {
                 id: 'sea-ph-my-id',
@@ -1163,13 +1109,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: false,
                 nameKo: 'GMA Network · ABS-CBN (필리핀) / Astro (말레이시아) / Vidio (인도네시아)',
                 nameTc: 'GMA · ABS-CBN (菲律賓) / Astro (馬來西亞) / Vidio (印尼)',
-                works: ['Wind Up', 'Whale Star'],
+                works: [],
                 scaleKo: '필리핀 양대 방송 스튜디오(GMA, ABS-CBN), 말레이시아 1위 유료방송(Astro), 인도네시아 1위 로컬 OTT(Vidio).',
                 scaleTc: '壟斷菲律賓市場的兩大傳媒集團（GMA、ABS-CBN）、馬來西亞付費電視龍頭（Astro）與印尼第一串流平台（Vidio）。',
                 koreaKo: '동남아 내 K-POP 및 한국 드라마 소비량이 가장 높은 시장으로, 한국 로맨스·스릴러 대본의 현지어 리메이크 및 한국 드라마 방영권 구매 지속.',
-                koreaTc: '韓流與 K-POP 狂熱度極高的東南亞主力市場，長年購買韓國劇本翻拍本土劇，並大量採購韓劇與偶像影視作品。',
-                pitchKo: '20+편 K-POP 아이돌 숏드라마·영화 패키지, 《Whale Star》《Unforgotten》 방영권 및 검증된 한국 상업 대본 리메이크 판권 제안.',
-                pitchTc: '打包推銷 20+ 部 K-POP 偶像短劇／電影、長篇韓劇《鯨星》《Unforgotten》播映權，以及高完成度韓國原創劇本翻拍授權。'
+                koreaTc: '韓流與 K-POP 狂熱度極高的東南亞主力市場，長年購買韓國劇本翻拍本土劇，並大量採購韓劇與偶像影視作品。'
             },
 
             // --- 🇭🇰🇲🇴 홍콩·마카오 (Hong Kong & Macau) ---
@@ -1180,30 +1124,26 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: true,
                 nameKo: 'MakerVille (ViuTV · 홍콩 PCCW 그룹)',
                 nameTc: '電訊盈科 PCCW — MakerVille (ViuTV) / Now TV',
-                works: ['사내맞선'],
-                scaleKo: '홍콩 최대 통신·엔터 그룹 PCCW 산하로 무료방송 ViuTV와 홍콩 최고 인기 보이그룹 MIRROR를 운영하는 제작·방송사(유료방송 Now TV 포함).',
-                scaleTc: '香港最大電訊娛樂集團 PCCW 旗下，營運免費電視 ViuTV 及頂流男團 MIRROR（同集團 Now TV 為香港最大收費電視）。',
-                koreaKo: '한국 웹툰·드라마 원작 《사내맞선》을 홍콩판 《社內相親》(MIRROR 주연, 2023.11 방영)으로 리메이크해 대성공. 2026년 4월에는 《김비서가 왜 그럴까》 홍콩판 리메이크 판권 협의 공식 발표.',
-                koreaTc: '2023年11月成功將韓國網漫／韓劇《社內相親》翻拍為港劇（由旗下男團 MIRROR 主演）；2026年4月更宣布正與韓方洽談《金秘書為何那樣》港版翻拍版權！',
-                pitchKo: '한국 웹툰·드라마를 홍콩 아이돌 주연 드라마로 리메이크하는 1순위 바이어! 판타지·요리 로맨스, 타임슬립, 학원 미스터리 대본 및 웹툰 60+편을 차기 MIRROR 주연작으로 제안.',
-                pitchTc: '最愛買韓國網漫與愛情喜劇劇本給旗下偶像拍港劇！直接提《社內相親》與《金秘書》，推薦奇幻愛情、料理戀愛、穿越喜劇劇本與 60+ 部韓漫，並向 Now TV 推銷成片。',
-                iceKo: '귀사가 《사내맞선》 홍콩판 리메이크를 성공시키고 최근 《김비서가 왜 그럴까》 리메이크를 추진하시는 등 한국 IP 현지화에 보여주신 탁월한 성과에 깊이 주목하고 있습니다.',
-                iceTc: '非常佩服貴司成功翻拍港版《社內相親》（MIRROR 主演）並推進《金秘書為何那樣》港版改編，我們手上的韓國網漫與高概念愛情喜劇劇本非常適合貴司團隊！'
+                works: ['사내맞선 · 김비서가 왜 그럴까'],
+                scaleKo: '홍콩 최대 통신·엔터 그룹 PCCW 산하로 무료방송 ViuTV와 홍콩 최고 인기 아이돌 그룹 MIRROR, COLLAR를 운영하는 제작·방송사(유료방송 Now TV 포함).',
+                scaleTc: '香港最大電訊娛樂集團 PCCW 旗下，營運免費電視 ViuTV 及頂流偶像團體 MIRROR、COLLAR（同集團 Now TV 為香港最大收費電視）。',
+                koreaKo: '한국 웹툰·드라마 원작 《사내맞선》을 홍콩판 《社內相親》(MIRROR 주연, 2023.11 방영)으로 리메이크한 데 이어, 한국 인기 웹툰·드라마 《김비서가 왜 그럴까(金秘書為何那樣)》 홍콩판 리메이크(MIRROR 盧瀚霆·COLLAR 蘇雅琳 주연) 제작을 공식 발표함.',
+                koreaTc: '繼 2023 年成功翻拍港版《社內相親》（MIRROR 盧瀚霆、呂爵安主演）後，再度正式出品翻拍韓國人氣網漫／韓劇《金秘書為何那樣》香港版（由盧瀚霆與 COLLAR 蘇雅琳領銜主演）！',
+                iceKo: '귀사가 《사내맞선》 홍콩판에 이어 《김비서가 왜 그럴까》 홍콩판(盧瀚霆·蘇雅琳 주연) 리메이크를 연속으로 제작하시는 등 한국 웹툰·드라마 IP 현지화에 보여주신 탁월한 성과에 깊이 주목하고 있습니다.',
+                iceTc: '非常佩服貴司繼成功翻拍港版《社內相親》後，再度出品由盧瀚霆與蘇雅琳主演的港版《金秘書為何那樣》，我們手上的韓國網漫與原創劇本非常適合貴司團隊！'
             },
             {
                 id: 'hk-edko-medialink',
                 region: 'HKMO',
                 tracks: ['T2', 'T3', 'T4'],
                 priority: false,
-                nameKo: '에드코 필름(安樂影片) · 골든씬(高先) · 메디아링크 본사(羚邦集團)',
+                nameKo: '에드코 필름(安樂影片) · 골든씬(高先電影) · 메디아링크 본사(羚邦集團)',
                 nameTc: '安樂影片 (Edko Films) · 高先電影 · 羚邦集團香港總部 (Medialink)',
-                works: ['파묘 (Exhuma)', '밀례'],
-                scaleKo: '홍콩 브로드웨이 시네마 모기업이자 아시아 메이저 영화 투자·배급사(에드코 필름), 그리고 홍콩 상장 아시아 최대 애니·IP 라이선싱 그룹 본사(메디아링크, 02230.HK).',
-                scaleTc: '香港百老匯院線母公司暨亞洲電影投資發行巨頭（安樂影片），以及香港上市之亞洲最大動畫發行與品牌授權集團總部（羚邦集團 02230.HK）。',
-                koreaKo: '에드코 필름은 《부산행》《신과 함께》《기생충》《파묘》 등 한국 역대급 흥행작의 홍콩 독점 배급사이며, 메디아링크는 아시아 전역의 애니메이션 배급 및 IP 팝업·MD 사업을 전개.',
-                koreaTc: '安樂影片為《屍速列車》《與神同行》《寄生上流》《破墓》在香港的獨家發行商；羚邦總部則統籌全亞洲動畫採購與日韓角色快閃店授權。',
-                pitchKo: '에드코 필름에는 공포영화 《밀례》와 K-POP 가로형 영화 홍콩 배급을, 메디아링크 본사에는 오리지널 애니메이션 배급 및 Vamkids 범아시아 라이선스를 제안.',
-                pitchTc: '向安樂影片推銷恐怖片《密禮》與 K-POP 橫式電影港澳院線發行；向羚邦香港總部洽談動畫片單與 Vamkids 港澳東南亞快閃店授權。'
+                works: ['파묘 (Exhuma)', 'HOPE'],
+                scaleKo: '홍콩 브로드웨이 시네마 모기업(에드코 필름), 홍콩 대표 영화 배급사(골든씬), 그리고 홍콩 상장 아시아 최대 애니·IP 라이선싱 그룹 본사(메디아링크, 02230.HK).',
+                scaleTc: '香港百老匯院線母公司（安樂影片）、香港指標電影發行商（高先電影），以及香港上市之亞洲最大動畫發行與品牌授權集團總部（羚邦集團 02230.HK）。',
+                koreaKo: '에드코 필름은 《부산행》《신과 함께》《기생충》《파묘》 등 한국 대작을 홍콩에 배급했으며, 골든씬(高先電影)은 2026년 9월 나홍진 감독의 한국 영화 《HOPE(逆襲希望港)》를 홍콩 개봉. 메디아링크는 한국 웹툰 원작 애니 《나 혼자만 레벨업》의 아시아 배급·라이선싱을 총괄.',
+                koreaTc: '安樂影片為《屍速列車》《與神同行》《寄生上流》《破墓》香港發行商；高先電影於 2026 年 9 月在港盛大發行羅泓軫導演韓片《HOPE：逆襲希望港》；羚邦總部則統籌《我獨自升級》等全亞洲動畫與角色授權。'
             },
 
             // --- 🇨🇳 중국 (Mainland China / Global Platforms) ---
@@ -1212,15 +1152,13 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 region: 'CN',
                 tracks: ['T1', 'T3'],
                 priority: false,
-                nameKo: '레몬 인터내셔널(檸萌) · 화처 크로톤(華策) · 신리 미디어(新麗)',
-                nameTc: '檸萌國際 (Linmon) · 華策影視國際部 (Huace) · 新麗傳媒',
-                works: [],
-                scaleKo: '중국 1선 상장 드라마 제작 스튜디오의 글로벌·해외 사업 법인(TCCF 바이어 및 아시아 마켓 상시 참가).',
-                scaleTc: '中國一線上市劇集製作巨頭之國際業務子公司（常駐香港與新加坡，活躍於 TCCF）。',
-                koreaKo: '한국 오리지널 대본 및 웹툰의 리메이크 판권 거래는 저작권 무역에 해당하여 방영 규제의 영향을 받지 않으므로, 검증된 한국 상업 대본을 지속 구매하여 화어권 및 태국 등에서 리메이크 제작.',
-                koreaTc: '「購買韓國原創劇本與網漫進行華語／泰語本土化翻拍」屬於著作權貿易，不受成片播出限制，因此長年高價收購韓國懸疑、奇幻、穿越與愛情劇本。',
-                pitchKo: '즉시 현지화 각색 및 촬영이 가능한 고완성도 한국 오리지널 대본(미스터리 스릴러, 판타지 로맨스, 타임슬립 코미디 등)과 60+편 웹툰 IP 판매 제안.',
-                pitchTc: '主打可立即本土化改編的高完成度韓國原創劇本（懸疑驚悚、密室生存、奇幻愛情、穿越喜劇）與 60+ 部網漫 IP 翻拍授權。'
+                nameKo: '화처 크로톤(華策影視) · 레몬 인터내셔널(檸萌國際) · 신리 미디어(新麗)',
+                nameTc: '華策影視國際部 (Huace) · 檸萌國際 (Linmon) · 新麗傳媒',
+                works: ['내 딸 서영이', '청춘시대', '킬미 힐미'],
+                scaleKo: '중국 1선 상장 드라마 제작 스튜디오의 글로벌·해외 사업 법인.',
+                scaleTc: '中國一線上市劇集製作巨頭之國際業務子公司。',
+                koreaKo: '화처미디어(華策影視)는 한국 드라마 《내 딸 서영이》(중국판 《妻子的謊言》), JTBC 《청춘시대》(중국판 《最親愛的你》), 《킬미 힐미》(《柒個我》) 등의 정식 리메이크 판권을 구매해 중국어판 드라마로 제작·방영한 실적 보유.',
+                koreaTc: '華策影視曾正式購買韓劇《我的女兒㥠榮》（翻拍為《妻子的謊言》）、JTBC《青春時代》（翻拍為《最親愛的你》）、《Kill Me Heal Me》（翻拍為《柒個我》）等版權進行華語劇集改編；購買韓國原創劇本翻拍屬於著作權貿易，不受成片播出限制。'
             },
             {
                 id: 'cn-shortdrama-ott',
@@ -1229,13 +1167,11 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: false,
                 nameKo: '글로벌 숏드라마 3강 (ReelShort · DramaBox · ShortMax) & iQIYI/WeTV 글로벌',
                 nameTc: '出海短劇巨頭 (ReelShort · DramaBox · ShortMax) ＆ 愛奇藝/騰訊國際版',
-                works: ['Wind Up'],
+                works: [],
                 scaleKo: '글로벌 매출 최상위 세로형 숏드라마 플랫폼 3사 및 동남아·글로벌 시장을 타깃으로 하는 iQIYI International / WeTV.',
                 scaleTc: '全球營收最高的三大直式短劇出海平台，以及深耕東南亞與全球市場的 iQIYI International 與 WeTV。',
                 koreaKo: '동남아·미주·일한 유저 확보를 위해 K-POP 아이돌 주연 숏드라마 및 한국 드라마 판권 수급과 숏폼용 대본 확보를 적극 확대 중.',
-                koreaTc: '積極擴充日韓偶像短劇與韓劇片庫以吸引全球韓流用戶，並大量採購高概念劇本進行短劇翻拍。',
-                pitchKo: '당사 글로벌 K-POP 숏드라마 플랫폼 ‘KITZ’의 20+편 세로형 숏드라마 라인업(NCT, TWICE, ZB1 등 주연) 해외 배급 및 숏폼 리메이크 대본 패키지 제안.',
-                pitchTc: '直接對接 TAKEONE「KITZ」平台的 20+ 部 K-POP 偶像直式短劇海外分發權，並批量推銷適合改編短劇的高概念劇本。'
+                koreaTc: '積極擴充日韓偶像短劇與韓劇片庫以吸引全球韓流用戶，並大量採購高概念劇本進行短劇翻拍。'
             },
             {
                 id: 'cn-yizhiyu-miniso',
@@ -1247,10 +1183,8 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 works: [],
                 scaleKo: '중국 최대 K-POP 공식 앨범·팬사인회·팝업스토어 플랫폼(이즈즈위) 및 전 세계 수천 개 매장을 보유한 글로벌 캐릭터 콜라보 리테일 그룹(MINISO).',
                 scaleTc: '中國最大 K-POP 專輯特典、簽售與韓團快閃店平台（一直娛），以及擁有全球數千家門市的 IP 聯名零售巨頭（名創優品 MINISO）。',
-                koreaKo: '이즈즈위는 한국 주요 기획사와 직접 협업하여 ENHYPEN 등 최정상 보이그룹의 팝업스토어와 특전 포토카드 이벤트를 다수 운영했으며, MINISO는 일·한 캐릭터 글로벌 라이선싱을 활발히 전개.',
-                koreaTc: '一直娛與韓國各大經紀公司直接合作，深諳 ENHYPEN 粉絲對特典小卡與快閃店的驚人購買力；MINISO 則在全球門市大舉聯名日韓角色 IP。',
-                pitchKo: '상하이 팝업 성공 경험을 바탕으로 《ENHYPEN WORLD》 Vamkids 팝업스토어, 한정 포토카드+인게임 패키지 유통 및 글로벌 캐릭터 콜라보 제안.',
-                pitchTc: '結合曾在上海成功舉辦快閃店的實績，洽談《ENHYPEN WORLD》Vamkids 快閃店、獨家小卡禮包銷售與全球門市聯名周邊。'
+                koreaKo: '이즈즈위는 한국 주요 기획사와 직접 협업하여 K-POP 보이그룹·걸그룹의 팝업스토어와 특전 포토카드 이벤트를 다수 운영했으며, MINISO는 일·한 캐릭터 글로벌 라이선싱을 활발히 전개.',
+                koreaTc: '一直娛與韓國各大經紀公司直接合作，深諳粉絲對特典小卡與快閃店的驚人購買力；MINISO 則在全球門市大舉聯名日韓角色 IP。'
             },
 
             // --- 🌍 구미·유럽·미주 (West / Global) ---
@@ -1261,16 +1195,14 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: true,
                 nameKo: 'BBC Studios Asia (영국 BBC 스튜디오 아시아)',
                 nameTc: 'BBC Studios Asia (英國廣播公司商業分支)',
-                works: ['Unforgotten (언포가튼)'],
+                works: [],
                 scaleKo: '영국 공영방송 BBC의 글로벌 콘텐츠 배급·포맷 라이선싱·공동제작 총괄 스튜디오.',
                 scaleTc: '全球頂級影視模式（Format）授權、國際發行與共同製作巨頭。',
-                koreaKo: '핵심 레퍼런스: 당사(TAKEONE COMPANY)가 BBC의 대표 범죄 수사극 《Unforgotten》 포맷 판권을 정식 구매하여 한국판 리메이크 드라마를 제작함!',
-                koreaTc: '最強破冰王牌：TAKEONE COMPANY 已正式購買 BBC 經典犯罪懸疑名作《Unforgotten》版權並製作韓國版翻拍劇！',
-                pitchKo: '가장 확실한 파트너십 명분 보유! 한국판 《Unforgotten》 제작 성과 공유 및 BBC 네트워크를 통한 글로벌 배급 협력, 나아가 당사 오리지널 미스터리·스릴러 대본의 영미권 역수출 제안.',
-                pitchTc: '天然的家人級破冰話題！現場向 BBC 團隊展示韓版《Unforgotten》精彩成果、探討全球聯合發行，並反向推銷 TAKEONE 原創懸疑驚悚劇本與《CELL》給歐美市場。',
-                iceKo: '당사가 BBC의 명작 크라임 스릴러 《Unforgotten》의 한국판 리메이크를 제작하게 되어 매우 뜻깊게 생각하며, 이번 TCCF에서 한국판 제작 성과와 글로벌 배급 협력을 직접 논의하고 싶습니다.',
-                iceTc: '非常榮幸我們 TAKEONE 製作了貴司經典名作《Unforgotten》的韓國翻拍版！希望能於 TCCF 與貴司分享韓版成果並探討全球發行與新項目合作。',
-                iceEn: 'As the Korean studio behind the official Korean remake of BBC’s acclaimed crime thriller <Unforgotten>, we would be thrilled to connect with the BBC Studios team at TCCF to share updates on the Korean adaptation and explore global distribution and new IP collaborations!'
+                koreaKo: '영국 BBC의 대표 범죄 수사극·드라마 포맷을 한국 주요 방송사 및 제작사에 라이선싱하여 한국판 리메이크 및 글로벌 공동배급을 활발히 전개 중.',
+                koreaTc: '積極將英國 BBC 經典犯罪懸疑與戲劇模式授權韓國製作公司進行韓版翻拍，並推動全球聯合發行與共同製作。',
+                iceKo: 'BBC 스튜디오가 한국 제작사들과 함께 명작 드라마 포맷 리메이크 및 글로벌 배급 협력을 활발히 전개하고 계신 점 깊이 주목하고 있습니다.',
+                iceTc: '非常關注貴司積極與韓國製作團隊推進經典劇集模式翻拍與全球聯合發行的跨國合作！',
+                iceEn: 'We closely follow BBC Studios’ strong track record in partnering with Korean studios on drama format adaptations and global distribution, and would love to explore strategic collaborations at TCCF!'
             },
             {
                 id: 'west-viki-kocowa',
@@ -1279,28 +1211,24 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 priority: false,
                 nameKo: 'Rakuten Viki · KOCOWA+ (북미·유럽·중남미 한류 전문 OTT)',
                 nameTc: 'Rakuten Viki · KOCOWA+ (歐美與全球最大韓流專屬 OTT)',
-                works: ['Wind Up', 'Whale Star', 'Unforgotten'],
+                works: [],
                 scaleKo: '미주·유럽·오세아니아·중남미 190여 개국에 한국 드라마와 K-POP 콘텐츠를 서비스하는 글로벌 최대 한류 전용 OTT 양대 산맥.',
-                scaleTc: '覆蓋北美、歐洲与拉丁美洲超過 190 國的兩大韓流專屬串流平台霸主。',
+                scaleTc: '覆蓋北美、歐洲與拉丁美洲超過 190 國的兩大韓流專屬串流平台霸主。',
                 koreaKo: '한국 주요 방송사 및 제작사의 드라마·예능·아이돌 웹드라마를 북미·유럽 권역에 상시 수급·배급.',
-                koreaTc: '長年採購所有韓國一線劇集、獨立製片與 K-POP 偶像劇集於歐美與拉美市場播映。',
-                pitchKo: '서구권 팬덤이 두터운 NCT, TWICE 다현, MONSTA X, ZB1 주연 20+편 K-POP 숏드라마/영화 패키지 및 《Whale Star》《Unforgotten》 미주·유럽 방영권 제안.',
-                pitchTc: '歐美 K-POP 粉絲對 NCT、TWICE、MONSTA X、ZB1 狂熱度極高，是銷售 20+ 部偶像短劇／電影包與《鯨星》《Unforgotten》歐美區版權的第一買家！'
+                koreaTc: '長年採購所有韓國一線劇集、獨立製片與 K-POP 偶像劇集於歐美與拉美市場播映。'
             },
             {
                 id: 'west-federation-mediawan-crunchyroll',
                 region: 'WEST',
                 tracks: ['T1', 'T2', 'T3'],
                 priority: false,
-                nameKo: 'Federation Studios · Mediawan (프랑스) / Crunchyroll · Well Go USA (미국)',
-                nameTc: 'Federation · Mediawan (法國影視動畫巨頭) / Crunchyroll · Well Go USA (北美)',
-                works: ['CELL', '밀례'],
-                scaleKo: 'TCCF에 참가하는 유럽 대표 드라마·애니메이션 스튜디오(Federation, Mediawan) 및 소니 산하 글로벌 1위 애니 플랫폼(Crunchyroll), 북미 최대 아시아 장르영화 배급사(Well Go USA).',
-                scaleTc: '出席 TCCF 的歐洲頂級製片與動畫集團（Federation、Mediawan）、Sony 旗下全球最大動畫平台（Crunchyroll）與北美最大亞洲電影發行商（Well Go USA）。',
-                koreaKo: 'Well Go USA는 《파묘》《범죄도시》 등 한국 장르 영화를 북미에 배급했으며, 유럽·북미 스튜디오들은 한국 웹툰 원작 애니메이션 및 서바이벌·스릴러 포맷 리메이크에 높은 관심 보유.',
-                koreaTc: 'Well Go USA 在北美發行《破墓》《犯罪都市》等大量韓國類型大片；歐洲與北美廠牌則高度關注韓國網漫動畫化與生存驚悚劇本翻拍。',
-                pitchKo: 'Well Go USA에 공포영화 《밀례》 북미 배급을, Crunchyroll·Mediawan에 오리지널/웹툰 원작 애니메이션 배급·합작을, Federation에 《CELL》 및 서바이벌 대본 리메이크를 제안.',
-                pitchTc: '向 Well Go USA 推銷恐怖片《密禮》北美發行；向 Crunchyroll 與 Mediawan 洽談動畫發行與合製；向 Federation 推銷《CELL》與密室生存劇本歐美翻拍。'
+                nameKo: 'Well Go USA · Crunchyroll (북미) / Federation · Mediawan (유럽)',
+                nameTc: 'Well Go USA · Crunchyroll (北美) / Federation · Mediawan (歐洲)',
+                works: ['파묘 (Exhuma)', '나 혼자만 레벨업'],
+                scaleKo: '북미 최대 아시아 장르영화 배급사(Well Go USA), 소니 산하 글로벌 1위 애니메이션 플랫폼(Crunchyroll) 및 유럽 대표 미디어 스튜디오(Federation, Mediawan).',
+                scaleTc: '北美最大亞洲類型電影發行商（Well Go USA）、Sony 旗下全球最大動畫平台（Crunchyroll）與出席 TCCF 的歐洲製片集團（Federation、Mediawan）。',
+                koreaKo: 'Well Go USA는 2024년 3월 한국 오컬트 공포 흥행작 《파묘(Exhuma)》를 비롯하여 《범죄도시》《부산행》 등을 북미 극장 및 블루레이로 공식 배급했으며, Crunchyroll은 한국 웹툰 원작 애니메이션 《나 혼자만 레벨업(Solo Leveling)》《신의 탑》을 글로벌 투자·배급.',
+                koreaTc: 'Well Go USA 於 2024 年 3 月在北美正式發行韓國恐怖大片《破墓（Exhuma）》及《犯罪都市》《屍速列車》等片；Crunchyroll 則共同投資並於全球發行韓國網漫改編動畫《我獨自升級》《神之塔》。'
             }
         ];
 
@@ -1336,10 +1264,20 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 if (savedMemos) {
                     buyerMemos = JSON.parse(savedMemos);
                 }
+                reviewerName = localStorage.getItem(STORAGE_KEY_REVIEWER) || '';
+                const revInput = document.getElementById('reviewer-name-input');
+                if (revInput) revInput.value = reviewerName;
             } catch (e) {
                 selectedBuyerIds = COMPANIES.filter(c => c.priority).map(c => c.id);
             }
             updateSelectionCounters();
+        }
+
+        function saveReviewerName(val) {
+            reviewerName = val.trim();
+            try {
+                localStorage.setItem(STORAGE_KEY_REVIEWER, reviewerName);
+            } catch (e) {}
         }
 
         function saveSelectionToStorage(skipCloud = false) {
@@ -1360,21 +1298,21 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
             const urlBin = params.get('bin');
             const urlKey = params.get('key');
 
-            if (urlBin && urlKey) {
+            if (urlBin) {
                 cloudBinId = urlBin.trim();
-                cloudApiKey = urlKey.trim();
+                cloudApiKey = (urlKey ? urlKey.trim() : DEFAULT_JSONBIN_API_KEY);
                 try {
                     localStorage.setItem(STORAGE_KEY_CLOUD_BIN, cloudBinId);
                     localStorage.setItem(STORAGE_KEY_CLOUD_KEY, cloudApiKey);
                 } catch (e) {}
-            } else if (DEFAULT_JSONBIN_BIN_ID && DEFAULT_JSONBIN_API_KEY) {
-                cloudBinId = DEFAULT_JSONBIN_BIN_ID.trim();
-                cloudApiKey = DEFAULT_JSONBIN_API_KEY.trim();
             } else {
                 try {
-                    cloudBinId = localStorage.getItem(STORAGE_KEY_CLOUD_BIN) || '';
-                    cloudApiKey = localStorage.getItem(STORAGE_KEY_CLOUD_KEY) || '';
-                } catch (e) {}
+                    cloudBinId = DEFAULT_JSONBIN_BIN_ID.trim() || localStorage.getItem(STORAGE_KEY_CLOUD_BIN) || '';
+                    cloudApiKey = localStorage.getItem(STORAGE_KEY_CLOUD_KEY) || DEFAULT_JSONBIN_API_KEY.trim() || '';
+                } catch (e) {
+                    cloudBinId = DEFAULT_JSONBIN_BIN_ID.trim();
+                    cloudApiKey = DEFAULT_JSONBIN_API_KEY.trim();
+                }
             }
             updateCloudStatusUI('ready');
         }
@@ -1737,14 +1675,14 @@ const DEFAULT_JSONBIN_API_KEY = "${key}";`;
             const isKo = uiLang === 'KO';
             const priorityCount = COMPANIES.filter(c => c.priority).length;
             const kpis = isKo ? [
-                { num: COMPANIES.length + '개 그룹', label: '검증 완료 타깃 바이어 (대만+해외 5개 권역)' },
+                { num: COMPANIES.length + '개 그룹', label: '수록 타깃 바이어 (대만+해외 5개 권역)' },
                 { num: priorityCount + '개사 ★', label: '최우선 미팅 추천 바이어 (핵심 타깃)' },
-                { num: VERIFIED_WORKS.length + '건', label: '대표 한국 IP 리메이크·배급 검증 사례' },
+                { num: VERIFIED_WORKS.length + '건', label: '대표 한국 IP 리메이크·배급 사례' },
                 { num: '5개 국어', label: '맞춤형 초청장 (한/일/대만/영/중)' }
             ] : [
-                { num: COMPANIES.length + ' 家集團', label: '已核實目標買家（台灣＋海外5大區域）' },
+                { num: COMPANIES.length + ' 家集團', label: '收錄目標買家（台灣＋海外5大區域）' },
                 { num: priorityCount + ' 家 ★', label: '最優先推薦會面買家（核心目標）' },
-                { num: VERIFIED_WORKS.length + ' 部', label: '代表性韓國 IP 翻拍與發行驗證案例' },
+                { num: VERIFIED_WORKS.length + ' 部', label: '代表性韓國 IP 翻拍與發行案例' },
                 { num: '5 種語言', label: '客製化邀約信（韓/日/繁中/英/簡中）' }
             ];
 
@@ -1860,7 +1798,7 @@ const DEFAULT_JSONBIN_API_KEY = "${key}";`;
                 else if (currentTrack === 'SELECTED') matchTrack = selectedBuyerIds.includes(c.id);
                 else if (currentTrack !== 'ALL') matchTrack = c.tracks.includes(currentTrack);
 
-                const searchBlob = `${c.nameKo} ${c.nameTc} ${c.scaleKo} ${c.scaleTc} ${c.koreaKo} ${c.koreaTc} ${c.pitchKo} ${c.pitchTc} ${(c.works || []).join(' ')}`.toLowerCase();
+                const searchBlob = `${c.nameKo} ${c.nameTc} ${c.scaleKo} ${c.scaleTc} ${c.koreaKo} ${c.koreaTc} ${(c.works || []).join(' ')}`.toLowerCase();
                 const matchSearch = !query || searchBlob.includes(query);
 
                 return matchRegion && matchTrack && matchSearch;
@@ -1883,7 +1821,6 @@ const DEFAULT_JSONBIN_API_KEY = "${key}";`;
                 const name = isKo ? c.nameKo : c.nameTc;
                 const scale = isKo ? c.scaleKo : c.scaleTc;
                 const korea = isKo ? c.koreaKo : c.koreaTc;
-                const pitch = isKo ? c.pitchKo : c.pitchTc;
 
                 const badgesHtml = c.tracks.map(tr => {
                     const info = TRACK_INFO[tr];
@@ -1902,7 +1839,6 @@ const DEFAULT_JSONBIN_API_KEY = "${key}";`;
                                 <div class="flex items-center gap-1.5 flex-wrap">
                                     <span class="text-xs font-bold px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700">${regionLabel}</span>
                                     ${c.priority ? `<span class="text-[11px] font-extrabold px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300">★ ${isKo ? '최우선' : '最優先'}</span>` : ''}
-                                    <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">✓ ${isKo ? '검증완료' : '已核實'}</span>
                                 </div>
 
                                 <!-- 바이어 선정 토글 버튼 -->
@@ -1921,7 +1857,7 @@ const DEFAULT_JSONBIN_API_KEY = "${key}";`;
 
                             ${worksHtml}
 
-                            <!-- 상세 정보: 개요 + 한국 협업 실적 + 제안 포인트 -->
+                            <!-- 상세 정보: 개요 + 한국 협업 실적 -->
                             <div class="space-y-2 pt-1 text-xs leading-relaxed">
                                 <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
                                     <span class="font-bold text-slate-800 block mb-0.5">${t.cardScaleLabel}</span>
@@ -1930,10 +1866,6 @@ const DEFAULT_JSONBIN_API_KEY = "${key}";`;
                                 <div class="bg-emerald-50/60 p-2.5 rounded-xl border border-emerald-200/70">
                                     <span class="font-bold text-emerald-900 block mb-0.5">${t.cardKoreaLabel}</span>
                                     <span class="text-slate-700">${korea}</span>
-                                </div>
-                                <div class="bg-indigo-50/60 p-2.5 rounded-xl border border-indigo-100">
-                                    <span class="font-bold text-indigo-900 block mb-0.5">${t.cardPitchLabel}</span>
-                                    <span class="text-slate-800 font-medium">${pitch}</span>
                                 </div>
                             </div>
                         </div>
@@ -1961,6 +1893,14 @@ const DEFAULT_JSONBIN_API_KEY = "${key}";`;
                 showToast(isKo ? '선정 목록에서 제외되었습니다.' : '已從選定清單移除。');
             } else {
                 selectedBuyerIds.push(companyId);
+                // 검토자 이름이 입력되어 있으면 누가 선정했는지 메모에 자동 표시
+                if (reviewerName) {
+                    const tag = `[${reviewerName} 픽]`;
+                    const cur = buyerMemos[companyId] || '';
+                    if (!cur.includes(tag)) {
+                        buyerMemos[companyId] = cur ? `${tag} ${cur}` : tag;
+                    }
+                }
                 showToast(isKo ? '선정 바이어 목록에 추가되었습니다!' : '已加入選定買家清單！');
             }
             saveSelectionToStorage();
@@ -2021,7 +1961,7 @@ const DEFAULT_JSONBIN_API_KEY = "${key}";`;
             container.innerHTML = selectedCompanies.map((c, idx) => {
                 const name = isKo ? c.nameKo : c.nameTc;
                 const regionLabel = isKo ? REGION_INFO[c.region].ko : REGION_INFO[c.region].tc;
-                const pitch = isKo ? c.pitchKo : c.pitchTc;
+                const korea = isKo ? c.koreaKo : c.koreaTc;
                 const memo = buyerMemos[c.id] || '';
                 const tracksStr = c.tracks.map(tr => isKo ? TRACK_INFO[tr].ko : TRACK_INFO[tr].tc).join(' / ');
 
@@ -2035,7 +1975,7 @@ const DEFAULT_JSONBIN_API_KEY = "${key}";`;
                                 <h4 class="text-sm sm:text-base font-black text-slate-900">${name}</h4>
                             </div>
                             <div class="text-xs font-semibold text-indigo-700">${tracksStr}</div>
-                            <div class="text-xs text-slate-600">${pitch}</div>
+                            <div class="text-xs text-slate-600">${korea}</div>
                         </div>
 
                         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 lg:w-96 shrink-0">
@@ -2077,11 +2017,9 @@ const DEFAULT_JSONBIN_API_KEY = "${key}";`;
                 const name = isKo ? c.nameKo : c.nameTc;
                 const region = isKo ? REGION_INFO[c.region].ko : REGION_INFO[c.region].tc;
                 const tracks = c.tracks.map(tr => isKo ? TRACK_INFO[tr].ko : TRACK_INFO[tr].tc).join(', ');
-                const pitch = isKo ? c.pitchKo : c.pitchTc;
-                const memo = buyerMemos[c.id] ? ` | 💬 코멘트: ${buyerMemos[c.id]}` : '';
+                const memo = buyerMemos[c.id] ? `\n   - 💬 코멘트: ${buyerMemos[c.id]}` : '';
                 lines.push(`${i + 1}. [${region}] ${name}${c.priority ? ' (★최우선)' : ''}`);
-                lines.push(`   - 협업 분야: ${tracks}`);
-                lines.push(`   - 제안 핵심: ${pitch}${memo}`);
+                lines.push(`   - 협업 분야: ${tracks}${memo}`);
                 lines.push('');
             });
 
@@ -2102,7 +2040,7 @@ const DEFAULT_JSONBIN_API_KEY = "${key}";`;
                 return;
             }
 
-            const headers = ['No', 'Region', 'Company_KO', 'Company_TC', 'Priority', 'Tracks', 'Verified_Korea_Collab', 'TAKEONE_Pitch', 'Executive_Memo'];
+            const headers = ['No', 'Region', 'Company_KO', 'Company_TC', 'Priority', 'Tracks', 'Korea_Collab_History', 'Executive_Memo'];
             const rows = selectedCompanies.map((c, idx) => [
                 idx + 1,
                 REGION_INFO[c.region].ko,
@@ -2111,7 +2049,6 @@ const DEFAULT_JSONBIN_API_KEY = "${key}";`;
                 c.priority ? 'STAR' : 'NORMAL',
                 `"${c.tracks.map(tr => TRACK_INFO[tr].ko).join(' / ')}"`,
                 `"${c.koreaKo.replace(/"/g, '""')}"`,
-                `"${c.pitchKo.replace(/"/g, '""')}"`,
                 `"${(buyerMemos[c.id] || '').replace(/"/g, '""')}"`
             ]);
 
@@ -2144,26 +2081,26 @@ const DEFAULT_JSONBIN_API_KEY = "${key}";`;
                 let subjParts = [];
                 if (hasT1) subjParts.push('오리지널 대본 판매 및 웹툰 IP 리메이크');
                 if (hasT2) subjParts.push('K-POP 아이돌 숏드라마/영화 및 드라마·애니 배급');
-                if (hasT3) subjParts.push('글로벌 영상·애니 공동투자 및 합작제작');
-                if (hasT4) subjParts.push('《ENHYPEN WORLD》 캐릭터 Vamkids 라이선스·팝업');
+                if (hasT3) subjParts.push('글로벌 영상·애니 공동투자 및 공동제작');
+                if (hasT4) subjParts.push('캐릭터 IP 라이선스·굿즈 유통·팝업스토어');
                 const subject = `[TCCF 미팅 제안] 한국 TAKEONE COMPANY — ${subjParts.join(', ')} 협업 제안`;
 
                 let items = [];
                 let idx = 1;
                 if (hasT1) {
-                    items.push(`${idx}. [고완성도 한국 오리지널 대본 판매 및 60+편 인기 웹툰(Webtoon) IP 영상화 리메이크 권리]\n   - 오리지널 상업 대본(현지 드라마/숏폼/영화 즉시 리메이크 가능): 판타지 로맨스, 학원 퇴마, 미스터리 스릴러, 밀실 서바이벌, SF 액션, 타임슬립 코미디, 요리 연애 서바이벌 등 다양한 상업 장르 보유.\n   - 검증된 한국 인기 웹툰 IP 60+편: 한국 카카오/다음 웹툰 랭킹 1위 및 부산국제영화제 초청작 《CELL》을 비롯하여 《마왕까지 한 걸음》, 《돌아온 여름에게》, 《여름소녀 강소년》 등 드라마·영화·숏폼 리메이크 판권.`);
+                    items.push(`${idx}. [고완성도 한국 오리지널 대본 판매 및 60+편 인기 웹툰(Webtoon) IP 영상화 리메이크 권리]\n   - 오리지널 상업 대본(현지 드라마/숏폼/영화 즉시 리메이크 가능): 판타지 로맨스, 학원 퇴마, 미스터리 스릴러, 밀실 서바이벌, SF 액션, 타임슬립 코미디, 요리 연애 서바이벌 등 다양한 상업 장르 보유.\n   - 검증된 한국 인기 웹툰 IP 60+편: 한국 주요 웹툰 플랫폼 랭킹 1위 및 국제영화제 초청작을 포함하여 시장성이 검증된 인기 웹툰 IP의 실사 드라마·숏폼·영화 리메이크 판권.`);
                     idx++;
                 }
                 if (hasT2) {
-                    items.push(`${idx}. [K-POP 최정상 아이돌 주연 숏드라마·영화, 텐트폴 한드 및 애니메이션 배급(Distribution)]\n   - K-POP 아이돌 주연 신작 20+편(세로형 숏드라마 + 가로형 영화 이중 규격 완비): NCT 제노&재민 주연 청춘 야구 드라마 《Wind Up》 및 TWICE 다현, MONSTA X 형원, THE BOYZ 영훈, ZEROBASEONE 김지웅, FIFTY FIFTY 등이 주연한 20여 편의 신작 라인업.\n   - 프라임타임 장편 드라마·상업영화·애니메이션: 시대 대작 《고래별(Whale Star)》, 영국 BBC 원작 리메이크 범죄 스릴러 《언포가튼(Unforgotten)》, 오컬트 공포영화 《밀례(密禮)》 및 오리지널 애니메이션 시리즈.`);
+                    items.push(`${idx}. [K-POP 최정상 아이돌 주연 숏드라마·영화, 장편 드라마 및 애니메이션 배급(Distribution)]\n   - K-POP 아이돌 주연 신작 20+편(세로형 숏드라마 + 가로형 영화 이중 규격 완비): 최정상 K-POP 아이돌 그룹 멤버들이 주연한 청춘 스포츠, 로맨스, 장르물 등 20여 편의 신작 라인업.\n   - 프라임타임 장편 드라마·상업영화·애니메이션: 대형 시대극, 해외 유명 포맷 리메이크 범죄 스릴러, 오컬트 공포영화 및 오리지널 애니메이션 시리즈.`);
                     idx++;
                 }
                 if (hasT3) {
-                    items.push(`${idx}. [영상 및 애니메이션 프로젝트 공동투자(Co-investment) & 글로벌 합작제작(Co-production)]\n   - 당사의 K-POP 최정상 아티스트 네트워크, 글로벌 숏폼 플랫폼 ‘KITZ’ 및 60+편 원작 IP를 바탕으로 글로벌 타깃 숏폼·장편 시리즈·상업영화 및 오리지널/웹툰 원작 애니메이션의 공동투자와 합작제작을 제안드립니다.`);
+                    items.push(`${idx}. [영상 및 애니메이션 프로젝트 공동투자(Co-investment) & 글로벌 공동제작(Co-production)]\n   - 당사의 K-POP 최정상 아티스트 네트워크, 글로벌 숏폼 드라마 플랫폼 및 60+편 원작 스토리 IP를 바탕으로 글로벌 타깃 숏폼·장편 시리즈·상업영화 및 오리지널/웹툰 원작 애니메이션의 공동투자와 공동제작을 제안드립니다.`);
                     idx++;
                 }
                 if (hasT4) {
-                    items.push(`${idx}. [《ENHYPEN WORLD》 공식 게임 캐릭터 IP ‘Vamkids(밤키즈)’ 라이선스·MD 유통·팝업스토어 협업]\n   - 당사는 ENHYPEN 공식 모바일 게임 《ENHYPEN WORLD》를 개발·서비스하며 멤버 기반 공식 캐릭터 IP ‘Vamkids(밤키즈)’를 보유하고 있습니다. 서울, 도쿄, 가오슝, 상하이, 미국 등에서 성공적으로 개최한 팝업스토어 실적을 바탕으로 (a) 캐릭터 상품화 및 콜라보 라이선스, (b) 공식 MD 및 인게임 아이템·실물 특전 포토카드 패키지 유통, (c) 현지 오프라인 팝업스토어 공동 기획·운영을 제안드립니다.`);
+                    items.push(`${idx}. [K-POP 공식 모바일 게임 캐릭터 IP 라이선스·굿즈(MD) 유통·팝업스토어 협업]\n   - 당사는 K-POP 아이돌 공식 모바일 게임을 개발·서비스하며 아티스트 기반 공식 캐릭터 IP를 보유하고 있습니다. 서울, 도쿄, 가오슝, 상하이, 미국 등에서 성공적으로 개최한 팝업스토어 실적을 바탕으로 (a) 캐릭터 상품화 및 현지 콜라보 라이선스, (b) 공식 굿즈(MD) 및 인게임 아이템·실물 특전 포토카드 패키지 유통, (c) 현지 오프라인 팝업스토어 공동 기획·운영을 제안드립니다.`);
                     idx++;
                 }
 
@@ -2173,7 +2110,7 @@ const DEFAULT_JSONBIN_API_KEY = "${key}";`;
                 const body = `안녕하세요, ${cleanName} 담당자님.
 
 한국의 종합 엔터테인먼트 및 IP 콘텐츠 스튜디오 TAKEONE COMPANY(테이크원컴퍼니)입니다.
-당사는 전문 스토리·웹툰 IP 기획개발 부문을 보유하고 있으며, 글로벌 K-POP 숏폼 드라마 플랫폼 ‘KITZ’와 공식 모바일 게임 《ENHYPEN WORLD》를 운영하고 드라마·영화·애니메이션을 제작하고 있습니다.
+당사는 전문 스토리·웹툰 IP 기획개발 부문을 보유하고 있으며, 글로벌 K-POP 숏폼 드라마 플랫폼과 K-POP 아이돌 공식 모바일 게임을 운영하고 드라마·영화·애니메이션을 기획·제작하고 있습니다.
 ${iceLine}
 이번 타이베이 TCCF 기간 중 귀사와 미팅을 갖고 아래 분야의 전략적 협업을 논의하고자 합니다:
 
@@ -2193,25 +2130,25 @@ TAKEONE COMPANY 드림`;
                 if (hasT1) subjParts.push('韓国オリジナル脚本・ウェブトゥーンIP映像化');
                 if (hasT2) subjParts.push('K-POPアイドル主演作・韓国ドラマ配給');
                 if (hasT3) subjParts.push('映像・アニメ共同投資および共同製作');
-                if (hasT4) subjParts.push('『ENHYPEN WORLD』キャラクターIP「Vamkids」展開');
+                if (hasT4) subjParts.push('K-POPキャラクターIPライセンス・MD・ポップアップ展開');
                 const subject = `【TCCF面談のお願い】韓国TAKEONE COMPANY — ${subjParts.join('／')}に関する協業のご提案`;
 
                 let items = [];
                 let idx = 1;
                 if (hasT1) {
-                    items.push(`${idx}. 【韓国オリジナル脚本の販売および60作品以上の人気ウェブトゥーン（Webtoon）IPの映像化・リメイク権許諾】\n   ・オリジナル商業脚本（日本版ドラマ・ショートドラマ・映画へのリメイクに最適）：ファンタジーロマンス、学園退魔、ミステリースリラー、密室サバイバル、SFアクション、タイムスリップ・コメディ、料理×恋愛サバイバルなど多彩な商業ジャンルを保有しております。\n   ・韓国人気ウェブトゥーンIP（60作品以上）：韓国Kakao/Daum 웹툰ランキング1位を獲得し釜山国際映画祭にも選出された『CELL』をはじめ、『魔王まであと一歩』『帰ってきた夏へ』『サマーガール・リバーボーイ』など、市場で 검증された人気IPの実写化・アニメ化権をご提案いたします。`);
+                    items.push(`${idx}. 【韓国オリジナル脚本の販売および60作品以上の人気ウェブトゥーン（Webtoon）IPの映像化・リメイク権許諾】\n   ・オリジナル商業脚本（日本版ドラマ・ショートドラマ・映画へのリメイクに最適）：ファンタジーロマンス、学園退魔、ミステリースリラー、密室サバイバル、SFアクション、タイムスリップ・コメディ、料理×恋愛サバイバルなど多彩な商業ジャンルを保有しております。\n   ・韓国人気ウェブトゥーンIP（60作品以上）：韓国主要ウェブトゥーンプラットフォームでランキング1位を獲得し国際映画祭にも選出された話題作をはじめ、市場で検証された人気IPの実写化・アニメ化権をご提案いたします。`);
                     idx++;
                 }
                 if (hasT2) {
-                    items.push(`${idx}. 【K-POPトップアイドル主演ショートドラマ・映画、新作韓国ドラマ・アニメの日本配給・配信権（Distribution）】\n   ・K-POPアイドル主演の新作20タイトル以上（縦型ショートドラマ＋横型映画の2フォーマット対応）：NCTのJENO＆JAEMIN主演の青春野球ドラマ『Wind Up』をはじめ、TWICE ダヒョン、MONSTA X ヒョンウォン、THE BOYZ ヨンフン、ZEROBASEONE キム・ジウン、FIFTY FIFTYらが出演する新作20作品以上の日本国内配信権・放送権・パッケージ（DVD/BD）化権。\n   ・大型韓国ドラマ＆商業映画・アニメ：時代劇大作『鯨星（Whale Star）』、英BBC人気作の韓国リメイク版クライムサスペンス『Unforgotten』、韓国オカルトホラー映画『密礼（Mil-rye）』、およびオリジナルアニメーションシリーズ。`);
+                    items.push(`${idx}. 【K-POPトップアイドル主演ショートドラマ・映画、新作韓国ドラマ・アニメの日本配給・配信権（Distribution）】\n   ・K-POPアイドル主演の新作20タイトル以上（縦型ショートドラマ＋横型映画の2フォーマット対応）：K-POPトップアイドルグループのメンバーが出演する青春スポーツ、ロマンス、ジャンル作品など新作20作品以上の日本国内配信権・放送権・パッケージ（DVD/BD）化権。\n   ・大型韓国ドラマ＆商業映画・アニメ：大型時代劇ドラマ、海外名作フォーマットの韓国リメイク版クライムサスペンス、韓国オカルトホラー映画、およびオリジナルアニメーションシリーズ。`);
                     idx++;
                 }
                 if (hasT3) {
-                    items.push(`${idx}. 【映像・アニメーション作品の共同投資（Co-investment）および日韓共同製作（Co-production）】\n   ・弊社のK-POPアーティストネットワーク、グローバルショートドラマプラットフォーム「KITZ」、および60作品以上の原作IPを活用し、グローバル向けショートドラマ・連続ドラマ・商業映画、ならびにウェブトゥーン原作アニメーションの共同投資・製作委員会への参画をご相談したく存じます。`);
+                    items.push(`${idx}. 【映像・アニメーション作品の共同投資（Co-investment）および日韓共同製作（Co-production）】\n   ・弊社のK-POPアーティストネットワーク、グローバルショートドラマプラットフォーム、および60作品以上の原作IPを活用し、グローバル向けショートドラマ・連続ドラマ・商業映画、ならびにウェブトゥーン原作アニメーションの共同投資・共同製作をご相談したく存じます。`);
                     idx++;
                 }
                 if (hasT4) {
-                    items.push(`${idx}. 【『ENHYPEN WORLD』公式キャラクターIP「Vamkids（バムキッズ）」ライセンス・MD販売・ポップアップストア協業】\n   ・弊社はENHYPENの公式モバイルゲーム『ENHYPEN WORLD』を開発・運営しており、メンバーをモチーフにした専用キャラクターIP「Vamkids」を展開しております。東京・ソウル・高雄・上海・米国でのポップアップストア開催実績をもとに、(a) 日本国内における商品化ライセンス・コラボ展開、(b) 公式グッズ（MD）およびゲーム連動特典トレカパッケージの流通販売、(c) ポップアップストアの共同企画・運営についてご提案いたします。`);
+                    items.push(`${idx}. 【K-POP公式モバイルゲーム内キャラクターIPのライセンス・MD販売・ポップアップストア協業】\n   ・弊社はK-POPアーティスト公式モバイルゲームを開発・運営しており、メンバーをモチーフにした専用キャラクターIPを展開しております。東京・ソウル・高雄・上海・米国でのポップアップストア開催実績をもとに、(a) 日本国内における商品化ライセンス・コラボ展開、(b) 公式グッズ（MD）およびゲーム連動特典トレカパッケージの流通販売、(c) ポップアップストアの共同企画・運営についてご提案いたします。`);
                     idx++;
                 }
 
@@ -2224,7 +2161,7 @@ TAKEONE COMPANY 드림`;
 突然のご連絡にて失礼いたします。
 韓国の総合エンターテインメント・IPコンテンツ企業、TAKEONE COMPANY（テイクワン・カンパニー）と申します。
 
-弊社はオリジナルのストーリー・ウェブトゥーンIP開発部門を有し、グローバルK-POPショートドラマプラットフォーム「KITZ」および公式モバイルゲーム『ENHYPEN WORLD』の運営、ならびにドラマ・映画・アニメーションの企画制作を行っております。
+弊社はオリジナルのストーリー・ウェブトゥーンIP開発部門を有し、グローバルK-POPショートドラマプラットフォームおよびK-POP公式モバイルゲームの運営、ならびにドラマ・映画・アニメーションの企画制作を行っております。
 ${iceLine}
 このたび台北で開催される「TCCF」への参加にあたり、ぜひ貴社と面談の機会をいただきたくご連絡いたしました。以下の分野において協業の可能性をご相談できれば幸いです。
 
@@ -2246,26 +2183,26 @@ TAKEONE COMPANY`;
                 let subjParts = [];
                 if (hasT1) subjParts.push('韓國原創劇本＆網漫IP改編');
                 if (hasT2) subjParts.push('K-POP偶像短劇/電影＆韓劇動畫發行');
-                if (hasT3) subjParts.push('影視與動畫合資合製');
-                if (hasT4) subjParts.push('《ENHYPEN WORLD》角色Vamkids授權與快閃店');
+                if (hasT3) subjParts.push('影視與動畫共同投資與共同製作');
+                if (hasT4) subjParts.push('K-POP遊戲角色IP授權與快閃店');
                 const subject = `［TCCF 會議邀約］韓國 TAKEONE COMPANY — ${subjParts.join('、')}合作洽談`;
 
                 let items = [];
                 let idx = 1;
                 if (hasT1) {
-                    items.push(`${idx}. 【高完成度韓國原創劇本銷售 ＆ 60+ 部人氣網漫（Webtoon）影視改編授權】\n   - 原創劇本（可直接翻拍為台劇／港劇／短劇／電影）：涵蓋奇幻愛情、校園驅魔、懸疑驚悚、密室生存、科幻動作、穿越喜劇、料理戀愛生存等多元商業題材。\n   - 韓國人氣網漫 IP 改編權：包含曾奪下韓國 Kakao/Daum Webtoon 排行榜冠軍並受邀釜山國際影展的《CELL》，以及《離魔王只有一步》、《致歸來的夏天》、《夏日女孩河男孩》等經過市場驗證的熱門網漫 IP。`);
+                    items.push(`${idx}. 【高完成度韓國原創劇本銷售 ＆ 60+ 部人氣網漫（Webtoon）影視改編授權】\n   - 原創劇本（可直接翻拍為台劇／港劇／短劇／電影）：涵蓋奇幻愛情、校園驅魔、懸疑驚悚、密室生存、科幻動作、穿越喜劇、料理戀愛生存等多元商業題材。\n   - 韓國人氣網漫 IP 改編權：包含曾奪下韓國主流網漫平台排行榜冠軍並受邀國際影展的代表作等 60 餘部經過市場驗證的熱門網漫 IP，皆可授權改編為真人影集、短劇或電影。`);
                     idx++;
                 }
                 if (hasT2) {
-                    items.push(`${idx}. 【K-POP 頂級偶像主演之短劇＆電影、旗艦韓劇與動畫之版權發行（Distribution）】\n   - K-POP 偶像短劇＆電影（直式短劇＋橫式電影雙規格）：包含 NCT JENO & JAEMIN 主演之爆款青春棒球劇《Wind Up》，以及由 FIFTY FIFTY、TWICE 多賢、MONSTA X 亨元、THE BOYZ 泳勛、ZEROBASEONE 金地雄等主演之 20 餘部新作。\n   - 黃金檔長篇韓劇與商業電影：包含時代大劇《鯨星（Whale Star）》、BBC 翻拍懸疑劇《Unforgotten》及韓國恐怖電影《密禮》等最新片單，以及原創動畫系列。`);
+                    items.push(`${idx}. 【K-POP 頂級偶像主演之短劇＆電影、旗艦韓劇與動畫之版權發行（Distribution）】\n   - K-POP 偶像短劇＆電影（直式短劇＋橫式電影雙規格）：由多組韓國一線 K-POP 頂級偶像團體成員領銜主演之 20 餘部全新作品（涵蓋青春運動、浪漫愛情、懸疑類型等）。\n   - 黃金檔長篇韓劇與商業電影：包含大型時代劇、知名海外模式翻拍之犯罪懸疑韓劇、韓國巫俗恐怖電影，以及原創動畫與短篇動畫系列。`);
                     idx++;
                 }
                 if (hasT3) {
-                    items.push(`${idx}. 【影視與動畫項目之共同投資（Co-investment）＆跨國聯合製作（Co-production）】\n   - 我們擁有深厚的 K-POP 頂級藝人合作網絡、自有全球短劇平台「KITZ」與完整製作體系，希望能與貴司探討全球向短劇、長篇影集、商業電影及原創／漫改動畫之共同投資與跨國合製（亦可搭配台灣文策院 TICP 國際合資方案共同推進）。`);
+                    items.push(`${idx}. 【影視與動畫項目之共同投資（Co-investment）＆跨國共同製作（Co-production）】\n   - 我們擁有深厚的 K-POP 頂級藝人合作網絡、自有全球 K-POP 短劇平台與完整製作體系，希望能與貴司探討全球向短劇、長篇影集、商業電影及原創／漫改動畫之共同投資與跨國共同製作（亦可搭配台灣文策院 TICP 國際合資方案共同推進）。`);
                     idx++;
                 }
                 if (hasT4) {
-                    items.push(`${idx}. 【《ENHYPEN WORLD》遊戲內成員角色 IP「Vamkids」授權、周邊銷售與快閃店合作】\n   - 我們開發並營運 ENHYPEN 官方手遊《ENHYPEN WORLD》，並以成員為原型打造專屬角色形象「Vamkids（밤키즈）」。我們曾於高雄、東京、首爾、上海及美國成功舉辦多場 K-POP 快閃店，期待洽談：(a) 角色商品化與聯名授權、(b) 官方周邊（MD）與遊戲虛寶小卡禮包通路銷售、(c) 線下快閃店（Pop-up Store）共同策劃與營運。`);
+                    items.push(`${idx}. 【K-POP 官方手遊角色 IP 授權、周邊商品（MD）銷售與快閃店合作】\n   - 我們開發並營運韓國頂級男團官方手遊，並以成員為原型打造了遊戲內專屬角色 IP。我們曾於高雄、東京、首爾、上海及美國成功舉辦多場 K-POP 快閃店，期待洽談：(a) 角色商品化與聯名授權（Licensing）、(b) 官方周邊（MD）與遊戲虛寶特典小卡禮包通路銷售、(c) 線下快閃店（Pop-up Store）共同策劃與營運。`);
                     idx++;
                 }
 
@@ -2274,7 +2211,7 @@ TAKEONE COMPANY`;
 
                 const body = `${cleanName} 團隊您好！
 
-我們是韓國綜合娛樂與 IP 內容企業 TAKEONE COMPANY。我們擁有專業的原創故事與網漫 IP 開發部門、營運全球 K-POP 短劇平台「KITZ」與官方手遊《ENHYPEN WORLD》，並持續推出多元影視與動畫作品。
+我們是韓國綜合娛樂與 IP 內容企業 TAKEONE COMPANY。我們擁有專業的原創故事與網漫 IP 開發部門、營運全球 K-POP 短劇平台與頂級偶像官方手遊，並持續推出多元影視與動畫作品。
 ${iceLine}
 久仰貴司在產業中的卓越實力與影響力，本次於 TCCF 展會期間，希望能與貴司預約會議，針對以下業務方向洽談合作：
 
@@ -2293,32 +2230,32 @@ TAKEONE COMPANY`;
                 let subjParts = [];
                 if (hasT1) subjParts.push('韩国原创剧本&网漫IP改编');
                 if (hasT2) subjParts.push('K-POP偶像短剧/电影&韩剧动画发行');
-                if (hasT3) subjParts.push('影视与动画合资合制');
-                if (hasT4) subjParts.push('《ENHYPEN WORLD》角色Vamkids授权与快闪店');
+                if (hasT3) subjParts.push('影视与动画共同投资与共同制作');
+                if (hasT4) subjParts.push('K-POP游戏角色IP授权与快闪店');
                 const subject = `［TCCF 会议邀约］韩国 TAKEONE COMPANY — ${subjParts.join('、')}合作洽谈`;
 
                 let items = [];
                 let idx = 1;
                 if (hasT1) {
-                    items.push(`${idx}. 【高完成度韩国原创剧本销售 ＆ 60+ 部人气网漫（Webtoon）影视改编授权】\n   - 原创剧本（非常适合华语本土化翻拍或出海短剧/电影改编）：涵盖奇幻爱情、校园驱魔、悬疑惊悚、密室生存、科幻动作、穿越喜剧、料理恋爱生存等多元高概念商业题材。\n   - 韩国人气网漫 IP 改编权：包含曾夺下韩国 Kakao/Daum Webtoon 排行榜冠军并受邀釜山国际电影节的《CELL》，以及《离魔王只有一步》、《致归来的夏天》、《夏日女孩河男孩》等热门网漫 IP。`);
+                    items.push(`${idx}. 【高完成度韩国原创剧本销售 ＆ 60+ 部人气网漫（Webtoon）影视改编授权】\n   - 原创剧本（非常适合华语本土化翻拍或出海短剧/电影改编）：涵盖奇幻爱情、校园驱魔、悬疑惊悚、密室生存、科幻动作、穿越喜剧、料理恋爱生存等多元高概念商业题材。\n   - 韩国人气网漫 IP 改编权：包含曾夺下韩国主流网漫平台排行榜冠军并受邀国际电影节的代表作等 60 余部热门网漫 IP。`);
                     idx++;
                 }
                 if (hasT2) {
-                    items.push(`${idx}. 【K-POP 顶级偶像主演之短剧＆电影、旗舰韩剧与动画之版权发行（Distribution）】\n   - K-POP 偶像短剧＆电影（支持竖屏短剧＋横屏电影双规格）：包含 NCT JENO & JAEMIN 主演之爆款青春棒球剧《Wind Up》，以及由 FIFTY FIFTY、TWICE 多贤、MONSTA X 亨元、THE BOYZ 泳勋、ZEROBASEONE 金地雄等主演之 20 余部新作。\n   - 黄金档长篇韩剧与商业电影：包含时代大剧《鲸星（Whale Star）》、BBC 翻拍悬疑剧《Unforgotten》、恐怖电影《密礼》及原创动画系列。`);
+                    items.push(`${idx}. 【K-POP 顶级偶像主演之短剧＆电影、旗舰韩剧与动画之版权发行（Distribution）】\n   - K-POP 偶像短剧＆电影（支持竖屏短剧＋横屏电影双规格）：由多组韩国一线 K-POP 顶级偶像团体成员领衔主演之 20 余部新作。\n   - 黄金档长篇韩剧与商业电影：包含大型时代剧、知名海外模式翻拍悬疑剧、韩国恐怖电影及原创动画系列。`);
                     idx++;
                 }
                 if (hasT3) {
-                    items.push(`${idx}. 【影视与动画项目之共同投资（Co-investment）＆跨国联合制作（Co-production）】\n   - 我们拥有深厚的 K-POP 顶级艺人合作网络、自有全球短剧平台「KITZ」与完整制作体系，希望能与贵司探讨全球向短剧、长篇剧集、商业电影及原创／漫改动画之共同投资与跨国合制。`);
+                    items.push(`${idx}. 【影视与动画项目之共同投资（Co-investment）＆跨国共同制作（Co-production）】\n   - 我们拥有深厚的 K-POP 顶级艺人合作网络、自有全球短剧平台与完整制作体系，希望能与贵司探讨全球向短剧、长篇剧集、商业电影及原创／漫改动画之共同投资与跨国共同制作。`);
                     idx++;
                 }
                 if (hasT4) {
-                    items.push(`${idx}. 【《ENHYPEN WORLD》游戏内成员角色 IP「Vamkids」授权、周边销售与快闪店合作】\n   - 我们开发并运营 ENHYPEN 官方手游《ENHYPEN WORLD》，并以成员为原型打造专属角色形象「Vamkids（밤키즈）」。我们曾于上海、高雄、东京、首尔及美国成功举办多场高人气 K-POP 快闪店，期待洽谈：(a) 角色商品化与联名授权、(b) 官方周边（MD）与游戏虚宝小卡礼包渠道销售、(c) 线下快闪店（Pop-up Store）共同策划与运营。`);
+                    items.push(`${idx}. 【K-POP 官方手游角色 IP 授权、周边商品（MD）销售与快闪店合作】\n   - 我们开发并运营韩国顶级偶像官方手游，并以成员为原型打造专属角色形象。我们曾于上海、高雄、东京、首尔及美国成功举办多场高人气 K-POP 快闪店，期待洽谈：(a) 角色商品化与联名授权、(b) 官方周边（MD）与游戏虚宝特典小卡礼包渠道销售、(c) 线下快闪店（Pop-up Store）共同策划与运营。`);
                     idx++;
                 }
 
                 const body = `${cleanName} 团队您好！
 
-我们是韩国综合娱乐与 IP 内容企业 TAKEONE COMPANY。我们设有专业的原创故事与网漫 IP 开发部门、运营全球 K-POP 短剧平台「KITZ」与官方手游《ENHYPEN WORLD》，并持续推出多元影视与动画作品。
+我们是韩国综合娱乐与 IP 内容企业 TAKEONE COMPANY。我们设有专业的原创故事与网漫 IP 开发部门、运营全球 K-POP 短剧平台与官方手游，并持续推出多元影视与动画作品。
 
 久仰贵司在行业内的卓越实力与影响力，本次于 TCCF 展会期间，希望能与贵司预约会议，针对以下业务方向洽谈合作：
 
@@ -2337,25 +2274,25 @@ TAKEONE COMPANY`;
             if (hasT1) subjParts.push('Script & Webtoon IP Remake');
             if (hasT2) subjParts.push('K-POP Micro-Dramas/Films & K-Drama Distribution');
             if (hasT3) subjParts.push('Co-Investment & Co-Production');
-            if (hasT4) subjParts.push('ENHYPEN Game Character "Vamkids" Licensing & Pop-Up');
+            if (hasT4) subjParts.push('K-POP Game Character IP Licensing & Pop-Up');
             const subject = `[TCCF Meeting Request] TAKEONE COMPANY (Korea) — ${subjParts.join(' / ')}`;
 
             let items = [];
             let idx = 1;
             if (hasT1) {
-                items.push(`${idx}. [Original Scripts & 60+ Webtoon IPs for Local Remake / Adaptation]\n   - Ready-to-Shoot Commercial Screenplays (for Series, Micro-dramas & Feature Films): Covering Fantasy Romance, High School Exorcism, Mystery Thriller, Survival Game, Sci-Fi Action, Time-Travel Comedy, and Culinary Romance Survival.\n   - 60+ Proven Korean Webtoon IPs: Headlined by <CELL> (#1 on Kakao/Daum Webtoon & Official Selection at Busan International Film Festival), alongside <One Step from the Demon King>, <To the Returning Summer>, and <Summer Girl, River Boy>.`);
+                items.push(`${idx}. [Original Scripts & 60+ Webtoon IPs for Local Remake / Adaptation]\n   - Ready-to-Shoot Commercial Screenplays (for Series, Micro-dramas & Feature Films): Covering Fantasy Romance, High School Exorcism, Mystery Thriller, Survival Game, Sci-Fi Action, Time-Travel Comedy, and Culinary Romance Survival.\n   - 60+ Proven Korean Webtoon IPs: Including chart-topping titles on major Korean Webtoon platforms and international film festival selections, available for live-action series, short-form, or film adaptation.`);
                 idx++;
             }
             if (hasT2) {
-                items.push(`${idx}. [Content Distribution: K-POP Idol Short Dramas/Films, Tentpole K-Dramas & Animation]\n   - 20+ K-POP Idol Starring Titles (Available in BOTH Vertical Micro-Drama & Horizontal Feature Film Formats): Including the hit youth baseball drama <Wind Up> starring NCT's JENO & JAEMIN, plus 20+ new titles starring TWICE (Dahyun), MONSTA X (Hyungwon), ZEROBASEONE (Kim Ji-woong), THE BOYZ (Younghoon), and FIFTY FIFTY.\n   - Flagship K-Dramas, Films & Animation: Including epic period drama <Whale Star>, the Korean remake of BBC's crime thriller <Unforgotten>, occult horror film <Mil-rye (Secret Ritual)>, and original animated series.`);
+                items.push(`${idx}. [Content Distribution: K-POP Idol Short Dramas/Films, Tentpole K-Dramas & Animation]\n   - 20+ K-POP Idol Starring Titles (Available in BOTH Vertical Micro-Drama & Horizontal Feature Film Formats): Over 20 new titles starring members of top-tier K-POP idol groups across youth sports, romance, and genre storylines.\n   - Flagship K-Dramas, Films & Animation: Including an epic period drama, a Korean crime thriller remake of a hit international format, an occult horror feature film, and original animated series.`);
                 idx++;
             }
             if (hasT3) {
-                items.push(`${idx}. [Co-Investment & International Co-Production (Live-Action & Animation)]\n   - Leveraging our top-tier K-POP artist network, 60+ story IPs, and global short-form platform "KITZ", we are seeking strategic partners for co-financing and co-producing global short-form series, premium dramas, genre films, and original/webtoon-based animations.`);
+                items.push(`${idx}. [Co-Investment & International Co-Production (Live-Action & Animation)]\n   - Leveraging our top-tier K-POP artist network, 60+ story IPs, and global short-form drama platform, we are seeking strategic partners for co-financing and co-producing global short-form series, premium dramas, genre films, and original/webtoon-based animations.`);
                 idx++;
             }
             if (hasT4) {
-                items.push(`${idx}. [<ENHYPEN WORLD> Official Character IP "Vamkids" Licensing, MD & Pop-Up Stores]\n   - As the developer and publisher of ENHYPEN's official mobile game <ENHYPEN WORLD>, we created the member-based character IP "Vamkids". Following our successful pop-up stores in Tokyo, Seoul, Kaohsiung, Shanghai, and the US, we are looking for local partners for: (a) Character Licensing & Collaborations, (b) Official MD & Exclusive Photocard/Game Pack Distribution, and (c) Offline Pop-Up Store Co-Hosting.`);
+                items.push(`${idx}. [K-POP Official Mobile Game Character IP Licensing, MD & Pop-Up Stores]\n   - As the developer and publisher of official K-POP mobile games featuring artist-based character IPs, and following our successful pop-up stores in Tokyo, Seoul, Kaohsiung, Shanghai, and the US, we are looking for local partners for: (a) Character Licensing & Brand Collaborations, (b) Official MD & Exclusive Photocard/Game Pack Distribution, and (c) Offline Pop-Up Store Co-Hosting.`);
                 idx++;
             }
 
@@ -2364,7 +2301,7 @@ TAKEONE COMPANY`;
 
             const body = `Dear ${cleanName} Team,
 
-Greetings from TAKEONE COMPANY, a leading South Korean comprehensive entertainment and IP content studio. We operate an in-house story & Webtoon IP lab, the global K-POP short-form drama platform "KITZ", and the hit mobile game <ENHYPEN WORLD>, alongside full-scale drama, film, and animation production.
+Greetings from TAKEONE COMPANY, a leading South Korean comprehensive entertainment and IP content studio. We operate an in-house story & Webtoon IP lab, a global K-POP short-form drama platform, and official K-POP mobile games, alongside full-scale drama, film, and animation production.
 ${iceLine}
 We greatly admire your strong market leadership and would love to schedule a meeting with your team at TCCF in Taipei to explore potential synergies across the following areas:
 
@@ -2494,8 +2431,8 @@ TAKEONE COMPANY`;
 
             const presets = [
                 {
-                    titleKo: '⭐ [종합 미디어 그룹용] 다중 사업 통합 초청장 (대본/웹툰 리메이크 + 완성작 배급 + 공동투자)',
-                    titleTc: '⭐ 【綜合型大型集團專用】多重項目打包邀約信（劇本改編＋成品發行＋合資合拍）',
+                    titleKo: '⭐ [종합 미디어 그룹용] 다중 사업 통합 초청장 (대본/웹툰 리메이크 + 완성작 배급 + 공동투자·공동제작)',
+                    titleTc: '⭐ 【綜合型大型集團專用】多重項目打包邀約信（劇本改編＋成品發行＋共同投資與共同製作）',
                     subKo: '대상: 타이완모바일, 완인 인터내셔널, NTT 도코모(Lemino), TV도쿄, 태국 True CJ, 범아시아 Viu, 홍콩 MakerVille, BBC Studios 등',
                     subTc: '適用於：台灣大哥大、網銀國際、日本 NTT DOCOMO、東京電視台、泰國正大 True CJ、泛亞 Viu、香港 MakerVille、BBC Studios 等',
                     tracks: ['T1', 'T2', 'T3'],
@@ -2504,32 +2441,32 @@ TAKEONE COMPANY`;
                 {
                     titleKo: '① [대본 & 웹툰 IP 리메이크 바이어용] 현지 드라마·영화 제작사 / 방송사 자체제작부',
                     titleTc: '① 發送給【劇本與 IP 改編買家：影視開發商／製作公司／電視台自製部】',
-                    subKo: '핵심 전략: 오리지널 상업 대본 + 60+편 웹툰 IP(《CELL》 등) 영상화 리메이크 판권 패키지 제안',
-                    subTc: '策略重點：將原創劇本與 60+ 部原創網漫（《CELL》等）一起打包，專賣影視改編權與翻拍劇本',
+                    subKo: '핵심 전략: 오리지널 상업 대본 + 60+편 웹툰 IP 영상화 리메이크 판권 패키지 제안',
+                    subTc: '策略重點：將原創劇本與 60+ 部原創網漫一起打包，專賣影視改編權與翻拍劇本',
                     tracks: ['T1'],
                     highlight: false
                 },
                 {
                     titleKo: '② [완성작 구매·배급 바이어용] OTT 플랫폼 / 방송사 구매부 / 극장·애니 배급사',
                     titleTc: '② 發送給【成品買家：OTT 平台／電視台購片部／院線與動畫發行商】',
-                    subKo: '핵심 전략: K-POP 아이돌 숏드라마/영화 20+편(가로·세로 이중 규격), 대작 한드 《Whale Star》《Unforgotten》, 공포영화 《밀례》 배급',
-                    subTc: '策略重點：專賣 K-POP 偶像短劇/電影 20+ 部（直橫雙規格）、長劇《鯨星》《Unforgotten》、恐怖片《密禮》與動畫發行權',
+                    subKo: '핵심 전략: K-POP 아이돌 숏드라마/영화 20+편(가로·세로 이중 규격), 장편 한국 드라마, 상업영화 및 애니메이션 배급',
+                    subTc: '策略重點：專賣 K-POP 偶像短劇/電影 20+ 部（直橫雙規格）、長篇韓劇、商業電影與動畫發行權',
                     tracks: ['T2'],
                     highlight: false
                 },
                 {
-                    titleKo: '③ [공동투자 & 합작 파트너용] 글로벌 제작사 / 투자 배급사 / 애니메이션 스튜디오',
-                    titleTc: '③ 發送給【合資與合拍夥伴：影視投資方／跨國製作公司／動畫製作公司】',
-                    subKo: '핵심 전략: 신규 글로벌 숏폼·드라마·영화 및 웹툰 원작 애니메이션의 공동투자(Co-investment) 및 합작제작(Co-production)',
-                    subTc: '策略重點：洽談新項目的共同投資（Co-investment）與跨國聯合製作（Co-production）',
+                    titleKo: '③ [공동투자 & 공동제작 파트너용] 글로벌 제작사 / 투자 배급사 / 애니메이션 스튜디오',
+                    titleTc: '③ 發送給【共同投資與共同製作夥伴：影視投資方／跨國製作公司／動畫製作公司】',
+                    subKo: '핵심 전략: 신규 글로벌 숏폼·드라마·영화 및 웹툰 원작 애니메이션의 공동투자(Co-investment) 및 공동제작(Co-production)',
+                    subTc: '策略重點：洽談新項目的共同投資（Co-investment）與跨國共同製作（Co-production）',
                     tracks: ['T3'],
                     highlight: false
                 },
                 {
-                    titleKo: '④ [캐릭터 라이선스·MD·팝업 파트너용] 굿즈 유통사 / 팝업스토어 운영사 / 에이전시',
+                    titleKo: '④ [캐릭터 라이선스·굿즈·팝업 파트너용] 굿즈 유통사 / 팝업스토어 운영사 / 에이전시',
                     titleTc: '④ 發送給【角色授權代理商／周邊通路／快閃店營運商】',
-                    subKo: '핵심 전략: 《ENHYPEN WORLD》 멤버 캐릭터 IP ‘Vamkids’ 라이선스, 인게임 포토카드 패키지 유통 및 현지 팝업스토어 개최',
-                    subTc: '策略重點：獨立洽談《ENHYPEN WORLD》成員角色「Vamkids」之授權、周邊與虛寶小卡禮包銷售、快閃店合作',
+                    subKo: '핵심 전략: K-POP 공식 모바일 게임 캐릭터 IP 라이선스, 공식 굿즈(MD)·인게임 포토카드 패키지 유통 및 현지 팝업스토어 개최',
+                    subTc: '策略重點：獨立洽談 K-POP 官方手遊角色 IP 授權、周邊與虛寶小卡禮包銷售、快閃店合作',
                     tracks: ['T4'],
                     highlight: false
                 }
