@@ -547,6 +547,8 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
         let cloudBinId = '';
         let cloudApiKey = '';
         let cloudSyncTimer = null;
+        let isPushingCloud = false;
+        let realtimePollInterval = null;
 
         // UI 다국어 사전 (한국어 / 대만어)
         const UI_TEXT = {
@@ -1248,7 +1250,24 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
             if (isCloudConfigured()) {
                 pullFromCloud(true);
             }
+            startRealtimePolling();
         };
+
+        // 5초마다 클라우드 변경사항을 자동 감지하여 새로고침 없이 화면에 즉시 반영
+        function startRealtimePolling() {
+            if (realtimePollInterval) clearInterval(realtimePollInterval);
+            realtimePollInterval = setInterval(() => {
+                if (!document.hidden && isCloudConfigured() && !isPushingCloud && !cloudSyncTimer) {
+                    pullFromCloud(true, true);
+                }
+            }, 5000);
+
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && isCloudConfigured() && !isPushingCloud) {
+                    pullFromCloud(true, true);
+                }
+            });
+        }
 
         function loadSelectionFromStorage() {
             try {
@@ -1379,6 +1398,7 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 if (!silent) openCloudModal();
                 return;
             }
+            isPushingCloud = true;
             updateCloudStatusUI('saving');
             const payload = {
                 updatedAt: new Date().toISOString(),
@@ -1404,15 +1424,17 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 if (!silent) {
                     showToast(uiLang === 'KO' ? '⚠️ 클라우드 저장 실패: Bin ID와 API Key를 확인해 주세요.' : '⚠️ 雲端儲存失敗，請檢查 Bin ID 與 Key。');
                 }
+            } finally {
+                isPushingCloud = false;
             }
         }
 
-        async function pullFromCloud(silent = false) {
-            if (!isCloudConfigured()) {
-                if (!silent) openCloudModal();
+        async function pullFromCloud(silent = false, onlyRenderIfChanged = false) {
+            if (!isCloudConfigured() || isPushingCloud) {
+                if (!silent && !isCloudConfigured()) openCloudModal();
                 return;
             }
-            updateCloudStatusUI('saving');
+            if (!onlyRenderIfChanged) updateCloudStatusUI('saving');
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${cloudBinId}/latest`, {
                     method: 'GET',
@@ -1422,17 +1444,31 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 const data = await res.json();
                 const record = data.record || data;
 
-                if (Array.isArray(record.selectedBuyerIds)) {
-                    selectedBuyerIds = record.selectedBuyerIds;
-                }
-                if (record.buyerMemos && typeof record.buyerMemos === 'object') {
-                    buyerMemos = record.buyerMemos;
-                }
+                const remoteIds = Array.isArray(record.selectedBuyerIds) ? record.selectedBuyerIds : selectedBuyerIds;
+                const remoteMemos = (record.buyerMemos && typeof record.buyerMemos === 'object') ? record.buyerMemos : buyerMemos;
 
-                saveSelectionToStorage(true);
-                renderFilterTabs();
-                renderCompanies();
-                renderSelectedView();
+                const hasChanged =
+                    JSON.stringify(remoteIds) !== JSON.stringify(selectedBuyerIds) ||
+                    JSON.stringify(remoteMemos) !== JSON.stringify(buyerMemos);
+
+                if (!onlyRenderIfChanged || hasChanged) {
+                    selectedBuyerIds = remoteIds;
+                    buyerMemos = remoteMemos;
+                    saveSelectionToStorage(true);
+                    renderFilterTabs();
+                    renderCompanies();
+                    // 사용자가 메모 입력창에 타이핑 중이 아닐 때만 선정 뷰 재렌더링
+                    const activeEl = document.activeElement;
+                    const isTypingMemo = activeEl && activeEl.tagName === 'INPUT' && document.getElementById('view-selected') && !document.getElementById('view-selected').classList.contains('hidden');
+                    if (!isTypingMemo) {
+                        renderSelectedView();
+                    } else {
+                        updateSelectedSummaryTextarea();
+                    }
+                    if (onlyRenderIfChanged && hasChanged) {
+                        showToast(uiLang === 'KO' ? '🔄 실시간 업데이트: 새로운 바이어 선정/메모가 반영되었습니다!' : '🔄 即時更新：已同步最新買家勾選與備註！');
+                    }
+                }
 
                 const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                 updateCloudStatusUI('saved', nowStr);
@@ -1441,7 +1477,7 @@ const DEFAULT_JSONBIN_API_KEY = "";</pre>
                 }
             } catch (err) {
                 console.error('JSONBin Pull Error:', err);
-                updateCloudStatusUI('error');
+                if (!onlyRenderIfChanged) updateCloudStatusUI('error');
                 if (!silent) {
                     showToast(uiLang === 'KO' ? '⚠️ 클라우드 불러오기 실패: 설정 정보를 확인해 주세요.' : '⚠️ 無法載入雲端資料，請檢查設定。');
                 }
