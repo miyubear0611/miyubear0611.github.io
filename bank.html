@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VakıfBank + Ziraat 土耳其办卡终极全流程指南 | راهنمای جامع افتتاح حساب در ترکیه</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter, Noto Sans SC & Vazirmatn (for crisp Persian typography) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS & JS for Interactive Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        goose: {
+                            50: '#FFFDF5',   // 极浅鹅黄背景
+                            100: '#FEF9E7',  // 柔和鹅黄卡片底色
+                            200: '#FCF0C2',  // 鹅黄浅边框/高亮
+                            300: '#F9E086',  // 纯正鹅黄主色调
+                            400: '#F4C94B',  // 暖鹅黄强调色
+                            500: '#E5AC1B',  // 深鹅黄按钮/图标
+                            600: '#C4890D',  // 琥珀深色文字装点
+                            700: '#96640A',
+                            800: '#784F0E',
+                            900: '#4A3006',
+                        }
+                    },
+                    fontFamily: {
+                        zh: ['"Inter"', '"Noto Sans SC"', 'sans-serif'],
+                        fa: ['"Vazirmatn"', '"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #FFFDF5;
+            color: #292524;
+            scroll-behavior: smooth;
+        }
+        .lang-zh {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+        }
+        .lang-fa {
+            font-family: 'Vazirmatn', sans-serif;
+            line-height: 1.95;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FEF9E7;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #F4C94B;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #E5AC1B;
+        }
+        /* Leaflet custom marker styling */
+        .custom-pin {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+            border: 2px solid #ffffff;
+            transition: transform 0.2s ease;
+        }
+        .custom-pin:hover {
+            transform: scale(1.15);
+        }
+        .vakif-pin {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: #ffffff;
+        }
+        .ziraat-pin {
+            background: linear-gradient(135deg, #E11D48, #BE123C);
+            color: #ffffff;
+        }
+        .leaflet-popup-content-wrapper {
+            border-radius: 14px;
+            background: #FFFDF5;
+            border: 1px solid #F9E086;
+            box-shadow: 0 10px 25px -5px rgba(150, 100, 10, 0.15);
+        }
+        .section-card {
+            background: #FFFFFF;
+            border: 1.5px solid #FCF0C2;
+            box-shadow: 0 6px 20px -4px rgba(229, 172, 27, 0.08);
+        }
+        .soft-badge {
+            background-color: #FEF9E7;
+            border: 1px solid #F9E086;
+            color: #784F0E;
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-goose-300 selection:text-goose-900 lang-zh" id="app-body">
+
+    <!-- Toast Notification for Copy Actions -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden transform transition-all duration-300 translate-y-2 opacity-0">
+        <div class="bg-stone-800 text-goose-100 px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-goose-400">
+            <i class="fa-solid fa-circle-check text-goose-300 text-lg"></i>
+            <span id="toast-msg" class="text-sm font-medium">已复制到剪贴板！</span>
+        </div>
+    </div>
+
+    <!-- Fullscreen Modal for Turkish Bank Teller Message -->
+    <div id="teller-modal" class="fixed inset-0 z-50 hidden bg-stone-900/75 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-goose-50 border-2 border-goose-300 rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto" dir="ltr">
+            <div class="flex items-center justify-between border-b border-goose-200 pb-4 mb-5">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-9 h-9 rounded-xl bg-goose-300 text-goose-900 flex items-center justify-center font-bold">TR</span>
+                    <div>
+                        <h3 class="font-bold text-stone-800 text-lg">Banka Görevlisi İçin Bilgi Notu</h3>
+                        <p class="text-xs text-stone-500">请直接将此屏幕展示给银行柜员 / این صفحه را به متصدی بانک نشان دهید</p>
+                    </div>
+                </div>
+                <button onclick="closeTellerModal()" class="w-10 h-10 rounded-full bg-goose-100 hover:bg-goose-200 text-stone-700 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-4 text-stone-800 text-base md:text-lg leading-relaxed font-medium bg-white p-5 rounded-2xl border border-goose-200 shadow-inner">
+                <p>"Merhaba, pasaportum ve vergi numaram hazır. Ailem bana yurt dışındayken para göndereceği için <span class="bg-goose-200 px-1.5 py-0.5 rounded font-bold">Vadesiz TL</span> ve <span class="bg-goose-200 px-1.5 py-0.5 rounded font-bold">Vadesiz USD</span> hesabı açmak istiyorum <span class="text-rose-600 font-bold">(sigorta istemiyorum)</span>. Hesabı aktif etmek için şimdi nakit TL yatıracağım.</p>
+                <p>İran'da ailemin evinde yaşıyorum; İran ev adresim, Türkiye otel adresim ve anne-baba bilgilerim telefonumda yazılıdır.</p>
+                <p>Güney Kore'de yaşayacağım için üzerinde pasaporttaki adımın yazılı olduğu <span class="bg-goose-200 px-1.5 py-0.5 rounded font-bold">İsimli Banka Kartı</span> <span class="text-emerald-700 font-bold">(kesinlikle Visa veya Mastercard logolu olsun, TROY olmasın)</span> basılmasını istiyorum. Otelde kurye bekleyemeyeceğim için kartımın kesinlikle bu şubeye gönderilmesini <span class="bg-goose-200 px-1.5 py-0.5 rounded font-bold">(Şubeden Teslim)</span> talep ediyorum.</p>
+                <p>Ayrıca lütfen kartımın yurt dışı harcama hesabını <span class="bg-goose-200 px-1.5 py-0.5 rounded font-bold">Vadesiz USD (Dolar)</span> hesabım olarak bağlayın ve mobil bankacılıkta güvenlik doğrulamasını SMS yerine <span class="bg-goose-200 px-1.5 py-0.5 rounded font-bold">Mobil Onay (Bildirim)</span> olarak ayarlayın."</p>
+            </div>
+            <div class="mt-5 flex justify-end gap-3">
+                <button onclick="copyText(turkishScriptText)" class="px-5 py-2.5 rounded-xl bg-goose-300 hover:bg-goose-400 text-goose-900 font-semibold text-sm flex items-center gap-2 transition">
+                    <i class="fa-regular fa-copy"></i> Copy Türkçe
+                </button>
+                <button onclick="closeTellerModal()" class="px-5 py-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-white font-semibold text-sm transition">
+                    Close / 关闭 / بستن
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Sticky Header & Language Tab Switcher -->
+    <header class="sticky top-0 z-40 bg-goose-50/95 backdrop-blur-md border-b border-goose-200 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <!-- Brand Title -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-goose-300 border border-goose-400 flex items-center justify-center text-goose-900 shadow-sm shrink-0">
+                    <i class="fa-solid fa-building-columns text-lg"></i>
+                </div>
+                <div>
+                    <h1 id="header-title" class="font-bold text-stone-800 text-base md:text-lg leading-tight">
+                        土耳其 VakıfBank + Ziraat 办卡终极全流程
+                    </h1>
+                    <p id="header-subtitle" class="text-xs text-stone-500">
+                        伊朗出发 ➔ 伊斯坦布尔开户 ➔ 韩国刷卡与交房租完整攻略（零简化版）
+                    </p>
+                </div>
+            </div>
+
+            <!-- Language Switcher Tabs -->
+            <div class="flex items-center bg-goose-100 p-1 rounded-2xl border border-goose-300 shadow-inner shrink-0" dir="ltr">
+                <button id="tab-zh" onclick="switchLang('zh')" class="px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 bg-goose-300 text-goose-900 shadow-sm">
+                    <span>🇨🇳</span>
+                    <span>中文完整版</span>
+                </button>
+                <button id="tab-fa" onclick="switchLang('fa')" class="px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 text-stone-600 hover:text-stone-900" style="font-family: 'Vazirmatn', sans-serif;">
+                    <span>🇮🇷</span>
+                    <span>نسخه کامل فارسی</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Section Navigation Bar -->
+        <div class="bg-goose-100/80 border-t border-goose-200/70">
+            <div class="max-w-6xl mx-auto px-4 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar text-xs md:text-sm font-medium">
+                <a href="#sec-1" class="px-3 py-1.5 rounded-xl hover:bg-goose-200 text-stone-700 whitespace-nowrap transition flex items-center gap-1.5">
+                    <span class="w-5 h-5 rounded-full bg-goose-300 text-goose-900 inline-flex items-center justify-center text-xs font-bold">1</span>
+                    <span data-i18n="nav1">主副卡分工与防封控</span>
+                </a>
+                <a href="#sec-2" class="px-3 py-1.5 rounded-xl hover:bg-goose-200 text-stone-700 whitespace-nowrap transition flex items-center gap-1.5">
+                    <span class="w-5 h-5 rounded-full bg-goose-300 text-goose-900 inline-flex items-center justify-center text-xs font-bold">2</span>
+                    <span data-i18n="nav2">伊朗出发前准备清单</span>
+                </a>
+                <a href="#sec-3" class="px-3 py-1.5 rounded-xl bg-goose-200/70 hover:bg-goose-300 text-goose-900 font-semibold whitespace-nowrap transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-map-location-dot text-goose-600"></i>
+                    <span data-i18n="nav3">伊斯坦布尔12家支行地图与地址</span>
+                </a>
+                <a href="#sec-4" class="px-3 py-1.5 rounded-xl hover:bg-goose-200 text-stone-700 whitespace-nowrap transition flex items-center gap-1.5">
+                    <span class="w-5 h-5 rounded-full bg-goose-300 text-goose-900 inline-flex items-center justify-center text-xs font-bold">4</span>
+                    <span data-i18n="nav4">办卡 6 步全流程 & 柜员截图</span>
+                </a>
+                <a href="#sec-5" class="px-3 py-1.5 rounded-xl hover:bg-goose-200 text-stone-700 whitespace-nowrap transition flex items-center gap-1.5">
+                    <span class="w-5 h-5 rounded-full bg-goose-300 text-goose-900 inline-flex items-center justify-center text-xs font-bold">5</span>
+                    <span data-i18n="nav5">妈妈打钱 & 韩国交房租/刷卡</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-6xl mx-auto px-4 py-6 md:py-10 space-y-10">
+
+        <!-- ========================================== -->
+        <!-- CHINESE CONTENT (中文完整版 - 零删减)       -->
+        <!-- ========================================== -->
+        <div id="content-zh" class="space-y-10">
+
+            <!-- Intro Banner -->
+            <div class="bg-gradient-to-br from-goose-100 via-goose-50 to-goose-200/60 border-2 border-goose-300 rounded-3xl p-6 md:p-8 shadow-sm">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div class="space-y-2 max-w-3xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-goose-300/80 text-goose-900 text-xs font-bold">
+                            <i class="fa-solid fa-star"></i> 核心结论先行
+                        </div>
+                        <h2 class="text-xl md:text-2xl font-bold text-stone-800 leading-snug">
+                            把 <span class="underline decoration-goose-500 decoration-4 underline-offset-4">VakıfBank（瓦基夫银行）设为主卡</span>、<span class="underline decoration-rose-400 decoration-4 underline-offset-4">Ziraat Bankası（农业银行）设为副卡</span> 是最好的组合；同时，在手机银行 App 内部把里拉和美元换来换去，<span class="text-emerald-700 font-extrabold">绝对不会触发银行封控</span>。
+                        </h2>
+                        <p class="text-sm md:text-base text-stone-600">
+                            先把你最关心的这两个核心逻辑讲透，再把包含所有细节的终极完整版全流程给你整理在下面：
+                        </p>
+                    </div>
+                    <div class="flex sm:flex-col gap-2.5 shrink-0 w-full sm:w-auto">
+                        <div class="flex-1 bg-white/90 border border-amber-300 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-sm">
+                            <span class="w-8 h-8 rounded-xl bg-amber-500 text-white font-bold flex items-center justify-center text-sm">主</span>
+                            <div>
+                                <div class="text-xs text-stone-500 font-medium">随身日常 + 100万房租</div>
+                                <div class="font-bold text-stone-800 text-sm">VakıfBank (直扣USD)</div>
+                            </div>
+                        </div>
+                        <div class="flex-1 bg-white/90 border border-rose-200 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-sm">
+                            <span class="w-8 h-8 rounded-xl bg-rose-600 text-white font-bold flex items-center justify-center text-sm">副</span>
+                            <div>
+                                <div class="text-xs text-stone-500 font-medium">锁家里 + 补取80万房租</div>
+                                <div class="font-bold text-stone-800 text-sm">Ziraat Bankası (TL扣款)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 1 (ZH) -->
+            <section id="sec-1-zh" class="section-card rounded-3xl p-6 md:p-8 space-y-6">
+                <div class="flex items-center gap-3 border-b border-goose-200 pb-4">
+                    <span class="w-9 h-9 rounded-2xl bg-goose-300 text-goose-900 font-extrabold flex items-center justify-center text-lg shadow-sm">一</span>
+                    <h3 class="text-lg md:text-xl font-bold text-stone-800">为什么 VakıfBank 做主卡、Ziraat 做副卡？换汇会封控吗？</h3>
+                </div>
+
+                <!-- 1.1 -->
+                <div class="space-y-4">
+                    <h4 class="font-bold text-stone-800 text-base md:text-lg flex items-center gap-2">
+                        <span class="w-2 h-5 bg-goose-500 rounded-full inline-block"></span>
+                        1. 主副卡最佳分工（减少 90% 的换汇次数）
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <!-- Main Card -->
+                        <div class="bg-goose-50 border-2 border-amber-300/80 rounded-2xl p-5 space-y-3 relative overflow-hidden">
+                            <div class="flex items-center justify-between">
+                                <span class="px-3 py-1 rounded-full bg-amber-500 text-white text-xs font-bold">主卡 · VakıfBank</span>
+                                <span class="text-xs font-semibold text-amber-800 bg-amber-100 px-2.5 py-1 rounded-lg">直接扣美元 (Vadesiz USD)</span>
+                            </div>
+                            <h5 class="font-bold text-stone-800 text-base">
+                                主卡（随身带 + 日常刷卡 + 每月取 100万韩元房租）：选 VakıfBank
+                            </h5>
+                            <p class="text-sm text-stone-700 leading-relaxed">
+                                <strong class="text-stone-900">核心原因：</strong> VakıfBank 的手机银行支持把储蓄卡的境外扣款账户直接绑定到你的<strong>美元活期账户（Vadesiz USD）</strong>。绑定后，妈妈打来里拉你只需要换成美元 1 次，之后你在韩国便利店刷卡、去 ATM 取 100 万韩元房租，系统全程直接从美元账户扣款，<strong>永远不需要再把美元换回里拉！</strong>
+                            </p>
+                        </div>
+
+                        <!-- Sub Card -->
+                        <div class="bg-goose-50 border-2 border-rose-200 rounded-2xl p-5 space-y-3 relative overflow-hidden">
+                            <div class="flex items-center justify-between">
+                                <span class="px-3 py-1 rounded-full bg-rose-600 text-white text-xs font-bold">副卡 · Ziraat Bankası</span>
+                                <span class="text-xs font-semibold text-rose-800 bg-rose-100 px-2.5 py-1 rounded-lg">ATM前10秒换里拉</span>
+                            </div>
+                            <h5 class="font-bold text-stone-800 text-base">
+                                副卡（锁在家里 + 仅每月去 ATM 补取剩下 80万韩元房租）：选 Ziraat Bankası
+                            </h5>
+                            <p class="text-sm text-stone-700 leading-relaxed">
+                                <strong class="text-stone-900">核心原因：</strong> Ziraat 的储蓄卡系统比较老旧，在境外 ATM 取款时往往强制只认<strong>里拉主账户（TL）</strong>。所以这张卡你平时不用带出门，钱存成美元放在里面保值；每个月只在交房租那天操作 1 次——站在韩国 ATM 前把 80 万韩元对应的美元换成里拉，10 秒后插卡取出来即可。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1.2 -->
+                <div class="space-y-4 pt-2">
+                    <h4 class="font-bold text-stone-800 text-base md:text-lg flex items-center gap-2">
+                        <span class="w-2 h-5 bg-goose-500 rounded-full inline-block"></span>
+                        2. 在手机 App 里把里拉和美元换来换去，会封控吗？
+                    </h4>
+                    <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-5 space-y-2">
+                        <div class="flex items-center gap-2 text-emerald-800 font-bold text-base">
+                            <i class="fa-solid fa-shield-halved text-emerald-600"></i>
+                            内部换汇绝对不会封控：
+                        </div>
+                        <p class="text-sm text-stone-700 leading-relaxed">
+                            在 <code class="bg-white px-1.5 py-0.5 rounded border border-emerald-200 font-semibold">Ziraat Mobil</code> 和 <code class="bg-white px-1.5 py-0.5 rounded border border-emerald-200 font-semibold">VakıfBank Mobil</code> 软件里买卖美元（Döviz Alış/Satış），你是直接跟银行做交易，每换一次银行都能赚你的汇率差价和 0.2% 的税，银行非常欢迎，<strong>100% 不会因为你在 App 里换汇而封卡</strong>。
+                        </p>
+                    </div>
+
+                    <div class="bg-amber-50/70 border border-amber-300 rounded-2xl p-5 space-y-3">
+                        <div class="flex items-center gap-2 text-amber-900 font-bold text-base">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+                            真正会触发土耳其银行封控（MASAK 反洗钱冻结）的只有一件事 —— “乱收陌生人转账”：
+                        </div>
+                        <ul class="space-y-2.5 text-sm text-stone-700 leading-relaxed list-disc pl-5">
+                            <li>
+                                <strong class="text-rose-700">封控雷区：</strong> 妈妈在伊朗找换汇所（صرافی）给你打里拉时，如果换汇所老板今天用张三的个人卡给你转 1 万里拉、明天用李四的个人卡给你转 1 万里拉，高频收到不同陌生人的转账，会被系统判定为地下钱庄洗钱而锁卡。
+                            </li>
+                            <li>
+                                <strong class="text-emerald-800">防封控铁律：</strong> 妈妈不用每个月打钱，最好每 2～3 个月打一次；每次打钱时，让换汇所<strong>一次性一笔转清</strong>，转账后你只做 1 次“里拉换美元”，这样你的账户安全得像铁桶一样。
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2 (ZH) -->
+            <section id="sec-2-zh" class="section-card rounded-3xl p-6 md:p-8 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-goose-200 pb-4">
+                    <div class="flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-2xl bg-goose-300 text-goose-900 font-extrabold flex items-center justify-center text-lg shadow-sm">二</span>
+                        <h3 class="text-lg md:text-xl font-bold text-stone-800">从伊朗出发前的准备清单（住爸妈家 + 2,000里拉预算）</h3>
+                    </div>
+                    <span class="soft-badge text-xs font-semibold px-3 py-1 rounded-full">
+                        全部不需要公证、不需要找翻译公司，自己在手机里准备好即可
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left Column: Passport & Photos -->
+                    <div class="space-y-4">
+                        <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-3">
+                            <label class="flex items-start gap-3 cursor-pointer">
+                                <input type="checkbox" class="mt-1 w-4 h-4 accent-amber-500 rounded">
+                                <span class="text-sm md:text-base text-stone-800">
+                                    <strong>伊朗护照原件（Pasaport）：</strong> 有效期至少 6 个月以上。
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-3">
+                            <div class="font-bold text-stone-800 text-sm md:text-base flex items-center gap-2">
+                                <i class="fa-regular fa-images text-goose-600"></i>
+                                手机相册存好 3 张照片（仅防抽查，大概率不看）：
+                            </div>
+                            <div class="space-y-2.5 pl-1 text-sm text-stone-700">
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" class="mt-1 w-4 h-4 accent-amber-500 rounded">
+                                    <span>你的<strong>伊朗户口本（Shenasnameh / شناسنامه）</strong>照片。</span>
+                                </label>
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" class="mt-1 w-4 h-4 accent-amber-500 rounded">
+                                    <span>你的<strong>伊朗身份证（Kart-e Melli）</strong>照片。</span>
+                                </label>
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" class="mt-1 w-4 h-4 accent-amber-500 rounded">
+                                    <span><strong>爸妈家的水电或燃气电子账单（قبض برق یا گاز）截图</strong>（写你爸爸名字完全没问题，因为你的伊朗护照内页印着爸爸的英文名 Father's Name，柜员一看就能对上）。</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-3">
+                            <div class="font-bold text-stone-800 text-sm md:text-base flex items-center gap-2">
+                                <i class="fa-solid fa-coins text-goose-600"></i>
+                                现金准备：
+                            </div>
+                            <div class="space-y-2.5 pl-1 text-sm text-stone-700">
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" class="mt-1 w-4 h-4 accent-amber-500 rounded">
+                                    <span><strong>你带去存卡的 2,000 里拉（每家银行各存 1,000 里拉）：</strong> 用于开户时当场存进两家银行激活账户（每家各存 1,000 里拉最爽快省事，开户后钱还是你自己的）。</span>
+                                </label>
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" class="mt-1 w-4 h-4 accent-amber-500 rounded">
+                                    <span><strong>买电话卡的钱（约 1,500 里拉 / 约 45 美元）：</strong> 单独准备，落地后买 Turkcell 电话卡。</span>
+                                </label>
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" class="mt-1 w-4 h-4 accent-amber-500 rounded">
+                                    <span><strong>去韩国交租房保证金的美元大钞：</strong> 锁在随身背包里不动，不在土耳其存，直接带去韩国首尔明洞换韩元。</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: 5 Lines of English Info in Phone Notes -->
+                    <div class="bg-goose-100/70 border-2 border-goose-300 rounded-2xl p-5 flex flex-col justify-between space-y-4">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-stone-800 text-sm md:text-base flex items-center gap-2">
+                                    <i class="fa-regular fa-note-sticky text-goose-600"></i>
+                                    手机备忘录提前写好“5 行英文信息”
+                                </span>
+                                <span class="text-xs bg-white px-2.5 py-1 rounded-lg border border-goose-300 text-goose-800 font-medium">办税号和柜台录入直接照抄</span>
+                            </div>
+                            <div class="space-y-3 bg-white p-4 rounded-xl border border-goose-200 text-sm text-stone-700">
+                                <div class="pb-2.5 border-b border-goose-100">
+                                    <div class="font-bold text-stone-900">1. 你的护照英文名与姓：</div>
+                                    <div class="text-xs text-stone-600 font-mono mt-0.5">First Name (Ad) / Last Name (Soyad)</div>
+                                </div>
+                                <div class="pb-2.5 border-b border-goose-100">
+                                    <div class="font-bold text-stone-900">2. 爸妈的英文名（只写名，不写姓）：</div>
+                                    <div class="text-xs text-stone-600 font-mono mt-0.5">Father (Baba Adı): 爸爸英文名 / Mother (Anne Adı): 妈妈英文名</div>
+                                </div>
+                                <div class="pb-2.5 border-b border-goose-100">
+                                    <div class="font-bold text-stone-900">3. 伊朗爸妈家的英文地址：</div>
+                                    <div class="text-xs text-stone-600 font-mono mt-0.5">例如 NO. 12, UNIT 4, VALIASR ST., TEHRAN, IRAN + 10 位数伊朗邮编</div>
+                                </div>
+                                <div class="pb-2.5 border-b border-goose-100">
+                                    <div class="font-bold text-stone-900">4. 伊斯坦布尔酒店地址：</div>
+                                    <div class="text-xs text-stone-600 mt-0.5">复制酒店在 Google 地图上的土耳其语地址 + 5 位数邮编</div>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-stone-900">5. 个人邮箱：</div>
+                                    <div class="text-xs text-stone-600 mt-0.5">你的常用 Email 地址</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="copyNotesTemplate('zh')" class="w-full py-2.5 px-4 rounded-xl bg-goose-300 hover:bg-goose-400 text-goose-900 font-bold text-sm flex items-center justify-center gap-2 transition shadow-sm">
+                            <i class="fa-regular fa-copy"></i> 一键复制“5行备忘录”模板到手机填写
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- PERSIAN CONTENT PART 1 & 2 (نسخه فارسی)    -->
+        <!-- ========================================== -->
+        <div id="content-fa" class="hidden space-y-10 lang-fa" dir="rtl">
+
+            <!-- Intro Banner (FA) -->
+            <div class="bg-gradient-to-br from-goose-100 via-goose-50 to-goose-200/60 border-2 border-goose-300 rounded-3xl p-6 md:p-8 shadow-sm">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div class="space-y-3 max-w-3xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-goose-300/80 text-goose-900 text-xs font-bold">
+                            <i class="fa-solid fa-star"></i> نتیجه اصلی در یک نگاه
+                        </div>
+                        <h2 class="text-xl md:text-2xl font-bold text-stone-800 leading-relaxed">
+                            انتخاب <span class="underline decoration-goose-500 decoration-4 underline-offset-4">واکیف‌بانک (VakıfBank) به عنوان کارت اصلی</span> و <span class="underline decoration-rose-400 decoration-4 underline-offset-4">زراعت بانک (Ziraat Bankası) به عنوان کارت فرعی (پشتیبان)</span>، بهترین ترکیب ممکن است؛ علاوه بر این، تبدیل کردن لیر به دلار و برعکس در داخل اپلیکیشن موبایل بانک، <span class="text-emerald-700 font-extrabold">تحت هیچ شرایطی باعث مسدود شدن (بلوکه شدن) حساب شما نمی‌شود</span>.
+                        </h2>
+                        <p class="text-sm md:text-base text-stone-600">
+                            ابتدا این دو منطق اصلی را که بیشترین دغدغه را در موردشان دارید به طور کامل باز می‌کنیم و سپس راهنمای جامع و گام‌به‌گام با تمام جزئیات را در ادامه برایتان می‌آوریم:
+                        </p>
+                    </div>
+                    <div class="flex sm:flex-col gap-2.5 shrink-0 w-full sm:w-auto">
+                        <div class="flex-1 bg-white/90 border border-amber-300 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-sm">
+                            <span class="w-9 h-9 rounded-xl bg-amber-500 text-white font-bold flex items-center justify-center text-xs">اصلی</span>
+                            <div>
+                                <div class="text-xs text-stone-500 font-medium">همراه روزانه + ۱ میلیون وون اجاره</div>
+                                <div class="font-bold text-stone-800 text-sm" dir="ltr">VakıfBank (USD)</div>
+                            </div>
+                        </div>
+                        <div class="flex-1 bg-white/90 border border-rose-200 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-sm">
+                            <span class="w-9 h-9 rounded-xl bg-rose-600 text-white font-bold flex items-center justify-center text-xs">فرعی</span>
+                            <div>
+                                <div class="text-xs text-stone-500 font-medium">در خانه + ۸۰۰ هزار وون اجاره</div>
+                                <div class="font-bold text-stone-800 text-sm" dir="ltr">Ziraat Bankası (TL)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 1 (FA) -->
+            <section id="sec-1-fa" class="section-card rounded-3xl p-6 md:p-8 space-y-6">
+                <div class="flex items-center gap-3 border-b border-goose-200 pb-4">
+                    <span class="w-9 h-9 rounded-2xl bg-goose-300 text-goose-900 font-extrabold flex items-center justify-center text-lg shadow-sm">۱</span>
+                    <h3 class="text-lg md:text-xl font-bold text-stone-800">چرا واکیف‌بانک کارت اصلی و زراعت بانک کارت فرعی باشد؟ آیا تبدیل ارز باعث مسدودی حساب می‌شود؟</h3>
+                </div>
+
+                <!-- 1.1 FA -->
+                <div class="space-y-4">
+                    <h4 class="font-bold text-stone-800 text-base md:text-lg flex items-center gap-2">
+                        <span class="w-2 h-5 bg-goose-500 rounded-full inline-block"></span>
+                        ۱) بهترین تقسیم کار بین کارت اصلی و فرعی (کاهش ۹۰ درصدی دفعات تبدیل ارز)
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <!-- Main Card FA -->
+                        <div class="bg-goose-50 border-2 border-amber-300/80 rounded-2xl p-5 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-3 py-1 rounded-full bg-amber-500 text-white text-xs font-bold">کارت اصلی · VakıfBank</span>
+                                <span class="text-xs font-semibold text-amber-800 bg-amber-100 px-2.5 py-1 rounded-lg">کسر مستقیم دلار (Vadesiz USD)</span>
+                            </div>
+                            <h5 class="font-bold text-stone-800 text-base">
+                                کارت اصلی (همراه همیشگی + خریدهای روزانه + برداشت ماهانه ۱ میلیون وون برای اجاره خانه): واکیف‌بانک (VakıfBank)
+                            </h5>
+                            <p class="text-sm text-stone-700 leading-relaxed">
+                                <strong class="text-stone-900">دلیل اصلی:</strong> موبایل بانک واکیف‌بانک به شما این امکان را می‌دهد که حساب کسر وجه در خارج از کشورِ کارت بانکی‌تان را مستقیماً به <strong>حساب جاری دلاری (Vadesiz USD)</strong> متصل کنید. پس از این اتصال، وقتی مادرتان برایتان لیر واریز کرد، شما فقط <strong>۱ بار</strong> آن را به دلار تبدیل می‌کنید؛ بعد از آن، چه در فروشگاه‌های کره کارت بکشید و چه برای برداشت ۱ میلیون وون اجاره خانه به خودپرداز (ATM) بروید، سیستم تمام مبالغ را مستقیماً از حساب دلاری شما کسر می‌کند و <strong>دیگر هرگز نیازی نیست دلار را دوباره به لیر تبدیل کنید!</strong>
+                            </p>
+                        </div>
+
+                        <!-- Sub Card FA -->
+                        <div class="bg-goose-50 border-2 border-rose-200 rounded-2xl p-5 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-3 py-1 rounded-full bg-rose-600 text-white text-xs font-bold">کارت فرعی · Ziraat Bankası</span>
+                                <span class="text-xs font-semibold text-rose-800 bg-rose-100 px-2.5 py-1 rounded-lg">تبدیل ۱۰ ثانیه‌ای جلوی ATM</span>
+                            </div>
+                            <h5 class="font-bold text-stone-800 text-base">
+                                کارت فرعی (نگهداری در خانه + فقط ماهانه یک‌بار مراجعه به خودپرداز برای برداشت ۸۰۰ هزار وون باقی‌مانده اجاره): زراعت بانک (Ziraat Bankası)
+                            </h5>
+                            <p class="text-sm text-stone-700 leading-relaxed">
+                                <strong class="text-stone-900">دلیل اصلی:</strong> سیستم کارت‌های بانکی زراعت کمی قدیمی است و هنگام برداشت پول از خودپردازهای خارج از ترکیه، معمولاً به اجبار فقط <strong>حساب اصلی لیر (TL)</strong> را می‌شناسد. بنابراین، در روزهای عادی نیازی نیست این کارت را با خود بیرون ببرید و پولتان را به صورت دلار در آن نگه می‌دارید تا ارزشش حفظ شود؛ فقط ماهی یک‌بار در روز پرداخت اجاره، جلوی خودپرداز در کره می‌ایستید، معادل دلاریِ ۸۰۰ هزار وون را در اپلیکیشن به لیر تبدیل می‌کنید و ۱۰ ثانیه بعد کارت را وارد دستگاه کرده و پول را برمی‌دارید.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1.2 FA -->
+                <div class="space-y-4 pt-2">
+                    <h4 class="font-bold text-stone-800 text-base md:text-lg flex items-center gap-2">
+                        <span class="w-2 h-5 bg-goose-500 rounded-full inline-block"></span>
+                        ۲) آیا تبدیل لیر و دلار به یکدیگر در اپلیکیشن موبایل باعث مسدود شدن حساب می‌شود؟
+                    </h4>
+                    <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-5 space-y-2">
+                        <div class="flex items-center gap-2 text-emerald-800 font-bold text-base">
+                            <i class="fa-solid fa-shield-halved text-emerald-600"></i>
+                            تبدیل ارز در داخل اپلیکیشن مطلقاً باعث مسدودی نمی‌شود:
+                        </div>
+                        <p class="text-sm text-stone-700 leading-relaxed">
+                            وقتی در اپلیکیشن‌های <code class="bg-white px-1.5 py-0.5 rounded border border-emerald-200 font-semibold" dir="ltr">Ziraat Mobil</code> و <code class="bg-white px-1.5 py-0.5 rounded border border-emerald-200 font-semibold" dir="ltr">VakıfBank Mobil</code> دلار می‌خرید یا می‌فروشید (Döviz Alış/Satış)، در واقع دارید مستقیماً با خودِ بانک معامله می‌کنید. در هر بار تبدیل ارز، بانک از اختلاف قیمت خرید و فروش و همچنین ۰.۲٪ مالیات سود می‌برد؛ بنابراین بانک از این کار بسیار استقبال می‌کند و <strong>۱۰۰٪ مطمئن باشید که به خاطر تبدیل ارز در اپلیکیشن، حسابتان مسدود نخواهد شد</strong>.
+                        </p>
+                    </div>
+
+                    <div class="bg-amber-50/70 border border-amber-300 rounded-2xl p-5 space-y-3">
+                        <div class="flex items-center gap-2 text-amber-900 font-bold text-base">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+                            تنها یک چیز واقعاً باعث مسدود شدن حساب در بانک‌های ترکیه (بلوکه شدن توسط سیستم ضد پولشویی MASAK) می‌شود — «دریافت مکرر وجه از افراد ناشناس»:
+                        </div>
+                        <ul class="space-y-2.5 text-sm text-stone-700 leading-relaxed list-disc pr-5">
+                            <li>
+                                <strong class="text-rose-700">منطقه خطر (خط قرمز مسدودی):</strong> وقتی مادرتان در ایران به صرافی مراجعه می‌کند تا برایتان لیر بفرستد، اگر صراف امروز با کارت شخصی «شخص الف» برایتان ۱۰ هزار لیر کارت‌به‌کارت کند و فردا با کارت شخصی «شخص ب» ۱۰ هزار لیر دیگر بزند، دریافت مکرر پول از حساب افراد غریبه و مختلف باعث می‌شود سیستم بانک به پولشویی یا صرافی غیرمجاز شک کرده و کارتتان را قفل کند.
+                            </li>
+                            <li>
+                                <strong class="text-emerald-800">قانون طلایی جلوگیری از مسدودی:</strong> نیازی نیست مادرتان هر ماه پول بفرستد؛ بهترین کار این است که هر ۲ تا ۳ ماه یک‌بار این کار را انجام دهد. در هر بار انتقال پول، از صرافی بخواهید کل مبلغ را <strong>یک‌جا و در یک تراکنش</strong> واریز کند. پس از نشستن پول به حساب، شما هم فقط ۱ بار کل لیرها را به دلار تبدیل می‌کنید؛ با این روش امنیت حساب شما مثل یک گاوصندوق آهنین تضمین می‌شود.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2 (FA) -->
+            <section id="sec-2-fa" class="section-card rounded-3xl p-6 md:p-8 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-goose-200 pb-4">
+                    <div class="flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-2xl bg-goose-300 text-goose-900 font-extrabold flex items-center justify-center text-lg shadow-sm">۲</span>
+                        <h3 class="text-lg md:text-xl font-bold text-stone-800">چک‌لیست اقدامات قبل از حرکت از ایران (سکونت در خانه والدین + بودجه ۲,۰۰۰ لیر)</h3>
+                    </div>
+                    <span class="soft-badge text-xs font-semibold px-3 py-1 rounded-full">
+                        بدون نیاز به ترجمه رسمی یا محضر؛ فقط در گوشی موبایل خود آماده داشته باشید
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Right Column in RTL: Passport & Photos -->
+                    <div class="space-y-4">
+                        <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-3">
+                            <label class="flex items-start gap-3 cursor-pointer">
+                                <input type="checkbox" class="mt-1.5 w-4 h-4 accent-amber-500 rounded">
+                                <span class="text-sm md:text-base text-stone-800">
+                                    <strong>اصل پاسپورت ایرانی (Pasaport):</strong> با حداقل ۶ ماه اعتبار.
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-3">
+                            <div class="font-bold text-stone-800 text-sm md:text-base flex items-center gap-2">
+                                <i class="fa-regular fa-images text-goose-600"></i>
+                                ذخیره داشتن ۳ عکس در گالری گوشی (فقط برای احتیاط در صورت بررسی؛ به احتمال زیاد اصلاً نگاه نمی‌کنند):
+                            </div>
+                            <div class="space-y-2.5 pr-1 text-sm text-stone-700">
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" class="mt-1.5 w-4 h-4 accent-amber-500 rounded">
+                                    <span>عکس صفحه اول <strong>شناسنامه (Shenasnameh)</strong>.</span>
+                                </label>
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" class="mt-1.5 w-4 h-4 accent-amber-500 rounded">
+                                    <span>عکس <strong>کارت ملی (Kart-e Melli)</strong>.</span>
+                                </label>
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" class="mt-1.5 w-4 h-4 accent-amber-500 rounded">
+                                    <span><strong>اسکرین‌شات قبض الکترونیکی برق یا گاز خانه پدر و مادر:</strong> اینکه قبض به نام پدرتان باشد هیچ مشکلی ندارد، چون در صفحه اطلاعات پاسپورت ایرانی، نام پدر به انگلیسی در قسمت Father's Name درج شده و کارمند بانک با یک نگاه متوجه ارتباط فامیلی می‌شود.</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-3">
+                            <div class="font-bold text-stone-800 text-sm md:text-base flex items-center gap-2">
+                                <i class="fa-solid fa-coins text-goose-600"></i>
+                                آماده‌سازی پول نقد:
+                            </div>
+                            <div class="space-y-2.5 pr-1 text-sm text-stone-700">
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" class="mt-1.5 w-4 h-4 accent-amber-500 rounded">
+                                    <span><strong>۲,۰۰۰ لیر نقد برای واریز به دو بانک (برای هر بانک ۱,۰۰۰ لیر):</strong> جهت واریز اولیه به حساب هنگام افتتاح و فعال‌سازی در هر دو بانک (واریز مستقیم ۱,۰۰۰ لیر در هر بانک کارتان را بسیار سریع و راحت می‌کند و بعد از باز شدن حساب، این پول متعلق به خودتان است).</span>
+                                </label>
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" class="mt-1.5 w-4 h-4 accent-amber-500 rounded">
+                                    <span><strong>پول خرید سیم‌کارت (حدود ۱,۵۰۰ لیر / معادل تقریبی ۴۵ دلار):</strong> این مبلغ را جداگانه کنار بگذارید تا به محض رسیدن به ترکیه سیم‌کارت ترکسل (Turkcell) بخرید.</span>
+                                </label>
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" class="mt-1.5 w-4 h-4 accent-amber-500 rounded">
+                                    <span><strong>اسکناس‌های درشت دلار برای پرداخت پول پیش خانه در کره:</strong> این پول را در کوله‌پشتی دستی خود در جای امن بگذارید و به آن دست نزنید؛ آن را در بانک‌های ترکیه نخوابانید، بلکه مستقیماً با خود به سئول ببرید و در صرافی‌های منطقه میونگ‌دونگ (Myeong-dong) به وون تبدیل کنید.</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Left Column in RTL: 5 Lines of English Info -->
+                    <div class="bg-goose-100/70 border-2 border-goose-300 rounded-2xl p-5 flex flex-col justify-between space-y-4">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between flex-wrap gap-2">
+                                <span class="font-bold text-stone-800 text-sm md:text-base flex items-center gap-2">
+                                    <i class="fa-regular fa-note-sticky text-goose-600"></i>
+                                    نوشتن «۵ خط اطلاعات به زبان انگلیسی» در نوت گوشی
+                                </span>
+                                <span class="text-xs bg-white px-2.5 py-1 rounded-lg border border-goose-300 text-goose-800 font-medium">برای کد مالیاتی و باجه بانک</span>
+                            </div>
+                            <div class="space-y-3 bg-white p-4 rounded-xl border border-goose-200 text-sm text-stone-700">
+                                <div class="pb-2.5 border-b border-goose-100">
+                                    <div class="font-bold text-stone-900">۱. نام و نام خانوادگی به انگلیسی (مطابق پاسپورت):</div>
+                                    <div class="text-xs text-stone-600 font-mono mt-0.5" dir="ltr">First Name (Ad) / Last Name (Soyad)</div>
+                                </div>
+                                <div class="pb-2.5 border-b border-goose-100">
+                                    <div class="font-bold text-stone-900">۲. نام کوچک پدر و مادر به انگلیسی (فقط نام کوچک، بدون نام خانوادگی):</div>
+                                    <div class="text-xs text-stone-600 font-mono mt-0.5" dir="ltr">Father (Baba Adı): [Father Name] / Mother (Anne Adı): [Mother Name]</div>
+                                </div>
+                                <div class="pb-2.5 border-b border-goose-100">
+                                    <div class="font-bold text-stone-900">۳. آدرس خانه پدر و مادر در ایران به انگلیسی:</div>
+                                    <div class="text-xs text-stone-600 font-mono mt-0.5" dir="ltr">NO. 12, UNIT 4, VALIASR ST., TEHRAN, IRAN + 10-digit Postal Code</div>
+                                </div>
+                                <div class="pb-2.5 border-b border-goose-100">
+                                    <div class="font-bold text-stone-900">۴. آدرس هتل در استانبول:</div>
+                                    <div class="text-xs text-stone-600 mt-0.5">آدرس دقیق هتل به زبان ترکی از روی گوگل‌مپ + کد پستی ۵ رقمی هتل</div>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-stone-900">۵. ایمیل شخصی:</div>
+                                    <div class="text-xs text-stone-600 mt-0.5">آدرس ایمیل (Email) فعال خودتان</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="copyNotesTemplate('fa')" class="w-full py-2.5 px-4 rounded-xl bg-goose-300 hover:bg-goose-400 text-goose-900 font-bold text-sm flex items-center justify-center gap-2 transition shadow-sm">
+                            <i class="fa-regular fa-copy"></i> کپی قالب آماده ۵ خط اطلاعات در گوشی
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- SHARED SECTION 3: INTERACTIVE GOOGLE MAP & 12 BRANCHES (中/波共用) -->
+        <!-- =============================================================== -->
+        <section id="sec-3" class="section-card rounded-3xl p-6 md:p-8 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-goose-200 pb-4">
+                <div class="flex items-center gap-3">
+                    <span id="sec3-badge" class="w-9 h-9 rounded-2xl bg-goose-300 text-goose-900 font-extrabold flex items-center justify-center text-lg shadow-sm shrink-0">三</span>
+                    <div>
+                        <h3 id="sec3-title" class="text-lg md:text-xl font-bold text-stone-800">
+                            伊斯坦布尔两大高成功率街区与 6 家连逛支行 Google 地图及地址
+                        </h3>
+                        <p id="sec3-desc" class="text-xs md:text-sm text-stone-600 mt-1">
+                            无居留卡的伊朗人办卡，<strong>Laleli–Aksaray–Beyazıt 一线</strong>和<strong>Osmanbey–Şişli–Harbiye 一线</strong>成功率最高。每个街区的 6 家支行都在同一条笔直的大街上，万一第 1 家支行柜员态度不好或逼你买保险，直接拿回护照出门，走 5 分钟就能进下一家支行！
+                        </p>
+                    </div>
+                </div>
+
+                <!-- District Quick Switch Buttons -->
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                    <button id="btn-dist-1" onclick="focusDistrict(1)" class="px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold transition flex items-center gap-2 bg-goose-300 text-goose-900 shadow-sm border border-goose-400">
+                        <i class="fa-solid fa-train-tram"></i>
+                        <span id="btn-dist-1-txt">街区一：Laleli – Aksaray – Beyazıt (首选)</span>
+                    </button>
+                    <button id="btn-dist-2" onclick="focusDistrict(2)" class="px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold transition flex items-center gap-2 bg-goose-50 hover:bg-goose-200 text-stone-700 border border-goose-300">
+                        <i class="fa-solid fa-train-subway"></i>
+                        <span id="btn-dist-2-txt">街区二：Osmanbey – Şişli – Harbiye (次选)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Map Container (Google Maps Tiles + Direct Google Maps Embed & App Links) -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <!-- Left 2 Columns: Multi-Pin Google Road Map -->
+                <div class="lg:col-span-2 relative rounded-2xl overflow-hidden border-2 border-goose-300 shadow-inner bg-goose-100">
+                    <div id="istanbul-map" class="w-full h-[380px] md:h-[430px] z-10"></div>
+                    <!-- Map Legend Overlay -->
+                    <div class="absolute bottom-3 left-3 z-20 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-goose-300 shadow-md flex flex-wrap items-center gap-3 text-xs font-semibold" dir="ltr">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-3.5 h-3.5 rounded-full bg-amber-500 inline-block border border-white shadow-sm"></span>
+                            <span id="legend-vakif">VakıfBank (主卡)</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-3.5 h-3.5 rounded-full bg-rose-600 inline-block border border-white shadow-sm"></span>
+                            <span id="legend-ziraat">Ziraat (副卡)</span>
+                        </div>
+                        <span id="legend-tip" class="text-stone-500 hidden sm:inline">Google Maps 街道图 · 点击支行可同步右侧谷歌实景导航</span>
+                    </div>
+                </div>
+
+                <!-- Right 1 Column: Native Google Maps Iframe & Direct Navigation Card -->
+                <div class="bg-goose-50 border-2 border-goose-300 rounded-2xl p-3.5 flex flex-col justify-between space-y-3 shadow-sm">
+                    <div class="flex items-center justify-between border-b border-goose-200 pb-2.5">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-brands fa-google text-amber-600 text-base"></i>
+                            <span id="gmap-card-title" class="font-bold text-stone-800 text-xs md:text-sm">Google Maps 实时导航窗</span>
+                        </div>
+                        <span id="gmap-active-branch" class="text-xs font-bold px-2 py-0.5 rounded-lg bg-amber-100 text-amber-900 border border-amber-300">
+                            VakıfBank Laleli
+                        </span>
+                    </div>
+
+                    <div class="rounded-xl overflow-hidden border border-goose-300 bg-white flex-1 min-h-[240px]">
+                        <iframe
+                            id="gmap-iframe"
+                            class="w-full h-full min-h-[240px] border-0"
+                            loading="lazy"
+                            allowfullscreen
+                            referrerpolicy="no-referrer-when-downgrade"
+                            src="https://maps.google.com/maps?q=Vak%C4%B1fBank%20Laleli%20%C5%9Eubesi%20Mesihpa%C5%9Fa%20Mah.%20Ordu%20Cad.%20No:72%20Fatih%20%C4%B0stanbul&t=&z=17&ie=UTF8&iwloc=&output=embed">
+                        </iframe>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div id="gmap-active-addr" class="text-xs font-mono text-stone-600 bg-white px-2.5 py-1.5 rounded-lg border border-goose-200 truncate" dir="ltr">
+                            Mesihpaşa Mah., Ordu Cad. No:72, Fatih/İstanbul
+                        </div>
+                        <a id="gmap-direct-link"
+                           href="https://www.google.com/maps/search/?api=1&query=Vak%C4%B1fBank+Laleli+%C5%9Eubesi+Mesihpa%C5%9Fa+Mah.+Ordu+Cad.+No:72+Fatih+%C4%B0stanbul"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 shadow-sm transition">
+                            <i class="fa-solid fa-diamond-turn-right"></i>
+                            <span id="gmap-open-btn-txt">在 Google Maps App 中打开导航</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- District 1 Table & Cards -->
+            <div class="space-y-3 pt-2">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-goose-100 px-4 py-3 rounded-2xl border border-goose-300">
+                    <div>
+                        <h4 id="d1-heading" class="font-bold text-stone-800 text-base flex items-center gap-2">
+                            <span class="px-2.5 py-0.5 rounded-lg bg-amber-500 text-white text-xs">街区一</span>
+                            <span>Laleli – Aksaray – Beyazıt（首选：伊朗人最密集）</span>
+                        </h4>
+                        <p id="d1-transit" class="text-xs md:text-sm text-stone-600 mt-0.5">
+                            <i class="fa-solid fa-route text-goose-600 mr-1"></i>
+                            <strong>交通：</strong> 坐有轨电车 <strong>T1 线</strong> 到 <strong>Laleli-İstanbul Üni. 站</strong>下车，顺着电车轨道走即可依次经过：
+                        </p>
+                    </div>
+                    <button onclick="focusDistrict(1)" class="self-start sm:self-center px-3 py-1.5 rounded-xl bg-white hover:bg-goose-200 text-goose-900 border border-goose-300 text-xs font-bold transition shrink-0">
+                        <i class="fa-solid fa-location-crosshairs mr-1"></i> <span data-i18n="viewDistrictMap">在地图查看此街区</span>
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto rounded-2xl border border-goose-200">
+                    <table class="w-full text-left border-collapse text-sm" id="table-dist-1">
+                        <thead>
+                            <tr class="bg-goose-100/90 text-stone-700 border-b border-goose-200 text-xs uppercase">
+                                <th class="py-3 px-4 font-bold" data-i18n="thBank">银行名称</th>
+                                <th class="py-3 px-4 font-bold" data-i18n="thBranch">支行名称（按推荐顺序）</th>
+                                <th class="py-3 px-4 font-bold" data-i18n="thAddress">具体街道地址（点击复制搜 Google 地图）</th>
+                                <th class="py-3 px-4 font-bold" data-i18n="thNote">位置说明</th>
+                                <th class="py-3 px-4 font-bold text-center" data-i18n="thAction">地图定位</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-dist-1" class="divide-y divide-goose-100 bg-white">
+                            <!-- Populated dynamically via JS for seamless ZH/FA switching -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- District 2 Table & Cards -->
+            <div class="space-y-3 pt-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-goose-100 px-4 py-3 rounded-2xl border border-goose-300">
+                    <div>
+                        <h4 id="d2-heading" class="font-bold text-stone-800 text-base flex items-center gap-2">
+                            <span class="px-2.5 py-0.5 rounded-lg bg-stone-700 text-white text-xs">街区二</span>
+                            <span>Osmanbey – Şişli – Harbiye（次选：现代商业区，沟通顺畅）</span>
+                        </h4>
+                        <p id="d2-transit" class="text-xs md:text-sm text-stone-600 mt-0.5">
+                            <i class="fa-solid fa-route text-goose-600 mr-1"></i>
+                            <strong>交通：</strong> 坐地铁 <strong>M2 线（绿线）</strong> 到 <strong>Osmanbey 站</strong>，从 <strong>Pangaltı 出口</strong>出来到大街上直走：
+                        </p>
+                    </div>
+                    <button onclick="focusDistrict(2)" class="self-start sm:self-center px-3 py-1.5 rounded-xl bg-white hover:bg-goose-200 text-goose-900 border border-goose-300 text-xs font-bold transition shrink-0">
+                        <i class="fa-solid fa-location-crosshairs mr-1"></i> <span data-i18n="viewDistrictMap">在地图查看此街区</span>
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto rounded-2xl border border-goose-200">
+                    <table class="w-full text-left border-collapse text-sm" id="table-dist-2">
+                        <thead>
+                            <tr class="bg-goose-100/90 text-stone-700 border-b border-goose-200 text-xs uppercase">
+                                <th class="py-3 px-4 font-bold" data-i18n="thBank">银行名称</th>
+                                <th class="py-3 px-4 font-bold" data-i18n="thBranch">支行名称（按推荐顺序）</th>
+                                <th class="py-3 px-4 font-bold" data-i18n="thAddress">具体街道地址（点击复制搜 Google 地图）</th>
+                                <th class="py-3 px-4 font-bold" data-i18n="thNote">位置说明</th>
+                                <th class="py-3 px-4 font-bold text-center" data-i18n="thAction">地图定位</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-dist-2" class="divide-y divide-goose-100 bg-white">
+                            <!-- Populated dynamically via JS for seamless ZH/FA switching -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- CHINESE CONTENT PART 4 & 5 (中文完整版 - 步骤四与步骤五)   -->
+        <!-- ========================================================= -->
+        <div id="content-zh-bottom" class="space-y-10">
+
+            <!-- Section 4 (ZH) -->
+            <section id="sec-4-zh" class="section-card rounded-3xl p-6 md:p-8 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-goose-200 pb-4">
+                    <div class="flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-2xl bg-goose-300 text-goose-900 font-extrabold flex items-center justify-center text-lg shadow-sm">四</span>
+                        <h3 class="text-lg md:text-xl font-bold text-stone-800">伊斯坦布尔办两张“印名字的卡”全流程</h3>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-bold">
+                        请务必在周一或周二早上去银行下单（制卡派送需 5～8 个工作日 / 约 7～10 天）
+                    </span>
+                </div>
+
+                <p class="text-sm text-stone-600 bg-goose-50 p-4 rounded-2xl border border-goose-200">
+                    因为两张卡都要正面印有你的护照英文名（<strong>İsimli Kart</strong>），总行制卡并派送到支行需要 <strong>5 ～ 8 个工作日（约 7 ～ 10 天）</strong>。请务必在<strong>周一或周二早上</strong>去银行下单。
+                </p>
+
+                <!-- Step 1 -->
+                <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-xl bg-goose-300 text-goose-900 font-bold text-xs">第 1 步</span>
+                        <h4 class="font-bold text-stone-800 text-base">落地第 1 天 —— 手机 3 分钟免费生成土耳其税号</h4>
+                    </div>
+                    <ul class="space-y-2 text-sm text-stone-700 list-disc pl-5 leading-relaxed">
+                        <li>连上 Wi-Fi，用手机浏览器打开土耳其税务局官网：<a href="https://dijital.gib.gov.tr" target="_blank" class="font-mono font-bold text-amber-700 underline">dijital.gib.gov.tr</a>。</li>
+                        <li>点击 <strong>“Yabancılar İçin Potansiyel Vergi Numarası (Potential Tax Number for Foreigners)”</strong>，全部用英文大写字母填入：名（Ad）、姓（Soyad）、性别（Kadın 女 / Erkek 男）、出生日期、出生城市、妈妈英文名（Anne Adı）、爸爸英文名（Baba Adı）、国籍选 <strong>İRAN (IRN)</strong>、土耳其酒店地址、伊朗护照号及有效期。</li>
+                        <li>点击提交，1 秒钟直接弹出带条形码的 10 位数税号 PDF 文件。保存在手机相册，并让酒店前台帮你<strong>打印 2 张纸质版</strong>。</li>
+                    </ul>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-xl bg-goose-300 text-goose-900 font-bold text-xs">第 2 步</span>
+                        <h4 class="font-bold text-stone-800 text-base">去银行当天早上 09:00 —— 买 Turkcell 电话卡并开漫游</h4>
+                    </div>
+                    <ul class="space-y-2 text-sm text-stone-700 list-disc pl-5 leading-relaxed">
+                        <li>拿护照去街边的 <strong>Turkcell</strong> 官方营业厅，买一张预付费电话卡（<strong>Hazır Kart</strong>）当场插进手机激活。</li>
+                        <li>让店员帮你确认打开 <strong>国际漫游（Uluslararası Dolaşım / Roaming）</strong>。</li>
+                    </ul>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="bg-goose-50 border-2 border-goose-300 rounded-2xl p-5 space-y-4">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-xl bg-amber-500 text-white font-bold text-xs">第 3 步（核心）</span>
+                        <h4 class="font-bold text-stone-800 text-base">上午 10:00 —— 先进 VakıfBank 办主卡，再去对面 Ziraat 办副卡</h4>
+                    </div>
+                    <ul class="space-y-2 text-sm text-stone-700 list-disc pl-5 leading-relaxed">
+                        <li>先走进 VakıfBank（如 Laleli 支行），取个人业务号（<strong>Bireysel İşlemler</strong>）。</li>
+                        <li>坐到柜台前，递上：<strong>伊朗护照 + 税号打印件 + 手机备忘录里的 5 行英文信息</strong>。</li>
+                        <li>
+                            <strong>关于你带的 2,000 里拉怎么存两家银行：</strong>
+                            <ul class="list-circle pl-5 mt-1 space-y-1">
+                                <li><strong>最推荐（省时省心）：</strong>直接带 <strong>2,000 里拉现金</strong>出门，在第 1 家 VakıfBank 存 1,000 里拉激活主卡，走出门直接去对面的第 2 家 Ziraat Bankası 把剩下的 1,000 里拉存进去激活副卡，全程不用在 ATM 倒腾！</li>
+                                <li>（备选：如果手头只带了 1,000 里拉，也可以每家存 500 里拉，或者先存进第 1 家后在门口 ATM 取出来再拿去第 2 家存）。</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <!-- Turkish Teller Script Box -->
+                    <div class="bg-white border-2 border-amber-300 rounded-2xl p-5 space-y-3 shadow-sm">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-goose-200 pb-3">
+                            <div class="flex items-center gap-2 font-bold text-stone-800 text-sm md:text-base">
+                                <span class="px-2 py-0.5 rounded bg-amber-500 text-white text-xs">Türkçe</span>
+                                直接把下面这张【终极土耳其语通关截图】亮给两家银行的柜员看：
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="openTellerModal()" class="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-white text-xs font-bold flex items-center gap-1.5 transition">
+                                    <i class="fa-solid fa-expand"></i> 全屏放大给柜员看
+                                </button>
+                                <button onclick="copyText(turkishScriptText)" class="px-3 py-1.5 rounded-xl bg-goose-300 hover:bg-goose-400 text-goose-900 text-xs font-bold flex items-center gap-1.5 transition">
+                                    <i class="fa-regular fa-copy"></i> 复制土语
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2.5 text-stone-800 text-sm md:text-base leading-relaxed font-medium bg-goose-50 p-4 rounded-xl border border-goose-200" dir="ltr">
+                            <p>"Merhaba, pasaportum ve vergi numaram hazır. Ailem bana yurt dışındayken para göndereceği için <strong>Vadesiz TL</strong> ve <strong>Vadesiz USD</strong> hesabı açmak istiyorum <strong>(sigorta istemiyorum)</strong>. Hesabı aktif etmek için şimdi nakit TL yatıracağım.</p>
+                            <p>İran'da ailemin evinde yaşıyorum; İran ev adresim, Türkiye otel adresim ve anne-baba bilgilerim telefonumda yazılıdır.</p>
+                            <p>Güney Kore'de yaşayacağım için üzerinde pasaporttaki adımın yazılı olduğu <strong>İsimli Banka Kartı (kesinlikle Visa veya Mastercard logolu olsun, TROY olmasın)</strong> basılmasını istiyorum. Otelde kurye bekleyemeyeceğim için kartımın kesinlikle bu şubeye gönderilmesini <strong>(Şubeden Teslim)</strong> talep ediyorum.</p>
+                            <p>Ayrıca lütfen kartımın yurt dışı harcama hesabını <strong>Vadesiz USD (Dolar)</strong> hesabım olarak bağlayın ve mobil bankacılıkta güvenlik doğrulamasını SMS yerine <strong>Mobil Onay (Bildirim)</strong> olarak ayarlayın."</p>
+                        </div>
+
+                        <p class="text-xs text-stone-500 leading-relaxed">
+                            <strong>（中文对照）：</strong>你好，我的护照和税号准备好了。因为我在国外时家里人会给我汇款，我想开通里拉和美元活期账户（不要保险）。我现在存入里拉现金来激活账户。我在伊朗住在父母家，伊朗地址、土耳其酒店地址和父母姓名都在手机里。因为我要去韩国生活，请为我申请印有我护照姓名的储蓄卡（务必是 Visa 或 Mastercard 标志，不要 TROY），并设为“务必寄到本支行柜台自取（Şubeden Teslim）”。另外请把我的卡片境外扣款账户绑定到美元活期账户，并把手机银行安全验证从短信改为 App 推送批准。
+                        </p>
+                    </div>
+
+                    <!-- App Push Setup -->
+                    <div class="bg-amber-50/80 border border-amber-300 rounded-xl p-4 space-y-2">
+                        <div class="font-bold text-stone-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-mobile-screen-button text-amber-600"></i>
+                            当场设置手机银行 App 推送验证（离开柜台前必做）：
+                        </div>
+                        <ul class="space-y-1.5 text-xs md:text-sm text-stone-700 list-disc pl-5">
+                            <li><strong>下载登录 VakıfBank Mobil：</strong>点 <code class="bg-white px-1.5 py-0.5 rounded border">Tüm İşlemler</code> ➔ <code class="bg-white px-1.5 py-0.5 rounded border">Ayarlar</code> ➔ <code class="bg-white px-1.5 py-0.5 rounded border">Güvenlik Ayarları</code>，开启 <strong>Cep İmza / Mobil Bildirim</strong>（App 推送批准）。</li>
+                            <li><strong>下载登录 Ziraat Mobil：</strong>点右下角 <code class="bg-white px-1.5 py-0.5 rounded border">Menü</code> ➔ <code class="bg-white px-1.5 py-0.5 rounded border">Profil ve Ayarlar</code> ➔ <code class="bg-white px-1.5 py-0.5 rounded border">Güvenlik ve Bildirim Ayarları</code>，开启 <strong>Ziraat Onay</strong>（App 推送批准）。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-xl bg-goose-300 text-goose-900 font-bold text-xs">第 4 步</span>
+                        <h4 class="font-bold text-stone-800 text-base">第 2 ～ 8 天 —— 手机查进度、回支行领出印名卡、门口 ATM 激活</h4>
+                    </div>
+                    <ul class="space-y-2.5 text-sm text-stone-700 list-disc pl-5 leading-relaxed">
+                        <li><strong>手机看进度：</strong>打开两个手机银行 App 的 <code class="bg-white px-1.5 py-0.5 rounded border">Kartlarım（我的卡）</code> ➔ <code class="bg-white px-1.5 py-0.5 rounded border">Kart Başvuru Takibi（申请追踪）</code>。大约 5 ～ 8 个工作日后，状态变成 <strong>“Şubede / Teslime Hazır（已到支行）”</strong>。</li>
+                        <li><strong>回支行拿卡 + 绑定美元扣款：</strong>带上护照回到你下单的那两家支行柜台，领出正面印着你英文全名的两张 Visa / Mastercard 储蓄卡！当场让柜员确认把新卡关联到你的美元账户，并在卡片背面签名条上签好你的护照英文名。</li>
+                        <li>
+                            <strong>开境外权限 + 门口 ATM 激活芯片：</strong>
+                            <ul class="list-circle pl-5 mt-1 space-y-1.5">
+                                <li>在两个手机 App 的 <code class="bg-white px-1.5 py-0.5 rounded border">Kart Ayarları（卡片设置）</code> 中，把新卡的 <strong>境外使用权限（Yurt Dışı Kullanım）</strong> 打开；并在 VakıfBank App 的 <code class="bg-white px-1.5 py-0.5 rounded border">Bağlı Hesap İşlemleri</code> 中确认把境外扣款账户选为 <strong>USD 账户</strong>。</li>
+                                <li>走到银行门外的 ATM，把两张印名卡分别插进去一次 ➔ 设置 4 位数密码（<strong>Şifre</strong>） ➔ 查询余额并<strong>试取 100 里拉</strong>再存回去。只要 ATM 正常吐钱，代表两张印名卡已 100% 激活！</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 5 (ZH) -->
+            <section id="sec-5-zh" class="section-card rounded-3xl p-6 md:p-8 space-y-6">
+                <div class="flex items-center gap-3 border-b border-goose-200 pb-4">
+                    <span class="w-9 h-9 rounded-2xl bg-goose-300 text-goose-900 font-extrabold flex items-center justify-center text-lg shadow-sm">五</span>
+                    <h3 class="text-lg md:text-xl font-bold text-stone-800">妈妈打钱流程 & 你在韩国交房租/刷卡流程</h3>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 5.1 Mother Remittance -->
+                    <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-4">
+                        <h4 class="font-bold text-stone-800 text-base flex items-center gap-2 border-b border-goose-200 pb-2.5">
+                            <i class="fa-solid fa-paper-plane text-goose-600"></i>
+                            1. 妈妈从伊朗打钱的流程（按需汇款，防封控版）
+                        </h4>
+                        <ul class="space-y-3 text-sm text-stone-700 list-disc pl-5 leading-relaxed">
+                            <li>
+                                <strong>你发给妈妈保存的信息：</strong>打开两个手机银行 App，把你的<strong>护照英文全名</strong>，以及两家银行以 <strong>TR 开头的 26 位里拉账号（TL IBAN）</strong>复制发给妈妈。
+                            </li>
+                            <li>
+                                <strong>怎么分配金额：</strong>
+                                <ul class="list-circle pl-5 mt-1 space-y-1">
+                                    <li><strong>大部分钱打进主卡（VakıfBank）：</strong>包括每个月要取的 100 万韩元房租 + 你所有的日常吃饭刷卡生活费。</li>
+                                    <li><strong>小部分钱打进副卡（Ziraat Bankası）：</strong>只需要算好每个月要补取的 <strong>80 万韩元房租</strong>对应的金额打进去即可。</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>妈妈在伊朗找换汇所（صرافی / Sarrafi）转账：</strong>
+                                <ul class="list-circle pl-5 mt-1 space-y-1">
+                                    <li>妈妈把土曼交给伊朗换汇所，让他们通过土耳其境内的 <strong>FAST 系统</strong>往你的两个 TR 里拉账号打里拉（几分钟秒到账）。</li>
+                                    <li><strong class="text-rose-700">防封控要求：</strong>叮嘱换汇所，每张卡的钱<strong>一次性一笔转入</strong>（不要拆成好几个陌生人分批转），转账备注留空或只写 <code class="bg-white px-1.5 py-0.5 rounded border font-semibold">Aile Desteği / Eğitim</code>（家庭/教育支持）。</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>到账后立刻换成美元锁住价值（只换这 1 次）：</strong>
+                                收到里拉后，你在<strong>韩国时间周一至周五 15:00 – 23:00</strong>（土耳其银行工作时间），打开两个手机银行 App，点击 <code class="bg-white px-1.5 py-0.5 rounded border">Döviz İşlemleri（外汇）</code> ➔ <code class="bg-white px-1.5 py-0.5 rounded border">Döviz Alış（买入美元 USD）</code>，把两张卡里的里拉全部一键换成美元存着。
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 5.2 South Korea Spending & Rent -->
+                    <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-4">
+                        <h4 class="font-bold text-stone-800 text-base flex items-center gap-2 border-b border-goose-200 pb-2.5">
+                            <i class="fa-solid fa-credit-card text-goose-600"></i>
+                            2. 你在韩国日常刷卡与交房租的流程
+                        </h4>
+                        <ul class="space-y-3 text-sm text-stone-700 list-disc pl-5 leading-relaxed">
+                            <li>
+                                <strong>刚到韩国交租房保证金（보증금）：</strong>把随身带的美元大钞（1 万美元以内免申报）带到<strong>首尔明洞换钱所</strong>换成韩元现钞交给房东，零损耗。
+                            </li>
+                            <li>
+                                <strong>平时每天吃饭、便利店、买东西：</strong>
+                                只带 <strong>VakıfBank 主卡</strong>出门（Ziraat 副卡锁在房间里）。结账时直接把芯片插进 POS 机插槽，系统会自动从你的 VakıfBank 美元账户里扣款，丝滑省心。
+                            </li>
+                            <li>
+                                <strong>每个月交 180 万韩元房租那天：</strong>
+                                带上两张卡，白天去学校或住处附近的韩国四大银行（<strong>友利 Woori、新韩 Shinhan、韩亚 Hana、国民 KB</strong>），找到标有 <strong>Global ATM</strong> 的机器：
+                                <div class="mt-2 space-y-2">
+                                    <div class="bg-white p-3 rounded-xl border border-amber-300">
+                                        <span class="font-bold text-amber-800">第 1 笔（取 100 万）：</span>直接插 <strong>VakıfBank 主卡</strong> ➔ 选 <code class="font-mono text-xs bg-goose-100 px-1 rounded">Foreign Card</code> ➔ <code class="font-mono text-xs bg-goose-100 px-1 rounded">Savings</code> ➔ <code class="font-mono text-xs bg-goose-100 px-1 rounded">Continue without conversion</code> ➔ 直接从美元账户扣款取出 100 万韩元。
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-rose-200">
+                                        <span class="font-bold text-rose-700">第 2 笔（取 80 万）：</span>掏出手机打开 <strong>Ziraat Mobil</strong>，花 10 秒钟把副卡里 80 万韩元对应的美元点 <code class="font-mono text-xs bg-goose-100 px-1 rounded">Döviz Satış</code> 卖成里拉 ➔ 接着马上插 <strong>Ziraat 副卡</strong>取出剩下的 80 万韩元。<strong>3 分钟一次拿齐 180 万韩元现金！</strong>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- PERSIAN CONTENT PART 4 & 5 (نسخه فارسی - بخش ۴ و ۵)       -->
+        <!-- ========================================================= -->
+        <div id="content-fa-bottom" class="hidden space-y-10 lang-fa" dir="rtl">
+
+            <!-- Section 4 (FA) -->
+            <section id="sec-4-fa" class="section-card rounded-3xl p-6 md:p-8 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-goose-200 pb-4">
+                    <div class="flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-2xl bg-goose-300 text-goose-900 font-extrabold flex items-center justify-center text-lg shadow-sm">۴</span>
+                        <h3 class="text-lg md:text-xl font-bold text-stone-800">مراحل کامل گرفتن دو «کارت بانکی با نام» در استانبول</h3>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-bold">
+                        حتماً صبح روز دوشنبه یا سه‌شنبه به بانک مراجعه کنید (صدور و ارسال کارت ۵ تا ۸ روز کاری زمان می‌برد)
+                    </span>
+                </div>
+
+                <p class="text-sm text-stone-600 bg-goose-50 p-4 rounded-2xl border border-goose-200">
+                    از آنجا که روی هر دو کارت باید نام و نام خانوادگی انگلیسی شما مطابق پاسپورت حک شود (<strong>İsimli Kart</strong>)، صدور کارت در شعبه مرکزی و ارسال آن به شعبه حدود <strong>۵ تا ۸ روز کاری (تقریباً ۷ تا ۱۰ روز تقویمی)</strong> زمان می‌برد. بنابراین حتماً <strong>صبح روز دوشنبه یا سه‌شنبه</strong> برای ثبت درخواست به بانک مراجعه کنید.
+                </p>
+
+                <!-- Step 1 FA -->
+                <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-xl bg-goose-300 text-goose-900 font-bold text-xs">گام اول</span>
+                        <h4 class="font-bold text-stone-800 text-base">روز اول ورود به ترکیه — دریافت رایگان کد مالیاتی ترکیه با گوشی در ۳ دقیقه</h4>
+                    </div>
+                    <ul class="space-y-2 text-sm text-stone-700 list-disc pr-5 leading-relaxed">
+                        <li>به وای‌فای وصل شوید و با مرورگر گوشی وارد سایت رسمی اداره مالیات ترکیه به آدرس <a href="https://dijital.gib.gov.tr" target="_blank" class="font-mono font-bold text-amber-700 underline" dir="ltr">dijital.gib.gov.tr</a> شوید.</li>
+                        <li>روی گزینه <strong>"Yabancılar İçin Potansiyel Vergi Numarası (Potential Tax Number for Foreigners)"</strong> بزنید و تمام اطلاعات را با حروف بزرگ انگلیسی وارد کنید: نام (Ad)، نام خانوادگی (Soyad)، جنسیت (Kadın زن / Erkek مرد)، تاریخ تولد، شهر محل تولد، نام انگلیسی مادر (Anne Adı)، نام انگلیسی پدر (Baba Adı)، ملیت را روی <strong>İRAN (IRN)</strong> بگذارید، آدرس هتل در ترکیه، شماره پاسپورت ایرانی و تاریخ اعتبار آن.</li>
+                        <li>دکمه ثبت را بزنید؛ در عرض ۱ ثانیه فایل PDF کد مالیاتی ۱۰ رقمی همراه با بارکد برایتان صادر می‌شود. آن را در گوشی ذخیره کنید و از پذیرش هتل بخواهید <strong>۲ نسخه پرینت کاغذی</strong> از آن برایتان بگیرد.</li>
+                    </ul>
+                </div>
+
+                <!-- Step 2 FA -->
+                <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-xl bg-goose-300 text-goose-900 font-bold text-xs">گام دوم</span>
+                        <h4 class="font-bold text-stone-800 text-base">ساعت ۰۹:۰۰ صبح روز مراجعه به بانک — خرید سیم‌کارت Turkcell و فعال‌سازی رومینگ</h4>
+                    </div>
+                    <ul class="space-y-2 text-sm text-stone-700 list-disc pr-5 leading-relaxed">
+                        <li>با پاسپورت به یکی از نمایندگی‌های رسمی <strong>Turkcell</strong> در خیابان بروید و یک سیم‌کارت اعتباری (<strong>Hazır Kart</strong>) بخرید تا همان‌جا روی گوشی شما بیندازند و فعال کنند.</li>
+                        <li>از کارمند نمایندگی بخواهید حتماً <strong>رومینگ بین‌المللی (Uluslararası Dolaşım / Roaming)</strong> خط شما را هم فعال کند.</li>
+                    </ul>
+                </div>
+
+                <!-- Step 3 FA -->
+                <div class="bg-goose-50 border-2 border-goose-300 rounded-2xl p-5 space-y-4">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-xl bg-amber-500 text-white font-bold text-xs">گام سوم (مهم‌ترین بخش)</span>
+                        <h4 class="font-bold text-stone-800 text-base">ساعت ۱۰:۰۰ صبح — ابتدا مراجعه به VakıfBank برای کارت اصلی، سپس Ziraat در آن طرف خیابان برای کارت فرعی</h4>
+                    </div>
+                    <ul class="space-y-2 text-sm text-stone-700 list-disc pr-5 leading-relaxed">
+                        <li>ابتدا وارد شعبه واکیف‌بانک (مثلاً شعبه Laleli) شوید و از دستگاه نوبت‌دهی، نوبت خدمات مشتریان حقیقی/انفرادی (<strong>Bireysel İşlemler</strong>) بگیرید.</li>
+                        <li>پشت باجه بنشینید و این موارد را تحویل دهید: <strong>پاسپورت ایرانی + پرینت کد مالیاتی + ۵ خط اطلاعات انگلیسی که در نوت گوشی نوشته‌اید</strong>.</li>
+                        <li>
+                            <strong>نحوه واریز ۲,۰۰۰ لیر در دو بانک برای فعال‌سازی حساب‌ها:</strong>
+                            <ul class="list-circle pr-5 mt-1 space-y-1">
+                                <li><strong>بهترین و راحت‌ترین روش:</strong> همراه داشتن <strong>۲,۰۰۰ لیر نقد</strong> است؛ در بانک اول (واکیف‌بانک) ۱,۰۰۰ لیر برای فعال‌سازی حساب واریز می‌کنید و سپس مستقیماً به شعبه زراعت بانک در آن طرف خیابان می‌روید و ۱,۰۰۰ لیر دوم را در آنجا واریز می‌کنید تا بدون هیچ دردسری هر دو حساب فعال شوند!</li>
+                                <li>(روش جایگزین در صورت همراه داشتن فقط ۱,۰۰۰ لیر: می‌توانید در هر بانک ۵۰۰ لیر بگذارید، یا کل ۱,۰۰۰ لیر را در بانک اول واریز کرده و بلافاصله از خودپرداز جلوی در برداشت کنید و به بانک دوم ببرید).</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <!-- Turkish Teller Script Box FA -->
+                    <div class="bg-white border-2 border-amber-300 rounded-2xl p-5 space-y-3 shadow-sm">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-goose-200 pb-3">
+                            <div class="flex items-center gap-2 font-bold text-stone-800 text-sm md:text-base">
+                                <span class="px-2 py-0.5 rounded bg-amber-500 text-white text-xs">Türkçe</span>
+                                این متن ترکی (برگ برنده) را مستقیماً روی صفحه گوشی به متصدی هر دو بانک نشان دهید:
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="openTellerModal()" class="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-white text-xs font-bold flex items-center gap-1.5 transition">
+                                    <i class="fa-solid fa-expand"></i> نمایش تمام‌صفحه برای کارمند بانک
+                                </button>
+                                <button onclick="copyText(turkishScriptText)" class="px-3 py-1.5 rounded-xl bg-goose-300 hover:bg-goose-400 text-goose-900 text-xs font-bold flex items-center gap-1.5 transition">
+                                    <i class="fa-regular fa-copy"></i> کپی متن ترکی
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2.5 text-stone-800 text-sm md:text-base leading-relaxed font-medium bg-goose-50 p-4 rounded-xl border border-goose-200 text-left" dir="ltr" style="font-family: 'Inter', sans-serif;">
+                            <p>"Merhaba, pasaportum ve vergi numaram hazır. Ailem bana yurt dışındayken para göndereceği için <strong>Vadesiz TL</strong> ve <strong>Vadesiz USD</strong> hesabı açmak istiyorum <strong>(sigorta istemiyorum)</strong>. Hesabı aktif etmek için şimdi nakit TL yatıracağım.</p>
+                            <p>İran'da ailemin evinde yaşıyorum; İran ev adresim, Türkiye otel adresim ve anne-baba bilgilerim telefonumda yazılıdır.</p>
+                            <p>Güney Kore'de yaşayacağım için üzerinde pasaporttaki adımın yazılı olduğu <strong>İsimli Banka Kartı (kesinlikle Visa veya Mastercard logolu olsun, TROY olmasın)</strong> basılmasını istiyorum. Otelde kurye bekleyemeyeceğim için kartımın kesinlikle bu şubeye gönderilmesini <strong>(Şubeden Teslim)</strong> talep ediyorum.</p>
+                            <p>Ayrıca lütfen kartımın yurt dışı harcama hesabını <strong>Vadesiz USD (Dolar)</strong> hesabım olarak bağlayın ve mobil bankacılıkta güvenlik doğrulamasını SMS yerine <strong>Mobil Onay (Bildirim)</strong> olarak ayarlayın."</p>
+                        </div>
+
+                        <p class="text-xs text-stone-500 leading-relaxed">
+                            <strong>(ترجمه فارسی متن بالا برای اطلاع خودتان):</strong> سلام، پاسپورت و کد مالیاتی من آماده است. از آنجایی که خانواده‌ام در زمان حضورم در خارج از کشور برایم پول می‌فرستند، می‌خواهم یک حساب جاری لیر و یک حساب جاری دلار باز کنم (بیمه نمی‌خواهم). برای فعال‌سازی حساب، همین الان لیر نقد واریز می‌کنم. من در ایران در خانه والدینم زندگی می‌کنم؛ آدرس منزلم در ایران، آدرس هتلم در ترکیه و مشخصات پدر و مادرم در گوشی‌ام نوشته شده است. چون قرار است در کره جنوبی زندگی کنم، درخواست صدور کارت بانکی با نام خودم مطابق پاسپورت (İsimli Banka Kartı) را دارم (حتماً با لوگوی Visa یا Mastercard باشد، TROY نباشد). از آنجا که نمی‌توانم در هتل منتظر پیک بمانم، تقاضا دارم کارت من حتماً به همین شعبه ارسال شود تا حضوری تحویل بگیرم (Şubeden Teslim). همچنین لطفاً حساب خرج‌کردِ خارج از کشورِ کارتم را به حساب جاری دلاری‌ام متصل کنید و تایید امنیتی موبایل بانک را به جای پیامک، روی تایید از طریق نوتیفیکیشن اپلیکیشن (Mobil Onay) تنظیم فرمایید.
+                        </p>
+                    </div>
+
+                    <!-- App Push Setup FA -->
+                    <div class="bg-amber-50/80 border border-amber-300 rounded-xl p-4 space-y-2">
+                        <div class="font-bold text-stone-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-mobile-screen-button text-amber-600"></i>
+                            تنظیم تایید هویت از طریق نوتیفیکیشن اپلیکیشن (قبل از بلند شدن از جلوی باجه حتماً انجام شود):
+                        </div>
+                        <ul class="space-y-1.5 text-xs md:text-sm text-stone-700 list-disc pr-5">
+                            <li><strong>در اپلیکیشن VakıfBank Mobil:</strong> به مسیر <code class="bg-white px-1.5 py-0.5 rounded border" dir="ltr">Tüm İşlemler ➔ Ayarlar ➔ Güvenlik Ayarları</code> بروید و گزینه <strong>Cep İmza / Mobil Bildirim</strong> (تایید از طریق نوتیفیکیشن اپ) را فعال کنید.</li>
+                            <li><strong>در اپلیکیشن Ziraat Mobil:</strong> در پایین سمت راست روی <code class="bg-white px-1.5 py-0.5 rounded border" dir="ltr">Menü ➔ Profil ve Ayarlar ➔ Güvenlik ve Bildirim Ayarları</code> بزنید و گزینه <strong>Ziraat Onay</strong> (تایید از طریق اپ) را فعال کنید.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Step 4 FA -->
+                <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-xl bg-goose-300 text-goose-900 font-bold text-xs">گام چهارم</span>
+                        <h4 class="font-bold text-stone-800 text-base">روز ۲ تا ۸ — پیگیری وضعیت در گوشی، تحویل گرفتن کارت‌های با نام از شعبه و فعال‌سازی در خودپرداز جلوی در</h4>
+                    </div>
+                    <ul class="space-y-2.5 text-sm text-stone-700 list-disc pr-5 leading-relaxed">
+                        <li><strong>پیگیری وضعیت صدور کارت در گوشی:</strong> در هر دو اپلیکیشن موبایل بانک به بخش <code class="bg-white px-1.5 py-0.5 rounded border" dir="ltr">Kartlarım</code> (کارت‌های من) ➔ <code class="bg-white px-1.5 py-0.5 rounded border" dir="ltr">Kart Başvuru Takibi</code> (پیگیری درخواست کارت) بروید. پس از حدود ۵ تا ۸ روز کاری، وضعیت کارت به <strong>"Şubede / Teslime Hazır" (در شعبه / آماده تحویل)</strong> تغییر می‌کند.</li>
+                        <li><strong>مراجعه به شعبه برای دریافت کارت + اتصال به حساب دلاری:</strong> با پاسپورت به همان دو شعبه‌ای که درخواست داده بودید برگردید و دو کارت بانکی Visa / Mastercard را که نام کامل انگلیسی‌تان روی آن‌ها حک شده تحویل بگیرید! همان‌جا از متصدی باجه بخواهید یک‌بار دیگر چک و تایید کند که کارت جدید به حساب دلاری شما متصل شده باشد؛ سپس پشت کارت‌ها را در محل مخصوص امضا، مطابق نام انگلیسی پاسپورتتان امضا کنید.</li>
+                        <li>
+                            <strong>باز کردن دسترسی خارج از کشور + فعال‌سازی تراشه کارت در خودپرداز جلوی شعبه:</strong>
+                            <ul class="list-circle pr-5 mt-1 space-y-1.5">
+                                <li>در هر دو اپلیکیشن موبایل، وارد بخش <code class="bg-white px-1.5 py-0.5 rounded border" dir="ltr">Kart Ayarları</code> (تنظیمات کارت) شوید و گزینه <strong>Yurt Dışı Kullanım</strong> (استفاده در خارج از کشور) را روشن کنید؛ همچنین در اپلیکیشن واکیف‌بانک، در بخش <code class="bg-white px-1.5 py-0.5 rounded border" dir="ltr">Bağlı Hesap İşlemleri</code> مطمئن شوید که حساب متصل برای برداشت خارج از کشور روی حساب <strong>USD</strong> قرار دارد.</li>
+                                <li>به سراغ خودپرداز (ATM) بیرونِ درِ شعبه بروید، هر دو کارت با نام را به نوبت وارد دستگاه کنید ⬅ رمز ۴ رقمی (<strong>Şifre</strong>) تعیین کنید ⬅ موجودی بگیرید و برای تست <strong>۱۰۰ لیر برداشت کرده</strong> و دوباره به حساب واریز کنید. به محض اینکه خودپرداز به درستی پول نقد به شما داد، یعنی تراشه هر دو کارت با نام شما ۱۰۰٪ فعال شده است!</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 5 (FA) -->
+            <section id="sec-5-fa" class="section-card rounded-3xl p-6 md:p-8 space-y-6">
+                <div class="flex items-center gap-3 border-b border-goose-200 pb-4">
+                    <span class="w-9 h-9 rounded-2xl bg-goose-300 text-goose-900 font-extrabold flex items-center justify-center text-lg shadow-sm">۵</span>
+                    <h3 class="text-lg md:text-xl font-bold text-stone-800">مراحل واریز پول توسط مادر از ایران و نحوه کشیدن کارت و پرداخت اجاره در کره جنوبی</h3>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 5.1 Mother Remittance FA -->
+                    <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-4">
+                        <h4 class="font-bold text-stone-800 text-base flex items-center gap-2 border-b border-goose-200 pb-2.5">
+                            <i class="fa-solid fa-paper-plane text-goose-600"></i>
+                            ۱) مراحل فرستادن پول توسط مادر از ایران (واریز اصولی و ضد مسدودی)
+                        </h4>
+                        <ul class="space-y-3 text-sm text-stone-700 list-disc pr-5 leading-relaxed">
+                            <li>
+                                <strong>اطلاعاتی که برای مادرتان می‌فرستید تا ذخیره کند:</strong> هر دو اپلیکیشن موبایل بانک را باز کنید و <strong>نام و نام خانوادگی کامل انگلیسی (مطابق پاسپورت)</strong> به همراه <strong>شماره شبای ۲۶ رقمی حساب لیر (TL IBAN)</strong> هر دو بانک را که با حروف <strong>TR</strong> شروع می‌شود کپی کرده و برای مادرتان بفرستید.
+                            </li>
+                            <li>
+                                <strong>نحوه تقسیم مبلغ بین دو کارت:</strong>
+                                <ul class="list-circle pr-5 mt-1 space-y-1">
+                                    <li><strong>بخش اصلی پول به کارت اصلی (VakıfBank) واریز شود:</strong> شامل معادلِ ۱ میلیون وون اجاره ماهانه خانه + تمام هزینه‌های روزانه غذا، خرید و زندگی شما.</li>
+                                    <li><strong>بخش کمتری از پول به کارت فرعی (Ziraat Bankası) واریز شود:</strong> فقط کافی است معادلِ <strong>۸۰۰ هزار وون</strong> باقی‌مانده اجاره ماهانه را حساب کرده و به این کارت بریزید.</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>مراجعه مادر به صرافی در ایران برای انتقال وجه:</strong>
+                                <ul class="list-circle pr-5 mt-1 space-y-1">
+                                    <li>مادرتان در ایران معادل تومانی را به صرافی می‌دهد و از آن‌ها می‌خواهد از طریق سیستم <strong>FAST</strong> در داخل ترکیه، به دو شماره شبای لیر (TR IBAN) شما لیر واریز کنند (در عرض چند دقیقه آنی به حساب می‌نشیند).</li>
+                                    <li><strong class="text-rose-700">شرط مهم برای جلوگیری از مسدودی:</strong> حتماً به صرافی تاکید کنید که مبلغِ هر کارت را <strong>یک‌جا و در یک تراکنش واحد</strong> واریز کند (پول را خرد نکنند تا چند نفر غریبه مختلف تیکه‌تیکه برایتان کارت‌به‌کارت کنند) و در قسمت توضیحات تراکنش هم یا چیزی ننویسند یا فقط عبارت <code class="bg-white px-1.5 py-0.5 rounded border font-semibold" dir="ltr">Aile Desteği / Eğitim</code> (حمایت خانواده / تحصیل) را درج کنند.</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>تبدیل فوری لیر به دلار به محض نشستن پول به حساب (فقط همین ۱ بار):</strong>
+                                پس از دریافت لیر، در روزهای دوشنبه تا جمعه بین <strong>ساعت ۱۵:۰۰ تا ۲۳:۰۰ به وقت کره جنوبی</strong> (که معادل ساعات کاری بانک‌های ترکیه است)، هر دو اپلیکیشن موبایل بانک را باز کنید، به بخش <code class="bg-white px-1.5 py-0.5 rounded border" dir="ltr">Döviz İşlemleri</code> (امور ارزی) ⬅ <code class="bg-white px-1.5 py-0.5 rounded border" dir="ltr">Döviz Alış</code> (خرید ارز / دلار USD) بروید و تمام لیرهای موجود در هر دو کارت را با یک کلیک به دلار تبدیل کرده و نگه دارید.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 5.2 South Korea Spending & Rent FA -->
+                    <div class="bg-goose-50 border border-goose-200 rounded-2xl p-5 space-y-4">
+                        <h4 class="font-bold text-stone-800 text-base flex items-center gap-2 border-b border-goose-200 pb-2.5">
+                            <i class="fa-solid fa-credit-card text-goose-600"></i>
+                            ۲) مراحل خرید روزانه و پرداخت اجاره خانه در کره جنوبی
+                        </h4>
+                        <ul class="space-y-3 text-sm text-stone-700 list-disc pr-5 leading-relaxed">
+                            <li>
+                                <strong>پرداخت پول پیش خانه (ودیعه / 보증금) در بدو ورود به کره:</strong> اسکناس‌های درشت دلاری را که همراه خود آورده‌اید (تا سقف ۱۰ هزار دلار نیاز به اظهار گمرکی ندارد) به <strong>صرافی‌های منطقه میونگ‌دونگ (Myeong-dong) سئول</strong> ببرید، بدون هیچ افت قیمتی به اسکناس وون کره تبدیل کنید و تحویل صاحب‌خانه بدهید.
+                            </li>
+                            <li>
+                                <strong>خریدهای روزمره، رستوران و فروشگاه‌ها در طول ماه:</strong>
+                                فقط <strong>کارت اصلی (VakıfBank)</strong> را با خود بیرون ببرید (کارت فرعی زراعت را در اتاقتان در جای امن قفل کنید). موقع حساب کردن، کارت را داخل شیار دستگاه کارت‌خوان (POS) قرار دهید؛ سیستم به صورت خودکار و بدون دردسر مبلغ را مستقیماً از حساب دلاری واکیف‌بانک شما کسر می‌کند.
+                            </li>
+                            <li>
+                                <strong>در روز پرداخت اجاره ماهانه (۱ میلیون و ۸۰۰ هزار وون):</strong>
+                                هر دو کارت را بردارید و در طول روز به یکی از شعب چهار بانک بزرگ کره (بانک‌های <strong>Woori، Shinhan، Hana یا KB</strong>) در نزدیکی دانشگاه یا محل سکونتتان بروید و خودپردازهایی را که علامت <strong>Global ATM</strong> دارند پیدا کنید:
+                                <div class="mt-2 space-y-2">
+                                    <div class="bg-white p-3 rounded-xl border border-amber-300">
+                                        <span class="font-bold text-amber-800">برداشت اول (۱ میلیون وون):</span> کارت اصلی <strong>VakıfBank</strong> را وارد دستگاه کنید ⬅ گزینه <code class="font-mono text-xs bg-goose-100 px-1 rounded" dir="ltr">Foreign Card</code> ⬅ سپس <code class="font-mono text-xs bg-goose-100 px-1 rounded" dir="ltr">Savings</code> ⬅ و در نهایت <code class="font-mono text-xs bg-goose-100 px-1 rounded" dir="ltr">Continue without conversion</code> را انتخاب کنید ⬅ مبلغ ۱ میلیون وون مستقیماً از حساب دلاری شما کسر و به صورت نقد پرداخت می‌شود.
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-rose-200">
+                                        <span class="font-bold text-rose-700">برداشت دوم (۸۰۰ هزار وون):</span> گوشی خود را درآورید، اپلیکیشن <strong>Ziraat Mobil</strong> را باز کنید و در عرض ۱۰ ثانیه، از بخش <code class="font-mono text-xs bg-goose-100 px-1 rounded" dir="ltr">Döviz Satış</code> معادل دلاریِ ۸۰۰ هزار وون را در کارت فرعی به لیر بفروشید (تبدیل کنید) ⬅ بلافاصله کارت فرعی <strong>Ziraat</strong> را وارد خودپرداز کنید و ۸۰۰ هزار وون باقی‌مانده را برداشت نمایید. <strong>به همین راحتی در عرض ۳ دقیقه کل ۱ میلیون و ۸۰۰ هزار وون اجاره خانه را نقد تحویل می‌گیرید!</strong>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-goose-200 bg-goose-100/60 py-6 mt-12">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-500">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                <span id="footer-left">VakıfBank (主卡 Vadesiz USD) + Ziraat Bankası (副卡) 终极办卡指南</span>
+            </div>
+            <div id="footer-right">
+                点击地图图钉或表格地址即可一键复制 Google 地图导航地址 · راهنمای دو زبانه فارسی و چینی
+            </div>
+        </div>
+    </footer>
+
+    <!-- Complete Interactive JavaScript -->
+    <script>
+        let currentLang = 'zh';
+        let map = null;
+        let markersMap = {};
+
+        const turkishScriptText = `Merhaba, pasaportum ve vergi numaram hazır. Ailem bana yurt dışındayken para göndereceği için Vadesiz TL ve Vadesiz USD hesabı açmak istiyorum (sigorta istemiyorum). Hesabı aktif etmek için şimdi nakit TL yatıracağım.\n\nİran'da ailemin evinde yaşıyorum; İran ev adresim, Türkiye otel adresim ve anne-baba bilgilerim telefonumda yazılıdır.\n\nGüney Kore'de yaşayacağım için üzerinde pasaporttaki adımın yazılı olduğu İsimli Banka Kartı (kesinlikle Visa veya Mastercard logolu olsun, TROY olmasın) basılmasını istiyorum. Otelde kurye bekleyemeyeceğim için kartımın kesinlikle bu şubeye gönderilmesini (Şubeden Teslim) talep ediyorum.\n\nAyrıca lütfen kartımın yurt dışı harcama hesabını Vadesiz USD (Dolar) hesabım olarak bağlayın ve mobil bankacılıkta güvenlik doğrulamasını SMS yerine Mobil Onay (Bildirim) olarak ayarlayın.`;
+
+        // All 12 Branches Data (6 in District 1, 6 in District 2)
+        const branchesData = [
+            // District 1: Laleli - Aksaray - Beyazıt
+            {
+                id: 'd1-v1',
+                district: 1,
+                bank: 'VakıfBank',
+                roleZh: 'VakıfBank（主卡）',
+                roleFa: 'VakıfBank (کارت اصلی)',
+                nameZh: '1. Laleli Şubesi（首选）',
+                nameFa: '1. Laleli Şubesi (انتخاب اول)',
+                address: 'Mesihpaşa Mah., Ordu Cad. No:72, Fatih/İstanbul',
+                noteZh: 'T1 电车 Laleli 站正旁边的奥尔杜大街上',
+                noteFa: 'دقیقاً کنار ایستگاه تراموای لاله‌لی، در خیابان اوردو (Ordu)',
+                lat: 41.0099,
+                lng: 28.9574,
+                pinLabel: 'V1'
+            },
+            {
+                id: 'd1-v2',
+                district: 1,
+                bank: 'VakıfBank',
+                roleZh: 'VakıfBank（主卡）',
+                roleFa: 'VakıfBank (کارت اصلی)',
+                nameZh: '2. Aksaray Şubesi（备选1）',
+                nameFa: '2. Aksaray Şubesi (جایگزین ۱)',
+                address: 'Haseki Sultan Mah., Turgut Özal Millet Cad. No:7, Fatih/İstanbul',
+                noteZh: '从 Laleli 顺着大街往西走 5 分钟，过天桥即是',
+                noteFa: 'از لاله‌لی در امتداد خیابان اصلی ۵ دقیقه به سمت غرب بروید، بعد از پل عابر پیاده',
+                lat: 41.0114,
+                lng: 28.9498,
+                pinLabel: 'V2'
+            },
+            {
+                id: 'd1-v3',
+                district: 1,
+                bank: 'VakıfBank',
+                roleZh: 'VakıfBank（主卡）',
+                roleFa: 'VakıfBank (کارت اصلی)',
+                nameZh: '3. Beyazıt Şubesi（备选2）',
+                nameFa: '3. Beyazıt Şubesi (جایگزین ۲)',
+                address: 'Mimar Hayrettin Mah., Yeniçeriler Cad. No:9, Fatih/İstanbul',
+                noteZh: '从 Laleli 顺着电车轨道往东走 5 分钟',
+                noteFa: 'از لاله‌لی در امتداد ریل تراموا ۵ دقیقه به سمت شرق بروید',
+                lat: 41.0091,
+                lng: 28.9635,
+                pinLabel: 'V3'
+            },
+            {
+                id: 'd1-z1',
+                district: 1,
+                bank: 'Ziraat',
+                roleZh: 'Ziraat（副卡）',
+                roleFa: 'Ziraat (کارت فرعی)',
+                nameZh: '1. Laleli Şubesi（首选）',
+                nameFa: '1. Laleli Şubesi (انتخاب اول)',
+                address: 'Mesihpaşa Mah., Ordu Cad. No:63, Fatih/İstanbul',
+                noteZh: '就在 VakıfBank Laleli 支行斜对面',
+                noteFa: 'دقیقاً روبه‌روی شعبه لاله‌لیِ واکیف‌بانک (به صورت مورب)',
+                lat: 41.0103,
+                lng: 28.9569,
+                pinLabel: 'Z1'
+            },
+            {
+                id: 'd1-z2',
+                district: 1,
+                bank: 'Ziraat',
+                roleZh: 'Ziraat（副卡）',
+                roleFa: 'Ziraat (کارت فرعی)',
+                nameZh: '2. Aksaray Şubesi（备选1）',
+                nameFa: '2. Aksaray Şubesi (جایگزین ۱)',
+                address: 'Aksaray Mah., Turgut Özal Millet Cad. No:2, Fatih/İstanbul',
+                noteZh: 'Aksaray 路口，离 VakıfBank Aksaray 百米内',
+                noteFa: 'سر چهارراه آکسارای، در فاصله کمتر از ۱۰۰ متری شعبه آکسارایِ واکیف‌بانک',
+                lat: 41.0110,
+                lng: 28.9513,
+                pinLabel: 'Z2'
+            },
+            {
+                id: 'd1-z3',
+                district: 1,
+                bank: 'Ziraat',
+                roleZh: 'Ziraat（副卡）',
+                roleFa: 'Ziraat (کارت فرعی)',
+                nameZh: '3. Beyazıt Şubesi（备选2）',
+                nameFa: '3. Beyazıt Şubesi (جایگزین ۲)',
+                address: 'Beyazıt Mah., Yeniçeriler Cad. No:23, Fatih/İstanbul',
+                noteZh: 'T1 电车 Beyazıt 站旁，与 VakıfBank 同街',
+                noteFa: 'کنار ایستگاه تراموای بیازیت، در همان خیابان شعبه واکیف‌بانک',
+                lat: 41.0088,
+                lng: 28.9650,
+                pinLabel: 'Z3'
+            },
+
+            // District 2: Osmanbey - Şişli - Harbiye
+            {
+                id: 'd2-v1',
+                district: 2,
+                bank: 'VakıfBank',
+                roleZh: 'VakıfBank（主卡）',
+                roleFa: 'VakıfBank (کارت اصلی)',
+                nameZh: '1. Osmanbey Şubesi（首选）',
+                nameFa: '1. Osmanbey Şubesi (انتخاب اول)',
+                address: 'Meşrutiyet Mah., Halaskargazi Cad. No:110, Şişli/İstanbul',
+                noteZh: '地铁 Osmanbey 站出来走 2 分钟',
+                noteFa: '۲ دقیقه پیاده‌روی از خروجی ایستگاه متروی عثمان‌بی',
+                lat: 41.0537,
+                lng: 28.9875,
+                pinLabel: 'V1'
+            },
+            {
+                id: 'd2-v2',
+                district: 2,
+                bank: 'VakıfBank',
+                roleZh: 'VakıfBank（主卡）',
+                roleFa: 'VakıfBank (کارت اصلی)',
+                nameZh: '2. Şişli Şubesi（备选1）',
+                nameFa: '2. Şişli Şubesi (جایگزین ۱)',
+                address: '19 Mayıs Mah., Halaskargazi Cad. No:214, Şişli/İstanbul',
+                noteZh: '顺着大街往北（Cevahir 商场方向）直走 7 分钟',
+                noteFa: 'در امتداد خیابان اصلی ۷ دقیقه مستقیم به سمت شمال (به طرف مرکز خرید جواهیر)',
+                lat: 41.0601,
+                lng: 28.9877,
+                pinLabel: 'V2'
+            },
+            {
+                id: 'd2-v3',
+                district: 2,
+                bank: 'VakıfBank',
+                roleZh: 'VakıfBank（主卡）',
+                roleFa: 'VakıfBank (کارت اصلی)',
+                nameZh: '3. Harbiye Şubesi（备选2）',
+                nameFa: '3. Harbiye Şubesi (جایگزین ۲)',
+                address: 'Harbiye Mah., Cumhuriyet Cad. No:167, Şişli/İstanbul',
+                noteZh: '顺着大街往南（塔克西姆方向）直走 6 分钟',
+                noteFa: 'در امتداد خیابان اصلی ۶ دقیقه مستقیم به سمت جنوب (به طرف میدان تکسیم)',
+                lat: 41.0469,
+                lng: 28.9873,
+                pinLabel: 'V3'
+            },
+            {
+                id: 'd2-z1',
+                district: 2,
+                bank: 'Ziraat',
+                roleZh: 'Ziraat（副卡）',
+                roleFa: 'Ziraat (کارت فرعی)',
+                nameZh: '1. Osmanbey (Pangaltı) Şubesi',
+                nameFa: '1. Osmanbey (Pangaltı) Şubesi',
+                address: 'Bozkurt Mah., Halaskargazi Cad. No:103, Şişli/İstanbul',
+                noteZh: '就在 VakıfBank Osmanbey 支行马路正对面',
+                noteFa: 'دقیقاً آن طرف خیابان، روبه‌روی شعبه عثمان‌بیِ واکیف‌بانک',
+                lat: 41.0533,
+                lng: 28.9870,
+                pinLabel: 'Z1'
+            },
+            {
+                id: 'd2-z2',
+                district: 2,
+                bank: 'Ziraat',
+                roleZh: 'Ziraat（副卡）',
+                roleFa: 'Ziraat (کارت فرعی)',
+                nameZh: '2. Şişli Şubesi（备选1）',
+                nameFa: '2. Şişli Şubesi (جایگزین ۱)',
+                address: 'Merkez Mah., Halaskargazi Cad. No:222, Şişli/İstanbul',
+                noteZh: '紧挨着 VakıfBank Şişli 支行',
+                noteFa: 'دقیقاً چسبیده به شعبه شیشلیِ واکیف‌بانک',
+                lat: 41.0607,
+                lng: 28.9879,
+                pinLabel: 'Z2'
+            },
+            {
+                id: 'd2-z3',
+                district: 2,
+                bank: 'Ziraat',
+                roleZh: 'Ziraat（副卡）',
+                roleFa: 'Ziraat (کارت فرعی)',
+                nameZh: '3. Harbiye Şubesi（备选2）',
+                nameFa: '3. Harbiye Şubesi (جایگزین ۲)',
+                address: 'Harbiye Mah., Cumhuriyet Cad. No:151, Şişli/İstanbul',
+                noteZh: '紧挨着 VakıfBank Harbiye 支行',
+                noteFa: 'دقیقاً چسبیده به شعبه هاربیهِ واکیف‌بانک',
+                lat: 41.0462,
+                lng: 28.9871,
+                pinLabel: 'Z3'
+            }
+        ];
+
+        // UI Dictionary for Shared Elements
+        const i18nDict = {
+            zh: {
+                headerTitle: '土耳其 VakıfBank + Ziraat 办卡终极全流程',
+                headerSubtitle: '伊朗出发 ➔ 伊斯坦布尔开户 ➔ 韩国刷卡与交房租完整攻略（零简化版）',
+                nav1: '主副卡分工与防封控',
+                nav2: '伊朗出发前准备清单',
+                nav3: '伊斯坦布尔12家支行 Google 地图',
+                nav4: '办卡全流程 & 柜员截图',
+                nav5: '妈妈打钱 & 韩国交房租/刷卡',
+                sec3Badge: '三',
+                sec3Title: '伊斯坦布尔两大高成功率街区与 6 家连逛支行 Google 地图及地址',
+                sec3Desc: '无居留卡的伊朗人办卡，<strong>Laleli–Aksaray–Beyazıt 一线</strong>和<strong>Osmanbey–Şişli–Harbiye 一线</strong>成功率最高。每个街区的 6 家支行都在同一条笔直的大街上，万一第 1 家支行柜员态度不好或逼你买保险，直接拿回护照出门，走 5 分钟就能进下一家支行！',
+                btnDist1: '街区一：Laleli – Aksaray – Beyazıt (首选)',
+                btnDist2: '街区二：Osmanbey – Şişli – Harbiye (次选)',
+                legendTip: 'Google Maps 街道图 · 点击支行可同步右侧谷歌地图与导航',
+                gmapCardTitle: 'Google Maps 实时导航窗',
+                gmapOpenBtnTxt: '在 Google Maps App 中打开导航',
+                d1Heading: '<span class="px-2.5 py-0.5 rounded-lg bg-amber-500 text-white text-xs">街区一</span><span>Laleli – Aksaray – Beyazıt（首选：伊朗人最密集）</span>',
+                d1Transit: '<i class="fa-solid fa-route text-goose-600 mr-1"></i><strong>交通：</strong> 坐有轨电车 <strong>T1 线</strong> 到 <strong>Laleli-İstanbul Üni. 站</strong>下车，顺着电车轨道走即可依次经过：',
+                d2Heading: '<span class="px-2.5 py-0.5 rounded-lg bg-stone-700 text-white text-xs">街区二</span><span>Osmanbey – Şişli – Harbiye（次选：现代商业区，沟通顺畅）</span>',
+                d2Transit: '<i class="fa-solid fa-route text-goose-600 mr-1"></i><strong>交通：</strong> 坐地铁 <strong>M2 线（绿线）</strong> 到 <strong>Osmanbey 站</strong>，从 <strong>Pangaltı 出口</strong>出来到大街上直走：',
+                viewDistrictMap: '在地图查看此街区',
+                thBank: '银行名称',
+                thBranch: '支行名称（按推荐顺序）',
+                thAddress: '具体街道地址（点击一键复制）',
+                thNote: '位置说明',
+                thAction: 'Google 地图与导航',
+                locateBtn: '地图定位',
+                openGmapBtn: 'Google Maps',
+                copyToast: '已复制到剪贴板：'
+            },
+            fa: {
+                headerTitle: 'راهنمای جامع افتتاح حساب VakıfBank و Ziraat در ترکیه',
+                headerSubtitle: 'حرکت از ایران ⬅ افتتاح حساب در استانبول ⬅ کارت کشیدن و پرداخت اجاره در کره جنوبی (نسخه کامل)',
+                nav1: 'تقسیم کار کارت‌ها و ضد مسدودی',
+                nav2: 'چک‌لیست قبل از حرکت از ایران',
+                nav3: 'نقشه گوگل‌مپ ۱۲ شعبه استانبول',
+                nav4: 'مراحل افتتاح حساب و متن ترکی',
+                nav5: 'واریز پول از ایران و خرج در کره',
+                sec3Badge: '۳',
+                sec3Title: 'نقشه گوگل‌مپ (Google Maps) و آدرس دو منطقه عالی با ۶ شعبه نزدیک به هم در استانبول',
+                sec3Desc: 'برای ایرانیانی که کارت اقامت ترکیه ندارند، راسته <strong>لاله‌لی – آکسارای – بیازیت</strong> و راسته <strong>عثمان‌بی – شیشلی – هاربیه</strong> بالاترین شانس موفقیت را دارند. در هر منطقه هر ۶ شعبه در یک خیابان مستقیم هستند؛ اگر شعبه اول بدخلقی کرد یا اصرار به بیمه داشت، با ۵ دقیقه پیاده‌روی وارد شعبه بعدی شوید!',
+                btnDist1: 'منطقه اول: Laleli – Aksaray – Beyazıt (انتخاب اول)',
+                btnDist2: 'منطقه دوم: Osmanbey – Şişli – Harbiye (انتخاب دوم)',
+                legendTip: 'نقشه Google Maps · با کلیک روی هر شعبه، مسیریابی گوگل‌مپ فعال می‌شود',
+                gmapCardTitle: 'پنجره مسیریابی مستقیم Google Maps',
+                gmapOpenBtnTxt: 'باز کردن مسیریابی در اپلیکیشن Google Maps',
+                d1Heading: '<span class="px-2.5 py-0.5 rounded-lg bg-amber-500 text-white text-xs">منطقه اول</span><span>Laleli – Aksaray – Beyazıt (انتخاب اول: پرتراکم‌ترین منطقه حضور ایرانیان)</span>',
+                d1Transit: '<i class="fa-solid fa-route text-goose-600 ml-1"></i><strong>مسیر دسترسی:</strong> سوار تراموای خط <strong>T1</strong> شوید و در ایستگاه <strong>Laleli-İstanbul Üni.</strong> پیاده شوید؛ در امتداد ریل تراموا به ترتیب به این شعبه‌ها می‌رسید:',
+                d2Heading: '<span class="px-2.5 py-0.5 rounded-lg bg-stone-700 text-white text-xs">منطقه دوم</span><span>Osmanbey – Şişli – Harbiye (انتخاب دوم: منطقه تجاری مدرن با ارتباط عالی)</span>',
+                d2Transit: '<i class="fa-solid fa-route text-goose-600 ml-1"></i><strong>مسیر دسترسی:</strong> سوار متروی خط <strong>M2 (خط سبز)</strong> شوید، در ایستگاه <strong>Osmanbey</strong> پیاده شوید و از خروجی <strong>Pangaltı</strong> بیرون بیایید:',
+                viewDistrictMap: 'نمایش این منطقه روی نقشه',
+                thBank: 'نام بانک',
+                thBranch: 'نام شعبه (به ترتیب اولویت)',
+                thAddress: 'آدرس دقیق خیابان (کلیک برای کپی)',
+                thNote: 'توضیحات موقعیت مکانی',
+                thAction: 'گوگل‌مپ و مسیریابی',
+                locateBtn: 'نمایش',
+                openGmapBtn: 'گوگل‌مپ',
+                copyToast: 'در حافظه کپی شد: '
+            }
+        };
+
+        // Initialize Map and Tables on Load
+        window.onload = function () {
+            initMap();
+            renderBranchTables();
+        };
+
+        function getGoogleMapsUrl(branch) {
+            const query = encodeURIComponent(`${branch.bank} ${branch.address}`);
+            return `https://www.google.com/maps/search/?api=1&query=${query}`;
+        }
+
+        function getGoogleEmbedUrl(branch) {
+            const query = encodeURIComponent(`${branch.bank} ${branch.address}`);
+            return `https://maps.google.com/maps?q=${query}&t=&z=17&ie=UTF8&iwloc=&output=embed`;
+        }
+
+        function initMap() {
+            map = L.map('istanbul-map', {
+                scrollWheelZoom: false
+            }).setView([41.0102, 28.9575], 15);
+
+            // Use official Google Maps standard road tiles (works on GitHub Pages without API key)
+            L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                attribution: '&copy; Google Maps',
+                maxZoom: 20
+            }).addTo(map);
+
+            branchesData.forEach(branch => {
+                const isVakif = branch.bank === 'VakıfBank';
+                const customIcon = L.divIcon({
+                    className: '',
+                    html: `<div class="custom-pin ${isVakif ? 'vakif-pin' : 'ziraat-pin'}" style="width:32px;height:32px;">${branch.pinLabel}</div>`,
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16],
+                    popupAnchor: [0, -16]
+                });
+
+                const marker = L.marker([branch.lat, branch.lng], { icon: customIcon }).addTo(map);
+                marker.bindPopup(getPopupHtml(branch));
+                marker.on('click', () => updateGoogleMapsEmbed(branch));
+                markersMap[branch.id] = marker;
+            });
+        }
+
+        function updateGoogleMapsEmbed(branch) {
+            const iframe = document.getElementById('gmap-iframe');
+            const badge = document.getElementById('gmap-active-branch');
+            const addr = document.getElementById('gmap-active-addr');
+            const directLink = document.getElementById('gmap-direct-link');
+
+            if (iframe) iframe.src = getGoogleEmbedUrl(branch);
+            if (badge) {
+                badge.textContent = `${branch.bank} · ${branch.pinLabel}`;
+                badge.className = branch.bank === 'VakıfBank'
+                    ? 'text-xs font-bold px-2 py-0.5 rounded-lg bg-amber-100 text-amber-900 border border-amber-300'
+                    : 'text-xs font-bold px-2 py-0.5 rounded-lg bg-rose-100 text-rose-900 border border-rose-300';
+            }
+            if (addr) addr.textContent = branch.address;
+            if (directLink) directLink.href = getGoogleMapsUrl(branch);
+        }
+
+        function getPopupHtml(branch) {
+            const isVakif = branch.bank === 'VakıfBank';
+            const badgeColor = isVakif ? 'background:#F59E0B;color:#fff;' : 'background:#E11D48;color:#fff;';
+            const roleText = currentLang === 'zh' ? branch.roleZh : branch.roleFa;
+            const nameText = currentLang === 'zh' ? branch.nameZh : branch.nameFa;
+            const noteText = currentLang === 'zh' ? branch.noteZh : branch.noteFa;
+            const copyBtnLabel = currentLang === 'zh' ? '复制地址' : 'کپی آدرس';
+            const gmapBtnLabel = currentLang === 'zh' ? '打开 Google Maps 导航' : 'مسیریابی در Google Maps';
+            const gmapUrl = getGoogleMapsUrl(branch);
+
+            return `
+                <div style="min-width:240px;font-family:'Inter','Noto Sans SC','Vazirmatn',sans-serif;" dir="${currentLang === 'fa' ? 'rtl' : 'ltr'}">
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                        <span style="${badgeColor}padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;">${roleText}</span>
+                    </div>
+                    <div style="font-weight:700;font-size:14px;color:#1c1917;margin-bottom:4px;">${nameText}</div>
+                    <div style="font-size:12px;color:#44403c;background:#FEF9E7;padding:6px 8px;border-radius:8px;border:1px solid #F9E086;margin-bottom:6px;direction:ltr;text-align:left;font-family:monospace;">
+                        ${branch.address}
+                    </div>
+                    <div style="font-size:12px;color:#57534e;margin-bottom:8px;">${noteText}</div>
+                    <div style="display:flex;gap:6px;">
+                        <button onclick="copyText('${branch.address.replace(/'/g, "\\'")}')" style="flex:1;background:#FEF9E7;color:#4A3006;border:1px solid #F4C94B;padding:6px 8px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">
+                            📋 ${copyBtnLabel}
+                        </button>
+                        <a href="${gmapUrl}" target="_blank" rel="noopener noreferrer" style="flex:1.3;background:#F59E0B;color:#ffffff;text-decoration:none;text-align:center;padding:6px 8px;border-radius:8px;font-size:11px;font-weight:700;display:inline-block;">
+                            🗺️ ${gmapBtnLabel}
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderBranchTables() {
+            const tbody1 = document.getElementById('tbody-dist-1');
+            const tbody2 = document.getElementById('tbody-dist-2');
+            if (!tbody1 || !tbody2) return;
+            tbody1.innerHTML = '';
+            tbody2.innerHTML = '';
+
+            const isFa = currentLang === 'fa';
+            const sec3El = document.getElementById('sec-3');
+            if (sec3El) sec3El.setAttribute('dir', isFa ? 'rtl' : 'ltr');
+            const table1El = document.getElementById('table-dist-1');
+            const table2El = document.getElementById('table-dist-2');
+            if (table1El) table1El.className = `w-full ${isFa ? 'text-right' : 'text-left'} border-collapse text-sm`;
+            if (table2El) table2El.className = `w-full ${isFa ? 'text-right' : 'text-left'} border-collapse text-sm`;
+
+            branchesData.forEach(branch => {
+                const isVakif = branch.bank === 'VakıfBank';
+                const gmapUrl = getGoogleMapsUrl(branch);
+                const roleBadge = isVakif
+                    ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-amber-500"></span>${isFa ? branch.roleFa : branch.roleZh}</span>`
+                    : `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-50 text-rose-800 border border-rose-200 font-bold text-xs whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-rose-600"></span>${isFa ? branch.roleFa : branch.roleZh}</span>`;
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-goose-50/90 transition cursor-pointer';
+                tr.onclick = () => focusBranch(branch.id);
+
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 align-middle">${roleBadge}</td>
+                    <td class="py-3.5 px-4 font-bold text-stone-800 align-middle whitespace-nowrap">${isFa ? branch.nameFa : branch.nameZh}</td>
+                    <td class="py-3.5 px-4 align-middle" dir="ltr">
+                        <div class="inline-flex items-center gap-2 bg-goose-50 hover:bg-goose-200 px-3 py-1.5 rounded-xl border border-goose-200 text-stone-800 font-mono text-xs transition" onclick="event.stopPropagation(); copyText('${branch.address.replace(/'/g, "\\'")}')">
+                            <span>${branch.address}</span>
+                            <i class="fa-regular fa-copy text-goose-600"></i>
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-4 text-stone-600 align-middle text-xs md:text-sm">${isFa ? branch.noteFa : branch.noteZh}</td>
+                    <td class="py-3.5 px-4 text-center align-middle">
+                        <div class="inline-flex items-center gap-1.5">
+                            <button onclick="event.stopPropagation(); focusBranch('${branch.id}')" class="px-2.5 py-1.5 rounded-xl bg-goose-200 hover:bg-goose-300 text-goose-900 font-bold text-xs inline-flex items-center gap-1 transition whitespace-nowrap">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>${i18nDict[currentLang].locateBtn}</span>
+                            </button>
+                            <a href="${gmapUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs inline-flex items-center gap-1 transition whitespace-nowrap shadow-sm">
+                                <i class="fa-brands fa-google"></i>
+                                <span>${i18nDict[currentLang].openGmapBtn}</span>
+                            </a>
+                        </div>
+                    </td>
+                `;
+
+                if (branch.district === 1) {
+                    tbody1.appendChild(tr);
+                } else {
+                    tbody2.appendChild(tr);
+                }
+            });
+        }
+
+        function focusDistrict(distNum) {
+            const btn1 = document.getElementById('btn-dist-1');
+            const btn2 = document.getElementById('btn-dist-2');
+
+            if (distNum === 1) {
+                map.flyTo([41.0102, 28.9575], 15, { duration: 0.8 });
+                updateGoogleMapsEmbed(branchesData[0]);
+                btn1.className = 'px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold transition flex items-center gap-2 bg-goose-300 text-goose-900 shadow-sm border border-goose-400';
+                btn2.className = 'px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold transition flex items-center gap-2 bg-goose-50 hover:bg-goose-200 text-stone-700 border border-goose-300';
+            } else {
+                map.flyTo([41.0535, 28.9875], 15, { duration: 0.8 });
+                updateGoogleMapsEmbed(branchesData[6]);
+                btn2.className = 'px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold transition flex items-center gap-2 bg-goose-300 text-goose-900 shadow-sm border border-goose-400';
+                btn1.className = 'px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold transition flex items-center gap-2 bg-goose-50 hover:bg-goose-200 text-stone-700 border border-goose-300';
+            }
+        }
+
+        function focusBranch(branchId) {
+            const branch = branchesData.find(b => b.id === branchId);
+            if (!branch) return;
+
+            updateGoogleMapsEmbed(branch);
+            document.getElementById('istanbul-map').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            map.flyTo([branch.lat, branch.lng], 17, { duration: 0.8 });
+            const marker = markersMap[branchId];
+            if (marker) {
+                marker.setPopupContent(getPopupHtml(branch));
+                marker.openPopup();
+            }
+        }
+
+        function switchLang(lang) {
+            currentLang = lang;
+            const body = document.getElementById('app-body');
+            const tabZh = document.getElementById('tab-zh');
+            const tabFa = document.getElementById('tab-fa');
+
+            const contentZh = document.getElementById('content-zh');
+            const contentFa = document.getElementById('content-fa');
+            const contentZhBottom = document.getElementById('content-zh-bottom');
+            const contentFaBottom = document.getElementById('content-fa-bottom');
+
+            if (lang === 'zh') {
+                body.classList.remove('lang-fa');
+                body.classList.add('lang-zh');
+                contentZh.classList.remove('hidden');
+                contentZhBottom.classList.remove('hidden');
+                contentFa.classList.add('hidden');
+                contentFaBottom.classList.add('hidden');
+
+                tabZh.className = 'px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 bg-goose-300 text-goose-900 shadow-sm';
+                tabFa.className = 'px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 text-stone-600 hover:text-stone-900';
+            } else {
+                body.classList.remove('lang-zh');
+                body.classList.add('lang-fa');
+                contentFa.classList.remove('hidden');
+                contentFaBottom.classList.remove('hidden');
+                contentZh.classList.add('hidden');
+                contentZhBottom.classList.add('hidden');
+
+                tabFa.className = 'px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 bg-goose-300 text-goose-900 shadow-sm';
+                tabZh.className = 'px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 text-stone-600 hover:text-stone-900';
+            }
+
+            // Update Shared Texts
+            const dict = i18nDict[lang];
+            document.getElementById('header-title').textContent = dict.headerTitle;
+            document.getElementById('header-subtitle').textContent = dict.headerSubtitle;
+            document.getElementById('sec3-badge').textContent = dict.sec3Badge;
+            document.getElementById('sec3-title').textContent = dict.sec3Title;
+            document.getElementById('sec3-desc').innerHTML = dict.sec3Desc;
+            document.getElementById('btn-dist-1-txt').textContent = dict.btnDist1;
+            document.getElementById('btn-dist-2-txt').textContent = dict.btnDist2;
+            document.getElementById('legend-tip').textContent = dict.legendTip;
+            document.getElementById('gmap-card-title').textContent = dict.gmapCardTitle;
+            document.getElementById('gmap-open-btn-txt').textContent = dict.gmapOpenBtnTxt;
+            document.getElementById('d1-heading').innerHTML = dict.d1Heading;
+            document.getElementById('d1-transit').innerHTML = dict.d1Transit;
+            document.getElementById('d2-heading').innerHTML = dict.d2Heading;
+            document.getElementById('d2-transit').innerHTML = dict.d2Transit;
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.textContent = dict[key];
+            });
+
+            // Refresh Map Popups & Branch Tables
+            branchesData.forEach(b => {
+                if (markersMap[b.id]) {
+                    markersMap[b.id].setPopupContent(getPopupHtml(b));
+                }
+            });
+            renderBranchTables();
+        }
+
+        function copyNotesTemplate(lang) {
+            const template = `1. First Name (Ad): [YOUR FIRST NAME] / Last Name (Soyad): [YOUR LAST NAME]\n2. Father (Baba Adı): [FATHER FIRST NAME] / Mother (Anne Adı): [MOTHER FIRST NAME]\n3. Iran Home Address: NO. XX, UNIT X, STREET, CITY, IRAN - Postal Code: [10-DIGIT CODE]\n4. Türkiye Otel Adresi: [HOTEL ADDRESS IN TURKISH + 5-DIGIT POSTA KODU]\n5. E-mail: [YOUR EMAIL ADDRESS]`;
+            copyText(template);
+        }
+
+        function copyText(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast(i18nDict[currentLang].copyToast + (text.length > 36 ? text.substring(0, 36) + '...' : text));
+            } catch (err) {
+                console.error('Copy failed', err);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        let toastTimeout = null;
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            toastMsg.textContent = msg;
+            toast.classList.remove('hidden', 'translate-y-2', 'opacity-0');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 2600);
+        }
+
+        function openTellerModal() {
+            document.getElementById('teller-modal').classList.remove('hidden');
+        }
+
+        function closeTellerModal() {
+            document.getElementById('teller-modal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
