@@ -682,13 +682,24 @@
                 <div class="flex flex-wrap items-center gap-2 shrink-0">
                     <button id="btn-dist-1" onclick="focusDistrict(1)" class="px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold transition flex items-center gap-2 bg-goose-300 text-goose-900 shadow-sm border border-goose-400">
                         <i class="fa-solid fa-train-tram"></i>
-                        <span id="btn-dist-1-txt">街区一：Laleli – Aksaray – Beyazıt (首选)</span>
+                        <span id="btn-dist-1-txt">街区一：Laleli – Aksaray – Beyazıt (老城保底)</span>
                     </button>
                     <button id="btn-dist-2" onclick="focusDistrict(2)" class="px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold transition flex items-center gap-2 bg-goose-50 hover:bg-goose-200 text-stone-700 border border-goose-300">
                         <i class="fa-solid fa-train-subway"></i>
-                        <span id="btn-dist-2-txt">街区二：Osmanbey – Şişli – Harbiye (次选)</span>
+                        <span id="btn-dist-2-txt">街区二：Osmanbey – Şişli – Harbiye (高分推荐)</span>
                     </button>
                 </div>
+            </div>
+
+            <!-- District Comparison & Recommendation Box (Şişli vs Laleli) -->
+            <div class="bg-gradient-to-r from-amber-50 via-goose-100 to-amber-50 border-2 border-amber-300 rounded-2xl p-4 md:p-5 space-y-2.5 shadow-sm">
+                <div class="flex items-center gap-2 font-bold text-stone-800 text-sm md:text-base">
+                    <i class="fa-solid fa-lightbulb text-amber-600 text-lg"></i>
+                    <span id="compare-title">选区实战建议：Şişli 区的 Google 评价明显更好，该去哪个区？</span>
+                </div>
+                <p id="compare-desc" class="text-xs md:text-sm text-stone-700 leading-relaxed">
+                    <strong>强烈建议先去【街区二：Osmanbey – Şişli – Harbiye】！</strong> Şişli 是现代商业与白领区，环境干净、排队少、柜员英语好且态度礼貌（如 <strong>Ziraat Harbiye 评分高达 3.8★</strong>、<strong>VakıfBank Feriköy 3.3★</strong>）；更妙的是 <strong>VakıfBank Şişli (207号) 与 Ziraat Şişli (209号) 两家大门紧挨着</strong>，出门 3 秒即可连办两张卡！而老城区 <strong>Laleli – Aksaray</strong> 评分偏低是因为批发商与游客极多、排队久、柜员态度冷淡，但柜员对“无居留卡外国人开户”极其麻木熟练，可作为稳妥保底。
+                </p>
             </div>
 
             <!-- Interactive Map Container (Google Maps Tiles + Direct Google Maps Embed & App Links) -->
@@ -729,21 +740,21 @@
                             loading="lazy"
                             allowfullscreen
                             referrerpolicy="no-referrer-when-downgrade"
-                            src="https://maps.google.com/maps?q=Vak%C4%B1fBank%20Laleli%20%C5%9Eubesi%20Mesihpa%C5%9Fa%20Mah.%20Ordu%20Cad.%20No:72%20Fatih%20%C4%B0stanbul&t=&z=17&ie=UTF8&iwloc=&output=embed">
+                            src="https://maps.google.com/maps?q=Vak%C4%B1fBank%20Laleli%20%C5%9Eubesi%2C%20Kemal%20Pa%C5%9Fa%2C%20Ordu%20Cd.%20No%3A%2058B%2C%2034134%20Fatih%2F%C4%B0stanbul&hl=en&z=17&ie=UTF8&iwloc=A&output=embed">
                         </iframe>
                     </div>
 
                     <div class="space-y-2">
                         <div id="gmap-active-addr" class="text-xs font-mono text-stone-600 bg-white px-2.5 py-1.5 rounded-lg border border-goose-200 truncate" dir="ltr">
-                            Mesihpaşa Mah., Ordu Cad. No:72, Fatih/İstanbul
+                            Kemal Paşa, Ordu Cd. No: 58B, 34134 Fatih/İstanbul
                         </div>
                         <a id="gmap-direct-link"
-                           href="https://www.google.com/maps/search/?api=1&query=Vak%C4%B1fBank+Laleli+%C5%9Eubesi+Mesihpa%C5%9Fa+Mah.+Ordu+Cad.+No:72+Fatih+%C4%B0stanbul"
+                           href="https://www.google.com/maps/search/?api=1&query=Vak%C4%B1fBank%20Laleli%20%C5%9Eubesi&query_place_id=ChIJ2c9gxIe5yhQRv4pgoP3JfXE&hl=en"
                            target="_blank"
                            rel="noopener noreferrer"
                            class="w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 shadow-sm transition">
                             <i class="fa-solid fa-diamond-turn-right"></i>
-                            <span id="gmap-open-btn-txt">在 Google Maps App 中打开导航</span>
+                            <span id="gmap-open-btn-txt">在 Google Maps 中精准打开此支行</span>
                         </a>
                     </div>
                 </div>
@@ -1239,20 +1250,23 @@
 
         const turkishScriptText = `Merhaba, pasaportum ve vergi numaram hazır. Ailem bana yurt dışındayken para göndereceği için Vadesiz TL ve Vadesiz USD hesabı açmak istiyorum (sigorta istemiyorum). Hesabı aktif etmek için şimdi nakit TL yatıracağım.\n\nİran'da ailemin evinde yaşıyorum; İran ev adresim, Türkiye otel adresim ve anne-baba bilgilerim telefonumda yazılıdır.\n\nGüney Kore'de yaşayacağım için üzerinde pasaporttaki adımın yazılı olduğu İsimli Banka Kartı (kesinlikle Visa veya Mastercard logolu olsun, TROY olmasın) basılmasını istiyorum. Otelde kurye bekleyemeyeceğim için kartımın kesinlikle bu şubeye gönderilmesini (Şubeden Teslim) talep ediyorum.\n\nAyrıca lütfen kartımın yurt dışı harcama hesabını Vadesiz USD (Dolar) hesabım olarak bağlayın ve mobil bankacılıkta güvenlik doğrulamasını SMS yerine Mobil Onay (Bildirim) olarak ayarlayın.`;
 
-        // All 12 Branches Data (6 in District 1, 6 in District 2)
+        // All 12 Branches Data with Official Google Maps Place IDs & Verified Street Addresses
         const branchesData = [
-            // District 1: Laleli - Aksaray - Beyazıt
+            // District 1: Laleli - Aksaray - Beyazıt (Fatih)
             {
                 id: 'd1-v1',
                 district: 1,
                 bank: 'VakıfBank',
+                officialName: 'VakıfBank Laleli Şubesi',
+                placeId: 'ChIJ2c9gxIe5yhQRv4pgoP3JfXE',
+                rating: '1.9★',
                 roleZh: 'VakıfBank（主卡）',
                 roleFa: 'VakıfBank (کارت اصلی)',
-                nameZh: '1. Laleli Şubesi（首选）',
-                nameFa: '1. Laleli Şubesi (انتخاب اول)',
-                address: 'Mesihpaşa Mah., Ordu Cad. No:72, Fatih/İstanbul',
-                noteZh: 'T1 电车 Laleli 站正旁边的奥尔杜大街上',
-                noteFa: 'دقیقاً کنار ایستگاه تراموای لاله‌لی، در خیابان اوردو (Ordu)',
+                nameZh: '1. Laleli Şubesi（首选 · 1.9★）',
+                nameFa: '1. Laleli Şubesi (انتخاب اول · ★1.9)',
+                address: 'Kemal Paşa, Ordu Cd. No: 58B, 34134 Fatih/İstanbul',
+                noteZh: 'T1 电车 Laleli 站正旁边的奥尔杜大街上，伊朗人办卡最密集',
+                noteFa: 'دقیقاً کنار ایستگاه تراموای لاله‌لی در خیابان Ordu',
                 lat: 41.0099,
                 lng: 28.9574,
                 pinLabel: 'V1'
@@ -1261,90 +1275,108 @@
                 id: 'd1-v2',
                 district: 1,
                 bank: 'VakıfBank',
+                officialName: 'VakıfBank Validesultan Şubesi',
+                placeId: 'ChIJH-ALHi65yhQR0Xge7-CA-a8',
+                rating: '3.5★',
                 roleZh: 'VakıfBank（主卡）',
                 roleFa: 'VakıfBank (کارت اصلی)',
-                nameZh: '2. Aksaray Şubesi（备选1）',
-                nameFa: '2. Aksaray Şubesi (جایگزین ۱)',
-                address: 'Haseki Sultan Mah., Turgut Özal Millet Cad. No:7, Fatih/İstanbul',
-                noteZh: '从 Laleli 顺着大街往西走 5 分钟，过天桥即是',
-                noteFa: 'از لاله‌لی در امتداد خیابان اصلی ۵ دقیقه به سمت غرب بروید، بعد از پل عابر پیاده',
-                lat: 41.0114,
-                lng: 28.9498,
+                nameZh: '2. Validesultan / Aksaray Şubesi（备选1 · 3.5★）',
+                nameFa: '2. Validesultan / Aksaray Şubesi (جایگزین ۱ · ★3.5)',
+                address: 'Aksaray, Teceddüt Sk. No: 3, 34096 Fatih/İstanbul',
+                noteZh: '从 Laleli 往西走到 Aksaray 路口旁，老城区评分最高的瓦基夫支行',
+                noteFa: 'کمی غرب‌تر از لاله‌لی در چهارراه آکسارای (امتیاز بالا ★3.5)',
+                lat: 41.0106,
+                lng: 28.9502,
                 pinLabel: 'V2'
             },
             {
                 id: 'd1-v3',
                 district: 1,
                 bank: 'VakıfBank',
+                officialName: 'VakıfBank Beyazıt Şubesi',
+                placeId: 'ChIJ51NBye65yhQR-1Y9hoKrGmw',
+                rating: '1.9★',
                 roleZh: 'VakıfBank（主卡）',
                 roleFa: 'VakıfBank (کارت اصلی)',
-                nameZh: '3. Beyazıt Şubesi（备选2）',
-                nameFa: '3. Beyazıt Şubesi (جایگزین ۲)',
-                address: 'Mimar Hayrettin Mah., Yeniçeriler Cad. No:9, Fatih/İstanbul',
-                noteZh: '从 Laleli 顺着电车轨道往东走 5 分钟',
-                noteFa: 'از لاله‌لی در امتداد ریل تراموا ۵ دقیقه به سمت شرق بروید',
-                lat: 41.0091,
-                lng: 28.9635,
+                nameZh: '3. Beyazıt Şubesi（备选2 · 1.9★）',
+                nameFa: '3. Beyazıt Şubesi (جایگزین ۲ · ★1.9)',
+                address: 'Mimar Kemalettin, Ordu Cd. No: 5, 34130 Fatih/İstanbul',
+                noteZh: '从 Laleli 顺着电车轨道往东走 4 分钟即是',
+                noteFa: 'از لاله‌لی در امتداد ریل تراموا ۴ دقیقه به سمت شرق',
+                lat: 41.0094,
+                lng: 28.9621,
                 pinLabel: 'V3'
             },
             {
                 id: 'd1-z1',
                 district: 1,
                 bank: 'Ziraat',
+                officialName: 'Ziraat Bankası Beyazıt Şubesi',
+                placeId: 'ChIJWYHtriW5yhQR0g0aIpOYHLI',
+                rating: '3.0★',
                 roleZh: 'Ziraat（副卡）',
                 roleFa: 'Ziraat (کارت فرعی)',
-                nameZh: '1. Laleli Şubesi（首选）',
-                nameFa: '1. Laleli Şubesi (انتخاب اول)',
-                address: 'Mesihpaşa Mah., Ordu Cad. No:63, Fatih/İstanbul',
-                noteZh: '就在 VakıfBank Laleli 支行斜对面',
-                noteFa: 'دقیقاً روبه‌روی شعبه لاله‌لیِ واکیف‌بانک (به صورت مورب)',
-                lat: 41.0103,
-                lng: 28.9569,
+                nameZh: '1. Beyazıt / Laleli Şubesi（首选 · 3.0★）',
+                nameFa: '1. Beyazıt / Laleli Şubesi (انتخاب اول · ★3.0)',
+                address: 'Mimar Hayrettin, Yeniçeriler Cd., 34126 Fatih/İstanbul',
+                noteZh: '就在 T1 电车轨道主街上，离 VakıfBank 仅百米',
+                noteFa: 'در همان خیابان اصلی تراموا، چند قدم بالاتر از واکیف‌بانک',
+                lat: 41.0088,
+                lng: 28.9648,
                 pinLabel: 'Z1'
             },
             {
                 id: 'd1-z2',
                 district: 1,
                 bank: 'Ziraat',
+                officialName: 'Ziraat Bankası Aksaray Şubesi',
+                placeId: 'ChIJk8N-Hym6yhQRisHsJfDSEO0',
+                rating: '2.8★',
                 roleZh: 'Ziraat（副卡）',
                 roleFa: 'Ziraat (کارت فرعی)',
-                nameZh: '2. Aksaray Şubesi（备选1）',
-                nameFa: '2. Aksaray Şubesi (جایگزین ۱)',
-                address: 'Aksaray Mah., Turgut Özal Millet Cad. No:2, Fatih/İstanbul',
-                noteZh: 'Aksaray 路口，离 VakıfBank Aksaray 百米内',
-                noteFa: 'سر چهارراه آکسارای، در فاصله کمتر از ۱۰۰ متری شعبه آکسارایِ واکیف‌بانک',
-                lat: 41.0110,
-                lng: 28.9513,
+                nameZh: '2. Aksaray Şubesi（备选1 · 2.8★）',
+                nameFa: '2. Aksaray Şubesi (جایگزین ۱ · ★2.8)',
+                address: 'Haseki Sultan, Turgut Özal Millet Cd. No: 5/2, 34096 Fatih/İstanbul',
+                noteZh: 'Aksaray 路口主街上，离 VakıfBank Validesultan 支行很近',
+                noteFa: 'در خیابان اصلی آکسارای، نزدیک شعبه واکیف‌بانک',
+                lat: 41.0112,
+                lng: 28.9489,
                 pinLabel: 'Z2'
             },
             {
                 id: 'd1-z3',
                 district: 1,
                 bank: 'Ziraat',
+                officialName: 'Ziraat Bankası Yenikapı Şubesi',
+                placeId: 'ChIJM35UEIe5yhQRGpBK-829ObY',
+                rating: '3.8★',
                 roleZh: 'Ziraat（副卡）',
                 roleFa: 'Ziraat (کارت فرعی)',
-                nameZh: '3. Beyazıt Şubesi（备选2）',
-                nameFa: '3. Beyazıt Şubesi (جایگزین ۲)',
-                address: 'Beyazıt Mah., Yeniçeriler Cad. No:23, Fatih/İstanbul',
-                noteZh: 'T1 电车 Beyazıt 站旁，与 VakıfBank 同街',
-                noteFa: 'کنار ایستگاه تراموای بیازیت، در همان خیابان شعبه واکیف‌بانک',
-                lat: 41.0088,
-                lng: 28.9650,
+                nameZh: '3. Yenikapı / Laleli南 Şubesi（高分备选 · 3.8★）',
+                nameFa: '3. Yenikapı / Laleli Şubesi (جایگزین با امتیاز بالا · ★3.8)',
+                address: 'Katip Kasım, Hayriye Tüccarı Cd. No: 10, 34130 Fatih/İstanbul',
+                noteZh: '从 Laleli 电车站往南顺坡走 4 分钟，老城区评分高达 3.8★ 的农业银行',
+                noteFa: '۴ دقیقه پیاده‌روی به سمت جنوب از لاله‌لی (امتیاز عالی ★3.8)',
+                lat: 41.0068,
+                lng: 28.9558,
                 pinLabel: 'Z3'
             },
 
-            // District 2: Osmanbey - Şişli - Harbiye
+            // District 2: Osmanbey - Şişli - Harbiye (Şişli - High Rating Modern District)
             {
                 id: 'd2-v1',
                 district: 2,
                 bank: 'VakıfBank',
+                officialName: 'Vakıfbank-osmanbey Branch',
+                placeId: 'ChIJ4VYq3RG3yhQRHB0NiMjs-8o',
+                rating: '3.1★',
                 roleZh: 'VakıfBank（主卡）',
                 roleFa: 'VakıfBank (کارت اصلی)',
-                nameZh: '1. Osmanbey Şubesi（首选）',
-                nameFa: '1. Osmanbey Şubesi (انتخاب اول)',
-                address: 'Meşrutiyet Mah., Halaskargazi Cad. No:110, Şişli/İstanbul',
-                noteZh: '地铁 Osmanbey 站出来走 2 分钟',
-                noteFa: '۲ دقیقه پیاده‌روی از خروجی ایستگاه متروی عثمان‌بی',
+                nameZh: '1. Osmanbey Şubesi（首选 · 3.1★）',
+                nameFa: '1. Osmanbey Şubesi (انتخاب اول · ★3.1)',
+                address: 'Cumhuriyet, Halaskargazi Cd. No: 101C, 34380 Şişli/İstanbul',
+                noteZh: '地铁 M2 线 Osmanbey 站出来走 1 分钟即是，沟通顺畅',
+                noteFa: '۱ دقیقه پیاده‌روی از خروجی متروی Osmanbey، برخورد عالی',
                 lat: 41.0537,
                 lng: 28.9875,
                 pinLabel: 'V1'
@@ -1353,13 +1385,16 @@
                 id: 'd2-v2',
                 district: 2,
                 bank: 'VakıfBank',
+                officialName: 'VakıfBank Şişli Şubesi',
+                placeId: 'ChIJazfeKVe3yhQR86UHMH0TOeM',
+                rating: '2.8★',
                 roleZh: 'VakıfBank（主卡）',
                 roleFa: 'VakıfBank (کارت اصلی)',
-                nameZh: '2. Şişli Şubesi（备选1）',
-                nameFa: '2. Şişli Şubesi (جایگزین ۱)',
-                address: '19 Mayıs Mah., Halaskargazi Cad. No:214, Şişli/İstanbul',
-                noteZh: '顺着大街往北（Cevahir 商场方向）直走 7 分钟',
-                noteFa: 'در امتداد خیابان اصلی ۷ دقیقه مستقیم به سمت شمال (به طرف مرکز خرید جواهیر)',
+                nameZh: '2. Şişli Şubesi（与Ziraat紧挨着 · 2.8★）',
+                nameFa: '2. Şişli Şubesi (چسبیده به زراعت بانک · ★2.8)',
+                address: 'Merkez, Halaskargazi Cd. No: 207/1, 34384 Şişli/İstanbul',
+                noteZh: '就在 207 号，隔壁 209 号就是 Ziraat Şişli 支行，出门 3 秒连办两家！',
+                noteFa: 'پلاک 207/1، دقیقاً دیواربه‌دیوارِ زراعت بانک شیشلی (پلاک 209)!',
                 lat: 41.0601,
                 lng: 28.9877,
                 pinLabel: 'V2'
@@ -1368,44 +1403,53 @@
                 id: 'd2-v3',
                 district: 2,
                 bank: 'VakıfBank',
+                officialName: 'VakıfBank Feriköy Şubesi',
+                placeId: 'ChIJjeb3NYS3yhQRDxFt9lMSn0I',
+                rating: '3.3★',
                 roleZh: 'VakıfBank（主卡）',
                 roleFa: 'VakıfBank (کارت اصلی)',
-                nameZh: '3. Harbiye Şubesi（备选2）',
-                nameFa: '3. Harbiye Şubesi (جایگزین ۲)',
-                address: 'Harbiye Mah., Cumhuriyet Cad. No:167, Şişli/İstanbul',
-                noteZh: '顺着大街往南（塔克西姆方向）直走 6 分钟',
-                noteFa: 'در امتداد خیابان اصلی ۶ دقیقه مستقیم به سمت جنوب (به طرف میدان تکسیم)',
-                lat: 41.0469,
-                lng: 28.9873,
+                nameZh: '3. Feriköy / Pangaltı Şubesi（高分备选 · 3.3★）',
+                nameFa: '3. Feriköy / Pangaltı Şubesi (امتیاز بالا · ★3.3)',
+                address: 'Cumhuriyet, Ergenekon Cd. No: 58A, 34380 Şişli/İstanbul',
+                noteZh: 'Osmanbey 地铁站 Pangaltı 出口背后走 2 分钟，排队少评分高 (3.3★)',
+                noteFa: '۲ دقیقه پیاده‌روی از خروجی Pangaltı متروی عثمان‌بی (خلوت با امتیاز ★3.3)',
+                lat: 41.0528,
+                lng: 28.9845,
                 pinLabel: 'V3'
             },
             {
                 id: 'd2-z1',
                 district: 2,
                 bank: 'Ziraat',
+                officialName: 'Ziraat Bankası Osmanbey Şubesi',
+                placeId: 'ChIJo0kg4hG3yhQRr9HaSLXNrog',
+                rating: '2.3★',
                 roleZh: 'Ziraat（副卡）',
                 roleFa: 'Ziraat (کارت فرعی)',
-                nameZh: '1. Osmanbey (Pangaltı) Şubesi',
-                nameFa: '1. Osmanbey (Pangaltı) Şubesi',
-                address: 'Bozkurt Mah., Halaskargazi Cad. No:103, Şişli/İstanbul',
-                noteZh: '就在 VakıfBank Osmanbey 支行马路正对面',
-                noteFa: 'دقیقاً آن طرف خیابان، روبه‌روی شعبه عثمان‌بیِ واکیف‌بانک',
-                lat: 41.0533,
-                lng: 28.9870,
+                nameZh: '1. Osmanbey Şubesi（首选 · 2.3★）',
+                nameFa: '1. Osmanbey Şubesi (انتخاب اول · ★2.3)',
+                address: 'Halaskargazi, Halaskargazi Cd. No: 78, 34371 Şişli/İstanbul',
+                noteZh: '就在 VakıfBank Osmanbey 支行斜对面马路上',
+                noteFa: 'درست در آن طرف خیابان، روبه‌روی شعبه عثمان‌بیِ واکیف‌بانک',
+                lat: 41.0530,
+                lng: 28.9872,
                 pinLabel: 'Z1'
             },
             {
                 id: 'd2-z2',
                 district: 2,
                 bank: 'Ziraat',
+                officialName: 'Ziraat Bank - Sisli Branch',
+                placeId: 'ChIJ7RIcNxu3yhQR1zAn-HF3KDE',
+                rating: '2.7★',
                 roleZh: 'Ziraat（副卡）',
                 roleFa: 'Ziraat (کارت فرعی)',
-                nameZh: '2. Şişli Şubesi（备选1）',
-                nameFa: '2. Şişli Şubesi (جایگزین ۱)',
-                address: 'Merkez Mah., Halaskargazi Cad. No:222, Şişli/İstanbul',
-                noteZh: '紧挨着 VakıfBank Şişli 支行',
-                noteFa: 'دقیقاً چسبیده به شعبه شیشلیِ واکیف‌بانک',
-                lat: 41.0607,
+                nameZh: '2. Şişli Şubesi（与Vakıf紧挨着 · 2.7★）',
+                nameFa: '2. Şişli Şubesi (دیواربه‌دیوار واکیف‌بانک · ★2.7)',
+                address: 'Merkez, Halaskargazi Cd. No: 209, 34381 Şişli/İstanbul',
+                noteZh: '门牌 209 号，紧挨着隔壁 207 号的 VakıfBank Şişli 支行',
+                noteFa: 'پلاک 209، دقیقاً چسبیده به شعبه شیشلیِ واکیف‌بانک (پلاک 207/1)',
+                lat: 41.0605,
                 lng: 28.9879,
                 pinLabel: 'Z2'
             },
@@ -1413,13 +1457,16 @@
                 id: 'd2-z3',
                 district: 2,
                 bank: 'Ziraat',
+                officialName: 'Ziraat Bankası Harbiye Şubesi',
+                placeId: 'ChIJA0kuwG23yhQRue3doDB4mHE',
+                rating: '3.8★',
                 roleZh: 'Ziraat（副卡）',
                 roleFa: 'Ziraat (کارت فرعی)',
-                nameZh: '3. Harbiye Şubesi（备选2）',
-                nameFa: '3. Harbiye Şubesi (جایگزین ۲)',
-                address: 'Harbiye Mah., Cumhuriyet Cad. No:151, Şişli/İstanbul',
-                noteZh: '紧挨着 VakıfBank Harbiye 支行',
-                noteFa: 'دقیقاً چسبیده به شعبه هاربیهِ واکیف‌بانک',
+                nameZh: '3. Harbiye Şubesi（最高分推荐 · 3.8★）',
+                nameFa: '3. Harbiye Şubesi (بهترین امتیاز در منطقه · ★3.8)',
+                address: 'İnönü, Cumhuriyet Cd. No: 121, 34373 Şişli/İstanbul',
+                noteZh: '从 Osmanbey 顺大街往南走 5 分钟，服务极佳的高分网点 (3.8★)',
+                noteFa: '۵ دقیقه پیاده‌روی از عثمان‌بی به سمت جنوب، شعبه بسیار خوش‌برخورد (★3.8)',
                 lat: 41.0462,
                 lng: 28.9871,
                 pinLabel: 'Z3'
@@ -1437,25 +1484,27 @@
                 nav4: '办卡全流程 & 柜员截图',
                 nav5: '妈妈打钱 & 韩国交房租/刷卡',
                 sec3Badge: '三',
-                sec3Title: '伊斯坦布尔两大高成功率街区与 6 家连逛支行 Google 地图及地址',
-                sec3Desc: '无居留卡的伊朗人办卡，<strong>Laleli–Aksaray–Beyazıt 一线</strong>和<strong>Osmanbey–Şişli–Harbiye 一线</strong>成功率最高。每个街区的 6 家支行都在同一条笔直的大街上，万一第 1 家支行柜员态度不好或逼你买保险，直接拿回护照出门，走 5 分钟就能进下一家支行！',
-                btnDist1: '街区一：Laleli – Aksaray – Beyazıt (首选)',
-                btnDist2: '街区二：Osmanbey – Şişli – Harbiye (次选)',
-                legendTip: 'Google Maps 街道图 · 点击支行可同步右侧谷歌地图与导航',
-                gmapCardTitle: 'Google Maps 实时导航窗',
-                gmapOpenBtnTxt: '在 Google Maps App 中打开导航',
-                d1Heading: '<span class="px-2.5 py-0.5 rounded-lg bg-amber-500 text-white text-xs">街区一</span><span>Laleli – Aksaray – Beyazıt（首选：伊朗人最密集）</span>',
+                sec3Title: '伊斯坦布尔两大高成功率街区与 12 家支行精准 Google 地图及地址',
+                sec3Desc: '无居留卡的伊朗人办卡，<strong>Osmanbey–Şişli–Harbiye 一线</strong>和<strong>Laleli–Aksaray–Beyazıt 一线</strong>成功率最高。每个街区的 6 家支行都在同一条笔直的大街上，万一第 1 家支行柜员态度不好或逼你买保险，直接拿回护照出门，走几分钟就能进下一家支行！',
+                btnDist1: '街区一：Laleli – Aksaray – Beyazıt (老城保底)',
+                btnDist2: '街区二：Osmanbey – Şişli – Harbiye (高分推荐)',
+                compareTitle: '选区实战建议：Şişli 区的 Google 评价明显更好，该去哪个区？',
+                compareDesc: '<strong>强烈建议先去【街区二：Osmanbey – Şişli – Harbiye】！</strong> Şişli 是现代商业与白领区，环境干净、排队少、柜员英语好且态度礼貌（如 <strong>Ziraat Harbiye 评分高达 3.8★</strong>、<strong>VakıfBank Feriköy 3.3★</strong>）；更妙的是 <strong>VakıfBank Şişli (207号) 与 Ziraat Şişli (209号) 两家大门紧挨着</strong>，出门 3 秒即可连办两张卡！而老城区 <strong>Laleli – Aksaray</strong> 评分偏低是因为批发商与游客极多、排队久、柜员态度冷淡，但柜员对“无居留卡外国人开户”极其麻木熟练，可作为稳妥保底。',
+                legendTip: 'Google Maps 英文街道图 · 点击支行直接精准锁定该网点位置',
+                gmapCardTitle: 'Google Maps 精准网点导航 (English Map)',
+                gmapOpenBtnTxt: '在 Google Maps 中精准打开此支行',
+                d1Heading: '<span class="px-2.5 py-0.5 rounded-lg bg-amber-500 text-white text-xs">街区一</span><span>Laleli – Aksaray – Beyazıt（老城区：伊朗人最密集、保底稳妥）</span>',
                 d1Transit: '<i class="fa-solid fa-route text-goose-600 mr-1"></i><strong>交通：</strong> 坐有轨电车 <strong>T1 线</strong> 到 <strong>Laleli-İstanbul Üni. 站</strong>下车，顺着电车轨道走即可依次经过：',
-                d2Heading: '<span class="px-2.5 py-0.5 rounded-lg bg-stone-700 text-white text-xs">街区二</span><span>Osmanbey – Şişli – Harbiye（次选：现代商业区，沟通顺畅）</span>',
-                d2Transit: '<i class="fa-solid fa-route text-goose-600 mr-1"></i><strong>交通：</strong> 坐地铁 <strong>M2 线（绿线）</strong> 到 <strong>Osmanbey 站</strong>，从 <strong>Pangaltı 出口</strong>出来到大街上直走：',
+                d2Heading: '<span class="px-2.5 py-0.5 rounded-lg bg-emerald-600 text-white text-xs">街区二（强烈推荐）</span><span>Osmanbey – Şişli – Harbiye（现代商业区：Google评分高、排队少、态度好）</span>',
+                d2Transit: '<i class="fa-solid fa-route text-goose-600 mr-1"></i><strong>交通：</strong> 坐地铁 <strong>M2 线（绿线）</strong> 到 <strong>Osmanbey 站</strong> 或 <strong>Şişli-Mecidiyeköy 站</strong>出来到大街上直走：',
                 viewDistrictMap: '在地图查看此街区',
                 thBank: '银行名称',
-                thBranch: '支行名称（按推荐顺序）',
-                thAddress: '具体街道地址（点击一键复制）',
-                thNote: '位置说明',
-                thAction: 'Google 地图与导航',
+                thBranch: '支行名称与 Google 评分',
+                thAddress: 'Google 核验精确地址（点击一键复制）',
+                thNote: '位置与实战说明',
+                thAction: '精准跳转 Google Maps',
                 locateBtn: '地图定位',
-                openGmapBtn: 'Google Maps',
+                openGmapBtn: '精准跳转',
                 copyToast: '已复制到剪贴板：'
             },
             fa: {
@@ -1463,29 +1512,31 @@
                 headerSubtitle: 'حرکت از ایران ⬅ افتتاح حساب در استانبول ⬅ کارت کشیدن و پرداخت اجاره در کره جنوبی (نسخه کامل)',
                 nav1: 'تقسیم کار کارت‌ها و ضد مسدودی',
                 nav2: 'چک‌لیست قبل از حرکت از ایران',
-                nav3: 'نقشه گوگل‌مپ ۱۲ شعبه استانبول',
+                nav3: 'نقشه انگلیسی Google Maps شعبه‌ها',
                 nav4: 'مراحل افتتاح حساب و متن ترکی',
                 nav5: 'واریز پول از ایران و خرج در کره',
                 sec3Badge: '۳',
-                sec3Title: 'نقشه گوگل‌مپ (Google Maps) و آدرس دو منطقه عالی با ۶ شعبه نزدیک به هم در استانبول',
-                sec3Desc: 'برای ایرانیانی که کارت اقامت ترکیه ندارند، راسته <strong>لاله‌لی – آکسارای – بیازیت</strong> و راسته <strong>عثمان‌بی – شیشلی – هاربیه</strong> بالاترین شانس موفقیت را دارند. در هر منطقه هر ۶ شعبه در یک خیابان مستقیم هستند؛ اگر شعبه اول بدخلقی کرد یا اصرار به بیمه داشت، با ۵ دقیقه پیاده‌روی وارد شعبه بعدی شوید!',
-                btnDist1: 'منطقه اول: Laleli – Aksaray – Beyazıt (انتخاب اول)',
-                btnDist2: 'منطقه دوم: Osmanbey – Şişli – Harbiye (انتخاب دوم)',
-                legendTip: 'نقشه Google Maps · با کلیک روی هر شعبه، مسیریابی گوگل‌مپ فعال می‌شود',
-                gmapCardTitle: 'پنجره مسیریابی مستقیم Google Maps',
-                gmapOpenBtnTxt: 'باز کردن مسیریابی در اپلیکیشن Google Maps',
-                d1Heading: '<span class="px-2.5 py-0.5 rounded-lg bg-amber-500 text-white text-xs">منطقه اول</span><span>Laleli – Aksaray – Beyazıt (انتخاب اول: پرتراکم‌ترین منطقه حضور ایرانیان)</span>',
+                sec3Title: 'نقشه دقیق انگلیسی (English Google Maps) و آدرس ۱۲ شعبه منتخب در استانبول',
+                sec3Desc: 'برای ایرانیانی که کارت اقامت ترکیه ندارند، راسته مدرن <strong>Osmanbey–Şişli–Harbiye</strong> و راسته <strong>Laleli–Aksaray–Beyazıt</strong> بالاترین شانس موفقیت را دارند. در هر منطقه هر ۶ شعبه در یک خیابان مستقیم هستند؛ اگر شعبه اول بدخلقی کرد یا اصرار به بیمه داشت، با چند دقیقه پیاده‌روی وارد شعبه بعدی شوید!',
+                btnDist1: 'منطقه اول: Laleli – Aksaray – Beyazıt (بافت قدیمی)',
+                btnDist2: 'منطقه دوم: Osmanbey – Şişli – Harbiye (پیشنهاد ویژه با امتیاز بالا)',
+                compareTitle: 'پیشنهاد ویژه انتخاب منطقه: امتیاز گوگل منطقه Şişli بالاتر است، کدام منطقه برویم بهتر است؟',
+                compareDesc: '<strong>اکیداً پیشنهاد می‌کنیم ابتدا به «منطقه دوم: Osmanbey – Şişli – Harbiye» بروید!</strong> منطقه شیشلی و عثمان‌بی یک منطقه تجاری مدرن و تمیز است، صف‌های کوتاه‌تری دارد و کارمندان بانک انگلیسی بلدند و بسیار محترمانه‌تر برخورد می‌کنند (مثلاً شعبه <strong>Ziraat Harbiye امتیاز عالی ★3.8</strong> و <strong>VakıfBank Feriköy امتیاز ★3.3</strong> دارد)؛ از همه بهتر اینکه <strong>شعبه VakıfBank Şişli (پلاک 207) و Ziraat Şişli (پلاک 209) دقیقاً دیواربه‌دیوار هم هستند</strong> و در ۳ ثانیه می‌توانید از اولی وارد دومی شوید! امتیاز پایین‌تر منطقه قدیمی Laleli به خاطر شلوغی شدید توریست‌ها و خستگی کارمندان است، اما چون روزانه ده‌ها حساب برای ایرانیان باز می‌کنند، به عنوان گزینه پشتیبان فوق‌العاده مطمئن است.',
+                legendTip: 'English Google Maps · با کلیک روی هر شعبه، لوکیشن دقیق همان بانک باز می‌شود',
+                gmapCardTitle: 'Google Maps (English View)',
+                gmapOpenBtnTxt: 'باز کردن لوکیشن دقیق شعبه در Google Maps',
+                d1Heading: '<span class="px-2.5 py-0.5 rounded-lg bg-amber-500 text-white text-xs">منطقه اول</span><span>Laleli – Aksaray – Beyazıt (پرتراکم‌ترین منطقه حضور ایرانیان)</span>',
                 d1Transit: '<i class="fa-solid fa-route text-goose-600 ml-1"></i><strong>مسیر دسترسی:</strong> سوار تراموای خط <strong>T1</strong> شوید و در ایستگاه <strong>Laleli-İstanbul Üni.</strong> پیاده شوید؛ در امتداد ریل تراموا به ترتیب به این شعبه‌ها می‌رسید:',
-                d2Heading: '<span class="px-2.5 py-0.5 rounded-lg bg-stone-700 text-white text-xs">منطقه دوم</span><span>Osmanbey – Şişli – Harbiye (انتخاب دوم: منطقه تجاری مدرن با ارتباط عالی)</span>',
-                d2Transit: '<i class="fa-solid fa-route text-goose-600 ml-1"></i><strong>مسیر دسترسی:</strong> سوار متروی خط <strong>M2 (خط سبز)</strong> شوید، در ایستگاه <strong>Osmanbey</strong> پیاده شوید و از خروجی <strong>Pangaltı</strong> بیرون بیایید:',
+                d2Heading: '<span class="px-2.5 py-0.5 rounded-lg bg-emerald-600 text-white text-xs">منطقه دوم (پیشنهاد اول)</span><span>Osmanbey – Şişli – Harbiye (منطقه مدرن با امتیاز گوگل بالاتر و خلوت‌تر)</span>',
+                d2Transit: '<i class="fa-solid fa-route text-goose-600 ml-1"></i><strong>مسیر دسترسی:</strong> سوار متروی خط <strong>M2 (خط سبز)</strong> شوید و در ایستگاه <strong>Osmanbey</strong> یا <strong>Şişli</strong> پیاده شوید:',
                 viewDistrictMap: 'نمایش این منطقه روی نقشه',
                 thBank: 'نام بانک',
-                thBranch: 'نام شعبه (به ترتیب اولویت)',
-                thAddress: 'آدرس دقیق خیابان (کلیک برای کپی)',
+                thBranch: 'نام شعبه و امتیاز گوگل',
+                thAddress: 'آدرس دقیق تاییدشده در گوگل‌مپ (کلیک برای کپی)',
                 thNote: 'توضیحات موقعیت مکانی',
-                thAction: 'گوگل‌مپ و مسیریابی',
-                locateBtn: 'نمایش',
-                openGmapBtn: 'گوگل‌مپ',
+                thAction: 'لوکیشن دقیق Google Maps',
+                locateBtn: 'روی نقشه',
+                openGmapBtn: 'لوکیشن دقیق',
                 copyToast: 'در حافظه کپی شد: '
             }
         };
@@ -1496,24 +1547,26 @@
             renderBranchTables();
         };
 
+        // Direct Exact Place ID Jump URL for Google Maps App & Web (100% opens exact branch pin, never a search list)
         function getGoogleMapsUrl(branch) {
-            const query = encodeURIComponent(`${branch.bank} ${branch.address}`);
-            return `https://www.google.com/maps/search/?api=1&query=${query}`;
+            const query = encodeURIComponent(`${branch.officialName}, ${branch.address}`);
+            return `https://www.google.com/maps/search/?api=1&query=${query}&query_place_id=${branch.placeId}&hl=en`;
         }
 
+        // Exact Single-Pin English Embed URL for Google Maps Iframe
         function getGoogleEmbedUrl(branch) {
-            const query = encodeURIComponent(`${branch.bank} ${branch.address}`);
-            return `https://maps.google.com/maps?q=${query}&t=&z=17&ie=UTF8&iwloc=&output=embed`;
+            const query = encodeURIComponent(`${branch.officialName}, ${branch.address}`);
+            return `https://maps.google.com/maps?q=${query}&hl=en&z=17&ie=UTF8&iwloc=A&output=embed`;
         }
 
         function initMap() {
             map = L.map('istanbul-map', {
                 scrollWheelZoom: false
-            }).setView([41.0102, 28.9575], 15);
+            }).setView([41.0537, 28.9875], 15);
 
-            // Use official Google Maps standard road tiles (works on GitHub Pages without API key)
-            L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-                attribution: '&copy; Google Maps',
+            // Use official Google Maps standard road tiles in ENGLISH (hl=en)
+            L.tileLayer('https://mt1.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}', {
+                attribution: '&copy; Google Maps (EN)',
                 maxZoom: 20
             }).addTo(map);
 
@@ -1532,6 +1585,9 @@
                 marker.on('click', () => updateGoogleMapsEmbed(branch));
                 markersMap[branch.id] = marker;
             });
+
+            // Default focus on high-rated District 2 (Osmanbey - Şişli)
+            focusDistrict(2);
         }
 
         function updateGoogleMapsEmbed(branch) {
@@ -1714,6 +1770,8 @@
             document.getElementById('sec3-desc').innerHTML = dict.sec3Desc;
             document.getElementById('btn-dist-1-txt').textContent = dict.btnDist1;
             document.getElementById('btn-dist-2-txt').textContent = dict.btnDist2;
+            document.getElementById('compare-title').textContent = dict.compareTitle;
+            document.getElementById('compare-desc').innerHTML = dict.compareDesc;
             document.getElementById('legend-tip').textContent = dict.legendTip;
             document.getElementById('gmap-card-title').textContent = dict.gmapCardTitle;
             document.getElementById('gmap-open-btn-txt').textContent = dict.gmapOpenBtnTxt;
