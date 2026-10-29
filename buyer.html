@@ -63,6 +63,12 @@
             
             <!-- 우측 컨트롤: 언어 전환 탭 (한국어 / 대만어) + 메인 뷰 탭 -->
             <div class="flex flex-wrap items-center justify-between lg:justify-end gap-2.5">
+                <!-- JSONBin 클라우드 실시간 동기화 상태 버튼 -->
+                <button onclick="openCloudModal()" id="btn-cloud-status" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all shadow-sm" title="JSONBin 실시간 클라우드 동기화 설정">
+                    <span id="cloud-status-dot" class="w-2 h-2 rounded-full bg-slate-400"></span>
+                    <span id="cloud-status-text">☁️ 클라우드 연동 설정</span>
+                </button>
+
                 <!-- 한국어 / 대만어 UI 언어 전환 탭 (Desktop) -->
                 <div class="hidden lg:flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700">
                     <span class="text-[11px] text-slate-400 px-2 font-medium">Language:</span>
@@ -273,11 +279,17 @@
                 <span class="px-2.5 py-1 rounded-lg bg-indigo-600 font-black text-white">
                     선정 완료: <span id="float-sel-count">0</span>개사
                 </span>
-                <span id="ui-float-desc" class="text-slate-300 hidden md:inline">
+                <span id="float-cloud-indicator" class="text-xs text-slate-400 hidden sm:inline-flex items-center gap-1">
+                    • <span id="float-cloud-msg">로컬 저장됨</span>
+                </span>
+                <span id="ui-float-desc" class="text-slate-300 hidden xl:inline">
                     카드의 <b>[☑ 바이어 선정]</b> 버튼을 클릭하여 미팅 희망 기업을 체크한 뒤, 우측 버튼으로 명단을 확인·복사하세요.
                 </span>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <button onclick="manualCloudSync()" id="btn-float-cloud-save" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow flex items-center gap-1">
+                    ☁️ <span id="ui-float-btn-cloud">선택결과 클라우드 저장</span>
+                </button>
                 <button onclick="switchMainView('selected')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition-all shadow">
                     ✅ <span id="ui-float-btn-view">선정된 목록 확인 / 메모 작성</span>
                 </button>
@@ -384,6 +396,108 @@
         </div>
     </div>
 
+    <!-- ==================== JSONBin.io 클라우드 실시간 동기화 설정 모달 ==================== -->
+    <div id="cloud-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden">
+            <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-600 text-white">JSONBin.io Cloud Sync</span>
+                    <h3 class="text-base sm:text-lg font-bold mt-1">☁️ 임원 선정 결과 실시간 공유 설정 (JSONBin 연동)</h3>
+                </div>
+                <button onclick="closeCloudModal()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800">
+                    ✕
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto custom-scrollbar space-y-5 text-xs sm:text-sm">
+                <!-- 상태 안내 -->
+                <div id="cloud-modal-status-banner" class="p-3.5 rounded-xl border bg-slate-50 border-slate-200 text-slate-700 flex items-center justify-between gap-2">
+                    <div>
+                        <div class="font-bold text-slate-900" id="cloud-modal-status-title">현재 상태: 미연동 (브라우저 로컬 저장 모드)</div>
+                        <div class="text-xs text-slate-500 mt-0.5" id="cloud-modal-status-desc">아래에 JSONBin API Key를 입력하고 [✨ 새 Bin 자동 생성]을 누르면 10초 만에 연동됩니다.</div>
+                    </div>
+                    <button onclick="pullFromCloud(false)" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white border border-slate-300 hover:bg-slate-100 shrink-0">
+                        🔄 최신 데이터 불러오기
+                    </button>
+                </div>
+
+                <!-- Step 1: API Key & 자동 Bin 생성 -->
+                <div class="space-y-3 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
+                    <div class="font-extrabold text-indigo-950 flex items-center justify-between">
+                        <span>1단계: JSONBin.io API Key 입력 및 Bin 생성</span>
+                        <a href="https://jsonbin.io/app/app/api-keys" target="_blank" rel="noopener" class="text-xs text-indigo-600 underline hover:text-indigo-800">JSONBin API Key 발급 페이지 열기 ↗</a>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">X-Master-Key (또는 X-Access-Key)</label>
+                        <div class="flex gap-2">
+                            <input type="password" id="input-jsonbin-key" placeholder="$2a$10$... 로 시작하는 API Key 붙여넣기" class="flex-1 px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <button onclick="toggleKeyVisibility()" class="px-2.5 py-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-600 hover:bg-slate-100">👁️</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Bin ID (이미 있으면 입력, 없으면 우측 자동 생성 클릭!)</label>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="input-jsonbin-bin" placeholder="예: 6720a1b2e41b4d34e44a1234" class="flex-1 px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <button onclick="autoCreateJsonBin()" id="btn-create-bin" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shrink-0">
+                                ✨ 새 Bin 자동 생성하기
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-1">
+                        <button onclick="saveCloudConfigFromUI()" class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
+                            💾 이 브라우저에 연동 저장 & 동기화 테스트
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: 리더(임원)와 공유하는 2가지 방법 -->
+                <div class="space-y-3 bg-amber-50/60 p-4 rounded-xl border border-amber-200">
+                    <div class="font-extrabold text-amber-950">
+                        2단계: 한국 리더(임원)에게 공유하는 방법 (택 1)
+                    </div>
+
+                    <!-- 방법 A: 전용 링크 복사 (코드 재업로드 불필요!) -->
+                    <div class="bg-white p-3.5 rounded-lg border border-amber-200 space-y-2">
+                        <div class="text-xs font-bold text-slate-900">
+                            🚀 방법 A (가장 간편 · GitHub 재수정 불필요): 아래 [임원 전달용 자동 연동 링크]를 복사해 보내기
+                        </div>
+                        <p class="text-[11px] text-slate-500">
+                            링크 주소 뒤에 Bin ID와 Key가 포함되어 있어, 리더분이 이 링크를 클릭해 열면 아무 설정 없이 체크하는 즉시 귀하의 화면에도 100% 똑같이 반영됩니다!
+                        </p>
+                        <div class="flex gap-2">
+                            <input type="text" id="input-share-url" readonly class="flex-1 px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded text-[11px] font-mono text-slate-600">
+                            <button onclick="copyShareableCloudUrl()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shrink-0">
+                                🔗 임원용 연동 링크 복사
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 방법 B: HTML 코드 상단에 고정 -->
+                    <div class="bg-white p-3.5 rounded-lg border border-slate-200 space-y-1.5">
+                        <div class="text-xs font-bold text-slate-900">
+                            💻 방법 B (깔끔한 기본 URL 유지): GitHub의 HTML 파일 내 변수 2줄에 넣기
+                        </div>
+                        <p class="text-[11px] text-slate-500">
+                            아래 코드 2줄을 복사하여 HTML 파일 내 <code class="bg-slate-100 px-1 rounded">&lt;script&gt;</code> 바로 아래에 있는 <code class="bg-slate-100 px-1 rounded">DEFAULT_JSONBIN_...</code> 부분에 덮어씌우고 GitHub에 커밋하면 기본 주소에서도 영구 작동합니다:
+                        </p>
+                        <div class="flex items-center gap-2">
+                            <pre id="code-snippet-preview" class="flex-1 p-2 bg-slate-900 text-emerald-300 rounded text-[11px] font-mono overflow-x-auto">const DEFAULT_JSONBIN_BIN_ID = "";
+const DEFAULT_JSONBIN_API_KEY = "";</pre>
+                            <button onclick="copyCodeSnippet()" class="px-2.5 py-1.5 rounded bg-slate-800 text-white text-xs font-bold shrink-0">코드 복사</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
+                <button onclick="disconnectCloudConfig()" class="text-xs font-semibold text-rose-600 hover:underline">연동 초기화</button>
+                <button onclick="closeCloudModal()" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white">닫기</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 복사 완료 토스트 알림 -->
     <div id="toast" class="fixed bottom-16 right-6 z-50 hidden bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl border border-slate-700 flex items-center gap-2.5 text-sm font-medium transition-all">
         <span class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
@@ -392,6 +506,15 @@
 
     <!-- ==================== 데이터 및 스크립트 ==================== -->
     <script>
+        // ============================================================================
+        // ★ [JSONBin.io 실시간 클라우드 공유 설정] ★
+        // 아래 두 변수에 JSONBin.io의 Bin ID와 API Key를 넣어 GitHub에 올리면
+        // 리더(임원)와 작성자 모두 별도 설정 없이 접속 즉시 실시간 동기화됩니다!
+        // (또는 웹페이지 우측 상단 [☁️ 클라우드 연동 설정] 버튼에서도 설정 가능합니다)
+        // ============================================================================
+        const DEFAULT_JSONBIN_BIN_ID = "";  // 예: "6720a1b2e41b4d34e44a1234"
+        const DEFAULT_JSONBIN_API_KEY = ""; // 예: "$2a$10$..."
+
         // 현재 UI 언어 ('KO' 또는 'TC')
         let uiLang = 'KO';
         let currentRegion = 'ALL';
@@ -407,6 +530,12 @@
 
         const STORAGE_KEY_IDS = 'tccf_takeone_selected_ids_v2';
         const STORAGE_KEY_MEMOS = 'tccf_takeone_buyer_memos_v2';
+        const STORAGE_KEY_CLOUD_BIN = 'tccf_takeone_jsonbin_id';
+        const STORAGE_KEY_CLOUD_KEY = 'tccf_takeone_jsonbin_key';
+
+        let cloudBinId = '';
+        let cloudApiKey = '';
+        let cloudSyncTimer = null;
 
         // UI 다국어 사전 (한국어 / 대만어)
         const UI_TEXT = {
@@ -1177,6 +1306,7 @@
 
         // ==================== 초기화 및 상태 관리 ====================
         window.onload = function() {
+            initCloudConfig();
             loadSelectionFromStorage();
             document.getElementById('total-count-badge').textContent = COMPANIES.length;
             updateUILanguageStrings();
@@ -1185,6 +1315,11 @@
             renderCompanies();
             renderSelectedView();
             renderMasterTemplates();
+
+            // JSONBin 클라우드가 설정되어 있으면 접속 시 최신 선정 데이터를 자동으로 불러옴
+            if (isCloudConfigured()) {
+                pullFromCloud(true);
+            }
         };
 
         function loadSelectionFromStorage() {
@@ -1195,7 +1330,7 @@
                 } else {
                     // 초기 실행 시 최우선 추천(priority: true) 바이어를 기본 선택해 두어 임원이 바로 볼 수 있게 함
                     selectedBuyerIds = COMPANIES.filter(c => c.priority).map(c => c.id);
-                    saveSelectionToStorage();
+                    saveSelectionToStorage(true);
                 }
                 const savedMemos = localStorage.getItem(STORAGE_KEY_MEMOS);
                 if (savedMemos) {
@@ -1207,12 +1342,315 @@
             updateSelectionCounters();
         }
 
-        function saveSelectionToStorage() {
+        function saveSelectionToStorage(skipCloud = false) {
             try {
                 localStorage.setItem(STORAGE_KEY_IDS, JSON.stringify(selectedBuyerIds));
                 localStorage.setItem(STORAGE_KEY_MEMOS, JSON.stringify(buyerMemos));
             } catch (e) {}
             updateSelectionCounters();
+
+            if (!skipCloud && isCloudConfigured()) {
+                scheduleCloudPush();
+            }
+        }
+
+        // ==================== JSONBin.io 실시간 클라우드 동기화 로직 ====================
+        function initCloudConfig() {
+            const params = new URLSearchParams(window.location.search);
+            const urlBin = params.get('bin');
+            const urlKey = params.get('key');
+
+            if (urlBin && urlKey) {
+                cloudBinId = urlBin.trim();
+                cloudApiKey = urlKey.trim();
+                try {
+                    localStorage.setItem(STORAGE_KEY_CLOUD_BIN, cloudBinId);
+                    localStorage.setItem(STORAGE_KEY_CLOUD_KEY, cloudApiKey);
+                } catch (e) {}
+            } else if (DEFAULT_JSONBIN_BIN_ID && DEFAULT_JSONBIN_API_KEY) {
+                cloudBinId = DEFAULT_JSONBIN_BIN_ID.trim();
+                cloudApiKey = DEFAULT_JSONBIN_API_KEY.trim();
+            } else {
+                try {
+                    cloudBinId = localStorage.getItem(STORAGE_KEY_CLOUD_BIN) || '';
+                    cloudApiKey = localStorage.getItem(STORAGE_KEY_CLOUD_KEY) || '';
+                } catch (e) {}
+            }
+            updateCloudStatusUI('ready');
+        }
+
+        function isCloudConfigured() {
+            return Boolean(cloudBinId && cloudApiKey);
+        }
+
+        function getJsonBinHeaders() {
+            const headers = { 'Content-Type': 'application/json' };
+            if (cloudApiKey.startsWith('$2a$') || cloudApiKey.startsWith('$2b$')) {
+                headers['X-Master-Key'] = cloudApiKey;
+                headers['X-Access-Key'] = cloudApiKey;
+            } else {
+                headers['X-Access-Key'] = cloudApiKey;
+                headers['X-Master-Key'] = cloudApiKey;
+            }
+            return headers;
+        }
+
+        function updateCloudStatusUI(state, timeStr = '') {
+            const dot = document.getElementById('cloud-status-dot');
+            const txt = document.getElementById('cloud-status-text');
+            const floatMsg = document.getElementById('float-cloud-msg');
+            const isKo = uiLang === 'KO';
+
+            if (!isCloudConfigured()) {
+                dot.className = 'w-2 h-2 rounded-full bg-slate-400';
+                txt.textContent = isKo ? '☁️ 클라우드 연동 설정' : '☁️ 雲端同步設定';
+                if (floatMsg) floatMsg.textContent = isKo ? '브라우저 로컬 저장됨' : '已儲存於本機';
+                return;
+            }
+
+            if (state === 'saving') {
+                dot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
+                txt.textContent = isKo ? '☁️ 클라우드 자동 저장 중...' : '☁️ 正在同步至雲端...';
+                if (floatMsg) floatMsg.textContent = isKo ? '클라우드 저장 중...' : '雲端同步中...';
+            } else if (state === 'saved') {
+                dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+                txt.textContent = isKo ? `☁️ 실시간 연동됨 (${timeStr})` : `☁️ 雲端已同步 (${timeStr})`;
+                if (floatMsg) floatMsg.textContent = isKo ? `클라우드 저장 완료 (${timeStr})` : `雲端已儲存 (${timeStr})`;
+            } else if (state === 'error') {
+                dot.className = 'w-2 h-2 rounded-full bg-rose-500';
+                txt.textContent = isKo ? '☁️ 연동 오류 (설정 확인)' : '☁️ 雲端同步錯誤';
+                if (floatMsg) floatMsg.textContent = isKo ? '클라우드 연결 실패' : '雲端連線失敗';
+            } else {
+                dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+                txt.textContent = isKo ? '☁️ 실시간 클라우드 연동 중' : '☁️ 雲端即時同步中';
+                if (floatMsg) floatMsg.textContent = isKo ? 'JSONBin 실시간 연동됨' : 'JSONBin 雲端已連線';
+            }
+        }
+
+        function scheduleCloudPush() {
+            if (!isCloudConfigured()) return;
+            updateCloudStatusUI('saving');
+            if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+            cloudSyncTimer = setTimeout(() => {
+                pushToCloud(true);
+            }, 500);
+        }
+
+        async function pushToCloud(silent = false) {
+            if (!isCloudConfigured()) {
+                if (!silent) openCloudModal();
+                return;
+            }
+            updateCloudStatusUI('saving');
+            const payload = {
+                updatedAt: new Date().toISOString(),
+                selectedBuyerIds: selectedBuyerIds,
+                buyerMemos: buyerMemos
+            };
+
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${cloudBinId}`, {
+                    method: 'PUT',
+                    headers: getJsonBinHeaders(),
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                updateCloudStatusUI('saved', nowStr);
+                if (!silent) {
+                    showToast(uiLang === 'KO' ? '☁️ 선정 결과가 클라우드에 저장되었습니다!' : '☁️ 選定結果已同步至雲端！');
+                }
+            } catch (err) {
+                console.error('JSONBin Push Error:', err);
+                updateCloudStatusUI('error');
+                if (!silent) {
+                    showToast(uiLang === 'KO' ? '⚠️ 클라우드 저장 실패: Bin ID와 API Key를 확인해 주세요.' : '⚠️ 雲端儲存失敗，請檢查 Bin ID 與 Key。');
+                }
+            }
+        }
+
+        async function pullFromCloud(silent = false) {
+            if (!isCloudConfigured()) {
+                if (!silent) openCloudModal();
+                return;
+            }
+            updateCloudStatusUI('saving');
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${cloudBinId}/latest`, {
+                    method: 'GET',
+                    headers: getJsonBinHeaders()
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                const record = data.record || data;
+
+                if (Array.isArray(record.selectedBuyerIds)) {
+                    selectedBuyerIds = record.selectedBuyerIds;
+                }
+                if (record.buyerMemos && typeof record.buyerMemos === 'object') {
+                    buyerMemos = record.buyerMemos;
+                }
+
+                saveSelectionToStorage(true);
+                renderFilterTabs();
+                renderCompanies();
+                renderSelectedView();
+
+                const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                updateCloudStatusUI('saved', nowStr);
+                if (!silent) {
+                    showToast(uiLang === 'KO' ? '☁️ 클라우드에서 최신 바이어 선정 내역을 불러왔습니다!' : '☁️ 已從雲端載入最新選定名單！');
+                }
+            } catch (err) {
+                console.error('JSONBin Pull Error:', err);
+                updateCloudStatusUI('error');
+                if (!silent) {
+                    showToast(uiLang === 'KO' ? '⚠️ 클라우드 불러오기 실패: 설정 정보를 확인해 주세요.' : '⚠️ 無法載入雲端資料，請檢查設定。');
+                }
+            }
+        }
+
+        function manualCloudSync() {
+            if (!isCloudConfigured()) {
+                openCloudModal();
+                return;
+            }
+            pushToCloud(false);
+        }
+
+        function openCloudModal() {
+            document.getElementById('input-jsonbin-key').value = cloudApiKey;
+            document.getElementById('input-jsonbin-bin').value = cloudBinId;
+            refreshCloudModalSnippets();
+            document.getElementById('cloud-modal').classList.remove('hidden');
+        }
+
+        function closeCloudModal() {
+            document.getElementById('cloud-modal').classList.add('hidden');
+        }
+
+        function toggleKeyVisibility() {
+            const inp = document.getElementById('input-jsonbin-key');
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+        }
+
+        async function autoCreateJsonBin() {
+            const keyInput = document.getElementById('input-jsonbin-key').value.trim();
+            if (!keyInput) {
+                showToast('먼저 JSONBin X-Master-Key를 입력해 주세요!');
+                return;
+            }
+            const btn = document.getElementById('btn-create-bin');
+            const origText = btn.textContent;
+            btn.textContent = '생성 중...';
+            btn.disabled = true;
+
+            try {
+                const payload = {
+                    updatedAt: new Date().toISOString(),
+                    selectedBuyerIds: selectedBuyerIds,
+                    buyerMemos: buyerMemos
+                };
+                const res = await fetch('https://api.jsonbin.io/v3/b', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': keyInput,
+                        'X-Bin-Name': 'TCCF_TAKEONE_Buyers'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                const newBinId = data.metadata && data.metadata.id;
+                if (newBinId) {
+                    document.getElementById('input-jsonbin-bin').value = newBinId;
+                    cloudApiKey = keyInput;
+                    cloudBinId = newBinId;
+                    localStorage.setItem(STORAGE_KEY_CLOUD_BIN, cloudBinId);
+                    localStorage.setItem(STORAGE_KEY_CLOUD_KEY, cloudApiKey);
+                    refreshCloudModalSnippets();
+                    updateCloudStatusUI('saved', '방금 생성됨');
+                    showToast('✨ 새 Bin이 성공적으로 생성되고 연동되었습니다!');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('⚠️ Bin 생성 실패: X-Master-Key가 올바른지 확인해 주세요.');
+            } finally {
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
+        }
+
+        function saveCloudConfigFromUI() {
+            const keyInput = document.getElementById('input-jsonbin-key').value.trim();
+            const binInput = document.getElementById('input-jsonbin-bin').value.trim();
+            if (!keyInput || !binInput) {
+                showToast('API Key와 Bin ID를 모두 입력하거나 [새 Bin 자동 생성]을 눌러주세요.');
+                return;
+            }
+            cloudApiKey = keyInput;
+            cloudBinId = binInput;
+            try {
+                localStorage.setItem(STORAGE_KEY_CLOUD_BIN, cloudBinId);
+                localStorage.setItem(STORAGE_KEY_CLOUD_KEY, cloudApiKey);
+            } catch (e) {}
+            refreshCloudModalSnippets();
+            pullFromCloud(false);
+        }
+
+        function refreshCloudModalSnippets() {
+            const bin = document.getElementById('input-jsonbin-bin').value.trim() || cloudBinId;
+            const key = document.getElementById('input-jsonbin-key').value.trim() || cloudApiKey;
+            const baseUrl = window.location.origin + window.location.pathname;
+            const shareUrl = (bin && key)
+                ? `${baseUrl}?bin=${encodeURIComponent(bin)}&key=${encodeURIComponent(key)}`
+                : '위에서 API Key와 Bin ID를 먼저 생성/저장해 주세요.';
+            document.getElementById('input-share-url').value = shareUrl;
+            document.getElementById('code-snippet-preview').textContent =
+`const DEFAULT_JSONBIN_BIN_ID = "${bin}";
+const DEFAULT_JSONBIN_API_KEY = "${key}";`;
+
+            const banner = document.getElementById('cloud-modal-status-banner');
+            const title = document.getElementById('cloud-modal-status-title');
+            const desc = document.getElementById('cloud-modal-status-desc');
+            if (bin && key) {
+                banner.className = 'p-3.5 rounded-xl border bg-emerald-50 border-emerald-200 text-emerald-900 flex items-center justify-between gap-2';
+                title.textContent = `✅ 클라우드 연동 활성화됨 (Bin ID: ${bin})`;
+                desc.textContent = '이제 바이어를 체크하거나 메모를 적으면 JSONBin에 실시간으로 자동 저장됩니다!';
+            } else {
+                banner.className = 'p-3.5 rounded-xl border bg-slate-50 border-slate-200 text-slate-700 flex items-center justify-between gap-2';
+                title.textContent = '현재 상태: 미연동 (브라우저 로컬 저장 모드)';
+                desc.textContent = '아래에 JSONBin API Key를 입력하고 [✨ 새 Bin 자동 생성]을 누르면 10초 만에 연동됩니다.';
+            }
+        }
+
+        function copyShareableCloudUrl() {
+            const val = document.getElementById('input-share-url').value;
+            if (!val.startsWith('http')) {
+                showToast('먼저 위에서 Bin을 생성하거나 저장해 주세요!');
+                return;
+            }
+            copyRawText(val, '🔗 임원 전달용 실시간 연동 링크가 복사되었습니다!');
+        }
+
+        function copyCodeSnippet() {
+            const code = document.getElementById('code-snippet-preview').textContent;
+            copyRawText(code, '💻 GitHub 코드 삽입용 스니펫이 복사되었습니다!');
+        }
+
+        function disconnectCloudConfig() {
+            cloudBinId = '';
+            cloudApiKey = '';
+            try {
+                localStorage.removeItem(STORAGE_KEY_CLOUD_BIN);
+                localStorage.removeItem(STORAGE_KEY_CLOUD_KEY);
+            } catch (e) {}
+            document.getElementById('input-jsonbin-key').value = '';
+            document.getElementById('input-jsonbin-bin').value = '';
+            refreshCloudModalSnippets();
+            updateCloudStatusUI('ready');
+            showToast('클라우드 연동이 초기화되었습니다.');
         }
 
         function updateSelectionCounters() {
