@@ -1,0 +1,2164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCCF 바이어 선정</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', 'Noto Sans TC', 'Noto Sans JP', 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .card-selected {
+            border-color: #4f46e5 !important;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25), 0 10px 15px -3px rgba(0, 0, 0, 0.08) !important;
+            background-color: #fafaff !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-20">
+
+    <!-- 상단 헤더 (Top Header) -->
+    <header class="bg-slate-900 text-white sticky top-0 z-30 shadow-lg border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs sm:text-sm tracking-wider shadow-sm shrink-0">
+                        TAKEONE COMPANY
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-black tracking-tight flex items-center gap-2">
+                            <span id="ui-header-title">TCCF 바이어 선정</span>
+                        </h1>
+                        <p id="ui-header-subtitle" class="text-xs text-slate-400">
+                            바이어별 최근 동향 · 한국 협업 실적(팩트체크 완료) · 임원 선정 및 맞춤형 초청장 시스템
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 모바일용 언어 토글 -->
+                <div class="flex lg:hidden items-center bg-slate-800 p-1 rounded-xl border border-slate-700 shrink-0">
+                    <button onclick="setUILang('KO')" id="ui-lang-KO-mob" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white">한국어</button>
+                    <button onclick="setUILang('TC')" id="ui-lang-TC-mob" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-300">대만어(繁體)</button>
+                </div>
+            </div>
+            
+            <!-- 우측 컨트롤: 언어 전환 탭 (한국어 / 대만어) + 메인 뷰 탭 -->
+            <div class="flex flex-wrap items-center justify-between lg:justify-end gap-2.5">
+                <!-- 한국어 / 대만어 UI 언어 전환 탭 (Desktop) -->
+                <div class="hidden lg:flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700">
+                    <span class="text-[11px] text-slate-400 px-2 font-medium">Language:</span>
+                    <button onclick="setUILang('KO')" id="ui-lang-KO" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-600 text-white shadow">
+                        🇰🇷 한국어 (보고용)
+                    </button>
+                    <button onclick="setUILang('TC')" id="ui-lang-TC" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white">
+                        🇹🇼 대만어 / 繁體中文
+                    </button>
+                </div>
+
+                <!-- 메인 뷰 전환 탭 -->
+                <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-xl border border-slate-700 w-full sm:w-auto justify-center">
+                    <button onclick="switchMainView('directory')" id="tab-directory" class="flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all bg-indigo-600 text-white shadow">
+                        🏢 <span id="ui-tab-dir-text">바이어 리스트</span> (<span id="total-count-badge">0</span>)
+                    </button>
+                    <button onclick="switchMainView('selected')" id="tab-selected" class="flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-white flex items-center justify-center gap-1.5">
+                        ✅ <span id="ui-tab-sel-text">선정된 바이어</span>
+                        <span id="selected-count-badge" class="px-1.5 py-0.2 bg-amber-500 text-slate-950 rounded-full text-xs font-black">0</span>
+                    </button>
+                    <button onclick="switchMainView('templates')" id="tab-templates" class="flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-white">
+                        📋 <span id="ui-tab-tpl-text">초청장 템플릿</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ==================== 뷰 1: 바이어 리포트 & 선정 ==================== -->
+        <div id="view-directory" class="space-y-6">
+
+            <!-- 상단 KPI & 대표 한국 협업 작품 (접기/펼치기 지원) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div>
+                        <h2 id="ui-kpi-title" class="text-base font-extrabold text-slate-900">📊 TCCF 타깃 바이어 요약 및 대표 한국 협업 사례 (팩트체크 완료)</h2>
+                        <p id="ui-kpi-desc" class="text-xs text-slate-500 mt-0.5">불확실하거나 확인되지 않은 정보는 제외하고, 공식 보도 및 작품 크레딧으로 확인된 실적만 수록했습니다.</p>
+                    </div>
+                    <button onclick="toggleWorksShowcase()" id="btn-toggle-showcase" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 self-start sm:self-auto px-3 py-1.5 rounded-lg bg-indigo-50">
+                        대표 협업 작품 접기 ▲
+                    </button>
+                </div>
+
+                <!-- KPI 그리드 -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="kpi-container">
+                    <!-- JS 렌더링 -->
+                </div>
+
+                <!-- 대표 한국 협업 작품 가로 스크롤 -->
+                <div id="works-showcase-wrap" class="space-y-2 pt-1">
+                    <div class="flex items-center justify-between">
+                        <span id="ui-works-label" class="text-xs font-bold text-slate-500 uppercase tracking-wider">🎬 바이어별 대표 한국 IP 리메이크 · 배급 · 합작 검증 사례</span>
+                        <span id="ui-works-hint" class="text-[11px] text-slate-400">좌우로 스크롤하여 확인하세요</span>
+                    </div>
+                    <div id="works-container" class="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+                        <!-- JS 렌더링 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 필터 콘솔 -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5 space-y-4">
+                
+                <!-- 1. 지역 선택 Tabs -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="space-y-2 flex-1">
+                        <div id="ui-filter-region-label" class="text-xs font-bold text-slate-400 uppercase tracking-wider">1. 권역별 필터 (Region)</div>
+                        <div class="flex flex-wrap gap-2" id="region-tabs">
+                            <!-- JS 렌더링 -->
+                        </div>
+                    </div>
+
+                    <!-- 임원용 빠른 선택 버튼 모음 -->
+                    <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-3 flex flex-col gap-1.5 shrink-0">
+                        <div id="ui-boss-quick-title" class="text-[11px] font-extrabold text-amber-900 flex items-center gap-1">
+                            👑 임원 검토 및 바이어 선정 도구 (자동 저장)
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button onclick="selectPriorityBuyers()" id="btn-sel-priority" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition-all">
+                                ★ 최우선 추천 바이어 일괄 선택
+                            </button>
+                            <button onclick="switchMainView('selected')" id="btn-go-selected" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all">
+                                ✅ 선정 목록 보기 (<span id="quick-sel-count">0</span>)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-100 pt-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <!-- 2. 사업 라인 필터 -->
+                    <div class="flex-1">
+                        <div id="ui-filter-track-label" class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">2. 사업 라인 및 우선순위 필터 (Business Track)</div>
+                        <div class="flex flex-wrap gap-1.5" id="track-tabs">
+                            <!-- JS 렌더링 -->
+                        </div>
+                    </div>
+
+                    <!-- 3. 검색창 -->
+                    <div class="w-full lg:w-72">
+                        <div id="ui-filter-search-label" class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">3. 키워드 검색 (Search)</div>
+                        <div class="relative">
+                            <input type="text" id="search-input" oninput="renderCompanies()" placeholder="기업명, 작품명(이태원, 파묘, 굿잡 등)..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 필터 통계 바 -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
+                <div class="text-sm text-slate-600">
+                    <span id="ui-showing-prefix">현재 표시 중:</span> <span id="filtered-count" class="font-extrabold text-indigo-600">0</span> <span id="ui-showing-suffix">개 타깃 바이어</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                    <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span> <span id="ui-legend-select">카드 우측 상단 <b>[선정]</b> 체크박스를 눌러 원하는 바이어를 골라주세요</span></span>
+                    <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> <span id="ui-legend-star">★ 최우선 미팅 추천</span></span>
+                </div>
+            </div>
+
+            <!-- 바이어 카드 그리드 -->
+            <div id="company-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- JS 렌더링 -->
+            </div>
+        </div>
+
+        <!-- ==================== 뷰 2: 선정된 바이어 목록 (임원 컨펌 & 내보내기) ==================== -->
+        <div id="view-selected" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-5">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 text-xs font-bold mb-1">
+                            👑 Executive Selection & Export
+                        </div>
+                        <h2 id="ui-sel-view-title" class="text-xl font-black text-slate-900">✅ 선정된 타깃 바이어 리스트 (임원 컨펌용)</h2>
+                        <p id="ui-sel-view-desc" class="text-sm text-slate-500 mt-0.5">
+                            바이어 리스트에서 체크(☑)한 기업들이 자동 집계됩니다. 코멘트를 남기거나 결과를 복사하여 담당자에게 전달할 수 있습니다.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="selectPriorityBuyers()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition-all">
+                            ★ 최우선 추천 바이어 자동 추가
+                        </button>
+                        <button onclick="clearAllSelectedBuyers()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 transition-all">
+                            🗑️ 전체 선택 해제
+                        </button>
+                        <button onclick="copySelectedSummaryText()" class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md transition-all flex items-center gap-1.5">
+                            📋 선정 바이어 명단 & 메모 복사 (카톡/슬랙/메일 공유용)
+                        </button>
+                        <button onclick="exportSelectedCSV()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all">
+                            💾 CSV(엑셀) 다운로드
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 선정된 바이어 목록 컨테이너 -->
+                <div id="selected-buyers-container" class="space-y-4">
+                    <!-- JS 렌더링 -->
+                </div>
+
+                <!-- 텍스트 미리보기 박스 -->
+                <div class="bg-slate-50 rounded-xl border border-slate-200 p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span id="ui-sel-preview-label" class="text-xs font-bold text-slate-600 uppercase">📄 공유용 텍스트 요약 미리보기 (복사하여 바로 전달 가능)</span>
+                        <button onclick="copySelectedSummaryText()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">📋 전체 텍스트 복사</button>
+                    </div>
+                    <textarea id="selected-summary-textarea" rows="8" readonly class="w-full p-3 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 font-mono leading-relaxed focus:outline-none custom-scrollbar"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 뷰 3: 5개 국어 초청장 템플릿 라이브러리 ==================== -->
+        <div id="view-templates" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-5">
+                    <div>
+                        <h2 id="ui-tpl-view-title" class="text-lg font-bold text-slate-900">📋 5개 국어 표준 & 종합 초청장 템플릿 (한국어 / 일본어 / 대만어 / 영어 / 중국어)</h2>
+                        <p id="ui-tpl-view-desc" class="text-xs sm:text-sm text-slate-500 mt-0.5">
+                            일본 바이어용 업계 표준 비즈니스 일본어(과도한 경어를 배제한 정중한 실무 표현) 및 한국어 보고용 버전을 완비했습니다.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl self-start">
+                        <button onclick="setTemplateLang('KO')" id="tpl-lang-KO" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm">🇰🇷 한국어</button>
+                        <button onclick="setTemplateLang('JA')" id="tpl-lang-JA" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900">🇯🇵 日本語 (일본 바이어)</button>
+                        <button onclick="setTemplateLang('TC')" id="tpl-lang-TC" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900">🇹🇼 繁體中文 (대만/홍콩)</button>
+                        <button onclick="setTemplateLang('EN')" id="tpl-lang-EN" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900">🌏 English (동남아/구미)</button>
+                        <button onclick="setTemplateLang('SC')" id="tpl-lang-SC" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900">🇨🇳 简体中文 (중국)</button>
+                    </div>
+                </div>
+
+                <div id="master-templates-container" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <!-- JS 렌더링 -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 하단 플로팅 바이어 선정 바 (Floating Selection Bar) -->
+    <div id="floating-selection-bar" class="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur text-white border-t border-slate-700 px-4 py-3 shadow-2xl transition-all">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div class="flex items-center gap-3 text-xs sm:text-sm">
+                <span class="px-2.5 py-1 rounded-lg bg-indigo-600 font-black text-white">
+                    선정 완료: <span id="float-sel-count">0</span>개사
+                </span>
+                <span id="ui-float-desc" class="text-slate-300 hidden md:inline">
+                    카드의 <b>[☑ 바이어 선정]</b> 버튼을 클릭하여 미팅 희망 기업을 체크한 뒤, 우측 버튼으로 명단을 확인·복사하세요.
+                </span>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <button onclick="switchMainView('selected')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition-all shadow">
+                    ✅ <span id="ui-float-btn-view">선정된 목록 확인 / 메모 작성</span>
+                </button>
+                <button onclick="copySelectedSummaryText()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow">
+                    📋 <span id="ui-float-btn-copy">선정 명단 바로 복사</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 맞춤형 초청장 모달 (5개 국어 지원) ==================== -->
+    <div id="letter-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-3xl w-full max-h-[92vh] flex flex-col overflow-hidden">
+            
+            <!-- Modal Header -->
+            <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span id="modal-company-region" class="text-xs px-2 py-0.5 rounded bg-slate-700 text-slate-200 font-medium"></span>
+                        <h3 id="modal-company-name" class="text-lg font-bold">기업명</h3>
+                    </div>
+                    <p id="modal-company-tracks" class="text-xs text-indigo-300 mt-1"></p>
+                </div>
+                <button onclick="closeLetterModal()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal 언어 및 사업 항목 선택 컨트롤 -->
+            <div class="px-6 py-3 bg-slate-50 border-b border-slate-200 flex flex-col gap-2.5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="text-xs font-bold text-slate-500 mr-1">초청장 언어 (Language):</span>
+                        <button onclick="switchModalLang('KO')" id="modal-lang-KO" class="px-2.5 py-1 rounded-md text-xs font-semibold transition-all">🇰🇷 한국어</button>
+                        <button onclick="switchModalLang('JA')" id="modal-lang-JA" class="px-2.5 py-1 rounded-md text-xs font-semibold transition-all">🇯🇵 日本語</button>
+                        <button onclick="switchModalLang('TC')" id="modal-lang-TC" class="px-2.5 py-1 rounded-md text-xs font-semibold transition-all">🇹🇼 繁體中文</button>
+                        <button onclick="switchModalLang('EN')" id="modal-lang-EN" class="px-2.5 py-1 rounded-md text-xs font-semibold transition-all">🌏 English</button>
+                        <button onclick="switchModalLang('SC')" id="modal-lang-SC" class="px-2.5 py-1 rounded-md text-xs font-semibold transition-all">🇨🇳 简体中文</button>
+                    </div>
+
+                    <label class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200 cursor-pointer">
+                        <input type="checkbox" id="chk-icebreaker" checked onchange="updateModalLetterContent()" class="rounded text-indigo-600">
+                        💡 바이어 맞춤형 한국 협업 언급(Icebreaker) 포함
+                    </label>
+                </div>
+
+                <!-- 포함할 비즈니스 트랙 체크박스 -->
+                <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-200/70">
+                    <span class="text-xs font-semibold text-slate-500">제안 항목 선택:</span>
+                    <label class="inline-flex items-center gap-1 text-xs bg-purple-50 text-purple-800 px-2 py-0.5 rounded border border-purple-200 cursor-pointer">
+                        <input type="checkbox" id="chk-T1" onchange="updateModalLetterContent()" class="rounded text-purple-600"> ① 대본/웹툰IP 리메이크
+                    </label>
+                    <label class="inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-800 px-2 py-0.5 rounded border border-blue-200 cursor-pointer">
+                        <input type="checkbox" id="chk-T2" onchange="updateModalLetterContent()" class="rounded text-blue-600"> ② 완성작 배급/방영권
+                    </label>
+                    <label class="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 cursor-pointer">
+                        <input type="checkbox" id="chk-T3" onchange="updateModalLetterContent()" class="rounded text-emerald-600"> ③ 공동투자/합작제작
+                    </label>
+                    <label class="inline-flex items-center gap-1 text-xs bg-rose-50 text-rose-800 px-2 py-0.5 rounded border border-rose-200 cursor-pointer">
+                        <input type="checkbox" id="chk-T4" onchange="updateModalLetterContent()" class="rounded text-rose-600"> ④ Vamkids 라이선스/팝업
+                    </label>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-4">
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="text-xs font-bold text-slate-500 uppercase">메일 제목 (Subject)</label>
+                        <button onclick="copyTextFromElement('modal-subject-input', '제목이 복사되었습니다!')" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1">
+                            📋 제목만 복사
+                        </button>
+                    </div>
+                    <input type="text" id="modal-subject-input" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="text-xs font-bold text-slate-500 uppercase">메일 본문 (Body — 자유롭게 수정 가능)</label>
+                        <button onclick="copyTextFromElement('modal-body-textarea', '본문이 복사되었습니다!')" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1">
+                            📋 본문만 복사
+                        </button>
+                    </div>
+                    <textarea id="modal-body-textarea" rows="13" class="w-full p-4 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 leading-relaxed focus:outline-none focus:ring-2 focus:ring-indigo-500 font-sans custom-scrollbar"></textarea>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+                <button onclick="toggleSelectFromModal()" id="modal-btn-select" class="px-3.5 py-2 rounded-xl text-xs font-bold border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors">
+                    ☑ 이 바이어 선정 목록에 추가/해제
+                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="closeLetterModal()" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-200 transition-colors">
+                        닫기
+                    </button>
+                    <button onclick="copyFullModalLetter()" class="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md transition-all flex items-center gap-1.5">
+                        📋 전체 복사 (제목 + 본문)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 복사 완료 토스트 알림 -->
+    <div id="toast" class="fixed bottom-16 right-6 z-50 hidden bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl border border-slate-700 flex items-center gap-2.5 text-sm font-medium transition-all">
+        <span class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
+        <span id="toast-msg">클립보드에 복사되었습니다!</span>
+    </div>
+
+    <!-- ==================== 데이터 및 스크립트 ==================== -->
+    <script>
+        // 현재 UI 언어 ('KO' 또는 'TC')
+        let uiLang = 'KO';
+        let currentRegion = 'ALL';
+        let currentTrack = 'ALL';
+        let currentTemplateLang = 'KO';
+        let activeModalCompany = null;
+        let currentModalLang = 'KO';
+        let showcaseOpen = true;
+
+        // LocalStorage 기반 임원 선정 바이어 ID 목록 및 메모
+        let selectedBuyerIds = [];
+        let buyerMemos = {};
+
+        const STORAGE_KEY_IDS = 'tccf_takeone_selected_ids_v2';
+        const STORAGE_KEY_MEMOS = 'tccf_takeone_buyer_memos_v2';
+
+        // UI 다국어 사전 (한국어 / 대만어)
+        const UI_TEXT = {
+            KO: {
+                headerTitle: 'TCCF 바이어 선정',
+                headerSubtitle: '바이어별 최근 동향 · 한국 협업 실적(팩트체크 완료) · 임원 선정 및 5개 국어 초청장 시스템',
+                tabDir: '바이어 리스트',
+                tabSel: '선정된 바이어',
+                tabTpl: '초청장 템플릿(5개국어)',
+                kpiTitle: '📊 TCCF 타깃 바이어 요약 및 대표 한국 협업 사례 (교차 검증 완료)',
+                kpiDesc: '불확실하거나 확인되지 않은 내용은 모두 삭제하고, 공식 보도 및 크레딧으로 확인된 내용만 반영했습니다.',
+                worksLabel: '🎬 주요 타깃 바이어의 한국 IP 리메이크 · 배급 · 합작 검증 사례',
+                worksHint: '포스터 검색 클릭 시 이미지 확인 가능',
+                btnShowcaseFold: '대표 협업 작품 접기 ▲',
+                btnShowcaseOpen: '대표 협업 작품 펼치기 ▼',
+                filterRegion: '1. 권역별 필터 (Region)',
+                filterTrack: '2. 사업 라인 및 우선순위 필터 (Track)',
+                filterSearch: '3. 키워드 검색 (Search)',
+                searchPlaceholder: '기업명, 작품명(이태원, 파묘, 굿잡, 사내맞선 등)...',
+                bossQuickTitle: '👑 임원 검토 및 바이어 선정 도구 (자동 저장)',
+                btnSelPriority: '★ 최우선 추천 바이어(8개사) 일괄 선택',
+                btnGoSelected: '✅ 선정 목록 보기',
+                showingPrefix: '현재 표시 중:',
+                showingSuffix: '개 타깃 바이어 그룹',
+                legendSelect: '카드 우측 상단 <b>[☑ 선정]</b> 버튼을 눌러 미팅 희망 바이어를 체크하세요',
+                legendStar: '★ 최우선 미팅 추천 대상',
+                cardScaleLabel: '🏢 기업 개요 및 최근 동향:',
+                cardKoreaLabel: '🤝 한국 협업 및 배급 실적 (검증 완료):',
+                cardPitchLabel: '🎯 TAKEONE 제안 포인트:',
+                btnSelectOff: '☐ 바이어 선정',
+                btnSelectOn: '☑ 선정 완료',
+                btnOpenLetter: '📩 맞춤형 초청장 (5개국어)',
+                btnQuickCopy: '⚡ 초청장 복사',
+                selViewTitle: '✅ 선정된 타깃 바이어 리스트 (임원 컨펌 및 공유)',
+                selViewDesc: '체크한 바이어가 자동 저장됩니다. 각 기업별 코멘트를 입력한 후 우측 상단 [선정 바이어 명단 복사]를 눌러 전달해 주세요.',
+                selPreviewLabel: '📄 공유용 텍스트 요약 미리보기 (카톡 / 슬랙 / 이메일 붙여넣기용)',
+                floatDesc: '카드의 [☑ 바이어 선정] 버튼을 클릭해 미팅 희망 기업을 고른 뒤, 우측 버튼으로 명단을 확인·복사하세요.',
+                floatBtnView: '선정된 목록 확인 / 메모 작성',
+                floatBtnCopy: '선정 명단 바로 복사'
+            },
+            TC: {
+                headerTitle: 'TCCF 바이어 선정 (買家選定與情報系統)',
+                headerSubtitle: '買家近期動態 · 韓國合作實績（已嚴格核實） · 長官勾選系統與五語系邀約信',
+                tabDir: '買家情報清單',
+                tabSel: '已選定買家',
+                tabTpl: '五語系邀約信模板',
+                kpiTitle: '📊 TCCF 目標買家總覽 ＆ 代表性韓國合作實績（已完成事實查核）',
+                kpiDesc: '已剔除不確定或查無實據之傳聞，僅保留經官方新聞與作品片單確認之合作實績。',
+                worksLabel: '🎬 重點買家之韓國 IP 翻拍 · 發行 · 合製驗證案例',
+                worksHint: '點擊可搜尋作品海報',
+                btnShowcaseFold: '收起代表作品 ▲',
+                btnShowcaseOpen: '展開代表作品 ▼',
+                filterRegion: '1. 選擇目標地區 (Region)',
+                filterTrack: '2. 選擇業務線與優先級 (Track)',
+                filterSearch: '3. 關鍵字搜尋 (Search)',
+                searchPlaceholder: '搜尋公司名、作品名（梨泰院、破墓、社內相親等）...',
+                bossQuickTitle: '👑 長官審閱與買家勾選工具（自動儲存）',
+                btnSelPriority: '★ 一鍵勾選 8 家最優先推薦買家',
+                btnGoSelected: '✅ 查看已選定清單',
+                showingPrefix: '目前顯示：',
+                showingSuffix: '家目標買家集團',
+                legendSelect: '點擊卡片右上角 <b>[☑ 選定]</b> 按鈕即可勾選滿意的合作對象',
+                legendStar: '★ 最優先推薦會面對象',
+                cardScaleLabel: '🏢 公司規模與近期動態：',
+                cardKoreaLabel: '🤝 韓國合作與發行實績（已核實）：',
+                cardPitchLabel: '🎯 TAKEONE 破冰與提案重點：',
+                btnSelectOff: '☐ 勾選此買家',
+                btnSelectOn: '☑ 已選定',
+                btnOpenLetter: '📩 客製化邀約信 (韓/日/中/英)',
+                btnQuickCopy: '⚡ 快複製信件',
+                selViewTitle: '✅ 已選定目標買家清單（供長官確認與匯出）',
+                selViewDesc: '勾選之買家會自動保存在瀏覽器中。可填寫備註並一鍵複製文字清單或下載 CSV。',
+                selPreviewLabel: '📄 分享用文字摘要預覽（可直接複製貼上至通訊軟體或信件）',
+                floatDesc: '請點擊卡片上的 [☑ 勾選此買家] 挑選目標公司，再點擊右側按鈕查看或複製清單。',
+                floatBtnView: '查看選定清單 / 填寫備註',
+                floatBtnCopy: '一鍵複製選定名單'
+            }
+        };
+
+        // 권역 정보
+        const REGION_INFO = {
+            ALL: { ko: '🌐 전체 권역', tc: '🌐 全部地區', defaultLang: 'KO' },
+            TW: { ko: '🇹🇼 대만 (Taiwan)', tc: '🇹🇼 台灣 (Taiwan)', defaultLang: 'TC' },
+            JP: { ko: '🇯🇵 일본 (Japan)', tc: '🇯🇵 日本 (Japan)', defaultLang: 'JA' },
+            SEA: { ko: '🌏 동남아 (SEA)', tc: '🌏 東南亞 (SEA)', defaultLang: 'EN' },
+            HKMO: { ko: '🇭🇰🇲🇴 홍콩·마카오', tc: '🇭🇰🇲🇴 香港與澳門', defaultLang: 'TC' },
+            CN: { ko: '🇨🇳 중국 (대륙/글로벌)', tc: '🇨🇳 中國大陸 (出海/買家)', defaultLang: 'SC' },
+            WEST: { ko: '🌍 구미·유럽·미주', tc: '🌍 歐美與全球', defaultLang: 'EN' }
+        };
+
+        // 사업 트랙 정보
+        const TRACK_INFO = {
+            T1: { code: 'T1', ko: '① 대본·웹툰IP 리메이크', tc: '① 劇本與網漫IP改編', badgeClass: 'bg-purple-100 text-purple-800 border-purple-200' },
+            T2: { code: 'T2', ko: '② 완성작 구매·배급', tc: '② 成品買家(OTT/電視/院線)', badgeClass: 'bg-blue-100 text-blue-800 border-blue-200' },
+            T3: { code: 'T3', ko: '③ 공동투자·합작제작', tc: '③ 合資與跨國合拍', badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+            T4: { code: 'T4', ko: '④ Vamkids 굿즈·팝업', tc: '④ Vamkids角色授權/快閃店', badgeClass: 'bg-rose-100 text-rose-800 border-rose-200' }
+        };
+
+        // 대표 한국 협업 작품 (검증 완료된 8대 핵심 레퍼런스)
+        const VERIFIED_WORKS = [
+            {
+                titleKo: '이태원 클라쓰', titleTc: '梨泰院Class',
+                subKo: 'Kakao 웹툰 원작 대만 리메이크', subTc: 'Kakao 網漫原作台版翻拍',
+                resultKo: '《來！金來號！》 · HBO Max (2026.07 공개)', resultTc: '《來！金來號！》 · HBO Max (2026.07 上線)',
+                buyerKo: '다무 엔터테인먼트 (大慕影藝)', buyerTc: '大慕影藝 (DaMou)',
+                hue: 350
+            },
+            {
+                titleKo: '굿잡 (Good Job)', titleTc: '絕佳拍檔 Good Job',
+                subKo: '한국 드라마 원작 한·대·싱 합작 리메이크', subTc: '韓劇原作台韓新合製翻拍',
+                resultKo: '《你好，我的怪盜老闆》 · 2026.05 크랭크인', resultTc: '《你好，我的怪盜老闆》 · 2026.05 開鏡',
+                buyerKo: '76호 원자 (KT StudioGenie·문책원 공동투자)', buyerTc: '七十六號原子 (KT StudioGenie·文策院合資)',
+                hue: 215
+            },
+            {
+                titleKo: '사내맞선', titleTc: '社內相親',
+                subKo: '한국 웹툰·드라마 원작 홍콩판 리메이크', subTc: '韓國網漫與韓劇原作港版翻拍',
+                resultKo: '홍콩 ViuTV 방영 · 아이돌 MIRROR 주연', resultTc: '香港 ViuTV 播映 · 頂流男團 MIRROR 主演',
+                buyerKo: 'MakerVille (ViuTV)', buyerTc: 'MakerVille (ViuTV)',
+                hue: 170
+            },
+            {
+                titleKo: '파묘 (Exhuma)', titleTc: '破墓 (Exhuma)',
+                subKo: '한국 오컬트 공포 영화 배급', subTc: '韓國薩滿恐怖電影台灣發行',
+                resultKo: '대만 흥행 1.12억 NT$ 돌파 (아시아 공포 최고)', resultTc: '台灣票房破 1.12 億台幣（亞洲恐怖片紀錄）',
+                buyerKo: '개러지플레이 (車庫娛樂)', buyerTc: '車庫娛樂 (GaragePlay)',
+                hue: 25
+            },
+            {
+                titleKo: '전지적 독자 시점', titleTc: '全知讀者視角',
+                subKo: '한국 웹소설·웹툰 원작 대작 영화 배급', subTc: '韓國網漫改編大片台灣發行',
+                resultKo: '2025.07 대만 개봉 · 첫날 NT$424만 흥행', resultTc: '2025.07 台灣上映 · 首日票房 424 萬台幣',
+                buyerKo: '차이창 인터내셔널 (采昌國際)', buyerTc: '采昌國際多媒體',
+                hue: 245
+            },
+            {
+                titleKo: '주처제삼해 (周處除三害)', titleTc: '周處除三害',
+                subKo: '대만 흥행 영화 한국판 리메이크 확정', subTc: '台灣爆款電影確定翻拍韓國版',
+                resultKo: '한국판 리메이크 확정 보도 (2025.02)', resultTc: '韓國版翻拍計畫確認報導 (2025.02)',
+                buyerKo: '완인 인터내셔널 (網銀國際 투자)', buyerTc: '網銀國際影視（主要出品投資）',
+                hue: 10
+            },
+            {
+                titleKo: '재벌집 막내아들 · 모범택시2', titleTc: '財閥家的小兒子 · 模範計程車2',
+                subKo: 'Viu Original 투자 및 범아시아 독점 서비스', subTc: 'Viu Original 投資及泛亞獨家播映',
+                resultKo: '동남아·홍콩·중동 16개국 독점 스트리밍', resultTc: '東南亞、香港、中東 16 國獨家串流',
+                buyerKo: 'Viu (PCCW 그룹)', buyerTc: 'Viu (電訊盈科 PCCW)',
+                hue: 280
+            },
+            {
+                titleKo: 'Unforgotten (언포가튼)', titleTc: 'Unforgotten',
+                subKo: 'BBC 원작 포맷 → TAKEONE 한국판 제작', subTc: 'BBC 原作模式 → TAKEONE 製作韓國版',
+                resultKo: 'TAKEONE 한국판 리메이크 완료 · 글로벌 배급 협력', resultTc: 'TAKEONE 完成韓版翻拍 · 洽談全球發行合作',
+                buyerKo: 'BBC Studios Asia', buyerTc: 'BBC Studios Asia',
+                hue: 145
+            }
+        ];
+
+        // ==================== 팩트체크 완료 타깃 바이어 데이터베이스 (38개 핵심 그룹) ====================
+        const COMPANIES = [
+            // --- 🇹🇼 대만 (Taiwan) ---
+            {
+                id: 'tw-damou',
+                region: 'TW',
+                tracks: ['T1', 'T3'],
+                priority: true,
+                nameKo: '다무 엔터테인먼트 (大慕影藝 · DaMou)',
+                nameTc: '大慕影藝 / 大慕可可 (DaMou Entertainment)',
+                works: ['이태원 클라쓰', 'CELL'],
+                scaleKo: '대만 최고 프리미엄 드라마 제작사(《인선지인》《우리와 악의 거리》). 2026년 7월 31일 HBO Max 오리지널 시리즈 《來！金來號！(Fired Up!)》 공개.',
+                scaleTc: '台灣頂級精品劇集廠牌（代表作《人選之人》《我們與惡的距離》）。2026年7月31日於 HBO Max 上線年度大劇《來！金來號！(Fired Up!)》。',
+                koreaKo: '카카오웹툰 1위작 《이태원 클라쓰》(작가 광진) 판권을 구매해 대만 현지화 12부작 드라마 《來！金來號！》로 제작·공개 완료.',
+                koreaTc: '購買韓國 Kakao Webtoon 冠軍網漫《梨泰院Class》（作者光진）版權，成功開發製作為 12 集台劇《來！金來號！》並登上 HBO Max。',
+                pitchKo: '카카오/다음 웹툰 1위 및 부산국제영화제 초청작인 《CELL》과 요리×연애 서바이벌 대본 등 60+편 웹툰 IP를 차기 웹툰 원작 드라마로 제안.',
+                pitchTc: '恭喜《來！金來號！》改編 Kakao 網漫熱播！直接推薦同為 Kakao/Daum 排行榜冠軍且入選釜山影展的《CELL》、料理戀愛生存劇本與 60+ 部韓漫作為下一部漫改台劇。',
+                iceKo: '귀사가 카카오웹툰 《이태원 클라쓰》를 원작으로 제작한 HBO Max 《來！金來號！》의 성공적인 공개를 진심으로 축하드립니다.',
+                iceTc: '非常恭喜貴司近期將韓國 Kakao 網漫《梨泰院Class》成功改編為 HBO Max 大劇《來！金來號！》！'
+            },
+            {
+                id: 'tw-wanin',
+                region: 'TW',
+                tracks: ['T1', 'T2', 'T3'],
+                priority: true,
+                nameKo: '완인 인터내셔널 (網銀國際影視 · Wanin)',
+                nameTc: '網銀國際影視 (Wanin International)',
+                works: ['주처제삼해', '밀례'],
+                scaleKo: '대만 대형 게임·엔터 자본 그룹. 글로벌 흥행작 《주처제삼해(周處除三害)》 메인 투자사(제작은 一種態度). 2024년 6월 대만 1위 극장 체인 威秀影城 지분 35.69%를 인수해 최대주주 등극.',
+                scaleTc: '台灣資金雄厚的遊戲與泛娛樂集團，全球爆款電影《周處除三害》最大出品投資方（製作為一種態度）。2024年6月收購威秀影城 35.69% 股權成為最大股東。',
+                koreaKo: '2025년 2월 《주처제삼해》 한국판 리메이크 확정 보도. 한국 CJ ENM 및 싱가포르 Clover Films와 글로벌 화어 대본 공모전 심사 협업.',
+                koreaTc: '2025年2月確認《周處除三害》韓國版翻拍計畫；並與韓國 CJ ENM、新加坡 Clover Films 合作舉辦華語劇本徵件評審。',
+                pitchKo: '게임+영상+극장 체인을 모두 보유한 핵심 바이어. SF 액션·밀실 서바이벌·범죄 스릴러 대본 리메이크/합작 및 공포영화 《밀례》·K-POP 영화 대만 배급 동시 제안.',
+                pitchTc: '兼具遊戲、影視投資與威秀院線資源！可一信洽談科幻動作、密室生存、懸疑劇本翻拍合製，以及恐怖片《密禮》與 K-POP 電影台灣發行。',
+                iceKo: '귀사가 투자한 《주처제삼해》의 글로벌 흥행과 한국판 리메이크 추진, 그리고 威秀影城 인수를 통한 공격적인 미디어 사업 확장에 깊이 주목하고 있습니다.',
+                iceTc: '我們非常關注貴司出品《周處除三害》推進韓國版翻拍，以及入主威秀影城、聯手 CJ ENM 推動劇本開發的跨國佈局！'
+            },
+            {
+                id: 'tw-grx',
+                region: 'TW',
+                tracks: ['T1', 'T3'],
+                priority: true,
+                nameKo: '한초문창 (瀚草文創 · GrX Studio)',
+                nameTc: '瀚草文創 (GrX Studio / Greener Grass)',
+                works: ['CELL', '밀례'],
+                scaleKo: '대만 국제 합제 및 장르물 선두 제작사(《모방범》《희생자 게임》). 2024년 10월 부산국제영화제에서 5년간 5천만 달러를 투자해 드라마 15편·공포 및 장르영화 5편을 제작하는 ‘아시아의 봄(Asia’s Spring)’ 발표.',
+                scaleTc: '台灣國際合製與類型片龍頭（《模仿犯》《誰是被害者》）。2024年10月於釜山影展宣布啟動「亞洲之春」計畫，5年投入5,000萬美元開發15部影集與5部恐怖類型電影。',
+                koreaKo: '부산국제영화제(BIFF)에서 ‘아시아의 봄’ 프로젝트 공식 발표 및 한·대 합작 K-POP 오디션 예능 《SCOOL》의 국제 배급 담당.',
+                koreaTc: '於釜山影展發布「亞洲之春」跨國合製計畫，並負責台韓合製男團選秀節目《SCOOL》之國際發行。',
+                pitchKo: '‘아시아의 봄(드라마 15편·공포영화 5편)’ 라인업에 맞춰 웹툰 《CELL》, 학원 퇴마·밀실 서바이벌·스릴러 대본 및 오컬트 공포영화 《밀례》 협업을 직격 제안.',
+                pitchTc: '直接對準其「亞洲之春 15部影集＋5部恐怖片」藍圖，推薦《CELL》、校園驅魔、密室生存、懸疑驚悚劇本，以及恐怖片《密禮》合製或翻拍。',
+                iceKo: '부산국제영화제에서 발표하신 5천만 달러 규모의 ‘아시아의 봄(드라마 15편·공포영화 5편)’ 글로벌 프로젝트에 큰 감명을 받았습니다.',
+                iceTc: '得知貴司於釜山影展啟動 5,000 萬美元「亞洲之春」計畫（開發 15 部影集與 5 部恐怖類型片），與我們旗下的強類型 IP 高度契合！'
+            },
+            {
+                id: 'tw-studio76',
+                region: 'TW',
+                tracks: ['T1', 'T3'],
+                priority: true,
+                nameKo: '76호 원자 (七十六號原子 · Studio76)',
+                nameTc: '七十六號原子 (Studio76)',
+                works: ['굿잡 (Good Job)'],
+                scaleKo: 'IP 투자 및 해외 리메이크 전문 스튜디오. 2026년 5월 신작 드라마 《你好，我的怪盜老闆》 크랭크인.',
+                scaleTc: '專注於 IP 投資、跨國改編與類型劇孵化之影視廠牌。2026年5月剛開鏡新劇《你好，我的怪盜老闆》。',
+                koreaKo: '한국 드라마 《굿잡》(정일우·권유리 주연)을 리메이크한 《你好，我的怪盜老闆》 제작 — 한국 KT StudioGenie, 싱가포르 와와영화, 대만 문책원(TAICCA) 공동투자 성사.',
+                koreaTc: '2026年5月開鏡之《你好，我的怪盜老闆》正是翻拍自韓劇《絕佳拍檔 Good Job》，並由韓國 KT StudioGenie、新加坡哇哇映畫與台灣文策院共同投資製作。',
+                pitchKo: '‘한국 IP + 한국 자금 + 대만 제작 + 문책원(TAICCA) 매칭 펀드’ 모델을 방금 성공시킨 교과서적 파트너. 당사 대본·웹툰 60+편으로 차기 한·대 합작 프로젝트 복제 제안.',
+                pitchTc: '剛跑通「韓國 IP＋韓國資金＋台灣製作＋文策院資金」閉環的教科書級夥伴！直接拿劇本庫與 60+ 部網漫找他們複製下一部台韓合資案。',
+                iceKo: '최근 한국 드라마 《굿잡》을 원작으로 KT StudioGenie 및 문책원과 함께 《你好，我的怪盜老闆》 공동투자·제작을 성사시키신 점 깊이 주목하고 있습니다.',
+                iceTc: '我們非常關注貴司近期與韓國 KT StudioGenie 及文策院合資翻拍韓劇《絕佳拍檔 Good Job》（《你好，我的怪盜老闆》）的成功模式！'
+            },
+            {
+                id: 'tw-bossdom',
+                region: 'TW',
+                tracks: ['T1', 'T3'],
+                priority: false,
+                nameKo: '바이위 디지털 (百聿數碼 · Bossdom)',
+                nameTc: '百聿數碼 (Bossdom)',
+                works: [],
+                scaleKo: '넷플릭스 글로벌 히트작 《화등초상(華燈初上)》 및 《차시차각(此時此刻)》을 제작한 대만 상장 드라마 제작사. 자체 후반작업(Post-production) 및 대형 상업작 기획 강점.',
+                scaleTc: 'Netflix 全球熱播台劇《華燈初上》《此時此刻》出品製作公司，具備強大後期製作與大型商業劇集募資能力。',
+                koreaKo: '글로벌 OTT 타깃 대형 장르물 및 아시아 IP 기반 상업 시리즈 기획·제작 지속 확대.',
+                koreaTc: '持續針對全球 OTT 市場開發高預算商業類型劇與跨國 IP 改編項目。',
+                pitchKo: '고예산 상업 시리즈로 제작 가능한 판타지 로맨스, 타임슬립 코미디, 미스터리 스릴러 대본 및 인기 웹툰 IP 제안.',
+                pitchTc: '適合推薦高完成度之奇幻愛情、穿越喜劇、懸疑驚悚原創劇本與人氣網漫 IP 進行旗艦台劇改編或共同投資。'
+            },
+            {
+                id: 'tw-twm',
+                region: 'TW',
+                tracks: ['T1', 'T2', 'T3'],
+                priority: true,
+                nameKo: '타이완모바일 (台灣大哥大 · MyVideo)',
+                nameTc: '台灣大哥大 (Taiwan Mobile / MyVideo)',
+                works: ['Wind Up', 'Whale Star', 'Unforgotten'],
+                scaleKo: '대만 3대 통신사 중 하나이자 토종 OTT ‘MyVideo’ 운영사. TCCF 공식 어워드 후원사로 누적 50편 이상의 대만 오리지널 영상에 투자한 핵심 자본.',
+                scaleTc: '台灣三大電信巨頭之一，營運本土指標 OTT「MyVideo」，並為 TCCF 官方大獎贊助商，累計投資超過 50 部原創影視作品。',
+                koreaKo: '문책원(TAICCA)과 함께 서울·부산 교류를 지속하며 한국 통신·미디어사(KT StudioGenie, LG U+ 등)와 공동투자 및 한국 드라마·영화 대량 구매 진행.',
+                koreaTc: '多次隨文策院赴首爾與釜山交流，與韓國 KT StudioGenie、LG U+ 等探討共同投資，且 MyVideo 長期採購韓劇、韓影與偶像內容。',
+                pitchKo: '① MyVideo 구매팀에 K-POP 숏드라마/영화 20+편 및 《Whale Star》《Unforgotten》 배급 제안 + ② 투자제작팀에 웹툰/대본 기반 한·대 공동투자 제안.',
+                pitchTc: '一信雙效：① 向 MyVideo 購片部推銷 20+ 部 K-POP 短劇/電影與《鯨星》《Unforgotten》；② 向內容投資部洽談網漫與劇本之台韓合資。'
+            },
+            {
+                id: 'tw-tv-four',
+                region: 'TW',
+                tracks: ['T1', 'T2'],
+                priority: false,
+                nameKo: '대만 4대 방송사 (TVBS · EBC 동삼 · SET 삼립 · GTV 팔대)',
+                nameTc: '四大商業電視網 (TVBS · 東森 EBC · 三立 SET · 八大 GTV)',
+                works: ['Whale Star', 'Unforgotten'],
+                scaleKo: '대만 상업 드라마 자체제작(自製部)과 해외 드라마 방영권 구매(購片部)를 주도하는 4대 메이저 방송 네트워크.',
+                scaleTc: '主導台灣商業戲劇自製（自製部）與海外韓劇採購播映（購片部）的四大核心電視網。',
+                koreaKo: '한국 SBS·MBC·JTBC 등과 한·대 합작 오디션 예능(《SCOOL》 등) 협업 및 장편 한국 드라마 지속 구매·리메이크.',
+                koreaTc: '近年與韓國電視台（SBS、MBC、JTBC 等）合作台韓合製選秀綜藝（如《SCOOL》），並長年採購長篇韓劇與尋找商業劇本翻拍。',
+                pitchKo: '자체제작부에는 타임슬립 코미디·판타지 로맨스·요리 연애 대본 리메이크를, 구매부에는 《Whale Star》《Unforgotten》 TV 방영권을 동시 제안.',
+                pitchTc: '對自製部主推穿越喜劇、奇幻愛情、料理戀愛劇本與青春網漫翻拍；對購片部主推時代大劇《鯨星》與懸疑劇《Unforgotten》電視播映權。'
+            },
+            {
+                id: 'tw-visionfilm',
+                region: 'TW',
+                tracks: ['T1', 'T3'],
+                priority: false,
+                nameKo: '비전 필름 · 화싱 엔터 (威像電影 · 華星娛樂 / 홍의소녀 팀)',
+                nameTc: '威像電影 · 華星娛樂 (紅衣小女孩團隊)',
+                works: ['밀례'],
+                scaleKo: '대만 대표 공포·민속 스릴러 프랜차이즈(《홍의소녀》 3부작, 《여귀교》) 개발·제작사.',
+                scaleTc: '台灣最成功的恐怖驚悚與民俗類型片開發商（代表作《紅衣小女孩》三部曲、《女鬼橋》系列）。',
+                koreaKo: '부천국제판타스틱영화제(BIFAN NAFF 프로젝트 마켓) 상시 참가 등 한국 공포·스릴러 제작진과 긴밀한 교류 보유.',
+                koreaTc: '常年入選並參與韓國富川國際奇幻影展（BIFAN NAFF 創投），與韓國恐怖驚悚片製作團隊交流密切。',
+                pitchKo: '당사의 학원 퇴마, 밀실 서바이벌, 미스터리 스릴러 대본 및 한국 공포영화 《밀례》 공동 프로모션·합작 제안에 최적화된 파트너.',
+                pitchTc: '完美契合 TAKEONE 旗下的「校園驅魔、密室生存、懸疑驚悚」原創劇本，並可探討恐怖片《密禮》合作。'
+            },
+            {
+                id: 'tw-producers-pack',
+                region: 'TW',
+                tracks: ['T1', 'T3'],
+                priority: false,
+                nameKo: '양인행 · 결과오락 · mm2 대만 · 화원창 · 경문학',
+                nameTc: '良人行影業 · 結果娛樂 · 滿滿額 mm2 · 華文創 · 鏡文學',
+                works: ['CELL'],
+                scaleKo: '넷플릭스 1위 대만 드라마 《영후(影后)》 제작사(양인행), 대만 대표 IP 개발사(경문학·결과오락) 및 상업영화 투자배급사(mm2·화원창).',
+                scaleTc: '涵蓋 Netflix 爆款台劇《影后》製作公司（良人行）、指標故事平台（鏡文學）、整合開發商（結果娛樂）與商業電影投資方（滿滿額、華文創）。',
+                koreaKo: '양인행의 부산국제영화제 아시아콘텐츠포럼 참가, mm2·화원창의 아시아 상업영화 공동투자 및 리메이크 개발 등 활발한 교류.',
+                koreaTc: '良人行曾受邀參與釜山影展論壇，滿滿額與華文創則長期參與亞洲商業類型片投資與劇本改編開發。',
+                pitchKo: '여성 타깃 판타지·요리 로맨스 대본 및 부산영화제 초청 웹툰 《CELL》 등 검증된 상업 원작 IP 패키지 제안.',
+                pitchTc: '主推女性受眾極高的奇幻愛情、料理戀愛劇本，以及釜山影展入選冠軍網漫《CELL》等 60+ 部漫改 IP。'
+            },
+            {
+                id: 'tw-telecom-ott',
+                region: 'TW',
+                tracks: ['T2'],
+                priority: true,
+                nameKo: '중화텔레콤 Hami Video · 원전 friDay影音',
+                nameTc: '中華電信 Hami Video · 遠傳 friDay影音',
+                works: ['Wind Up', 'Whale Star', 'Unforgotten'],
+                scaleKo: '대만 최대 통신사 OTT(Hami Video) 및 대만 내 한류 콘텐츠 구매량 1위 OTT 플랫폼(friDay影音).',
+                scaleTc: '台灣最大電信商旗下 Hami Video 與台灣韓流影視採購量第一名的遠傳 friDay影音。',
+                koreaKo: 'CJ ENM, SBS, MBC, JTBC, KT StudioGenie 등으로부터 한국 드라마·영화·K-POP 예능을 대량 독점 구매하여 유료 가입자 확보.',
+                koreaTc: '長期向 CJ ENM、SBS、MBC、JTBC、KT StudioGenie 等採購獨播韓劇、韓國電影與 K-POP 偶像綜藝。',
+                pitchKo: 'NCT JENO & JAEMIN 주연 《Wind Up》, TWICE 다현, MONSTA X, ZB1 등 20+편 K-POP 숏드라마/영화(가로·세로 이중 규격) 및 대작 《Whale Star》《Unforgotten》 패키지 제안.',
+                pitchTc: '主打 NCT JENO & JAEMIN《Wind Up》、TWICE 多賢、ZB1 等 20+ 部偶像新作（直式短劇＋橫式電影雙規格），並同步推銷長劇《鯨星》與《Unforgotten》！'
+            },
+            {
+                id: 'tw-linetv-catchplay-elta',
+                region: 'TW',
+                tracks: ['T2'],
+                priority: false,
+                nameKo: 'LINE TV · CATCHPLAY+ · ELTA(애얼달) · 포트코(杰德)',
+                nameTc: 'LINE TV · CATCHPLAY+ · 愛爾達 (ELTA) · 杰德創意影音',
+                works: ['Wind Up', 'Unforgotten'],
+                scaleKo: '대만 젊은 여성층 1위 플랫폼(LINE TV), 대만·인도네시아 크로스보더 OTT(CATCHPLAY+), 중화텔레콤 MOD 대표 채널(ELTA).',
+                scaleTc: '年輕女性用戶極多的 LINE TV、橫跨台印市場的 CATCHPLAY+，以及中華電信 MOD 龍頭頻道商愛爾達與杰德影音。',
+                koreaKo: 'LINE TV는 한국 웹드라마·아이돌 드라마 상시 편성, CATCHPLAY+는 영국·한국 범죄 스릴러 및 상업영화 구매, ELTA는 스포츠(야구)와 한류 드라마 주력.',
+                koreaTc: 'LINE TV 長期播映韓國青春網劇與偶像劇；CATCHPLAY+ 偏愛高質感英美與韓國犯罪懸疑劇；愛爾達則以棒球轉播與韓劇聞名。',
+                pitchKo: 'LINE TV·ELTA에는 NCT 청춘 야구 드라마 《Wind Up》 등 K-POP 20+편을, CATCHPLAY+에는 BBC 리메이크 범죄 스릴러 《Unforgotten》과 《Whale Star》를 맞춤 제안.',
+                pitchTc: '對 LINE TV 與愛爾達強推 NCT 青春棒球劇《Wind Up》等 20+ 部偶像短劇包；對 CATCHPLAY+ 強推 BBC 翻拍懸疑劇《Unforgotten》與《鯨星》。'
+            },
+            {
+                id: 'tw-vieshow',
+                region: 'TW',
+                tracks: ['T2', 'T4'],
+                priority: true,
+                nameKo: '비에쇼 필름 (威視電影 · 威秀影城 그룹)',
+                nameTc: '威視電影 / 威秀影城集團 (Vie Vision / Vieshow)',
+                works: ['Wind Up', '밀례'],
+                scaleKo: '대만 시장점유율 1위 멀티플렉스 체인 ‘威秀影城’ 계열 배급사(2024년 6월 완인 인터내셔널이 지분 35.69% 인수로 최대주주).',
+                scaleTc: '台灣市佔率第一連鎖影城「威秀影城」旗下發行商（2024年6月網銀國際收購 35.69% 股權成為最大股東）。',
+                koreaKo: '대만 내 K-POP 아이돌 콘서트 영화·팬 특별 상영회 및 한국 상업·공포영화 극장 개봉을 가장 활발히 진행하는 극장 배급사.',
+                koreaTc: '台灣引進最多 K-POP 偶像大銀幕電影、粉絲特典場次與韓國商業／恐怖電影的指標院線通路。',
+                pitchKo: 'NCT 《Wind Up》·TWICE 다현·ZB1 등 20+편 가로형 영화의 ‘극장 팬 스페셜 상영회(포토카드 특전 연동)’ 및 한국 공포영화 《밀례》 대만 극장 배급 제안.',
+                pitchTc: '必約頭號院線買家！推銷 NCT《Wind Up》、TWICE 多賢、ZB1 等 20+ 部橫式電影版之「影城粉絲特典場」，以及韓國恐怖片《密禮》院線發行！'
+            },
+            {
+                id: 'tw-garageplay',
+                region: 'TW',
+                tracks: ['T2'],
+                priority: true,
+                nameKo: '개러지플레이 (車庫娛樂 · GaragePlay)',
+                nameTc: '車庫娛樂 (GaragePlay)',
+                works: ['파묘 (Exhuma)', '밀례'],
+                scaleKo: '대만 내 한국영화 최다 구매·배급 1위 기업이자 자체 스트리밍 플랫폼 ‘GP+’ 운영사.',
+                scaleTc: '台灣韓國電影買片量第一名的發行商，並營運自有串流平台「GP+」。',
+                koreaKo: '한국 오컬트 공포 대작 《파묘(破墓)》를 대만에 배급해 흥행 수입 1.12억 대만달러(NT$)를 돌파하며 대만 역대 아시아 공포영화 최고 기록 달성.',
+                koreaTc: '在台獨家發行韓國巫俗恐怖大片《破墓》，創下破 1.12 億台幣票房奇蹟（刷新台灣影史亞洲恐怖片最高紀錄）。',
+                pitchKo: '《파묘》의 대성공으로 한국 오컬트·샤머니즘 공포물에 가장 적극적인 바이어! 신작 공포영화 《밀례(密禮)》 예고편 최우선 시사 및 K-POP 가로형 영화 패키지 제안.',
+                pitchTc: '因《破墓》破億大賣，車庫對韓國巫俗恐怖片極度敏銳！見面首推恐怖片《密禮》預告片，並打包推銷 K-POP 偶像橫式電影。',
+                iceKo: '귀사가 배급한 한국 오컬트 공포영화 《파묘》가 대만에서 1.12억 대만달러를 돌파하며 대기록을 세운 점에 깊은 인상을 받았습니다.',
+                iceTc: '非常佩服貴司在台灣發行韓國恐怖大片《破墓》創下破億票房的驚人實績！'
+            },
+            {
+                id: 'tw-caichang',
+                region: 'TW',
+                tracks: ['T2'],
+                priority: false,
+                nameKo: '차이창 인터내셔널 (采昌國際多媒體)',
+                nameTc: '采昌國際多媒體 (Cai Chang International)',
+                works: ['전지적 독자 시점', '밀례'],
+                scaleKo: '대만 3대 일·한 영화 전문 독립 배급사로, SNS 화제성 마케팅과 팬덤 프로모션에 강점 보유.',
+                scaleTc: '台灣排名前三的日韓電影獨立發行商，以極強的社群話題行銷與粉絲特映操作著稱。',
+                koreaKo: '대만 역대 한국영화 흥행 1위 《신과 함께》 배급사이며, 2025년 7월 한국 대작 《전지적 독자 시점(全知讀者視角)》을 대만 개봉(첫날 NT$424만으로 최근 5년 한국영화 오프닝 1위 기록).',
+                koreaTc: '曾締造《與神同行》台灣影史韓片票房冠軍；2025年7月在台盛大發行《全知讀者視角》（首日票房 424 萬台幣創近五年韓片開片冠軍）。',
+                pitchKo: '《전지적 독자 시점》의 성공적인 마케팅 역량을 언급하며, 당사 공포영화 《밀례》와 팬덤 화제성이 높은 K-POP 아이돌 가로형 영화 배급 제안.',
+                pitchTc: '先稱讚其發行《全知讀者視角》首日破紀錄的強大聲量，接著推薦恐怖片《密禮》以及粉絲號召力極強的 K-POP 偶像橫式電影。',
+                iceKo: '최근 한국 영화 《전지적 독자 시점》을 대만에 배급하시어 오프닝 흥행 신기록을 세우신 뛰어난 마케팅 역량에 깊이 감탄했습니다.',
+                iceTc: '非常佩服貴司近期在台發行《全知讀者視角》創下近五年韓片首日票房冠軍的強大行銷實力！'
+            },
+            {
+                id: 'tw-cable-buyers',
+                region: 'TW',
+                tracks: ['T2'],
+                priority: false,
+                nameKo: '웨이라이(緯來) · 롱화(龍華) · 팔대(八大 구매부)',
+                nameTc: '緯來電視網 (Videoland) · 龍華電視 (LTV) · 八大購片部',
+                works: ['Whale Star', 'Unforgotten'],
+                scaleKo: '대만 케이블TV 및 MOD 유료방송에서 한국 드라마 편성 비중이 가장 높은 3대 핵심 채널 사업자.',
+                scaleTc: '台灣有線電視與 MOD 數位頻道播映韓劇的三大主力頻道商。',
+                koreaKo: 'KBS·SBS·MBC·tvN·JTBC의 장편 한국 드라마, 시대극, 미스터리 극을 연중 상시 구매하여 대만 전역에 방영.',
+                koreaTc: '長年向韓國無線三台與 tvN、JTBC 採購黃金檔長篇韓劇、時代劇與懸疑劇進行全台播映。',
+                pitchKo: '장편 시대 대작 《Whale Star(고래별)》 및 BBC 원작 미스터리 수사극 《Unforgotten》의 대만 TV 방영권 제안.',
+                pitchTc: '重點推銷時代大劇《鯨星（Whale Star）》與 BBC 翻拍懸疑劇《Unforgotten》之台灣電視播映權。'
+            },
+            {
+                id: 'tw-anime-dist',
+                region: 'TW',
+                tracks: ['T2', 'T4'],
+                priority: false,
+                nameKo: '만디(曼迪) · 목면화(木棉花) · 링방 대만(羚邦) · 회귀선(回歸線)',
+                nameTc: '曼迪傳播 · 木棉花國際 · 羚邦台灣 · 回歸線娛樂',
+                works: [],
+                scaleKo: '대만 및 범아시아 애니메이션 배급과 캐릭터 굿즈·팝업스토어 시장을 주도하는 4대 메이저 에이전시.',
+                scaleTc: '主導台灣與泛亞動畫代理發行及角色快閃店、周邊授權的四大天王。',
+                koreaKo: '《나 혼자만 레벨업》《신의 탑》《갓 오브 하이스쿨》《외모지상주의》 등 한국 웹툰 원작 애니메이션의 대만 배급 및 MD 라이선스 진행.',
+                koreaTc: '曾代理引進《我獨自升級》《神之塔》《高校之神》《外貌協會至上主義》等韓國網漫改編動畫及其周邊商品。',
+                pitchKo: '오리지널 및 단편 애니메이션 시리즈 배급권(T2)과 《ENHYPEN WORLD》 Vamkids 캐릭터 팝업스토어·MD 라이선스(T4) 동시 협의.',
+                pitchTc: '可同時洽談原創動畫系列台灣發行（T2）以及 Vamkids 角色周邊與快閃店授權合作（T4）。'
+            },
+            {
+                id: 'tw-nada-anim',
+                region: 'TW',
+                tracks: ['T3'],
+                priority: false,
+                nameKo: '나다 홀딩스(智寶國際) · 란서스(冉色斯) · 몽상동화(夢想動畫)',
+                nameTc: '智寶國際 (Nada) · 冉色斯 (Xanthus) · 夢想動畫 · 魯颯颯 · 伊利亞',
+                works: ['CELL'],
+                scaleKo: '국제 애니메이션 제작위원회 설계 1위 기업(나다 홀딩스) 및 대만 대표 3D/2D 애니메이션·VFX 스튜디오 그룹.',
+                scaleTc: '台灣最強國際動畫製作委員會操盤手（智寶國際）與代表性 3D/2D 動畫及視效製作公司群。',
+                koreaKo: '문책원(TAICCA)과 협력하여 일본·한국 웹툰/게임 IP의 글로벌 애니메이션 공동투자 및 제작위원회 결성 추진.',
+                koreaTc: '與文策院深度合作，積極接洽日韓網漫與遊戲 IP 組建跨國動畫製作委員會並推向國際 OTT 平台。',
+                pitchKo: '당사 보유 60+편 웹툰(《CELL》《마왕까지 한 걸음》 등)의 애니메이션화 공동투자 및 오리지널 애니 합작 제작 제안.',
+                pitchTc: '針對 60+ 部網漫（如《CELL》《離魔王只有一步》）改編動畫與原創動畫，洽談組建台韓日跨國動畫製作委員會。'
+            },
+            {
+                id: 'tw-taicca',
+                region: 'TW',
+                tracks: ['T3'],
+                priority: false,
+                nameKo: '문책원 (TAICCA · 대만문화콘텐츠진흥원 국제합제팀)',
+                nameTc: '文策院 (TAICCA 國際合製投資部門)',
+                works: ['굿잡 (Good Job)'],
+                scaleKo: 'TCCF 주최 기관이자 ‘국제합작투자프로젝트(TICP)’를 통해 대만 측 제작비의 최대 49%까지 지분 투자·지원하는 정부 기관.',
+                scaleTc: 'TCCF 主辦機構，透過「國際合作投資專案計畫（TICP）」提供最高達 49% 之跨國合資資金支持。',
+                koreaKo: '한국 KOCCA, KOFIC, 부산국제영화제(BIFF), KT StudioGenie 등과 MOU 체결 및 다수의 한·대 합작 프로젝트 공동투자 집행.',
+                koreaTc: '已與韓國 KOCCA、KOFIC、釜山影展（BIFF）、KT StudioGenie 等簽署 MOU 並共同投資多部台韓合製作品。',
+                pitchKo: '국제팀 미팅을 통해 대만 현지 합작 파트너 매칭 및 TICP 공동투자 펀드 활용 방안 직접 협의.',
+                pitchTc: '預約文策院國際組，請其媒合台灣合製夥伴並指導申請 TICP 國際合資資金槓桿。'
+            },
+            {
+                id: 'tw-fanme',
+                region: 'TW',
+                tracks: ['T4'],
+                priority: true,
+                nameKo: 'FANME (飯迷 · 팬미)',
+                nameTc: 'FANME (飯迷)',
+                works: [],
+                scaleKo: '대만 대표 K-POP 공식 MD·앨범·팬사인회·팝업 전문 브랜드. 2025년 7월 콘서트 성지인 ‘타이베이 아레나(台北小巨蛋)’에 대형 상설 매장 오픈.',
+                scaleTc: '台灣最火紅的 K-POP 官方周邊、簽售與快閃店專門品牌。2025年7月於演唱會聖地「台北小巨蛋」開設首家大型常設實體門市。',
+                koreaKo: '(G)I-DLE·MEOVV 대만 팬사인회 및 팝업 주최, 2025년 한국 KPOPMERCH 팝업스토어 타이베이 신트렌드(三創) 도입, 타이베이 아레나 매장에서 ENHYPEN·SEVENTEEN·LE SSERAFIM 특전 포토카드 럭키드로우 운영.',
+                koreaTc: '曾主辦 (G)I-DLE、MEOVV 台灣簽售與快閃活動；2025年引進韓國 KPOPMERCH 快閃店至台北三創；小巨蛋門市更直接設有 ENHYPEN、SEVENTEEN 等特典小卡抽卡機！',
+                pitchKo: 'ENHYPEN 팬덤 구매력과 포토카드 럭키드로우를 가장 잘 아는 파트너! 《ENHYPEN WORLD》 Vamkids 타이베이 팝업 및 ‘인게임 아이템+한정 포토카드 패키지’ 독점 유통 제안.',
+                pitchTc: '100% 精準命中！小巨蛋門市本來就主打 ENHYPEN 抽卡機，直接洽談《ENHYPEN WORLD》Vamkids 快閃店與「遊戲虛寶＋實體特典小卡禮包」全台首發！',
+                iceKo: '2025년 7월 타이베이 아레나(小巨蛋) 상설 매장 오픈과 한국 KPOPMERCH 팝업 및 ENHYPEN 포토카드 이벤트 등을 성공적으로 운영하신 점 깊이 주목하고 있습니다.',
+                iceTc: '看到貴司於台北小巨蛋開設常設店、引進 KPOPMERCH 快閃店並推出 ENHYPEN 特典小卡活動大受歡迎，與我們的手遊角色 IP 完美契合！'
+            },
+            {
+                id: 'tw-bigart-0percent',
+                region: 'TW',
+                tracks: ['T4'],
+                priority: false,
+                nameKo: 'BIG ART(대예오락) & 0% TAIPEI',
+                nameTc: 'BIG ART (大藝娛樂) & 0% TAIPEI',
+                works: [],
+                scaleKo: '대만 주요 일·한 콘서트 주최사(BIG ART)이자 타이베이 중산구(赤峰街) 핵심 상권의 트렌디 팝업 전용 공간 운영사(0% TAIPEI).',
+                scaleTc: '台灣知名日韓演唱會主辦（大藝娛樂）暨台北中山區赤峰街潮流一級戰區快閃店空間「0% TAIPEI」營運商。',
+                koreaKo: '타이베이 내 다수의 일·한 IP 팝업 운영뿐만 아니라, 2025년 서울 성수·홍대에서 한국 팬덤 플랫폼 b.stage(bemyfriends)와 협력해 아이돌 팝업스토어 진행.',
+                koreaTc: '除在台北營運多檔日韓快閃店外，2025年更於首爾聖水洞／弘大與韓國粉絲平台巨頭 b.stage (bemyfriends) 合作舉辦大型偶像快閃店。',
+                pitchKo: '대만 Z세대 K-POP 팬들의 성지인 0% TAIPEI(중산구)에서 《ENHYPEN WORLD》 Vamkids 테마 팝업스토어 공동 기획·운영 제안.',
+                pitchTc: '0% TAIPEI 位於台灣 Z 世代追星族最愛的中山赤峰商圈，非常適合合作策劃《ENHYPEN WORLD》Vamkids 主題快閃店。'
+            },
+            {
+                id: 'tw-capsule-udesign-beast',
+                region: 'TW',
+                tracks: ['T4'],
+                priority: false,
+                nameKo: 'CAPSULE Taiwan · u.design(유니공창) · 야수국(Beast Kingdom) · HOKI',
+                nameTc: 'CAPSULE Taiwan · 有你共創 (u.design) · 野獸國 · HOKI 鶴奇 · 福福好',
+                works: [],
+                scaleKo: '대만 백화점·문화단지(화산1914·송산문창) 대형 팝업스토어, 콜라보 카페(OU-EN CAFE) 및 캐릭터 라이선싱·MD 제조 대표 기업군.',
+                scaleTc: '台灣大型文創園區（華山、松菸）、百貨快閃店、主題咖啡廳（OU-EN CAFE）與角色商品化授權龍頭群。',
+                koreaKo: 'Kakao Friends, LINE FRIENDS, 조구만(JOGUMAN), 디노탱(DINOTAENG), 잔망루피 등 한국 인기 캐릭터 대만 팝업스토어 및 K-POP 응원 카페·피규어 유통 다수 진행.',
+                koreaTc: '曾引進 Kakao Friends、LINE FRIENDS、JOGUMAN、DINOTAENG、잔망루피 等韓國現象級角色在台舉辦大型快閃店、開發聯名周邊與主題咖啡廳。',
+                pitchKo: 'Vamkids 대만 지역 상품화 라이선스(MD 현지 제작), 콜라보 테마 카페 및 백화점 순회 팝업스토어 파트너십 제안.',
+                pitchTc: '洽談 Vamkids 台灣區商品化聯名授權（Licensing）、主題咖啡廳與大型百貨巡迴快閃店合作。'
+            },
+            {
+                id: 'tw-gamania',
+                region: 'TW',
+                tracks: ['T3', 'T4'],
+                priority: false,
+                nameKo: '감마니아 그룹 (橘子集團 · Gamania / beanfun!)',
+                nameTc: '橘子集團 (Gamania / beanfun! / 購物橘子)',
+                works: [],
+                scaleKo: '대만 최대 게임 퍼블리싱·엔터 상장사(beanfun! 플랫폼, 쇼핑몰 및 영상 투자 펀드 보유).',
+                scaleTc: '台灣最大遊戲代理與泛娛樂上市公司之一，擁有 beanfun! 社群、購物橘子電商及影視文創投資基金。',
+                koreaKo: '한국 Nexon(《메이플스토리》), NCSoft(《리니지》), Kakao Games 등과 20년 이상 깊은 파트너십을 유지하며 대형 오프라인 페스티벌 및 IP 굿즈 커머스 운영.',
+                koreaTc: '代理韓國 Nexon《楓之谷》、NCSoft《天堂》長達 20 餘年，深諳「手遊虛寶＋實體周邊小卡＋線下嘉年華」整合變現。',
+                pitchKo: '모바일 게임 《ENHYPEN WORLD》 대만·홍콩 공동 프로모션 및 ‘인게임 아이템+Vamkids 실물 포토카드 패키지’ 독점 이커머스 판매 제안.',
+                pitchTc: '最適合洽談《ENHYPEN WORLD》手遊台港澳聯合行銷＋獨家販售「Vamkids 周邊＆遊戲虛寶小卡禮包」。'
+            },
+
+            // --- 🇯🇵 일본 (Japan) ---
+            {
+                id: 'jp-nttdocomo',
+                region: 'JP',
+                tracks: ['T1', 'T2', 'T3'],
+                priority: true,
+                nameKo: 'NTT 도코모 스튜디오 & 라이브 (NTT DOCOMO Studio & Live / Lemino)',
+                nameTc: 'NTT DOCOMO Studio & Live (旗下 Lemino 平台)',
+                works: ['Wind Up', 'Whale Star'],
+                scaleKo: '일본 최대 통신사 NTT 도코모와 요시모토흥업이 설립한 합작법인이자 TCCF 공식 전략 파트너. 일본 메이저 OTT 플랫폼 ‘Lemino’ 운영.',
+                scaleTc: '日本最大電信 NTT DOCOMO 與吉本興業合資成立之娛樂巨頭，為 TCCF 官方戰略合作夥伴，營運串流平台「Lemino」。',
+                koreaKo: 'Lemino 플랫폼을 통해 한국 드라마, K-POP 아이돌 콘텐츠 및 예능(HYBE·SM·CJ ENM 등)을 대량 독점 수급하며 한·일 공동투자·제작을 적극 확대 중.',
+                koreaTc: '透過 Lemino 平台大量引進獨家韓劇、K-POP 偶像綜藝與音樂內容，並積極參與日韓共同投資與合製。',
+                pitchKo: 'NCT 《Wind Up》, TWICE 다현, MONSTA X, ZB1 등 20+편 K-POP 숏드라마·영화의 일본 Lemino 독점 선공개 및 한·일 공동투자 프로젝트 제안.',
+                pitchTc: '主推 NCT《Wind Up》、TWICE 多賢、ZB1 等 20+ 部 K-POP 短劇／電影於日本 Lemino 平台獨播，並洽談日韓共同投資合製。',
+                iceJa: '貴社が展開されている映像配信プラットフォーム「Lemino」における韓国ドラマやK-POPコンテンツの積極的なラインナップ拡充、ならびに日韓共同製作への取り組みに大変注目しております。'
+            },
+            {
+                id: 'jp-tvtokyo-kadokawa',
+                region: 'JP',
+                tracks: ['T1', 'T2', 'T3'],
+                priority: false,
+                nameKo: 'TV도쿄 (テレビ東京) · TBS · KADOKAWA (카도카와)',
+                nameTc: 'TV Tokyo (東京電視台) · TBS · KADOKAWA (角川集團)',
+                works: ['CELL'],
+                scaleKo: 'TCCF 상시 참가 일본 핵심 지상파 방송사(TV도쿄·TBS) 및 글로벌 출판·애니메이션·IP 미디어 그룹(KADOKAWA).',
+                scaleTc: 'TCCF 常駐日本核心電視台（東京電視台、TBS）與日本跨國出版、動畫製作委員會巨頭（角川集團）。',
+                koreaKo: 'TV도쿄는 한국 CJ ENM·Studio Dragon·Kakao Ent. 등과 협업해 한국 웹툰·대본 원작 드라마를 제작했으며, KADOKAWA는 한국 웹툰 단행본 출판 및 애니화를 활발히 추진.',
+                koreaTc: '東京電視台多次與韓國 CJ ENM、Studio Dragon、Kakao 合作將韓國網漫與劇本改編為深夜日劇；角川則大量引進韓國條漫於日本出版與動畫化。',
+                pitchKo: '웹툰 60+편(부산영화제 초청작 《CELL》, 판타지 로맨스 등)과 미스터리·타임슬립·요리 연애 대본의 일본 심야 드라마 리메이크 및 애니메이션 공동제작 제안.',
+                pitchTc: '推銷 60+ 部韓漫（含《CELL》與奇幻愛情）及懸疑、穿越、料理戀愛劇本改編為日本深夜劇或共同製作日本動畫（Anime）。',
+                iceJa: '貴社が韓国のウェブトゥーンやオリジナル脚本を活用したドラマ化・アニメーション展開、および日韓共同プロジェクトを積極的に推進されている点に深く感銘を受けております。'
+            },
+            {
+                id: 'jp-unext-spo',
+                region: 'JP',
+                tracks: ['T2'],
+                priority: false,
+                nameKo: 'U-NEXT · AbemaTV · SPO 엔터테인먼트 · Avex Pictures',
+                nameTc: 'U-NEXT · AbemaTV · SPO Entertainment · Avex Pictures',
+                works: ['Wind Up', 'Whale Star', 'Unforgotten'],
+                scaleKo: '일본 내 한류 점유율 최상위 토종 OTT(U-NEXT, Abema) 및 일본 대표 한국 드라마·영화 배급·DVD/BD 유통사(SPO, Avex).',
+                scaleTc: '日本韓流市佔率最高的本土串流平台（U-NEXT、Abema）與日本老牌韓流影視發行暨藍光 DVD 代理商（SPO、Avex）。',
+                koreaKo: '한국 주요 방송사·제작사와 다수의 독점 스트리밍 계약을 체결하고 있으며, K-POP 아이돌 주연 작품의 일본 팬덤 유료 결제 및 패키지(DVD/BD) 판매 실적이 매우 높음.',
+                koreaTc: '與韓國各大電視台與製作公司簽有大量獨播合約，且日本粉絲對 K-POP 偶像主演作品之付費點播與藍光 DVD 購買力極強。',
+                pitchKo: '일본 내 팬덤이 막강한 NCT, TWICE 다현, MONSTA X, ZB1, THE BOYZ 주연 20+편 신작과 대작 《Whale Star》《Unforgotten》의 일본 스트리밍 및 DVD/BD 판권 제안.',
+                pitchTc: '針對日本粉絲極度狂熱的 NCT、TWICE 多賢、MONSTA X、ZB1 主演之 20+ 部新作，以及《鯨星》《Unforgotten》，打包推銷日本串流與高利潤 DVD/BD 發行權。',
+                iceJa: '日本市場において韓国ドラマやK-POPアーティスト出演作品の配信・パッケージ展開を牽引されている貴社に、ぜひ弊社の最新ラインナップをご紹介したく存じます。'
+            },
+            {
+                id: 'jp-parco-tower',
+                region: 'JP',
+                tracks: ['T4'],
+                priority: false,
+                nameKo: 'PARCO · SHIBUYA109 엔터 · Tower Records Japan · Animate',
+                nameTc: 'PARCO · SHIBUYA109 · Tower Records Japan · Animate',
+                works: [],
+                scaleKo: '일본 핵심 상권 팝업스토어 운영 백화점(PARCO, SHIBUYA109) 및 일본 최대 K-POP·캐릭터 굿즈 유통망(Tower Records, Animate).',
+                scaleTc: '日本最核心潮流百貨快閃店營運商（PARCO、SHIBUYA109）與日本最大 K-POP 及動漫周邊實體通路（Tower Records、Animate）。',
+                koreaKo: '도쿄·오사카 등지에서 ENHYPEN을 비롯한 한국 최정상 아이돌 팝업스토어 및 럭키드로우 특전 포토카드 캠페인을 상시 운영.',
+                koreaTc: '長年於東京、大阪等地舉辦 ENHYPEN 等韓國頂流男團快閃店與特典小卡銷售活動。',
+                pitchKo: '도쿄 팝업 성공 레퍼런스를 바탕으로 《ENHYPEN WORLD》 Vamkids 일본 주요 도시 순회 팝업스토어 및 게임 연동 포토카드 패키지 유통 제안.',
+                pitchTc: '結合曾在東京成功舉辦快閃店的實績，洽談《ENHYPEN WORLD》Vamkids 日本巡迴快閃店與特典小卡禮包通路銷售。',
+                iceJa: '日本国内にて数々のK-POPアーティストやキャラクターIPのポップアップストア・MD展開を成功させておられる貴社と、ぜひ『ENHYPEN WORLD』公式キャラクターIP「Vamkids」の展開をご相談したく存じます。'
+            },
+
+            // --- 🌏 동남아 (Southeast Asia) ---
+            {
+                id: 'sea-truecj-gmmtv',
+                region: 'SEA',
+                tracks: ['T1', 'T2', 'T3'],
+                priority: true,
+                nameKo: 'True CJ Creations (정대그룹×CJ 합작) · GMMTV · BEC World (태국)',
+                nameTc: '泰國正大集團 True CJ Creations · GMMTV · BEC World (泰國三台)',
+                works: ['CELL'],
+                scaleKo: '태국 최대 재벌 정대그룹(CP Group) 산하 TrueVisions와 한국 CJ ENM의 합작사(True CJ), 태국 1위 아이돌 드라마 제작사(GMMTV) 및 태국 3번 채널(BEC).',
+                scaleTc: '泰國首富正大集團（True）與韓國 CJ ENM 合資成立之王牌製作公司（True CJ）、泰國最大青春偶像劇廠牌（GMMTV）與泰國第3電視台。',
+                koreaKo: 'True CJ는 《시그널》《보이스》《굿 닥터》《아는 와이프》 등 한국 드라마를 태국판으로 리메이크해 연속 흥행시켰으며, GMMTV는 한국 청춘·학원·판타지 IP 리메이크에 주력.',
+                koreaTc: 'True CJ 專門將韓劇（《信號》《Voice》《Good Doctor》《認識的妻子》）翻拍為爆款泰劇；GMMTV 則熱衷購買韓國青春校園與奇幻愛情劇本／網漫進行泰版翻拍。',
+                pitchKo: '한국 검증 IP를 태국 드라마로 리메이크하는 핵심 바이어! 학원 퇴마, 밀실 서바이벌, 판타지·요리 로맨스 대본 및 60+편 웹툰 리메이크 패키지 제안.',
+                pitchTc: '專門將韓國好故事翻拍為泰劇的頭號買家！整包推銷校園驅魔、密室生存、穿越喜劇、料理戀愛劇本與 60+ 部韓漫，並向 TrueVisions 推銷韓劇與 K-POP 短劇。',
+                iceEn: 'We greatly admire your outstanding track record in adapting hit Korean IPs and scripts into top-rated Thai series.'
+            },
+            {
+                id: 'sea-viu',
+                region: 'SEA',
+                tracks: ['T1', 'T2', 'T3'],
+                priority: true,
+                nameKo: 'Viu (PCCW 그룹 · 범아시아 한류 OTT)',
+                nameTc: 'Viu (電訊盈科 PCCW 旗下泛亞最大韓流 OTT)',
+                works: ['재벌집 막내아들 · 모범택시2', 'Wind Up', 'Whale Star', 'Unforgotten'],
+                scaleKo: '홍콩 PCCW 산하로 동남아(태국·인도네시아·말레이시아·필리핀·싱가포르), 홍콩, 중동 등 16개국에 서비스하는 범아시아 대표 스트리밍 플랫폼.',
+                scaleTc: '電訊盈科（PCCW）旗下泛區域串流巨頭，服務覆蓋東南亞（泰、印、馬、菲、新）、香港與中東等 16 個市場。',
+                koreaKo: '《재벌집 막내아들》(2022) Viu Original 투자·배급 및 《모범택시2》(2023) 16개국 독점 스트리밍 등 한국 텐트폴 드라마와 K-POP 콘텐츠의 최대 구매처.',
+                koreaTc: '曾出品投資 Viu Original 韓劇《財閥家的小兒子》（2022）並於 16 國獨家播映《模範計程車2》（2023），為東南亞韓流內容核心買家。',
+                pitchKo: '20+편 K-POP 아이돌 숏드라마·영화 및 텐트폴 드라마 《Whale Star》《Unforgotten》 범아시아 방영권 판매 + Viu Original 로컬 리메이크용 대본·웹툰 동시 제안.',
+                pitchTc: '一魚兩吃：既銷售 20+ 部 K-POP 偶像短劇／電影與《鯨星》《Unforgotten》泛亞播映權，亦推銷原創劇本與網漫供 Viu Original 開發東南亞本土翻拍劇！',
+                iceEn: 'Recognizing Viu’s powerhouse leadership in bringing tentpole Korean series like <Reborn Rich> and <Taxi Driver 2> across 16 markets, we see tremendous synergy with our new slate.'
+            },
+            {
+                id: 'sea-mediacorp-encore',
+                region: 'SEA',
+                tracks: ['T1', 'T2', 'T3'],
+                priority: false,
+                nameKo: 'Mediacorp (싱가포르 신전매) · Encore Films · Clover Films',
+                nameTc: '新加坡新傳媒 (Mediacorp) · Encore Films · Clover Films',
+                works: ['밀례', 'Wind Up'],
+                scaleKo: '싱가포르 최대 국영 미디어 그룹이자 TCCF 공식 어워드 후원사(Mediacorp), 그리고 싱가포르·말레이시아·인도네시아 대표 극장 배급사(Encore, Clover).',
+                scaleTc: '新加坡最大國家級傳媒集團暨 TCCF 官方大獎贊助商（Mediacorp），以及新馬印指標院線發行商（Encore、Clover Films）。',
+                koreaKo: 'Mediacorp는 meWATCH 플랫폼에 한국 드라마를 수급하고 아시아 합작을 추진 중이며, Encore·Clover Films는 동남아 극장가에 한국 공포·상업영화를 활발히 배급.',
+                koreaTc: 'Mediacorp 長期採購韓劇登上 meWATCH 並推動亞洲跨國合製；Encore 與 Clover 則是新馬印地區引進韓國恐怖片與商業大片的主力院線商。',
+                pitchKo: 'Mediacorp에는 드라마 배급 및 국제 합작을, Encore·Clover에는 한국 오컬트 공포영화 《밀례》와 K-POP 가로형 영화 동남아 극장 배급을 제안.',
+                pitchTc: '對 Mediacorp 一信洽談劇集採購與跨國合製；對 Encore 與 Clover 重點推銷韓國恐怖片《密禮》與 K-POP 橫式電影之東南亞院線發行。'
+            },
+            {
+                id: 'sea-ph-my-id',
+                region: 'SEA',
+                tracks: ['T1', 'T2'],
+                priority: false,
+                nameKo: 'GMA Network · ABS-CBN (필리핀) / Astro (말레이시아) / Vidio (인도네시아)',
+                nameTc: 'GMA · ABS-CBN (菲律賓) / Astro (馬來西亞) / Vidio (印尼)',
+                works: ['Wind Up', 'Whale Star'],
+                scaleKo: '필리핀 양대 방송 스튜디오(GMA, ABS-CBN), 말레이시아 1위 유료방송(Astro), 인도네시아 1위 로컬 OTT(Vidio).',
+                scaleTc: '壟斷菲律賓市場的兩大傳媒集團（GMA、ABS-CBN）、馬來西亞付費電視龍頭（Astro）與印尼第一串流平台（Vidio）。',
+                koreaKo: '동남아 내 K-POP 및 한국 드라마 소비량이 가장 높은 시장으로, 한국 로맨스·스릴러 대본의 현지어 리메이크 및 한국 드라마 방영권 구매 지속.',
+                koreaTc: '韓流與 K-POP 狂熱度極高的東南亞主力市場，長年購買韓國劇本翻拍本土劇，並大量採購韓劇與偶像影視作品。',
+                pitchKo: '20+편 K-POP 아이돌 숏드라마·영화 패키지, 《Whale Star》《Unforgotten》 방영권 및 검증된 한국 상업 대본 리메이크 판권 제안.',
+                pitchTc: '打包推銷 20+ 部 K-POP 偶像短劇／電影、長篇韓劇《鯨星》《Unforgotten》播映權，以及高完成度韓國原創劇本翻拍授權。'
+            },
+
+            // --- 🇭🇰🇲🇴 홍콩·마카오 (Hong Kong & Macau) ---
+            {
+                id: 'hk-makerville',
+                region: 'HKMO',
+                tracks: ['T1', 'T2', 'T3'],
+                priority: true,
+                nameKo: 'MakerVille (ViuTV · 홍콩 PCCW 그룹)',
+                nameTc: '電訊盈科 PCCW — MakerVille (ViuTV) / Now TV',
+                works: ['사내맞선'],
+                scaleKo: '홍콩 최대 통신·엔터 그룹 PCCW 산하로 무료방송 ViuTV와 홍콩 최고 인기 보이그룹 MIRROR를 운영하는 제작·방송사(유료방송 Now TV 포함).',
+                scaleTc: '香港最大電訊娛樂集團 PCCW 旗下，營運免費電視 ViuTV 及頂流男團 MIRROR（同集團 Now TV 為香港最大收費電視）。',
+                koreaKo: '한국 웹툰·드라마 원작 《사내맞선》을 홍콩판 《社內相親》(MIRROR 주연, 2023.11 방영)으로 리메이크해 대성공. 2026년 4월에는 《김비서가 왜 그럴까》 홍콩판 리메이크 판권 협의 공식 발표.',
+                koreaTc: '2023年11月成功將韓國網漫／韓劇《社內相親》翻拍為港劇（由旗下男團 MIRROR 主演）；2026年4月更宣布正與韓方洽談《金秘書為何那樣》港版翻拍版權！',
+                pitchKo: '한국 웹툰·드라마를 홍콩 아이돌 주연 드라마로 리메이크하는 1순위 바이어! 판타지·요리 로맨스, 타임슬립, 학원 미스터리 대본 및 웹툰 60+편을 차기 MIRROR 주연작으로 제안.',
+                pitchTc: '最愛買韓國網漫與愛情喜劇劇本給旗下偶像拍港劇！直接提《社內相親》與《金秘書》，推薦奇幻愛情、料理戀愛、穿越喜劇劇本與 60+ 部韓漫，並向 Now TV 推銷成片。',
+                iceKo: '귀사가 《사내맞선》 홍콩판 리메이크를 성공시키고 최근 《김비서가 왜 그럴까》 리메이크를 추진하시는 등 한국 IP 현지화에 보여주신 탁월한 성과에 깊이 주목하고 있습니다.',
+                iceTc: '非常佩服貴司成功翻拍港版《社內相親》（MIRROR 主演）並推進《金秘書為何那樣》港版改編，我們手上的韓國網漫與高概念愛情喜劇劇本非常適合貴司團隊！'
+            },
+            {
+                id: 'hk-edko-medialink',
+                region: 'HKMO',
+                tracks: ['T2', 'T3', 'T4'],
+                priority: false,
+                nameKo: '에드코 필름(安樂影片) · 골든씬(高先) · 메디아링크 본사(羚邦集團)',
+                nameTc: '安樂影片 (Edko Films) · 高先電影 · 羚邦集團香港總部 (Medialink)',
+                works: ['파묘 (Exhuma)', '밀례'],
+                scaleKo: '홍콩 브로드웨이 시네마 모기업이자 아시아 메이저 영화 투자·배급사(에드코 필름), 그리고 홍콩 상장 아시아 최대 애니·IP 라이선싱 그룹 본사(메디아링크, 02230.HK).',
+                scaleTc: '香港百老匯院線母公司暨亞洲電影投資發行巨頭（安樂影片），以及香港上市之亞洲最大動畫發行與品牌授權集團總部（羚邦集團 02230.HK）。',
+                koreaKo: '에드코 필름은 《부산행》《신과 함께》《기생충》《파묘》 등 한국 역대급 흥행작의 홍콩 독점 배급사이며, 메디아링크는 아시아 전역의 애니메이션 배급 및 IP 팝업·MD 사업을 전개.',
+                koreaTc: '安樂影片為《屍速列車》《與神同行》《寄生上流》《破墓》在香港的獨家發行商；羚邦總部則統籌全亞洲動畫採購與日韓角色快閃店授權。',
+                pitchKo: '에드코 필름에는 공포영화 《밀례》와 K-POP 가로형 영화 홍콩 배급을, 메디아링크 본사에는 오리지널 애니메이션 배급 및 Vamkids 범아시아 라이선스를 제안.',
+                pitchTc: '向安樂影片推銷恐怖片《密禮》與 K-POP 橫式電影港澳院線發行；向羚邦香港總部洽談動畫片單與 Vamkids 港澳東南亞快閃店授權。'
+            },
+
+            // --- 🇨🇳 중국 (Mainland China / Global Platforms) ---
+            {
+                id: 'cn-linmon-huace',
+                region: 'CN',
+                tracks: ['T1', 'T3'],
+                priority: false,
+                nameKo: '레몬 인터내셔널(檸萌) · 화처 크로톤(華策) · 신리 미디어(新麗)',
+                nameTc: '檸萌國際 (Linmon) · 華策影視國際部 (Huace) · 新麗傳媒',
+                works: [],
+                scaleKo: '중국 1선 상장 드라마 제작 스튜디오의 글로벌·해외 사업 법인(TCCF 바이어 및 아시아 마켓 상시 참가).',
+                scaleTc: '中國一線上市劇集製作巨頭之國際業務子公司（常駐香港與新加坡，活躍於 TCCF）。',
+                koreaKo: '한국 오리지널 대본 및 웹툰의 리메이크 판권 거래는 저작권 무역에 해당하여 방영 규제의 영향을 받지 않으므로, 검증된 한국 상업 대본을 지속 구매하여 화어권 및 태국 등에서 리메이크 제작.',
+                koreaTc: '「購買韓國原創劇本與網漫進行華語／泰語本土化翻拍」屬於著作權貿易，不受成片播出限制，因此長年高價收購韓國懸疑、奇幻、穿越與愛情劇本。',
+                pitchKo: '즉시 현지화 각색 및 촬영이 가능한 고완성도 한국 오리지널 대본(미스터리 스릴러, 판타지 로맨스, 타임슬립 코미디 등)과 60+편 웹툰 IP 판매 제안.',
+                pitchTc: '主打可立即本土化改編的高完成度韓國原創劇本（懸疑驚悚、密室生存、奇幻愛情、穿越喜劇）與 60+ 部網漫 IP 翻拍授權。'
+            },
+            {
+                id: 'cn-shortdrama-ott',
+                region: 'CN',
+                tracks: ['T1', 'T2'],
+                priority: false,
+                nameKo: '글로벌 숏드라마 3강 (ReelShort · DramaBox · ShortMax) & iQIYI/WeTV 글로벌',
+                nameTc: '出海短劇巨頭 (ReelShort · DramaBox · ShortMax) ＆ 愛奇藝/騰訊國際版',
+                works: ['Wind Up'],
+                scaleKo: '글로벌 매출 최상위 세로형 숏드라마 플랫폼 3사 및 동남아·글로벌 시장을 타깃으로 하는 iQIYI International / WeTV.',
+                scaleTc: '全球營收最高的三大直式短劇出海平台，以及深耕東南亞與全球市場的 iQIYI International 與 WeTV。',
+                koreaKo: '동남아·미주·일한 유저 확보를 위해 K-POP 아이돌 주연 숏드라마 및 한국 드라마 판권 수급과 숏폼용 대본 확보를 적극 확대 중.',
+                koreaTc: '積極擴充日韓偶像短劇與韓劇片庫以吸引全球韓流用戶，並大量採購高概念劇本進行短劇翻拍。',
+                pitchKo: '당사 글로벌 K-POP 숏드라마 플랫폼 ‘KITZ’의 20+편 세로형 숏드라마 라인업(NCT, TWICE, ZB1 등 주연) 해외 배급 및 숏폼 리메이크 대본 패키지 제안.',
+                pitchTc: '直接對接 TAKEONE「KITZ」平台的 20+ 部 K-POP 偶像直式短劇海外分發權，並批量推銷適合改編短劇的高概念劇本。'
+            },
+            {
+                id: 'cn-yizhiyu-miniso',
+                region: 'CN',
+                tracks: ['T4'],
+                priority: false,
+                nameKo: '이즈즈위 (一直娛 · Yizhiyu) · 미니소 (MINISO 글로벌 IP팀)',
+                nameTc: '一直娛 (Yizhiyu) · 名創優品 (MINISO 全球 IP 聯名部)',
+                works: [],
+                scaleKo: '중국 최대 K-POP 공식 앨범·팬사인회·팝업스토어 플랫폼(이즈즈위) 및 전 세계 수천 개 매장을 보유한 글로벌 캐릭터 콜라보 리테일 그룹(MINISO).',
+                scaleTc: '中國最大 K-POP 專輯特典、簽售與韓團快閃店平台（一直娛），以及擁有全球數千家門市的 IP 聯名零售巨頭（名創優品 MINISO）。',
+                koreaKo: '이즈즈위는 한국 주요 기획사와 직접 협업하여 ENHYPEN 등 최정상 보이그룹의 팝업스토어와 특전 포토카드 이벤트를 다수 운영했으며, MINISO는 일·한 캐릭터 글로벌 라이선싱을 활발히 전개.',
+                koreaTc: '一直娛與韓國各大經紀公司直接合作，深諳 ENHYPEN 粉絲對特典小卡與快閃店的驚人購買力；MINISO 則在全球門市大舉聯名日韓角色 IP。',
+                pitchKo: '상하이 팝업 성공 경험을 바탕으로 《ENHYPEN WORLD》 Vamkids 팝업스토어, 한정 포토카드+인게임 패키지 유통 및 글로벌 캐릭터 콜라보 제안.',
+                pitchTc: '結合曾在上海成功舉辦快閃店的實績，洽談《ENHYPEN WORLD》Vamkids 快閃店、獨家小卡禮包銷售與全球門市聯名周邊。'
+            },
+
+            // --- 🌍 구미·유럽·미주 (West / Global) ---
+            {
+                id: 'west-bbc',
+                region: 'WEST',
+                tracks: ['T1', 'T2', 'T3'],
+                priority: true,
+                nameKo: 'BBC Studios Asia (영국 BBC 스튜디오 아시아)',
+                nameTc: 'BBC Studios Asia (英國廣播公司商業分支)',
+                works: ['Unforgotten (언포가튼)'],
+                scaleKo: '영국 공영방송 BBC의 글로벌 콘텐츠 배급·포맷 라이선싱·공동제작 총괄 스튜디오.',
+                scaleTc: '全球頂級影視模式（Format）授權、國際發行與共同製作巨頭。',
+                koreaKo: '핵심 레퍼런스: 당사(TAKEONE COMPANY)가 BBC의 대표 범죄 수사극 《Unforgotten》 포맷 판권을 정식 구매하여 한국판 리메이크 드라마를 제작함!',
+                koreaTc: '最強破冰王牌：TAKEONE COMPANY 已正式購買 BBC 經典犯罪懸疑名作《Unforgotten》版權並製作韓國版翻拍劇！',
+                pitchKo: '가장 확실한 파트너십 명분 보유! 한국판 《Unforgotten》 제작 성과 공유 및 BBC 네트워크를 통한 글로벌 배급 협력, 나아가 당사 오리지널 미스터리·스릴러 대본의 영미권 역수출 제안.',
+                pitchTc: '天然的家人級破冰話題！現場向 BBC 團隊展示韓版《Unforgotten》精彩成果、探討全球聯合發行，並反向推銷 TAKEONE 原創懸疑驚悚劇本與《CELL》給歐美市場。',
+                iceKo: '당사가 BBC의 명작 크라임 스릴러 《Unforgotten》의 한국판 리메이크를 제작하게 되어 매우 뜻깊게 생각하며, 이번 TCCF에서 한국판 제작 성과와 글로벌 배급 협력을 직접 논의하고 싶습니다.',
+                iceTc: '非常榮幸我們 TAKEONE 製作了貴司經典名作《Unforgotten》的韓國翻拍版！希望能於 TCCF 與貴司分享韓版成果並探討全球發行與新項目合作。',
+                iceEn: 'As the Korean studio behind the official Korean remake of BBC’s acclaimed crime thriller <Unforgotten>, we would be thrilled to connect with the BBC Studios team at TCCF to share updates on the Korean adaptation and explore global distribution and new IP collaborations!'
+            },
+            {
+                id: 'west-viki-kocowa',
+                region: 'WEST',
+                tracks: ['T2'],
+                priority: false,
+                nameKo: 'Rakuten Viki · KOCOWA+ (북미·유럽·중남미 한류 전문 OTT)',
+                nameTc: 'Rakuten Viki · KOCOWA+ (歐美與全球最大韓流專屬 OTT)',
+                works: ['Wind Up', 'Whale Star', 'Unforgotten'],
+                scaleKo: '미주·유럽·오세아니아·중남미 190여 개국에 한국 드라마와 K-POP 콘텐츠를 서비스하는 글로벌 최대 한류 전용 OTT 양대 산맥.',
+                scaleTc: '覆蓋北美、歐洲与拉丁美洲超過 190 國的兩大韓流專屬串流平台霸主。',
+                koreaKo: '한국 주요 방송사 및 제작사의 드라마·예능·아이돌 웹드라마를 북미·유럽 권역에 상시 수급·배급.',
+                koreaTc: '長年採購所有韓國一線劇集、獨立製片與 K-POP 偶像劇集於歐美與拉美市場播映。',
+                pitchKo: '서구권 팬덤이 두터운 NCT, TWICE 다현, MONSTA X, ZB1 주연 20+편 K-POP 숏드라마/영화 패키지 및 《Whale Star》《Unforgotten》 미주·유럽 방영권 제안.',
+                pitchTc: '歐美 K-POP 粉絲對 NCT、TWICE、MONSTA X、ZB1 狂熱度極高，是銷售 20+ 部偶像短劇／電影包與《鯨星》《Unforgotten》歐美區版權的第一買家！'
+            },
+            {
+                id: 'west-federation-mediawan-crunchyroll',
+                region: 'WEST',
+                tracks: ['T1', 'T2', 'T3'],
+                priority: false,
+                nameKo: 'Federation Studios · Mediawan (프랑스) / Crunchyroll · Well Go USA (미국)',
+                nameTc: 'Federation · Mediawan (法國影視動畫巨頭) / Crunchyroll · Well Go USA (北美)',
+                works: ['CELL', '밀례'],
+                scaleKo: 'TCCF에 참가하는 유럽 대표 드라마·애니메이션 스튜디오(Federation, Mediawan) 및 소니 산하 글로벌 1위 애니 플랫폼(Crunchyroll), 북미 최대 아시아 장르영화 배급사(Well Go USA).',
+                scaleTc: '出席 TCCF 的歐洲頂級製片與動畫集團（Federation、Mediawan）、Sony 旗下全球最大動畫平台（Crunchyroll）與北美最大亞洲電影發行商（Well Go USA）。',
+                koreaKo: 'Well Go USA는 《파묘》《범죄도시》 등 한국 장르 영화를 북미에 배급했으며, 유럽·북미 스튜디오들은 한국 웹툰 원작 애니메이션 및 서바이벌·스릴러 포맷 리메이크에 높은 관심 보유.',
+                koreaTc: 'Well Go USA 在北美發行《破墓》《犯罪都市》等大量韓國類型大片；歐洲與北美廠牌則高度關注韓國網漫動畫化與生存驚悚劇本翻拍。',
+                pitchKo: 'Well Go USA에 공포영화 《밀례》 북미 배급을, Crunchyroll·Mediawan에 오리지널/웹툰 원작 애니메이션 배급·합작을, Federation에 《CELL》 및 서바이벌 대본 리메이크를 제안.',
+                pitchTc: '向 Well Go USA 推銷恐怖片《密禮》北美發行；向 Crunchyroll 與 Mediawan 洽談動畫發行與合製；向 Federation 推銷《CELL》與密室生存劇本歐美翻拍。'
+            }
+        ];
+
+        // ==================== 초기화 및 상태 관리 ====================
+        window.onload = function() {
+            loadSelectionFromStorage();
+            document.getElementById('total-count-badge').textContent = COMPANIES.length;
+            updateUILanguageStrings();
+            renderKPIAndWorks();
+            renderFilterTabs();
+            renderCompanies();
+            renderSelectedView();
+            renderMasterTemplates();
+        };
+
+        function loadSelectionFromStorage() {
+            try {
+                const savedIds = localStorage.getItem(STORAGE_KEY_IDS);
+                if (savedIds) {
+                    selectedBuyerIds = JSON.parse(savedIds);
+                } else {
+                    // 초기 실행 시 최우선 추천(priority: true) 바이어를 기본 선택해 두어 임원이 바로 볼 수 있게 함
+                    selectedBuyerIds = COMPANIES.filter(c => c.priority).map(c => c.id);
+                    saveSelectionToStorage();
+                }
+                const savedMemos = localStorage.getItem(STORAGE_KEY_MEMOS);
+                if (savedMemos) {
+                    buyerMemos = JSON.parse(savedMemos);
+                }
+            } catch (e) {
+                selectedBuyerIds = COMPANIES.filter(c => c.priority).map(c => c.id);
+            }
+            updateSelectionCounters();
+        }
+
+        function saveSelectionToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY_IDS, JSON.stringify(selectedBuyerIds));
+                localStorage.setItem(STORAGE_KEY_MEMOS, JSON.stringify(buyerMemos));
+            } catch (e) {}
+            updateSelectionCounters();
+        }
+
+        function updateSelectionCounters() {
+            const count = selectedBuyerIds.length;
+            document.getElementById('selected-count-badge').textContent = count;
+            document.getElementById('quick-sel-count').textContent = count;
+            document.getElementById('float-sel-count').textContent = count;
+        }
+
+        // UI 언어 전환 (한국어 KO / 대만어 TC)
+        function setUILang(lang) {
+            uiLang = lang;
+            const isKo = lang === 'KO';
+
+            // Desktop 버튼 스타일
+            document.getElementById('ui-lang-KO').className = isKo
+                ? 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-600 text-white shadow'
+                : 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white';
+            document.getElementById('ui-lang-TC').className = !isKo
+                ? 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-600 text-white shadow'
+                : 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white';
+
+            // Mobile 버튼 스타일
+            document.getElementById('ui-lang-KO-mob').className = isKo
+                ? 'px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white'
+                : 'px-2.5 py-1 rounded-lg text-xs font-bold text-slate-300';
+            document.getElementById('ui-lang-TC-mob').className = !isKo
+                ? 'px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white'
+                : 'px-2.5 py-1 rounded-lg text-xs font-bold text-slate-300';
+
+            updateUILanguageStrings();
+            renderKPIAndWorks();
+            renderFilterTabs();
+            renderCompanies();
+            renderSelectedView();
+            renderMasterTemplates();
+        }
+
+        function updateUILanguageStrings() {
+            const t = UI_TEXT[uiLang];
+            document.getElementById('ui-header-title').textContent = t.headerTitle;
+            document.getElementById('ui-header-subtitle').textContent = t.headerSubtitle;
+            document.getElementById('ui-tab-dir-text').textContent = t.tabDir;
+            document.getElementById('ui-tab-sel-text').textContent = t.tabSel;
+            document.getElementById('ui-tab-tpl-text').textContent = t.tabTpl;
+            document.getElementById('ui-kpi-title').textContent = t.kpiTitle;
+            document.getElementById('ui-kpi-desc').textContent = t.kpiDesc;
+            document.getElementById('ui-works-label').textContent = t.worksLabel;
+            document.getElementById('ui-works-hint').textContent = t.worksHint;
+            document.getElementById('btn-toggle-showcase').textContent = showcaseOpen ? t.btnShowcaseFold : t.btnShowcaseOpen;
+            document.getElementById('ui-filter-region-label').textContent = t.filterRegion;
+            document.getElementById('ui-filter-track-label').textContent = t.filterTrack;
+            document.getElementById('ui-filter-search-label').textContent = t.filterSearch;
+            document.getElementById('search-input').placeholder = t.searchPlaceholder;
+            document.getElementById('ui-boss-quick-title').textContent = t.bossQuickTitle;
+            document.getElementById('btn-sel-priority').textContent = t.btnSelPriority;
+            document.getElementById('ui-showing-prefix').textContent = t.showingPrefix;
+            document.getElementById('ui-showing-suffix').textContent = t.showingSuffix;
+            document.getElementById('ui-legend-select').innerHTML = t.legendSelect;
+            document.getElementById('ui-legend-star').textContent = t.legendStar;
+            document.getElementById('ui-sel-view-title').textContent = t.selViewTitle;
+            document.getElementById('ui-sel-view-desc').textContent = t.selViewDesc;
+            document.getElementById('ui-sel-preview-label').textContent = t.selPreviewLabel;
+            document.getElementById('ui-float-desc').innerHTML = t.floatDesc;
+            document.getElementById('ui-float-btn-view').textContent = t.floatBtnView;
+            document.getElementById('ui-float-btn-copy').textContent = t.floatBtnCopy;
+        }
+
+        function toggleWorksShowcase() {
+            showcaseOpen = !showcaseOpen;
+            const wrap = document.getElementById('works-showcase-wrap');
+            const t = UI_TEXT[uiLang];
+            if (showcaseOpen) {
+                wrap.classList.remove('hidden');
+                document.getElementById('btn-toggle-showcase').textContent = t.btnShowcaseFold;
+            } else {
+                wrap.classList.add('hidden');
+                document.getElementById('btn-toggle-showcase').textContent = t.btnShowcaseOpen;
+            }
+        }
+
+        // KPI 및 대표 협업 작품 렌더링
+        function renderKPIAndWorks() {
+            const isKo = uiLang === 'KO';
+            const priorityCount = COMPANIES.filter(c => c.priority).length;
+            const kpis = isKo ? [
+                { num: COMPANIES.length + '개 그룹', label: '검증 완료 타깃 바이어 (대만+해외 5개 권역)' },
+                { num: priorityCount + '개사 ★', label: '최우선 미팅 추천 바이어 (핵심 타깃)' },
+                { num: VERIFIED_WORKS.length + '건', label: '대표 한국 IP 리메이크·배급 검증 사례' },
+                { num: '5개 국어', label: '맞춤형 초청장 (한/일/대만/영/중)' }
+            ] : [
+                { num: COMPANIES.length + ' 家集團', label: '已核實目標買家（台灣＋海外5大區域）' },
+                { num: priorityCount + ' 家 ★', label: '最優先推薦會面買家（核心目標）' },
+                { num: VERIFIED_WORKS.length + ' 部', label: '代表性韓國 IP 翻拍與發行驗證案例' },
+                { num: '5 種語言', label: '客製化邀約信（韓/日/繁中/英/簡中）' }
+            ];
+
+            document.getElementById('kpi-container').innerHTML = kpis.map(k => `
+                <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5">
+                    <div class="text-xl sm:text-2xl font-black text-indigo-600">${k.num}</div>
+                    <div class="text-xs text-slate-600 font-medium mt-0.5">${k.label}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('works-container').innerHTML = VERIFIED_WORKS.map(w => {
+                const title = isKo ? w.titleKo : w.titleTc;
+                const sub = isKo ? w.subKo : w.subTc;
+                const res = isKo ? w.resultKo : w.resultTc;
+                const buyer = isKo ? w.buyerKo : w.buyerTc;
+                const searchUrl = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(w.titleKo + ' 포스터');
+                return `
+                    <div class="shrink-0 w-56 rounded-xl p-4 text-white flex flex-col justify-between shadow-sm" style="background:linear-gradient(145deg, hsl(${w.hue} 65% 38%), hsl(${w.hue + 30} 60% 22%))">
+                        <div>
+                            <div class="text-[11px] opacity-85 font-medium">${sub}</div>
+                            <h3 class="text-lg font-black leading-snug mt-1">${title}</h3>
+                        </div>
+                        <div class="mt-3 pt-2.5 border-t border-white/25 text-xs space-y-1">
+                            <div class="font-bold">→ ${res}</div>
+                            <div class="opacity-90 text-[11px]">🏢 ${buyer}</div>
+                            <a href="${searchUrl}" target="_blank" rel="noopener" class="inline-block text-[11px] underline opacity-85 hover:opacity-100 pt-1">
+                                ${isKo ? '포스터 검색 ↗' : '搜尋海報 ↗'}
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 필터 탭 렌더링
+        function renderFilterTabs() {
+            const isKo = uiLang === 'KO';
+            const regionKeys = ['ALL', 'TW', 'JP', 'SEA', 'HKMO', 'CN', 'WEST'];
+            document.getElementById('region-tabs').innerHTML = regionKeys.map(r => {
+                const active = currentRegion === r;
+                const label = isKo ? REGION_INFO[r].ko : REGION_INFO[r].tc;
+                const count = r === 'ALL' ? COMPANIES.length : COMPANIES.filter(c => c.region === r).length;
+                return `
+                    <button onclick="setRegionFilter('${r}')" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${active ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">
+                        ${label} <span class="text-xs opacity-75">(${count})</span>
+                    </button>
+                `;
+            }).join('');
+
+            const tracks = [
+                { key: 'ALL', ko: '전체 사업', tc: '全部業務', cls: 'bg-slate-100 text-slate-700' },
+                { key: 'STAR', ko: '★ 최우선 미팅 대상', tc: '★ 最優先推薦買家', cls: 'bg-amber-50 text-amber-800 border border-amber-300' },
+                { key: 'SELECTED', ko: '☑ 선정된 바이어만', tc: '☑ 僅顯示已選定', cls: 'bg-indigo-50 text-indigo-700 border border-indigo-200' },
+                { key: 'T1', ko: TRACK_INFO.T1.ko, tc: TRACK_INFO.T1.tc, cls: 'bg-purple-50 text-purple-700 border border-purple-200' },
+                { key: 'T2', ko: TRACK_INFO.T2.ko, tc: TRACK_INFO.T2.tc, cls: 'bg-blue-50 text-blue-700 border border-blue-200' },
+                { key: 'T3', ko: TRACK_INFO.T3.ko, tc: TRACK_INFO.T3.tc, cls: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
+                { key: 'T4', ko: TRACK_INFO.T4.ko, tc: TRACK_INFO.T4.tc, cls: 'bg-rose-50 text-rose-700 border border-rose-200' }
+            ];
+
+            document.getElementById('track-tabs').innerHTML = tracks.map(t => {
+                const active = currentTrack === t.key;
+                const label = isKo ? t.ko : t.tc;
+                return `
+                    <button onclick="setTrackFilter('${t.key}')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${active ? 'bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-300' : t.cls + ' hover:opacity-90'}">
+                        ${label}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function setRegionFilter(region) {
+            currentRegion = region;
+            renderFilterTabs();
+            renderCompanies();
+        }
+
+        function setTrackFilter(track) {
+            currentTrack = track;
+            renderFilterTabs();
+            renderCompanies();
+        }
+
+        // 메인 뷰 전환
+        function switchMainView(view) {
+            ['directory', 'selected', 'templates'].forEach(v => {
+                const el = document.getElementById('view-' + v);
+                const tab = document.getElementById('tab-' + v);
+                if (v === view) {
+                    el.classList.remove('hidden');
+                    tab.className = 'flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all bg-indigo-600 text-white shadow flex items-center justify-center gap-1.5';
+                } else {
+                    el.classList.add('hidden');
+                    tab.className = 'flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-white flex items-center justify-center gap-1.5';
+                }
+            });
+            if (view === 'selected') {
+                renderSelectedView();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==================== 바이어 카드 그리드 렌더링 ====================
+        function renderCompanies() {
+            const grid = document.getElementById('company-grid');
+            const query = document.getElementById('search-input').value.trim().toLowerCase();
+            const isKo = uiLang === 'KO';
+            const t = UI_TEXT[uiLang];
+
+            const filtered = COMPANIES.filter(c => {
+                const matchRegion = currentRegion === 'ALL' || c.region === currentRegion;
+                let matchTrack = true;
+                if (currentTrack === 'STAR') matchTrack = c.priority;
+                else if (currentTrack === 'SELECTED') matchTrack = selectedBuyerIds.includes(c.id);
+                else if (currentTrack !== 'ALL') matchTrack = c.tracks.includes(currentTrack);
+
+                const searchBlob = `${c.nameKo} ${c.nameTc} ${c.scaleKo} ${c.scaleTc} ${c.koreaKo} ${c.koreaTc} ${c.pitchKo} ${c.pitchTc} ${(c.works || []).join(' ')}`.toLowerCase();
+                const matchSearch = !query || searchBlob.includes(query);
+
+                return matchRegion && matchTrack && matchSearch;
+            });
+
+            document.getElementById('filtered-count').textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-500">
+                        ${isKo ? '조건에 맞는 바이어가 없습니다. 필터를 변경해 보세요.' : '找不到符合條件的買家，請嘗試切換篩選條件。'}
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(c => {
+                const isSelected = selectedBuyerIds.includes(c.id);
+                const regionLabel = isKo ? REGION_INFO[c.region].ko : REGION_INFO[c.region].tc;
+                const name = isKo ? c.nameKo : c.nameTc;
+                const scale = isKo ? c.scaleKo : c.scaleTc;
+                const korea = isKo ? c.koreaKo : c.koreaTc;
+                const pitch = isKo ? c.pitchKo : c.pitchTc;
+
+                const badgesHtml = c.tracks.map(tr => {
+                    const info = TRACK_INFO[tr];
+                    return `<span class="text-[11px] font-bold px-2 py-0.5 rounded-md border ${info.badgeClass}">${isKo ? info.ko : info.tc}</span>`;
+                }).join('');
+
+                const worksHtml = (c.works && c.works.length > 0)
+                    ? `<div class="flex flex-wrap gap-1 pt-1">` + c.works.map(w => `<span class="text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 rounded">🎬 ${w}</span>`).join('') + `</div>`
+                    : '';
+
+                return `
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between p-5 ${isSelected ? 'card-selected' : ''}">
+                        <div class="space-y-3">
+                            <!-- 상단 헤더 & 임원 선정 체크 버튼 -->
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="text-xs font-bold px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700">${regionLabel}</span>
+                                    ${c.priority ? `<span class="text-[11px] font-extrabold px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300">★ ${isKo ? '최우선' : '最優先'}</span>` : ''}
+                                    <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">✓ ${isKo ? '검증완료' : '已核實'}</span>
+                                </div>
+
+                                <!-- 바이어 선정 토글 버튼 -->
+                                <button onclick="toggleSelectBuyer('${c.id}')" class="px-2.5 py-1 rounded-lg text-xs font-extrabold transition-all shrink-0 ${isSelected ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200'}">
+                                    ${isSelected ? t.btnSelectOn : t.btnSelectOff}
+                                </button>
+                            </div>
+
+                            <!-- 기업명 -->
+                            <h3 class="text-base font-black text-slate-900 leading-snug">${name}</h3>
+
+                            <!-- 트랙 배지 -->
+                            <div class="flex flex-wrap gap-1.5">
+                                ${badgesHtml}
+                            </div>
+
+                            ${worksHtml}
+
+                            <!-- 상세 정보: 개요 + 한국 협업 실적 + 제안 포인트 -->
+                            <div class="space-y-2 pt-1 text-xs leading-relaxed">
+                                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                    <span class="font-bold text-slate-800 block mb-0.5">${t.cardScaleLabel}</span>
+                                    <span class="text-slate-600">${scale}</span>
+                                </div>
+                                <div class="bg-emerald-50/60 p-2.5 rounded-xl border border-emerald-200/70">
+                                    <span class="font-bold text-emerald-900 block mb-0.5">${t.cardKoreaLabel}</span>
+                                    <span class="text-slate-700">${korea}</span>
+                                </div>
+                                <div class="bg-indigo-50/60 p-2.5 rounded-xl border border-indigo-100">
+                                    <span class="font-bold text-indigo-900 block mb-0.5">${t.cardPitchLabel}</span>
+                                    <span class="text-slate-800 font-medium">${pitch}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 하단 액션 버튼 -->
+                        <div class="pt-4 mt-4 border-t border-slate-100 flex items-center gap-2">
+                            <button onclick="openCompanyLetterModal('${c.id}')" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold bg-slate-900 hover:bg-indigo-600 text-white transition-colors shadow-sm flex items-center justify-center gap-1.5">
+                                <span>${t.btnOpenLetter}</span>
+                            </button>
+                            <button onclick="quickCopyCompanyLetter('${c.id}')" class="py-2 px-3 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors shrink-0">
+                                ${t.btnQuickCopy}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== 임원 선정 (Selection) 기능 ====================
+        function toggleSelectBuyer(companyId) {
+            const idx = selectedBuyerIds.indexOf(companyId);
+            const isKo = uiLang === 'KO';
+            if (idx > -1) {
+                selectedBuyerIds.splice(idx, 1);
+                showToast(isKo ? '선정 목록에서 제외되었습니다.' : '已從選定清單移除。');
+            } else {
+                selectedBuyerIds.push(companyId);
+                showToast(isKo ? '선정 바이어 목록에 추가되었습니다!' : '已加入選定買家清單！');
+            }
+            saveSelectionToStorage();
+            renderCompanies();
+            renderSelectedView();
+        }
+
+        function selectPriorityBuyers() {
+            const priorityIds = COMPANIES.filter(c => c.priority).map(c => c.id);
+            priorityIds.forEach(id => {
+                if (!selectedBuyerIds.includes(id)) selectedBuyerIds.push(id);
+            });
+            saveSelectionToStorage();
+            renderCompanies();
+            renderSelectedView();
+            showToast(uiLang === 'KO' ? '최우선 추천 바이어가 모두 선택되었습니다!' : '已選取所有最優先推薦買家！');
+        }
+
+        function clearAllSelectedBuyers() {
+            selectedBuyerIds = [];
+            saveSelectionToStorage();
+            renderCompanies();
+            renderSelectedView();
+            showToast(uiLang === 'KO' ? '선택이 모두 해제되었습니다.' : '已清空所有勾選。');
+        }
+
+        function updateBuyerMemo(companyId, value) {
+            buyerMemos[companyId] = value;
+            saveSelectionToStorage();
+            updateSelectedSummaryTextarea();
+        }
+
+        function renderSelectedView() {
+            const container = document.getElementById('selected-buyers-container');
+            const isKo = uiLang === 'KO';
+            const selectedCompanies = COMPANIES.filter(c => selectedBuyerIds.includes(c.id));
+
+            if (selectedCompanies.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-slate-50 rounded-2xl border border-dashed border-slate-300 p-8 text-center space-y-3">
+                        <div class="text-sm font-bold text-slate-600">
+                            ${isKo ? '아직 선정된 바이어가 없습니다.' : '目前尚未勾選任何買家。'}
+                        </div>
+                        <div class="flex justify-center gap-2">
+                            <button onclick="selectPriorityBuyers()" class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 text-white">
+                                ★ ${isKo ? '최우선 추천 바이어 일괄 선택' : '一鍵勾選最優先推薦買家'}
+                            </button>
+                            <button onclick="switchMainView('directory')" class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white">
+                                🏢 ${isKo ? '바이어 리스트로 이동' : '返回買家清單勾選'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                updateSelectedSummaryTextarea();
+                return;
+            }
+
+            container.innerHTML = selectedCompanies.map((c, idx) => {
+                const name = isKo ? c.nameKo : c.nameTc;
+                const regionLabel = isKo ? REGION_INFO[c.region].ko : REGION_INFO[c.region].tc;
+                const pitch = isKo ? c.pitchKo : c.pitchTc;
+                const memo = buyerMemos[c.id] || '';
+                const tracksStr = c.tracks.map(tr => isKo ? TRACK_INFO[tr].ko : TRACK_INFO[tr].tc).join(' / ');
+
+                return `
+                    <div class="bg-slate-50 rounded-xl border border-slate-200 p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div class="space-y-1.5 flex-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">${idx + 1}</span>
+                                <span class="text-xs font-bold px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700">${regionLabel}</span>
+                                ${c.priority ? `<span class="text-xs font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">★ 최우선</span>` : ''}
+                                <h4 class="text-sm sm:text-base font-black text-slate-900">${name}</h4>
+                            </div>
+                            <div class="text-xs font-semibold text-indigo-700">${tracksStr}</div>
+                            <div class="text-xs text-slate-600">${pitch}</div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 lg:w-96 shrink-0">
+                            <input type="text" value="${memo.replace(/"/g, '&quot;')}" oninput="updateBuyerMemo('${c.id}', this.value)" placeholder="${isKo ? '임원 코멘트 / 미팅 지시사항 입력...' : '填寫長官備註或指示...'}" class="flex-1 px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="openCompanyLetterModal('${c.id}')" class="px-3 py-2 rounded-lg text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 shrink-0">
+                                    📩 ${isKo ? '초청장' : '邀約信'}
+                                </button>
+                                <button onclick="toggleSelectBuyer('${c.id}')" class="px-2.5 py-2 rounded-lg text-xs font-bold bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 shrink-0">
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            updateSelectedSummaryTextarea();
+        }
+
+        function updateSelectedSummaryTextarea() {
+            const isKo = uiLang === 'KO';
+            const selectedCompanies = COMPANIES.filter(c => selectedBuyerIds.includes(c.id));
+            if (selectedCompanies.length === 0) {
+                document.getElementById('selected-summary-textarea').value = isKo
+                    ? '선정된 바이어가 없습니다.'
+                    : '尚未選定任何買家。';
+                return;
+            }
+
+            const lines = [];
+            lines.push(isKo
+                ? `[TAKEONE COMPANY] TCCF 타깃 바이어 선정 결과 (총 ${selectedCompanies.length}개 그룹)`
+                : `[TAKEONE COMPANY] TCCF 目標買家選定清單（共 ${selectedCompanies.length} 家集團）`
+            );
+            lines.push('==================================================');
+
+            selectedCompanies.forEach((c, i) => {
+                const name = isKo ? c.nameKo : c.nameTc;
+                const region = isKo ? REGION_INFO[c.region].ko : REGION_INFO[c.region].tc;
+                const tracks = c.tracks.map(tr => isKo ? TRACK_INFO[tr].ko : TRACK_INFO[tr].tc).join(', ');
+                const pitch = isKo ? c.pitchKo : c.pitchTc;
+                const memo = buyerMemos[c.id] ? ` | 💬 코멘트: ${buyerMemos[c.id]}` : '';
+                lines.push(`${i + 1}. [${region}] ${name}${c.priority ? ' (★최우선)' : ''}`);
+                lines.push(`   - 협업 분야: ${tracks}`);
+                lines.push(`   - 제안 핵심: ${pitch}${memo}`);
+                lines.push('');
+            });
+
+            document.getElementById('selected-summary-textarea').value = lines.join('\n');
+        }
+
+        function copySelectedSummaryText() {
+            updateSelectedSummaryTextarea();
+            const text = document.getElementById('selected-summary-textarea').value;
+            copyRawText(text, uiLang === 'KO' ? '선정 바이어 명단이 복사되었습니다! (카톡/슬랙/메일에 붙여넣기 하세요)' : '已複製選定買家清單！');
+        }
+
+        function exportSelectedCSV() {
+            const isKo = uiLang === 'KO';
+            const selectedCompanies = COMPANIES.filter(c => selectedBuyerIds.includes(c.id));
+            if (selectedCompanies.length === 0) {
+                showToast(isKo ? '먼저 바이어를 선택해 주세요.' : '請先勾選買家。');
+                return;
+            }
+
+            const headers = ['No', 'Region', 'Company_KO', 'Company_TC', 'Priority', 'Tracks', 'Verified_Korea_Collab', 'TAKEONE_Pitch', 'Executive_Memo'];
+            const rows = selectedCompanies.map((c, idx) => [
+                idx + 1,
+                REGION_INFO[c.region].ko,
+                `"${c.nameKo.replace(/"/g, '""')}"`,
+                `"${c.nameTc.replace(/"/g, '""')}"`,
+                c.priority ? 'STAR' : 'NORMAL',
+                `"${c.tracks.map(tr => TRACK_INFO[tr].ko).join(' / ')}"`,
+                `"${c.koreaKo.replace(/"/g, '""')}"`,
+                `"${c.pitchKo.replace(/"/g, '""')}"`,
+                `"${(buyerMemos[c.id] || '').replace(/"/g, '""')}"`
+            ]);
+
+            const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'TCCF_TAKEONE_Selected_Buyers.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast(isKo ? 'CSV 파일 다운로드가 시작되었습니다!' : '已下載 CSV 檔案！');
+        }
+
+        // ==================== 5개 국어 맞춤형 초청장 생성기 (KO / JA / TC / EN / SC) ====================
+        function generateCustomLetter(company, tracks, lang, includeIcebreaker = true) {
+            const hasT1 = tracks.includes('T1');
+            const hasT2 = tracks.includes('T2');
+            const hasT3 = tracks.includes('T3');
+            const hasT4 = tracks.includes('T4');
+            const isMulti = tracks.length > 1;
+
+            const rawName = (lang === 'KO') ? company.nameKo : company.nameTc;
+            const cleanName = rawName.split('(')[0].split('·')[0].split('/')[0].trim();
+
+            // 1. 한국어 (KO - 한국 임원 보고 및 한국어 소통용)
+            if (lang === 'KO') {
+                let subjParts = [];
+                if (hasT1) subjParts.push('오리지널 대본 판매 및 웹툰 IP 리메이크');
+                if (hasT2) subjParts.push('K-POP 아이돌 숏드라마/영화 및 드라마·애니 배급');
+                if (hasT3) subjParts.push('글로벌 영상·애니 공동투자 및 합작제작');
+                if (hasT4) subjParts.push('《ENHYPEN WORLD》 캐릭터 Vamkids 라이선스·팝업');
+                const subject = `[TCCF 미팅 제안] 한국 TAKEONE COMPANY — ${subjParts.join(', ')} 협업 제안`;
+
+                let items = [];
+                let idx = 1;
+                if (hasT1) {
+                    items.push(`${idx}. [고완성도 한국 오리지널 대본 판매 및 60+편 인기 웹툰(Webtoon) IP 영상화 리메이크 권리]\n   - 오리지널 상업 대본(현지 드라마/숏폼/영화 즉시 리메이크 가능): 판타지 로맨스, 학원 퇴마, 미스터리 스릴러, 밀실 서바이벌, SF 액션, 타임슬립 코미디, 요리 연애 서바이벌 등 다양한 상업 장르 보유.\n   - 검증된 한국 인기 웹툰 IP 60+편: 한국 카카오/다음 웹툰 랭킹 1위 및 부산국제영화제 초청작 《CELL》을 비롯하여 《마왕까지 한 걸음》, 《돌아온 여름에게》, 《여름소녀 강소년》 등 드라마·영화·숏폼 리메이크 판권.`);
+                    idx++;
+                }
+                if (hasT2) {
+                    items.push(`${idx}. [K-POP 최정상 아이돌 주연 숏드라마·영화, 텐트폴 한드 및 애니메이션 배급(Distribution)]\n   - K-POP 아이돌 주연 신작 20+편(세로형 숏드라마 + 가로형 영화 이중 규격 완비): NCT 제노&재민 주연 청춘 야구 드라마 《Wind Up》 및 TWICE 다현, MONSTA X 형원, THE BOYZ 영훈, ZEROBASEONE 김지웅, FIFTY FIFTY 등이 주연한 20여 편의 신작 라인업.\n   - 프라임타임 장편 드라마·상업영화·애니메이션: 시대 대작 《고래별(Whale Star)》, 영국 BBC 원작 리메이크 범죄 스릴러 《언포가튼(Unforgotten)》, 오컬트 공포영화 《밀례(密禮)》 및 오리지널 애니메이션 시리즈.`);
+                    idx++;
+                }
+                if (hasT3) {
+                    items.push(`${idx}. [영상 및 애니메이션 프로젝트 공동투자(Co-investment) & 글로벌 합작제작(Co-production)]\n   - 당사의 K-POP 최정상 아티스트 네트워크, 글로벌 숏폼 플랫폼 ‘KITZ’ 및 60+편 원작 IP를 바탕으로 글로벌 타깃 숏폼·장편 시리즈·상업영화 및 오리지널/웹툰 원작 애니메이션의 공동투자와 합작제작을 제안드립니다.`);
+                    idx++;
+                }
+                if (hasT4) {
+                    items.push(`${idx}. [《ENHYPEN WORLD》 공식 게임 캐릭터 IP ‘Vamkids(밤키즈)’ 라이선스·MD 유통·팝업스토어 협업]\n   - 당사는 ENHYPEN 공식 모바일 게임 《ENHYPEN WORLD》를 개발·서비스하며 멤버 기반 공식 캐릭터 IP ‘Vamkids(밤키즈)’를 보유하고 있습니다. 서울, 도쿄, 가오슝, 상하이, 미국 등에서 성공적으로 개최한 팝업스토어 실적을 바탕으로 (a) 캐릭터 상품화 및 콜라보 라이선스, (b) 공식 MD 및 인게임 아이템·실물 특전 포토카드 패키지 유통, (c) 현지 오프라인 팝업스토어 공동 기획·운영을 제안드립니다.`);
+                    idx++;
+                }
+
+                const iceLine = (includeIcebreaker && company.iceKo) ? `\n${company.iceKo}\n` : '';
+                const multiNote = isMulti ? `\n(귀사의 사업 영역이 다양한 만큼, 관련 부서 담당자분들과 함께 미팅하거나 제작개발팀·판권구매팀·투자팀별로 세션을 나누어 미팅하는 것 모두 환영합니다.)\n` : '';
+
+                const body = `안녕하세요, ${cleanName} 담당자님.
+
+한국의 종합 엔터테인먼트 및 IP 콘텐츠 스튜디오 TAKEONE COMPANY(테이크원컴퍼니)입니다.
+당사는 전문 스토리·웹툰 IP 기획개발 부문을 보유하고 있으며, 글로벌 K-POP 숏폼 드라마 플랫폼 ‘KITZ’와 공식 모바일 게임 《ENHYPEN WORLD》를 운영하고 드라마·영화·애니메이션을 제작하고 있습니다.
+${iceLine}
+이번 타이베이 TCCF 기간 중 귀사와 미팅을 갖고 아래 분야의 전략적 협업을 논의하고자 합니다:
+
+${items.join('\n\n')}
+${multiNote}
+TCCF 현장에서 당사의 최신 예고편 영상과 시놉시스, IP 카탈로그를 직접 공유드릴 수 있기를 기대합니다. 행사 기간 중 미팅 가능한 일시를 알려주시면 감사하겠습니다.
+
+감사합니다.
+TAKEONE COMPANY 드림`;
+
+                return { subject, body };
+            }
+
+            // 2. 일본어 (JA - 업계 표준 정중한 비즈니스 일본어, 과도한 경어 배제)
+            if (lang === 'JA') {
+                let subjParts = [];
+                if (hasT1) subjParts.push('韓国オリジナル脚本・ウェブトゥーンIP映像化');
+                if (hasT2) subjParts.push('K-POPアイドル主演作・韓国ドラマ配給');
+                if (hasT3) subjParts.push('映像・アニメ共同投資および共同製作');
+                if (hasT4) subjParts.push('『ENHYPEN WORLD』キャラクターIP「Vamkids」展開');
+                const subject = `【TCCF面談のお願い】韓国TAKEONE COMPANY — ${subjParts.join('／')}に関する協業のご提案`;
+
+                let items = [];
+                let idx = 1;
+                if (hasT1) {
+                    items.push(`${idx}. 【韓国オリジナル脚本の販売および60作品以上の人気ウェブトゥーン（Webtoon）IPの映像化・リメイク権許諾】\n   ・オリジナル商業脚本（日本版ドラマ・ショートドラマ・映画へのリメイクに最適）：ファンタジーロマンス、学園退魔、ミステリースリラー、密室サバイバル、SFアクション、タイムスリップ・コメディ、料理×恋愛サバイバルなど多彩な商業ジャンルを保有しております。\n   ・韓国人気ウェブトゥーンIP（60作品以上）：韓国Kakao/Daum 웹툰ランキング1位を獲得し釜山国際映画祭にも選出された『CELL』をはじめ、『魔王まであと一歩』『帰ってきた夏へ』『サマーガール・リバーボーイ』など、市場で 검증された人気IPの実写化・アニメ化権をご提案いたします。`);
+                    idx++;
+                }
+                if (hasT2) {
+                    items.push(`${idx}. 【K-POPトップアイドル主演ショートドラマ・映画、新作韓国ドラマ・アニメの日本配給・配信権（Distribution）】\n   ・K-POPアイドル主演の新作20タイトル以上（縦型ショートドラマ＋横型映画の2フォーマット対応）：NCTのJENO＆JAEMIN主演の青春野球ドラマ『Wind Up』をはじめ、TWICE ダヒョン、MONSTA X ヒョンウォン、THE BOYZ ヨンフン、ZEROBASEONE キム・ジウン、FIFTY FIFTYらが出演する新作20作品以上の日本国内配信権・放送権・パッケージ（DVD/BD）化権。\n   ・大型韓国ドラマ＆商業映画・アニメ：時代劇大作『鯨星（Whale Star）』、英BBC人気作の韓国リメイク版クライムサスペンス『Unforgotten』、韓国オカルトホラー映画『密礼（Mil-rye）』、およびオリジナルアニメーションシリーズ。`);
+                    idx++;
+                }
+                if (hasT3) {
+                    items.push(`${idx}. 【映像・アニメーション作品の共同投資（Co-investment）および日韓共同製作（Co-production）】\n   ・弊社のK-POPアーティストネットワーク、グローバルショートドラマプラットフォーム「KITZ」、および60作品以上の原作IPを活用し、グローバル向けショートドラマ・連続ドラマ・商業映画、ならびにウェブトゥーン原作アニメーションの共同投資・製作委員会への参画をご相談したく存じます。`);
+                    idx++;
+                }
+                if (hasT4) {
+                    items.push(`${idx}. 【『ENHYPEN WORLD』公式キャラクターIP「Vamkids（バムキッズ）」ライセンス・MD販売・ポップアップストア協業】\n   ・弊社はENHYPENの公式モバイルゲーム『ENHYPEN WORLD』を開発・運営しており、メンバーをモチーフにした専用キャラクターIP「Vamkids」を展開しております。東京・ソウル・高雄・上海・米国でのポップアップストア開催実績をもとに、(a) 日本国内における商品化ライセンス・コラボ展開、(b) 公式グッズ（MD）およびゲーム連動特典トレカパッケージの流通販売、(c) ポップアップストアの共同企画・運営についてご提案いたします。`);
+                    idx++;
+                }
+
+                const iceLine = (includeIcebreaker && company.iceJa) ? `\n${company.iceJa}\n` : '';
+                const multiNote = isMulti ? `\n（※貴社では複数の事業領域を展開されておりますので、関連部署の皆様との合同ミーティング、または編成・調達部門／制作開発部門ごとの個別ミーティングのいずれも柔軟に対応可能です。）\n` : '';
+
+                const body = `${cleanName}
+ご担当者様
+
+突然のご連絡にて失礼いたします。
+韓国の総合エンターテインメント・IPコンテンツ企業、TAKEONE COMPANY（テイクワン・カンパニー）と申します。
+
+弊社はオリジナルのストーリー・ウェブトゥーンIP開発部門を有し、グローバルK-POPショートドラマプラットフォーム「KITZ」および公式モバイルゲーム『ENHYPEN WORLD』の運営、ならびにドラマ・映画・アニメーションの企画制作を行っております。
+${iceLine}
+このたび台北で開催される「TCCF」への参加にあたり、ぜひ貴社と面談の機会をいただきたくご連絡いたしました。以下の分野において協業の可能性をご相談できれば幸いです。
+
+${items.join('\n\n')}
+${multiNote}
+当日は最新の予告編映像や企画書（Pitch Deck）、IPカタログをご覧いただければと存じます。
+ご多忙の折恐縮ですが、TCCF会期中にてご都合の良い日時をお知らせいただけますと幸いです。
+
+何卒よろしくお願い申し上げます。
+
+Best regards,
+TAKEONE COMPANY`;
+
+                return { subject, body };
+            }
+
+            // 3. 대만 번체중문 (TC)
+            if (lang === 'TC') {
+                let subjParts = [];
+                if (hasT1) subjParts.push('韓國原創劇本＆網漫IP改編');
+                if (hasT2) subjParts.push('K-POP偶像短劇/電影＆韓劇動畫發行');
+                if (hasT3) subjParts.push('影視與動畫合資合製');
+                if (hasT4) subjParts.push('《ENHYPEN WORLD》角色Vamkids授權與快閃店');
+                const subject = `［TCCF 會議邀約］韓國 TAKEONE COMPANY — ${subjParts.join('、')}合作洽談`;
+
+                let items = [];
+                let idx = 1;
+                if (hasT1) {
+                    items.push(`${idx}. 【高完成度韓國原創劇本銷售 ＆ 60+ 部人氣網漫（Webtoon）影視改編授權】\n   - 原創劇本（可直接翻拍為台劇／港劇／短劇／電影）：涵蓋奇幻愛情、校園驅魔、懸疑驚悚、密室生存、科幻動作、穿越喜劇、料理戀愛生存等多元商業題材。\n   - 韓國人氣網漫 IP 改編權：包含曾奪下韓國 Kakao/Daum Webtoon 排行榜冠軍並受邀釜山國際影展的《CELL》，以及《離魔王只有一步》、《致歸來的夏天》、《夏日女孩河男孩》等經過市場驗證的熱門網漫 IP。`);
+                    idx++;
+                }
+                if (hasT2) {
+                    items.push(`${idx}. 【K-POP 頂級偶像主演之短劇＆電影、旗艦韓劇與動畫之版權發行（Distribution）】\n   - K-POP 偶像短劇＆電影（直式短劇＋橫式電影雙規格）：包含 NCT JENO & JAEMIN 主演之爆款青春棒球劇《Wind Up》，以及由 FIFTY FIFTY、TWICE 多賢、MONSTA X 亨元、THE BOYZ 泳勛、ZEROBASEONE 金地雄等主演之 20 餘部新作。\n   - 黃金檔長篇韓劇與商業電影：包含時代大劇《鯨星（Whale Star）》、BBC 翻拍懸疑劇《Unforgotten》及韓國恐怖電影《密禮》等最新片單，以及原創動畫系列。`);
+                    idx++;
+                }
+                if (hasT3) {
+                    items.push(`${idx}. 【影視與動畫項目之共同投資（Co-investment）＆跨國聯合製作（Co-production）】\n   - 我們擁有深厚的 K-POP 頂級藝人合作網絡、自有全球短劇平台「KITZ」與完整製作體系，希望能與貴司探討全球向短劇、長篇影集、商業電影及原創／漫改動畫之共同投資與跨國合製（亦可搭配台灣文策院 TICP 國際合資方案共同推進）。`);
+                    idx++;
+                }
+                if (hasT4) {
+                    items.push(`${idx}. 【《ENHYPEN WORLD》遊戲內成員角色 IP「Vamkids」授權、周邊銷售與快閃店合作】\n   - 我們開發並營運 ENHYPEN 官方手遊《ENHYPEN WORLD》，並以成員為原型打造專屬角色形象「Vamkids（밤키즈）」。我們曾於高雄、東京、首爾、上海及美國成功舉辦多場 K-POP 快閃店，期待洽談：(a) 角色商品化與聯名授權、(b) 官方周邊（MD）與遊戲虛寶小卡禮包通路銷售、(c) 線下快閃店（Pop-up Store）共同策劃與營運。`);
+                    idx++;
+                }
+
+                const iceLine = (includeIcebreaker && company.iceTc) ? `\n${company.iceTc}\n` : '';
+                const multiNote = isMulti ? `\n（由於貴集團業務涵蓋多個領域，我們非常樂意於同一場會議與貴司相關部門共同交流，或配合貴司自製開發部、版權採購部、投資部等不同團隊分場次會面！）\n` : '';
+
+                const body = `${cleanName} 團隊您好！
+
+我們是韓國綜合娛樂與 IP 內容企業 TAKEONE COMPANY。我們擁有專業的原創故事與網漫 IP 開發部門、營運全球 K-POP 短劇平台「KITZ」與官方手遊《ENHYPEN WORLD》，並持續推出多元影視與動畫作品。
+${iceLine}
+久仰貴司在產業中的卓越實力與影響力，本次於 TCCF 展會期間，希望能與貴司預約會議，針對以下業務方向洽談合作：
+
+${items.join('\n\n')}
+${multiNote}
+期待能在展會期間與貴司見面，現場為您展示我們的最新片單預告、劇本與網漫 IP 目錄及角色圖庫！不知貴司於 TCCF 期間哪個時段方便安排會議？謝謝！
+
+Best regards,
+TAKEONE COMPANY`;
+
+                return { subject, body };
+            }
+
+            // 4. 중국어 간체 (SC)
+            if (lang === 'SC') {
+                let subjParts = [];
+                if (hasT1) subjParts.push('韩国原创剧本&网漫IP改编');
+                if (hasT2) subjParts.push('K-POP偶像短剧/电影&韩剧动画发行');
+                if (hasT3) subjParts.push('影视与动画合资合制');
+                if (hasT4) subjParts.push('《ENHYPEN WORLD》角色Vamkids授权与快闪店');
+                const subject = `［TCCF 会议邀约］韩国 TAKEONE COMPANY — ${subjParts.join('、')}合作洽谈`;
+
+                let items = [];
+                let idx = 1;
+                if (hasT1) {
+                    items.push(`${idx}. 【高完成度韩国原创剧本销售 ＆ 60+ 部人气网漫（Webtoon）影视改编授权】\n   - 原创剧本（非常适合华语本土化翻拍或出海短剧/电影改编）：涵盖奇幻爱情、校园驱魔、悬疑惊悚、密室生存、科幻动作、穿越喜剧、料理恋爱生存等多元高概念商业题材。\n   - 韩国人气网漫 IP 改编权：包含曾夺下韩国 Kakao/Daum Webtoon 排行榜冠军并受邀釜山国际电影节的《CELL》，以及《离魔王只有一步》、《致归来的夏天》、《夏日女孩河男孩》等热门网漫 IP。`);
+                    idx++;
+                }
+                if (hasT2) {
+                    items.push(`${idx}. 【K-POP 顶级偶像主演之短剧＆电影、旗舰韩剧与动画之版权发行（Distribution）】\n   - K-POP 偶像短剧＆电影（支持竖屏短剧＋横屏电影双规格）：包含 NCT JENO & JAEMIN 主演之爆款青春棒球剧《Wind Up》，以及由 FIFTY FIFTY、TWICE 多贤、MONSTA X 亨元、THE BOYZ 泳勋、ZEROBASEONE 金地雄等主演之 20 余部新作。\n   - 黄金档长篇韩剧与商业电影：包含时代大剧《鲸星（Whale Star）》、BBC 翻拍悬疑剧《Unforgotten》、恐怖电影《密礼》及原创动画系列。`);
+                    idx++;
+                }
+                if (hasT3) {
+                    items.push(`${idx}. 【影视与动画项目之共同投资（Co-investment）＆跨国联合制作（Co-production）】\n   - 我们拥有深厚的 K-POP 顶级艺人合作网络、自有全球短剧平台「KITZ」与完整制作体系，希望能与贵司探讨全球向短剧、长篇剧集、商业电影及原创／漫改动画之共同投资与跨国合制。`);
+                    idx++;
+                }
+                if (hasT4) {
+                    items.push(`${idx}. 【《ENHYPEN WORLD》游戏内成员角色 IP「Vamkids」授权、周边销售与快闪店合作】\n   - 我们开发并运营 ENHYPEN 官方手游《ENHYPEN WORLD》，并以成员为原型打造专属角色形象「Vamkids（밤키즈）」。我们曾于上海、高雄、东京、首尔及美国成功举办多场高人气 K-POP 快闪店，期待洽谈：(a) 角色商品化与联名授权、(b) 官方周边（MD）与游戏虚宝小卡礼包渠道销售、(c) 线下快闪店（Pop-up Store）共同策划与运营。`);
+                    idx++;
+                }
+
+                const body = `${cleanName} 团队您好！
+
+我们是韩国综合娱乐与 IP 内容企业 TAKEONE COMPANY。我们设有专业的原创故事与网漫 IP 开发部门、运营全球 K-POP 短剧平台「KITZ」与官方手游《ENHYPEN WORLD》，并持续推出多元影视与动画作品。
+
+久仰贵司在行业内的卓越实力与影响力，本次于 TCCF 展会期间，希望能与贵司预约会议，针对以下业务方向洽谈合作：
+
+${items.join('\n\n')}
+
+期待能在展会期间与贵司见面，现场为您展示我们的最新片单预告、剧本与网漫 IP 目录及角色图库！不知贵司于 TCCF 期间哪个时段方便安排会议？谢谢！
+
+Best regards,
+TAKEONE COMPANY`;
+
+                return { subject, body };
+            }
+
+            // 5. 영어 (EN)
+            let subjParts = [];
+            if (hasT1) subjParts.push('Script & Webtoon IP Remake');
+            if (hasT2) subjParts.push('K-POP Micro-Dramas/Films & K-Drama Distribution');
+            if (hasT3) subjParts.push('Co-Investment & Co-Production');
+            if (hasT4) subjParts.push('ENHYPEN Game Character "Vamkids" Licensing & Pop-Up');
+            const subject = `[TCCF Meeting Request] TAKEONE COMPANY (Korea) — ${subjParts.join(' / ')}`;
+
+            let items = [];
+            let idx = 1;
+            if (hasT1) {
+                items.push(`${idx}. [Original Scripts & 60+ Webtoon IPs for Local Remake / Adaptation]\n   - Ready-to-Shoot Commercial Screenplays (for Series, Micro-dramas & Feature Films): Covering Fantasy Romance, High School Exorcism, Mystery Thriller, Survival Game, Sci-Fi Action, Time-Travel Comedy, and Culinary Romance Survival.\n   - 60+ Proven Korean Webtoon IPs: Headlined by <CELL> (#1 on Kakao/Daum Webtoon & Official Selection at Busan International Film Festival), alongside <One Step from the Demon King>, <To the Returning Summer>, and <Summer Girl, River Boy>.`);
+                idx++;
+            }
+            if (hasT2) {
+                items.push(`${idx}. [Content Distribution: K-POP Idol Short Dramas/Films, Tentpole K-Dramas & Animation]\n   - 20+ K-POP Idol Starring Titles (Available in BOTH Vertical Micro-Drama & Horizontal Feature Film Formats): Including the hit youth baseball drama <Wind Up> starring NCT's JENO & JAEMIN, plus 20+ new titles starring TWICE (Dahyun), MONSTA X (Hyungwon), ZEROBASEONE (Kim Ji-woong), THE BOYZ (Younghoon), and FIFTY FIFTY.\n   - Flagship K-Dramas, Films & Animation: Including epic period drama <Whale Star>, the Korean remake of BBC's crime thriller <Unforgotten>, occult horror film <Mil-rye (Secret Ritual)>, and original animated series.`);
+                idx++;
+            }
+            if (hasT3) {
+                items.push(`${idx}. [Co-Investment & International Co-Production (Live-Action & Animation)]\n   - Leveraging our top-tier K-POP artist network, 60+ story IPs, and global short-form platform "KITZ", we are seeking strategic partners for co-financing and co-producing global short-form series, premium dramas, genre films, and original/webtoon-based animations.`);
+                idx++;
+            }
+            if (hasT4) {
+                items.push(`${idx}. [<ENHYPEN WORLD> Official Character IP "Vamkids" Licensing, MD & Pop-Up Stores]\n   - As the developer and publisher of ENHYPEN's official mobile game <ENHYPEN WORLD>, we created the member-based character IP "Vamkids". Following our successful pop-up stores in Tokyo, Seoul, Kaohsiung, Shanghai, and the US, we are looking for local partners for: (a) Character Licensing & Collaborations, (b) Official MD & Exclusive Photocard/Game Pack Distribution, and (c) Offline Pop-Up Store Co-Hosting.`);
+                idx++;
+            }
+
+            const iceLine = (includeIcebreaker && company.iceEn) ? `\n${company.iceEn}\n` : '';
+            const multiNote = isMulti ? `\n(As your group operates across multiple verticals, we would be delighted to meet with your relevant divisions together or schedule separate sessions with your Acquisitions, Development/Production, or Licensing teams!)\n` : '';
+
+            const body = `Dear ${cleanName} Team,
+
+Greetings from TAKEONE COMPANY, a leading South Korean comprehensive entertainment and IP content studio. We operate an in-house story & Webtoon IP lab, the global K-POP short-form drama platform "KITZ", and the hit mobile game <ENHYPEN WORLD>, alongside full-scale drama, film, and animation production.
+${iceLine}
+We greatly admire your strong market leadership and would love to schedule a meeting with your team at TCCF in Taipei to explore potential synergies across the following areas:
+
+${items.join('\n\n')}
+${multiNote}
+We look forward to sharing our latest trailers, IP pitch decks, and catalog with you in person. Could you let us know your availability during TCCF?
+
+Best regards,
+TAKEONE COMPANY`;
+
+            return { subject, body };
+        }
+
+        // ==================== 모달 제어 ====================
+        function openCompanyLetterModal(companyId) {
+            const company = COMPANIES.find(c => c.id === companyId);
+            if (!company) return;
+
+            activeModalCompany = company;
+            const isKo = uiLang === 'KO';
+            // 일본 바이어는 기본적으로 일본어(JA) 초청장을 보여주고, 그 외 권역은 권역 기본 언어 표시 (단, 한국어 UI에서도 바로 전환 가능)
+            currentModalLang = REGION_INFO[company.region].defaultLang;
+
+            document.getElementById('modal-company-region').textContent = isKo ? REGION_INFO[company.region].ko : REGION_INFO[company.region].tc;
+            document.getElementById('modal-company-name').textContent = isKo ? company.nameKo : company.nameTc;
+            document.getElementById('modal-company-tracks').textContent = (isKo ? '추천 제안 분야: ' : '推薦洽談業務：') + company.tracks.map(t => isKo ? TRACK_INFO[t].ko : TRACK_INFO[t].tc).join(' + ');
+
+            ['T1', 'T2', 'T3', 'T4'].forEach(t => {
+                document.getElementById('chk-' + t).checked = company.tracks.includes(t);
+            });
+
+            updateModalSelectButtonState();
+            updateModalLangButtons();
+            updateModalLetterContent();
+
+            document.getElementById('letter-modal').classList.remove('hidden');
+        }
+
+        function updateModalSelectButtonState() {
+            if (!activeModalCompany) return;
+            const isSelected = selectedBuyerIds.includes(activeModalCompany.id);
+            const btn = document.getElementById('modal-btn-select');
+            if (isSelected) {
+                btn.textContent = uiLang === 'KO' ? '☑ 선정 완료 (클릭 시 해제)' : '☑ 已選定此買家（點擊取消）';
+                btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-sm transition-colors';
+            } else {
+                btn.textContent = uiLang === 'KO' ? '☐ 이 바이어 선정 목록에 추가' : '☐ 將此買家加入選定清單';
+                btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors';
+            }
+        }
+
+        function toggleSelectFromModal() {
+            if (!activeModalCompany) return;
+            toggleSelectBuyer(activeModalCompany.id);
+            updateModalSelectButtonState();
+        }
+
+        function closeLetterModal() {
+            document.getElementById('letter-modal').classList.add('hidden');
+        }
+
+        function switchModalLang(lang) {
+            currentModalLang = lang;
+            updateModalLangButtons();
+            updateModalLetterContent();
+        }
+
+        function updateModalLangButtons() {
+            ['KO', 'JA', 'TC', 'EN', 'SC'].forEach(l => {
+                const btn = document.getElementById('modal-lang-' + l);
+                if (l === currentModalLang) {
+                    btn.className = 'px-2.5 py-1 rounded-md text-xs font-bold bg-indigo-600 text-white shadow-sm transition-all';
+                } else {
+                    btn.className = 'px-2.5 py-1 rounded-md text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 transition-all';
+                }
+            });
+        }
+
+        function updateModalLetterContent() {
+            if (!activeModalCompany) return;
+            const selectedTracks = ['T1', 'T2', 'T3', 'T4'].filter(t => document.getElementById('chk-' + t).checked);
+            const effectiveTracks = selectedTracks.length > 0 ? selectedTracks : activeModalCompany.tracks;
+            const includeIce = document.getElementById('chk-icebreaker').checked;
+
+            const { subject, body } = generateCustomLetter(activeModalCompany, effectiveTracks, currentModalLang, includeIce);
+            document.getElementById('modal-subject-input').value = subject;
+            document.getElementById('modal-body-textarea').value = body;
+        }
+
+        function quickCopyCompanyLetter(companyId) {
+            const company = COMPANIES.find(c => c.id === companyId);
+            if (!company) return;
+            const lang = REGION_INFO[company.region].defaultLang;
+            const { subject, body } = generateCustomLetter(company, company.tracks, lang, true);
+            const name = uiLang === 'KO' ? company.nameKo : company.nameTc;
+            copyRawText(`${subject}\n\n${body}`, `【${name.split('(')[0].trim()}】 ${uiLang === 'KO' ? '초청장이 복사되었습니다!' : '專屬邀約信已複製！'}`);
+        }
+
+        function copyFullModalLetter() {
+            const subj = document.getElementById('modal-subject-input').value;
+            const body = document.getElementById('modal-body-textarea').value;
+            copyRawText(`${subj}\n\n${body}`, uiLang === 'KO' ? '초청장 전체(제목+본문)가 복사되었습니다!' : '已複製完整信件（含主旨＋內文）！');
+        }
+
+        // ==================== 뷰 3: 5개 국어 마스터 템플릿 렌더링 ====================
+        function setTemplateLang(lang) {
+            currentTemplateLang = lang;
+            ['KO', 'JA', 'TC', 'EN', 'SC'].forEach(l => {
+                const btn = document.getElementById('tpl-lang-' + l);
+                if (l === lang) {
+                    btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm';
+                } else {
+                    btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900';
+                }
+            });
+            renderMasterTemplates();
+        }
+
+        function renderMasterTemplates() {
+            const container = document.getElementById('master-templates-container');
+            const isKo = uiLang === 'KO';
+            const dummyCompany = {
+                nameKo: '[바이어 기업명]',
+                nameTc: '[貴司名稱]',
+                iceKo: '', iceJa: '', iceTc: '', iceEn: ''
+            };
+
+            const presets = [
+                {
+                    titleKo: '⭐ [종합 미디어 그룹용] 다중 사업 통합 초청장 (대본/웹툰 리메이크 + 완성작 배급 + 공동투자)',
+                    titleTc: '⭐ 【綜合型大型集團專用】多重項目打包邀約信（劇本改編＋成品發行＋合資合拍）',
+                    subKo: '대상: 타이완모바일, 완인 인터내셔널, NTT 도코모(Lemino), TV도쿄, 태국 True CJ, 범아시아 Viu, 홍콩 MakerVille, BBC Studios 등',
+                    subTc: '適用於：台灣大哥大、網銀國際、日本 NTT DOCOMO、東京電視台、泰國正大 True CJ、泛亞 Viu、香港 MakerVille、BBC Studios 等',
+                    tracks: ['T1', 'T2', 'T3'],
+                    highlight: true
+                },
+                {
+                    titleKo: '① [대본 & 웹툰 IP 리메이크 바이어용] 현지 드라마·영화 제작사 / 방송사 자체제작부',
+                    titleTc: '① 發送給【劇本與 IP 改編買家：影視開發商／製作公司／電視台自製部】',
+                    subKo: '핵심 전략: 오리지널 상업 대본 + 60+편 웹툰 IP(《CELL》 등) 영상화 리메이크 판권 패키지 제안',
+                    subTc: '策略重點：將原創劇本與 60+ 部原創網漫（《CELL》等）一起打包，專賣影視改編權與翻拍劇本',
+                    tracks: ['T1'],
+                    highlight: false
+                },
+                {
+                    titleKo: '② [완성작 구매·배급 바이어용] OTT 플랫폼 / 방송사 구매부 / 극장·애니 배급사',
+                    titleTc: '② 發送給【成品買家：OTT 平台／電視台購片部／院線與動畫發行商】',
+                    subKo: '핵심 전략: K-POP 아이돌 숏드라마/영화 20+편(가로·세로 이중 규격), 대작 한드 《Whale Star》《Unforgotten》, 공포영화 《밀례》 배급',
+                    subTc: '策略重點：專賣 K-POP 偶像短劇/電影 20+ 部（直橫雙規格）、長劇《鯨星》《Unforgotten》、恐怖片《密禮》與動畫發行權',
+                    tracks: ['T2'],
+                    highlight: false
+                },
+                {
+                    titleKo: '③ [공동투자 & 합작 파트너용] 글로벌 제작사 / 투자 배급사 / 애니메이션 스튜디오',
+                    titleTc: '③ 發送給【合資與合拍夥伴：影視投資方／跨國製作公司／動畫製作公司】',
+                    subKo: '핵심 전략: 신규 글로벌 숏폼·드라마·영화 및 웹툰 원작 애니메이션의 공동투자(Co-investment) 및 합작제작(Co-production)',
+                    subTc: '策略重點：洽談新項目的共同投資（Co-investment）與跨國聯合製作（Co-production）',
+                    tracks: ['T3'],
+                    highlight: false
+                },
+                {
+                    titleKo: '④ [캐릭터 라이선스·MD·팝업 파트너용] 굿즈 유통사 / 팝업스토어 운영사 / 에이전시',
+                    titleTc: '④ 發送給【角色授權代理商／周邊通路／快閃店營運商】',
+                    subKo: '핵심 전략: 《ENHYPEN WORLD》 멤버 캐릭터 IP ‘Vamkids’ 라이선스, 인게임 포토카드 패키지 유통 및 현지 팝업스토어 개최',
+                    subTc: '策略重點：獨立洽談《ENHYPEN WORLD》成員角色「Vamkids」之授權、周邊與虛寶小卡禮包銷售、快閃店合作',
+                    tracks: ['T4'],
+                    highlight: false
+                }
+            ];
+
+            container.innerHTML = presets.map(p => {
+                const { subject, body } = generateCustomLetter(dummyCompany, p.tracks, currentTemplateLang, false);
+                const fullText = `${subject}\n\n${body}`;
+                const encodedText = encodeURIComponent(fullText);
+
+                return `
+                    <div class="${p.highlight ? 'lg:col-span-2 bg-amber-50/40 border-amber-300 ring-1 ring-amber-200' : 'bg-slate-50 border-slate-200'} rounded-2xl border p-5 flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                                <h3 class="text-base font-bold text-slate-900">${isKo ? p.titleKo : p.titleTc}</h3>
+                                <button onclick="copyDecodedText('${encodedText}', '${isKo ? '템플릿이 복사되었습니다!' : '已複製模板信件！'}')" class="self-start sm:self-auto px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all shrink-0">
+                                    📋 ${isKo ? '이 템플릿 복사' : '一鍵複製此模板'}
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-3">${isKo ? p.subKo : p.subTc}</p>
+                            <div class="bg-white rounded-xl border border-slate-200 p-4 space-y-2">
+                                <div class="text-xs font-bold text-indigo-700 border-b border-slate-100 pb-2">${subject}</div>
+                                <pre class="text-xs text-slate-700 whitespace-pre-wrap font-sans leading-relaxed max-h-64 overflow-y-auto custom-scrollbar">${body}</pre>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== 클립보드 유틸리티 ====================
+        function copyTextFromElement(elementId, msg) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            copyRawText(el.value, msg);
+        }
+
+        function copyDecodedText(encoded, msg) {
+            copyRawText(decodeURIComponent(encoded), msg);
+        }
+
+        function copyRawText(text, msg) {
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            temp.style.position = 'fixed';
+            temp.style.left = '-9999px';
+            document.body.appendChild(temp);
+            temp.select();
+            try {
+                document.execCommand('copy');
+                showToast(msg || '클립보드에 복사되었습니다!');
+            } catch (err) {
+                console.error('Copy failed', err);
+            }
+            document.body.removeChild(temp);
+        }
+
+        let toastTimeout = null;
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = msg;
+            toast.classList.remove('hidden');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2600);
+        }
+    </script>
+</body>
+</html>
