@@ -7349,7 +7349,18 @@ svg, img, video, canvas {
         if (savedLiveBg) {
           const parsedBg = JSON.parse(savedLiveBg);
           if (parsedBg && typeof parsedBg === 'object') {
-            Object.assign(liveDexcomState, parsedBg);
+            const ageMs = parsedBg.sensorTimestampMs ? (Date.now() - Number(parsedBg.sensorTimestampMs)) : Infinity;
+            // 超过 6 小时的旧传感器读数（例如 11-07 传感器用完前的最后一次 124）绝不恢复到顶部「实时血糖」圆框！
+            if (ageMs >= -5 * 60000 && ageMs <= 6 * 3600 * 1000) {
+              Object.assign(liveDexcomState, parsedBg);
+            } else {
+              liveDexcomState.bg = null;
+              liveDexcomState.delta = null;
+              liveDexcomState.sensorTimestampMs = 0;
+              liveDexcomState.cachedSessionId = parsedBg.cachedSessionId || '';
+              liveDexcomState.cachedRegion = parsedBg.cachedRegion || '';
+              localStorage.removeItem('steadyBg_liveDexcomState_v4');
+            }
           }
         }
       } catch (e) {
@@ -8119,17 +8130,22 @@ svg, img, video, canvas {
                 : [{ Value: data.bg, WT: data.wt, ts: wtMs || Date.now() }]
             );
 
-            updateLiveBgManually(data.bg, true);
-            updateLiveTrendManually(arrow);
-            autoBackfillPostMealBgFromDexcom();
+            const isLiveFresh6h = wtMs ? ((Date.now() - wtMs) <= 6 * 3600 * 1000) : true;
+            if (isLiveFresh6h) {
+              updateLiveBgManually(data.bg, true);
+              updateLiveTrendManually(arrow);
+              autoBackfillPostMealBgFromDexcom();
+            } else {
+              resetLiveDexcomBadgeToWaiting(t.dexcomNoNewData);
+            }
             updateTopSteadyStateDashboard();
             persistStateLocally();
             if (archRes.changedDates > 0) {
               scheduleAutoSync('Dexcom 24h全量曲线归档');
             }
 
-            if (hintEl) hintEl.textContent = `${t.dexcomSyncedAt} ${krHm}`;
-            if (dotEl) dotEl.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse-soft shrink-0';
+            if (hintEl) hintEl.textContent = isLiveFresh6h ? `${t.dexcomSyncedAt} ${krHm}` : t.dexcomNoNewData;
+            if (dotEl) dotEl.className = isLiveFresh6h ? 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse-soft shrink-0' : 'w-2 h-2 rounded-full bg-slate-400 shrink-0';
             if (!silent) {
               const deltaStr = liveDexcomState.delta !== null ? `(${liveDexcomState.delta >= 0 ? '+' + liveDexcomState.delta : liveDexcomState.delta} mg/dL)` : '';
               appendDexcomDiagLog(`🎉 成功读取最新血糖: ${data.bg} ${arrow} ${deltaStr} ｜ 已同步归档 ${archRes.totalArchivedPts} 个连续血糖点！`, 'text-emerald-400 font-bold');
@@ -8137,9 +8153,12 @@ svg, img, video, canvas {
             }
             return;
           } else if (data && data.ok && data.count === 0) {
+            resetLiveDexcomBadgeToWaiting(t.dexcomNoNewData);
+            persistStateLocally();
             if (hintEl) hintEl.textContent = t.dexcomNoNewData;
+            if (dotEl) dotEl.className = 'w-2 h-2 rounded-full bg-slate-400 shrink-0';
             if (!silent) {
-              appendDexcomDiagLog('⚠️ 账号登录成功！但过去 24 小时内 Dexcom 未上传新读数。', 'text-amber-300 font-bold');
+              appendDexcomDiagLog('⚠️ 账号登录成功！但过去 24 小时内 Dexcom 未上传新读数（传感器已到期或未佩戴），已自动清空旧缓存读数。', 'text-amber-300 font-bold');
               showToast(t.dexcomNoNewData, 'warn');
             }
             return;
@@ -8162,6 +8181,22 @@ svg, img, video, canvas {
           return;
         }
       }
+    }
+
+    function resetLiveDexcomBadgeToWaiting(statusMsg = '') {
+      liveDexcomState.bg = null;
+      liveDexcomState.delta = null;
+      liveDexcomState.sensorTimestampMs = 0;
+      const valEl = document.getElementById('liveBgValue');
+      const trEl = document.getElementById('liveBgTrend');
+      const badgeEl = document.getElementById('followCircleBadge');
+      const deltaEl = document.getElementById('liveBgDelta');
+      const agoEl = document.getElementById('liveBgTimeAgo');
+      if (valEl) valEl.textContent = '--';
+      if (trEl) trEl.textContent = '→';
+      if (badgeEl) badgeEl.className = 'px-2.5 py-1 rounded-2xl bg-slate-200 text-slate-600 flex items-baseline gap-1 shadow-inner transition-colors';
+      if (deltaEl) deltaEl.textContent = 'mg/dL';
+      if (agoEl) agoEl.textContent = statusMsg || (UI_TEXT[currentLang] || UI_TEXT.zh).dexcomNoNewData;
     }
 
     async function testDexcomConnectionNow() {
@@ -8750,7 +8785,7 @@ svg, img, video, canvas {
 
     // 启动与拉取云端后自动静默净化连续多日冻结的假血糖（如 11-07 ~ 11-13 连续 124），100% 保留真实饮食与胰岛素！
     async function autoSanitizeFrozenStaleBgInStore(syncCloudAfter = true) {
-      const candidates = detectStaleFrozenBgCandidates(4, 5);
+      const candidates = detectStaleFrozenBgCandidates(3, 4);
       if (candidates.length === 0) return false;
       const { clearedCells } = executeStaleCandidatesPurge(candidates);
       if (clearedCells > 0) {
@@ -8764,9 +8799,9 @@ svg, img, video, canvas {
       return false;
     }
 
-    // 手动一键清理入口（降低阈值至 >=3 天即可检出）
+    // 手动一键清理入口（降低阈值至 >=2 天即可检出）
     async function cleanStaleRepeatedBgArtifacts(skipConfirm = false) {
-      const staleCandidates = detectStaleFrozenBgCandidates(3, 4);
+      const staleCandidates = detectStaleFrozenBgCandidates(2, 3);
       if (staleCandidates.length === 0) {
         showToast('✅ 未检测到多日重复冻结的缓存误填血糖记录！', 'info', 3200);
         return;
