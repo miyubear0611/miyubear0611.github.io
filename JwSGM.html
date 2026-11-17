@@ -904,9 +904,9 @@ svg, img, video, canvas {
               <option value="30" id="optPanoAgp30">30d</option>
               <option value="all" id="optPanoAgpAll">All</option>
             </select>
-            <label class="px-2.5 py-1 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold cursor-pointer shadow-sm transition inline-flex items-center gap-1" title="Import Dexcom Clarity CSV / XML">
-              <span>📥</span> <span id="uiPanoImportClarityBtn">导入10月至今Dexcom历史CSV</span>
-              <input type="file" multiple accept=".csv,.tsv,.xml,.json,.txt" onchange="importDexcomHistoryFiles(event)" class="hidden" />
+            <label class="px-2.5 py-1 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold cursor-pointer shadow-sm transition inline-flex items-center gap-1" title="Import & Cloud-Upload Dexcom Clarity PDF / CSV / XML">
+              <span>📥</span> <span id="uiPanoImportClarityBtn">导入并云上传 Dexcom (.pdf/.csv)</span>
+              <input type="file" multiple accept=".pdf,.csv,.tsv,.xml,.json,.txt" onchange="importDexcomHistoryFiles(event)" class="hidden" />
             </label>
             <div id="daily24hStatsPills" class="flex flex-wrap items-center gap-1.5 text-[11px]">
               <!-- Dynamically populated: Points count, Mean BG, 70-180 TIR, 80-160 Tight TIR, CV% -->
@@ -1473,8 +1473,8 @@ svg, img, video, canvas {
               <span>📋</span> <span id="uiBtnCopyAllHist">复制全部历史报告</span>
             </button>
             <label class="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-sm cursor-pointer transition flex items-center gap-1">
-              <span>📥</span> <span id="uiBtnImportClarityTop">导入10月至今 Dexcom 历史 CSV</span>
-              <input type="file" multiple accept=".csv,.tsv,.xml,.json,.txt" onchange="importDexcomHistoryFiles(event)" class="hidden" />
+              <span>📥</span> <span id="uiBtnImportClarityTop">导入并云上传 Dexcom (.pdf/.csv)</span>
+              <input type="file" multiple accept=".pdf,.csv,.tsv,.xml,.json,.txt" onchange="importDexcomHistoryFiles(event)" class="hidden" />
             </label>
             <button onclick="exportAllHistoryDoctorCSV()" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition flex items-center gap-1">
               <span>📥</span> <span id="uiBtnExportAllHistCsv">导出全量医生分析 CSV</span>
@@ -1757,8 +1757,8 @@ svg, img, video, canvas {
               <input type="file" accept=".json" onchange="importFullJsonBackup(event)" class="hidden" />
             </label>
             <label class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-semibold cursor-pointer transition shadow-sm">
-              <span id="uiCfgImportClarityQuickBtn">📥 导入 Dexcom 历史全量曲线 (.csv/.xml)</span>
-              <input type="file" multiple accept=".csv,.tsv,.xml,.json,.txt" onchange="importDexcomHistoryFiles(event)" class="hidden" />
+              <span id="uiCfgImportClarityQuickBtn">📥 导入并云上传 Dexcom 历史 (.pdf/.csv)</span>
+              <input type="file" multiple accept=".pdf,.csv,.tsv,.xml,.json,.txt" onchange="importDexcomHistoryFiles(event)" class="hidden" />
             </label>
             <button type="button" onclick="cleanStaleRepeatedBgArtifacts()" id="uiCfgCleanStaleBgBtn" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-600 text-white font-semibold transition">🧹 清理历史缓存误填血糖 (保留饮食/胰岛素)</button>
           </div>
@@ -1804,12 +1804,12 @@ svg, img, video, canvas {
           <div class="p-3 rounded-xl bg-white/95 border border-sky-200 space-y-2.5">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <div id="uiClarityBoxTitle" class="font-bold text-sky-950 text-xs">📥 导入以前的 Dexcom 全部历史血糖 (Dexcom Clarity CSV / XML / JSON)</div>
-                <div id="uiClarityBoxSub" class="text-[11px] text-slate-500">支持一次多选多个 Clarity 导出的 90 天 CSV 文件，100% 保留已有饮食与胰岛素打卡</div>
+                <div id="uiClarityBoxTitle" class="font-bold text-sky-950 text-xs">📥 导入并云上传以前的 Dexcom 全部历史血糖 (支持 Clarity PDF / CSV / XML)</div>
+                <div id="uiClarityBoxSub" class="text-[11px] text-slate-500">直接选择 Dexcom Clarity 下载的 .pdf 报告或 .csv 文件，解析后自动上传至云端共享库 (BGKV)，所有接入网页的用户均可查看</div>
               </div>
               <label class="px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs cursor-pointer shadow-sm transition shrink-0">
-                <span id="uiClaritySelectBtn">📂 选择 Clarity CSV / XML 文件导入</span>
-                <input type="file" multiple accept=".csv,.tsv,.xml,.json,.txt" onchange="importDexcomHistoryFiles(event)" class="hidden" />
+                <span id="uiClaritySelectBtn">📂 选择 Clarity PDF / CSV 导入并云上传</span>
+                <input type="file" multiple accept=".pdf,.csv,.tsv,.xml,.json,.txt" onchange="importDexcomHistoryFiles(event)" class="hidden" />
               </label>
             </div>
 
@@ -2454,25 +2454,29 @@ svg, img, video, canvas {
         optPrevWeekly: '📊 本周7天总表 (Weekly)',
         optPrevAllHist: '🏥 全部历史医生报告 (All History)',
         btnSendFromPreview: '🚀 立即发送此报告至双邮箱',
-        cfgImportClarityQuickBtn: '📥 导入 Dexcom 历史全量曲线 (.csv/.xml)',
-        clarityBoxTitle: '📥 导入以前的 Dexcom 全部历史血糖 (Dexcom Clarity CSV / XML / JSON)',
-        clarityBoxSub: '支持一次多选多个 Clarity 导出的 90 天 CSV 文件，100% 保留已有饮食与胰岛素打卡',
-        claritySelectBtn: '📂 选择 Clarity CSV / XML 文件导入',
+        cfgImportClarityQuickBtn: '📥 导入并云上传 Dexcom 历史 (.pdf/.csv)',
+        clarityBoxTitle: '📥 导入并云上传以前的 Dexcom 全部历史血糖 (支持 Clarity PDF / CSV / XML)',
+        clarityBoxSub: '直接选择 Dexcom Clarity 下载的 .pdf 报告或 .csv 文件，解析后自动上传至云端共享库 (BGKV)，所有接入网页的用户均可查看',
+        claritySelectBtn: '📂 选择 Clarity PDF / CSV 导入并云上传',
         clarityTzLabel: '🕒 历史文件时间基准:',
         optClarityTzLocal: '📱 按手机/接收器当地时间 (Clarity默认·已在伊朗)',
         optClarityTzUtc: '🌐 按 UTC 标准时间换算为伊朗时间 (+3:30)',
         optClarityTzKr: '🇰🇷 按韩国时间换算为伊朗时间 (-5:30)',
         clarityBackfillChk: '✨ 自动用历史曲线补齐过去漏测的空腹 / 睡前 / 餐后2h空白格（绝不覆盖手填值）',
-        clarityGuideSummary: '💡 30秒导出以前所有 Dexcom 历史数据教程（突破 Share 接口 24 小时限制）',
-        clarityGuideBody: '<div>1. 用同一个 Dexcom 账号登录官方历史库：国际服打开 <b>clarity.dexcom.eu</b>（美服打开 <b>clarity.dexcom.com</b>）；</div><div>2. 点击页面右上角 <b>【Export / 导出】</b> 按钮 → 选择 <b>90 Days</b> 下载 <code>Clarity_Export_*.csv</code>（若有半年或一年历史，按日期分段导出多个 CSV 即可）；</div><div>3. 点击上方蓝色的 <b>【📂 选择 Clarity CSV / XML 文件导入】</b>（可一次框选全部 CSV 文件），系统会自动把每天 288 个点拼成完整历史曲线并同步上云！</div>',
+        clarityGuideSummary: '💡 30秒把 Dexcom 历史报告 (.pdf / .csv) 上传到云端共享教程',
+        clarityGuideBody: '<div>1. 用同一个 Dexcom 账号登录官方历史库：国际服打开 <b>clarity.dexcom.eu</b>（美服打开 <b>clarity.dexcom.com</b>）；</div><div>2. 直接下载包含<b>每日图谱 (Daily / 일간)</b> 的 <b>.pdf 报告</b>，或点右上角 <b>【Export / 导出】</b> 下载 <code>.csv</code> 文件；</div><div>3. 点击上方蓝色的 <b>【📂 选择 Clarity PDF / CSV 导入并云上传】</b>，系统会在浏览器内提取全部每 5 分钟曲线点并自动上传至云端共享库 (BGKV)，所有接入网页的设备打开即可自动看到！</div>',
         geminiReadyBadge: '👑 已识别新版 AQ. / AIza 格式 Gemini API Key · 自动调用最新 Gemini 3 系列四语医疗精翻（可点右上角「测试并刷新」实测）',
         geminiNeedKeyBadge: '✅ 云端 Worker 已内置您的新版 AQ. Gemini API Key（支持 AQ. 与 AIza 双格式）· 更新部署 wirj.txt 后点击右上角「🌐 测试并刷新四语翻译」即可验证实时 Gemini 3 命中！',
         geminiTestingBadge: '⏳ 正在实测云端 Gemini 3 四语医疗与波斯菜精翻通道...',
         geminiLiveOkPrefix: '👑 Gemini AI 已真实连通！当前命中模型:',
         geminiFallbackWarn: '⚠️ 云端尚未更新最新 wirj.txt（或项目额度繁忙），本次暂由 Google 翻译兜底完成四语转换:',
         clarityImportDonePrefix: '🎉 历史全量导入完成！',
-        clarityImportNoPts: '⚠️ 未在所选文件中识别到有效血糖点，请确认导出的是 Dexcom Clarity CSV / XML 文件',
-        panoImportClarityBtn: '导入10月至今Dexcom历史CSV',
+        clarityImportNoPts: '⚠️ 未在所选文件中识别到有效血糖曲线，请选择含每日曲线图 (Daily/일간) 的 Dexcom Clarity .pdf 报告或 .csv/.xml 文件',
+        panoImportClarityBtn: '导入并云上传 Dexcom (.pdf/.csv)',
+        clarityCloudUploading: '⏳ 正在解析文件并上传全量曲线至云端共享库 (BGKV)...',
+        clarityCloudSyncedSuffix: '☁️ 已同步至云端共享库 (所有接入网页的用户均可看到)',
+        clarityCloudPinWarn: '⚠️ 本地已解析成功，但云端上传需口令 (401)！请点右上角「⚙️ 设置」填入 Worker 访问口令 (AUTH_PIN) 后点「保存并立即同步」即可上传云端供所有人查看！',
+        clarityCloudNetWarn: '⚠️ 本地已解析保存，当前网络暂未连上云端 Worker；联网后点右上角「⚙️ 设置 ➔ 保存并立即同步」即可上传云端共享',
         btnExpandAllMeals: '📂 全部展开',
         btnCollapseAllMeals: '📁 全部折叠',
         expandAnyMealHint: '点击展开选择食物 / 填写血糖与胰岛素',
@@ -2961,25 +2965,29 @@ svg, img, video, canvas {
         optPrevWeekly: '📊 주간 7일 종합표 (Weekly)',
         optPrevAllHist: '🏥 의료진 전체 기록 보고서 (All History)',
         btnSendFromPreview: '🚀 이 보고서를 두 이메일로 즉시 발송',
-        cfgImportClarityQuickBtn: '📥 Dexcom 과거 전체 기록 가져오기 (.csv/.xml)',
-        clarityBoxTitle: '📥 과거 Dexcom 전체 혈당 기록 일괄 가져오기 (Dexcom Clarity CSV / XML / JSON)',
-        clarityBoxSub: 'Clarity에서 내보낸 90일 단위 CSV 여러 개를 한 번에 선택 가능 · 기존 식단/인슐린 기록 100% 보존',
-        claritySelectBtn: '📂 Clarity CSV / XML 파일 선택',
+        cfgImportClarityQuickBtn: '📥 Dexcom 과거 기록 가져오기 및 클라우드 업로드 (.pdf/.csv)',
+        clarityBoxTitle: '📥 과거 Dexcom 전체 혈당 기록 가져오기 및 클라우드 공유 (Clarity PDF / CSV / XML 지원)',
+        clarityBoxSub: 'Dexcom Clarity에서 다운로드한 .pdf 보고서 또는 .csv 파일을 바로 선택하면 클라우드 공유 저장소(BGKV)에 자동 업로드되어 모든 접속 기기에서 볼 수 있습니다',
+        claritySelectBtn: '📂 Clarity PDF / CSV 선택 및 클라우드 업로드',
         clarityTzLabel: '🕒 파일 시간대 기준:',
         optClarityTzLocal: '📱 기기 현지 기록 시간 그대로 사용 (Clarity 기본·이란 시간)',
         optClarityTzUtc: '🌐 UTC 표준시 ➔ 이란 시간 변환 (+3:30)',
         optClarityTzKr: '🇰🇷 한국 시간 ➔ 이란 시간 변환 (-5:30)',
         clarityBackfillChk: '✨ 과거 누락된 공복 / 취침 전 / 식후 2h 빈칸을 연속혈당 곡선으로 자동 보완 (수동 입력값 보존)',
-        clarityGuideSummary: '💡 과거 모든 Dexcom 데이터 30초 내보내기 가이드 (Share 24시간 제한 해결)',
-        clarityGuideBody: '<div>1. 동일한 Dexcom 계정으로 공식 기록 보관소 접속: 국제서버 <b>clarity.dexcom.eu</b> (미국서버 <b>clarity.dexcom.com</b>);</div><div>2. 우측 상단 <b>[Export / 내보내기]</b> 클릭 → <b>90 Days</b> 선택 후 <code>Clarity_Export_*.csv</code> 다운로드 (수개월~1년치도 기간별로 여러 개 다운로드 가능);</div><div>3. 위 파란색 <b>[📂 Clarity CSV / XML 파일 선택]</b> 버튼으로 파일들을 한 번에 선택하면 하루 288개 곡선이 자동 병합 및 클라우드 동기화됩니다!</div>',
+        clarityGuideSummary: '💡 Dexcom 과거 보고서 (.pdf / .csv) 30초 클라우드 업로드 가이드',
+        clarityGuideBody: '<div>1. 동일한 Dexcom 계정으로 공식 기록 보관소 접속: 국제서버 <b>clarity.dexcom.eu</b> (미국서버 <b>clarity.dexcom.com</b>);</div><div>2. <b>일간(Daily) 그래프</b>가 포함된 <b>.pdf 보고서</b>를 바로 저장하거나 우측 상단 <b>[Export]</b>에서 <code>.csv</code> 파일을 다운로드합니다;</div><div>3. 위 파란색 <b>[📂 Clarity PDF / CSV 선택 및 클라우드 업로드]</b> 버튼을 누르면 5분 단위 전체 곡선이 추출되어 클라우드 공유 저장소(BGKV)에 동기화되며 모든 기기에서 자동 표시됩니다!</div>',
         geminiReadyBadge: '👑 신규 AQ. / AIza 형식 Gemini API Key 인식됨 · 최신 Gemini 3 시리즈 정밀 번역 준비 완료',
         geminiNeedKeyBadge: '✅ 클라우드 Worker에 신규 AQ. Gemini API Key가 내장되어 있습니다 (AQ. 및 AIza 모두 지원) · wirj.txt 배포 후 우측 상단 [🌐 테스트 및 번역 새로고침]을 눌러 실시간 Gemini 3 연결을 확인하세요!',
         geminiTestingBadge: '⏳ 클라우드 Gemini 3 4개국어 의료/요리 번역 연결 테스트 중...',
         geminiLiveOkPrefix: '👑 Gemini AI 실시간 연결 성공! 사용 모델:',
         geminiFallbackWarn: '⚠️ Worker가 아직 업데이트 전이거나 할당량 초과로 Google 번역 폴백 처리됨:',
         clarityImportDonePrefix: '🎉 과거 Dexcom 기록 일괄 가져오기 완료!',
-        clarityImportNoPts: '⚠️ 선택한 파일에서 유효한 혈당 데이터를 찾지 못했습니다. Dexcom Clarity CSV / XML 파일인지 확인하세요.',
-        panoImportClarityBtn: '10월~현재 Dexcom CSV 가져오기',
+        clarityImportNoPts: '⚠️ 선택한 파일에서 유효한 혈당 곡선을 찾지 못했습니다. 일간(Daily) 그래프가 포함된 Dexcom Clarity .pdf 또는 .csv/.xml 파일을 선택하세요.',
+        panoImportClarityBtn: 'Dexcom 가져오기·클라우드 업로드 (.pdf/.csv)',
+        clarityCloudUploading: '⏳ 파일에서 5분 단위 곡선 추출 및 클라우드 공유 저장소(BGKV) 업로드 중...',
+        clarityCloudSyncedSuffix: '☁️ 클라우드 공유 저장소 동기화 완료 (모든 접속 기기에서 열람 가능)',
+        clarityCloudPinWarn: '⚠️ 로컬 추출은 완료되었으나 클라우드 업로드에 비밀번호(AUTH_PIN)가 필요합니다! 우측 상단 ⚙️ 설정에서 비밀번호 입력 후 동기화를 눌러주세요.',
+        clarityCloudNetWarn: '⚠️ 로컬에 저장되었으나 현재 클라우드 연결이 원활하지 않습니다. 네트워크 연결 후 ⚙️ 설정에서 동기화를 눌러주세요.',
         btnExpandAllMeals: '📂 전체 펼치기',
         btnCollapseAllMeals: '📁 전체 접기',
         expandAnyMealHint: '터치하여 음식 선택 / 혈당 및 인슐린 입력 열기',
@@ -3468,25 +3476,29 @@ svg, img, video, canvas {
         optPrevWeekly: '📊 جدول هفتگی ۷ روزه (Weekly)',
         optPrevAllHist: '🏥 گزارش جامع پزشک (All History)',
         btnSendFromPreview: '🚀 ارسال فوری این گزارش به ایمیل‌ها',
-        cfgImportClarityQuickBtn: '📥 ورود تمام سوابق قبلی Dexcom (.csv/.xml)',
-        clarityBoxTitle: '📥 ورود تمام داده‌های تاریخی Dexcom از گذشته (فایل CSV / XML / JSON از Dexcom Clarity)',
-        clarityBoxSub: 'امکان انتخاب همزمان چندین فایل ۹۰ روزه Clarity بدون حذف یا تغییر وعده‌های غذایی و انسولین ثبت‌شده',
-        claritySelectBtn: '📂 انتخاب فایل‌های CSV / XML دکسکام',
+        cfgImportClarityQuickBtn: '📥 ورود و آپلود ابری سوابق Dexcom (.pdf/.csv)',
+        clarityBoxTitle: '📥 ورود و آپلود ابری تمام داده‌های تاریخی Dexcom (پشتیبانی از PDF / CSV / XML)',
+        clarityBoxSub: 'فایل گزارش .pdf یا .csv خروجی Dexcom Clarity را مستقیم انتخاب کنید تا در فضای ابری مشترک (BGKV) آپلود شده و برای همه کاربران صفحه قابل مشاهده باشد',
+        claritySelectBtn: '📂 انتخاب فایل PDF / CSV دکسکام و آپلود ابری',
         clarityTzLabel: '🕒 مبنای ساعت فایل تاریخی:',
         optClarityTzLocal: '📱 ساعت محلی ثبت‌شده گوشی/گیرنده (پیش‌فرض Clarity · ساعت ایران)',
         optClarityTzUtc: '🌐 تبدیل از ساعت جهانی UTC به ساعت ایران (+3:30)',
         optClarityTzKr: '🇰🇷 تبدیل از ساعت کره به ساعت ایران (-5:30)',
         clarityBackfillChk: '✨ تکمیل خودکار جاهای خالی قند ناشتا، قبل خواب و ۲ ساعت بعد غذا از روی نمودار تاریخی (حفظ کامل اعداد دستی)',
-        clarityGuideSummary: '💡 راهنمای ۳۰ ثانیه‌ای دریافت تمام سوابق گذشته از Dexcom Clarity (فراتر از محدودیت ۲۴ ساعته Share)',
-        clarityGuideBody: '<div>۱. با همان نام کاربری Dexcom وارد سامانه رسمی سوابق شوید: سرور جهانی <b>clarity.dexcom.eu</b> (سرور آمریکا <b>clarity.dexcom.com</b>)؛</div><div>۲. در بالا روی دکمه <b>«Export»</b> بزنید ← بازه <b>90 Days</b> را انتخاب و فایل <code>Clarity_Export_*.csv</code> را دانلود کنید (برای ۶ ماه یا ۱ سال می‌توانید چند بازه ۹۰ روزه دانلود کنید)؛</div><div>۳. روی دکمه آبی <b>«📂 انتخاب فایل‌های CSV / XML»</b> بزنید و همه فایل‌ها را یکجا انتخاب کنید تا تمام ۲۸۸ نقطه روزانه در نمودار و فضای ابری ذخیره شود!</div>',
+        clarityGuideSummary: '💡 راهنمای ۳۰ ثانیه‌ای آپلود ابری گزارش PDF / CSV دکسکام برای مشاهده همگانی',
+        clarityGuideBody: '<div>۱. با همان نام کاربری Dexcom وارد سامانه رسمی سوابق شوید: سرور جهانی <b>clarity.dexcom.eu</b> (سرور آمریکا <b>clarity.dexcom.com</b>)؛</div><div>۲. گزارش <b>.pdf</b> شامل نمودارهای روزانه (Daily) یا فایل <code>.csv</code> از بخش <b>Export</b> را دانلود کنید؛</div><div>۳. روی دکمه آبی <b>«📂 انتخاب فایل PDF / CSV و آپلود ابری»</b> بزنید تا تمام نقاط ۵ دقیقه‌ای استخراج و در فضای ابری مشترک (BGKV) برای همه کاربران ذخیره شود!</div>',
         geminiReadyBadge: '👑 کلید معتبر Gemini (فرمت جدید AQ. یا AIza) شناسایی شد · آماده ترجمه تخصصی با نسل جدید Gemini 3',
         geminiNeedKeyBadge: '✅ کلید جدید AQ. شما در Worker ابری ذخیره شده است (پشتیبانی کامل از AQ. و AIza) · پس از بروزرسانی wirj.txt روی دکمه «🌐 تست و بروزرسانی ترجمه» بزنید!',
         geminiTestingBadge: '⏳ در حال تست ارتباط زنده با هوش مصنوعی Gemini 3...',
         geminiLiveOkPrefix: '👑 اتصال مستقیم به هوش مصنوعی Gemini برقرار شد! مدل فعال:',
         geminiFallbackWarn: '⚠️ در انتظار بروزرسانی Worker (یا تکمیل سهمیه)؛ ترجمه با مترجم جایگزین گوگل انجام شد:',
         clarityImportDonePrefix: '🎉 ورود کامل سوابق تاریخی Dexcom انجام شد!',
-        clarityImportNoPts: '⚠️ هیچ داده قند خونی در این فایل یافت نشد؛ لطفاً فایل CSV یا XML خروجی Dexcom Clarity را انتخاب کنید.',
-        panoImportClarityBtn: 'ورود سوابق Dexcom از مهرماه (CSV)',
+        clarityImportNoPts: '⚠️ هیچ منحنی قند خونی در این فایل یافت نشد؛ لطفاً گزارش .pdf (شامل نمودار روزانه) یا فایل .csv/.xml خروجی Dexcom Clarity را انتخاب کنید.',
+        panoImportClarityBtn: 'ورود و آپلود ابری Dexcom (.pdf/.csv)',
+        clarityCloudUploading: '⏳ در حال استخراج منحنی‌های ۵ دقیقه‌ای و آپلود در فضای ابری مشترک (BGKV)...',
+        clarityCloudSyncedSuffix: '☁️ در فضای ابری مشترک همگام شد (قابل مشاهده برای تمام کاربران صفحه)',
+        clarityCloudPinWarn: '⚠️ استخراج انجام شد اما آپلود ابری نیازمند رمز عبور (AUTH_PIN) است! در ⚙️ تنظیمات بالا رمز را وارد کرده و ذخیره و همگام‌سازی را بزنید.',
+        clarityCloudNetWarn: '⚠️ در حافظه دستگاه ذخیره شد؛ پس از اتصال شبکه از بخش ⚙️ تنظیمات دکمه ذخیره و همگام‌سازی ابری را بزنید.',
         btnExpandAllMeals: '📂 باز کردن همه وعده‌ها',
         btnCollapseAllMeals: '📁 بستن همه وعده‌ها',
         expandAnyMealHint: 'برای انتخاب غذا / ثبت قند خون و انسولین ضربه بزنید',
@@ -3975,25 +3987,29 @@ svg, img, video, canvas {
         optPrevWeekly: '📊 Weekly 7-Day Table',
         optPrevAllHist: '🏥 Full Physician Report',
         btnSendFromPreview: '🚀 Send This Report to Emails Now',
-        cfgImportClarityQuickBtn: '📥 Import Past Dexcom History (.csv/.xml)',
-        clarityBoxTitle: '📥 Import All Past Dexcom History (Dexcom Clarity CSV / XML / JSON)',
-        clarityBoxSub: 'Select multiple 90-day Clarity CSV exports at once — 100% preserves existing meal & insulin logs',
-        claritySelectBtn: '📂 Select Clarity CSV / XML Files',
+        cfgImportClarityQuickBtn: '📥 Import & Cloud-Upload Dexcom (.pdf/.csv)',
+        clarityBoxTitle: '📥 Import & Cloud-Upload All Past Dexcom History (Clarity PDF / CSV / XML)',
+        clarityBoxSub: 'Directly select your downloaded Dexcom Clarity .pdf report or .csv export — automatically uploads to shared cloud (BGKV) for all connected users',
+        claritySelectBtn: '📂 Select Clarity PDF / CSV & Upload to Cloud',
         clarityTzLabel: '🕒 File Timestamp Basis:',
         optClarityTzLocal: '📱 Receiver/Phone Local Time (Clarity Default · Iran Time)',
         optClarityTzUtc: '🌐 Convert UTC Timestamp ➔ Iran Time (+3:30)',
         optClarityTzKr: '🇰🇷 Convert Korea Time ➔ Iran Time (-5:30)',
         clarityBackfillChk: '✨ Auto-backfill missing past Fasting / Bedtime / 2h Post-Meal blanks from curve (never overwrites manual entries)',
-        clarityGuideSummary: '💡 30-Second Guide to Export All Past Dexcom History (Beyond Share\'s 24h Limit)',
-        clarityGuideBody: '<div>1. Sign in with the same Dexcom account at <b>clarity.dexcom.eu</b> (International/OUS) or <b>clarity.dexcom.com</b> (US);</div><div>2. Click <b>[Export]</b> at top-right → choose <b>90 Days</b> to download <code>Clarity_Export_*.csv</code> (export multiple date ranges for 6–12+ months);</div><div>3. Click <b>[📂 Select Clarity CSV / XML Files]</b> above (multi-select supported) — all 288 daily points will merge into curves & sync to cloud!</div>',
+        clarityGuideSummary: '💡 30-Second Guide to Upload Dexcom Clarity (.pdf / .csv) to Shared Cloud',
+        clarityGuideBody: '<div>1. Sign in with the same Dexcom account at <b>clarity.dexcom.eu</b> (International/OUS) or <b>clarity.dexcom.com</b> (US);</div><div>2. Download either the <b>.pdf report</b> (including Daily view) or click <b>[Export]</b> for <code>.csv</code>;</div><div>3. Click <b>[📂 Select Clarity PDF / CSV & Upload to Cloud]</b> above — all 5-min curve points extract in-browser and sync to shared cloud (BGKV) for every user!</div>',
         geminiReadyBadge: '👑 Valid AQ. / AIza Gemini API Key detected · Live Gemini 3 culinary & medical translation ready',
         geminiNeedKeyBadge: '✅ Your new AQ. Gemini API Key is built into the Cloud Worker (supports both AQ. & AIza formats) · Deploy updated wirj.txt and tap [🌐 Test & Refresh] to verify live Gemini 3!',
         geminiTestingBadge: '⏳ Testing live Gemini 3 4-language culinary & medical translation...',
         geminiLiveOkPrefix: '👑 Live Gemini AI Connected! Active Model:',
         geminiFallbackWarn: '⚠️ Worker not yet redeployed (or quota busy); completed via Google Translate fallback:',
         clarityImportDonePrefix: '🎉 Historical Dexcom Import Complete!',
-        clarityImportNoPts: '⚠️ No valid glucose readings found in selected file(s). Please select a Dexcom Clarity CSV or XML export.',
-        panoImportClarityBtn: 'Import Oct–Now Dexcom CSV',
+        clarityImportNoPts: '⚠️ No valid glucose curves found in selected file(s). Please select a Dexcom Clarity .pdf report (with Daily view) or .csv/.xml export.',
+        panoImportClarityBtn: 'Import & Upload Dexcom (.pdf/.csv)',
+        clarityCloudUploading: '⏳ Extracting 5-min curves & uploading to shared cloud (BGKV)...',
+        clarityCloudSyncedSuffix: '☁️ Synced to shared cloud (visible to all connected users)',
+        clarityCloudPinWarn: '⚠️ Parsed locally, but cloud upload returned 401! Enter your AUTH_PIN in top-right ⚙️ Settings and click Save & Sync to share to cloud.',
+        clarityCloudNetWarn: '⚠️ Saved locally; cloud Worker unreachable right now. Click Save & Sync in ⚙️ Settings once online.',
         btnExpandAllMeals: '📂 Expand All',
         btnCollapseAllMeals: '📁 Collapse All',
         expandAnyMealHint: 'Tap to expand & select foods / log BG & insulin',
@@ -8340,7 +8356,7 @@ svg, img, video, canvas {
             if (wRes.status === 401) {
               if (statusText) statusText.textContent = t.toastAuthFail;
               if (!silent) showToast(tMsg('toastAuthFail'), 'warn', 3500);
-              return;
+              return { ok: false, status: 401 };
             }
             if (wRes.ok) {
               const wData = await wRes.json();
@@ -8365,7 +8381,7 @@ svg, img, video, canvas {
                 const { krHm } = getFormattedDualClocks();
                 if (statusText) statusText.textContent = `${t.syncFullOk} (${krHm})`;
                 if (!silent) showToast(tMsg('toastSaved'));
-                return;
+                return { ok: true, status: 200, storageEngine: wData.storageEngine || 'worker' };
               }
             }
           }
@@ -8418,21 +8434,24 @@ svg, img, video, canvas {
             const { krHm } = getFormattedDualClocks();
             if (statusText) statusText.textContent = `${t.syncFullOk} (${krHm})`;
             if (!silent) showToast(tMsg('toastSaved'));
-            return;
+            return { ok: true, status: 200, storageEngine: serverConfig.jsonProvider || 'rest' };
           }
         } catch (e) {
           if (statusText) statusText.textContent = t.syncOfflineLocal;
+          return { ok: false, status: 0, error: e?.message || 'network_err' };
         }
       }
       if (!silent) {
         showToast(tMsg('toastSaved'));
       }
+      return { ok: false, status: 0 };
     }
 
     async function fetchFromJsonServer(silent = false) {
       const targetUrl = (serverConfig.jsonServerUrl || DEFAULT_WORKER_URL).trim();
       if (!targetUrl) return;
       const t = UI_TEXT[currentLang] || UI_TEXT.zh;
+      const statusText = document.getElementById('autoSyncStatusText');
       try {
         const isWorkerGateway = serverConfig.jsonProvider === 'worker' || targetUrl.includes('workers.dev');
         let data = null;
@@ -8442,6 +8461,7 @@ svg, img, video, canvas {
             action: 'json_get'
           });
           if (wRes.status === 401) {
+            if (statusText) statusText.textContent = t.toastAuthFail;
             if (!silent) showToast(tMsg('toastAuthFail'), 'warn', 3500);
             return;
           }
@@ -11656,6 +11676,283 @@ svg, img, video, canvas {
       return filled;
     }
 
+    function u8ToLatin1String(u8) {
+      const chunks = [];
+      for (let i = 0; i < u8.length; i += 8192) {
+        chunks.push(String.fromCharCode.apply(null, u8.subarray(i, i + 8192)));
+      }
+      return chunks.join('');
+    }
+
+    async function decompressPdfFlateBytes(subBytes) {
+      if (!subBytes || subBytes.length === 0) return new Uint8Array(0);
+      if (typeof DecompressionStream === 'undefined') return subBytes;
+      for (const fmt of ['deflate', 'deflate-raw']) {
+        try {
+          const ds = new DecompressionStream(fmt);
+          const writer = ds.writable.getWriter();
+          const reader = ds.readable.getReader();
+          const chunks = [];
+          let totalLen = 0;
+          const writePromise = writer.write(subBytes).then(() => writer.close()).catch(() => {});
+          try {
+            while (true) {
+              const { value, done } = await reader.read();
+              if (value && value.byteLength > 0) {
+                chunks.push(value);
+                totalLen += value.byteLength;
+              }
+              if (done) break;
+            }
+          } catch (readErr) {
+            // Preserve all already-decompressed chunks if trailing PDF newline precedes endstream
+          }
+          await writePromise;
+          if (totalLen > 0) {
+            const out = new Uint8Array(totalLen);
+            let offset = 0;
+            for (const c of chunks) {
+              out.set(c, offset);
+              offset += c.byteLength;
+            }
+            return out;
+          }
+        } catch (e) {}
+      }
+      return subBytes;
+    }
+
+    function parsePdfCmapText(txt) {
+      const cmap = new Map();
+      const rangeRe = /<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>/g;
+      let rm;
+      while ((rm = rangeRe.exec(txt)) !== null) {
+        const w = rm[1].length;
+        const s0 = parseInt(rm[1], 16);
+        const s1 = parseInt(rm[2], 16);
+        const d0 = parseInt(rm[3], 16);
+        if (s1 >= s0 && s1 - s0 < 512) {
+          for (let k = s0; k <= s1; k++) {
+            cmap.set(k.toString(16).toUpperCase().padStart(w, '0'), String.fromCodePoint(d0 + (k - s0)));
+          }
+        }
+      }
+      const cleaned = txt.replace(rangeRe, ' ');
+      const charRe = /<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>/g;
+      let cm;
+      while ((cm = charRe.exec(cleaned)) !== null) {
+        const src = cm[1].toUpperCase();
+        const dst = cm[2];
+        let chars = '';
+        for (let i = 0; i < dst.length; i += 4) {
+          const cp = parseInt(dst.slice(i, i + 4), 16);
+          if (!isNaN(cp)) chars += String.fromCharCode(cp);
+        }
+        if (chars) cmap.set(src, chars);
+      }
+      return cmap;
+    }
+
+    function parseClarityChartTitleDate(tstr) {
+      if (!tstr) return null;
+      const km = tstr.match(/(20\d{2})\D+(\d{1,2})\D+(\d{1,2})/);
+      if (km) {
+        const y = Number(km[1]), mo = Number(km[2]), da = Number(km[3]);
+        if (mo >= 1 && mo <= 12 && da >= 1 && da <= 31) {
+          return `${String(y).padStart(4, '0')}-${String(mo).padStart(2, '0')}-${String(da).padStart(2, '0')}`;
+        }
+      }
+      const monthMap = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
+      const em1 = tstr.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(\d{1,2}),?\s+(20\d{2})/i);
+      if (em1) {
+        const mo = monthMap[em1[1].slice(0, 3).toLowerCase()];
+        return `${em1[3]}-${String(mo).padStart(2, '0')}-${String(Number(em1[2])).padStart(2, '0')}`;
+      }
+      const em2 = tstr.match(/\b(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(20\d{2})/i);
+      if (em2) {
+        const mo = monthMap[em2[2].slice(0, 3).toLowerCase()];
+        return `${em2[3]}-${String(mo).padStart(2, '0')}-${String(Number(em2[1])).padStart(2, '0')}`;
+      }
+      return null;
+    }
+
+    // Pure-JS native Dexcom Clarity PDF Daily View vector curve extractor (zero external libraries!)
+    async function parseDexcomClarityPdfArrayBuffer(arrayBuffer, tzMode = 'local_iran') {
+      const points = [];
+      if (!arrayBuffer || arrayBuffer.byteLength < 64) return { points };
+      const bytes = new Uint8Array(arrayBuffer);
+      const rawStr = u8ToLatin1String(bytes);
+
+      const objMeta = new Map();
+      const objRe = /(\d+)\s+0\s+obj\b([\s\S]*?)endobj/g;
+      let om;
+      while ((om = objRe.exec(rawStr)) !== null) {
+        const oid = Number(om[1]);
+        const body = om[2];
+        const bodyStartInRaw = om.index + om[0].indexOf(body);
+        const sm = /stream(?:\r\n|\n)/.exec(body);
+        const endStreamPos = sm ? body.lastIndexOf('endstream') : -1;
+        if (sm && endStreamPos > sm.index) {
+          const hdrStr = body.slice(0, sm.index);
+          const sStart = bodyStartInRaw + sm.index + sm[0].length;
+          let sEnd = bodyStartInRaw + endStreamPos;
+          if (bytes[sEnd - 1] === 10) sEnd--;
+          if (bytes[sEnd - 1] === 13) sEnd--;
+          objMeta.set(oid, { hdrStr, sStart, sEnd });
+        } else {
+          objMeta.set(oid, { hdrStr: body, sStart: -1, sEnd: -1 });
+        }
+      }
+
+      const neededStreamIds = new Set();
+      const pageEntries = [];
+      for (const [oid, meta] of objMeta.entries()) {
+        const tm = meta.hdrStr.match(/\/ToUnicode\s+(\d+)\s+0\s+R/);
+        if (tm) neededStreamIds.add(Number(tm[1]));
+
+        if (/\/Type\s*\/Page\b/.test(meta.hdrStr) && !/\/Type\s*\/Pages\b/.test(meta.hdrStr)) {
+          const cids = [];
+          const singleCm = meta.hdrStr.match(/\/Contents\s+(\d+)\s+0\s+R/);
+          if (singleCm) {
+            cids.push(Number(singleCm[1]));
+          } else {
+            const arrCm = meta.hdrStr.match(/\/Contents\s*\[\s*([\s\S]*?)\]/);
+            if (arrCm) {
+              const refRe = /(\d+)\s+0\s+R/g;
+              let rm;
+              while ((rm = refRe.exec(arrCm[1])) !== null) cids.push(Number(rm[1]));
+            }
+          }
+          if (cids.length > 0) {
+            cids.forEach(id => neededStreamIds.add(id));
+            pageEntries.push({ oid, hdrStr: meta.hdrStr, cids });
+          }
+        }
+      }
+
+      const decodedStreams = new Map();
+      await Promise.all(Array.from(neededStreamIds).map(async sid => {
+        const meta = objMeta.get(sid);
+        if (!meta || meta.sStart < 0 || meta.sEnd <= meta.sStart) return;
+        const rawSlice = bytes.subarray(meta.sStart, meta.sEnd);
+        const isFlate = /\/FlateDecode\b/.test(meta.hdrStr);
+        const outBytes = isFlate ? await decompressPdfFlateBytes(rawSlice) : rawSlice;
+        decodedStreams.set(sid, u8ToLatin1String(outBytes));
+      }));
+
+      const fontCmaps = new Map();
+      for (const [oid, meta] of objMeta.entries()) {
+        const tm = meta.hdrStr.match(/\/ToUnicode\s+(\d+)\s+0\s+R/);
+        if (tm) {
+          const ctxt = decodedStreams.get(Number(tm[1]));
+          if (ctxt) fontCmaps.set(oid, parsePdfCmapText(ctxt));
+        }
+      }
+
+      pageEntries.sort((a, b) => a.oid - b.oid);
+      for (const pg of pageEntries) {
+        const ctxt = pg.cids.map(id => decodedStreams.get(id) || '').join('\n');
+        if (!ctxt || !ctxt.includes('0 0 770 126 re')) continue;
+
+        let resTxt = pg.hdrStr;
+        const resM = pg.hdrStr.match(/\/Resources\s+(\d+)\s+0\s+R/);
+        if (resM && objMeta.has(Number(resM[1]))) {
+          resTxt += '\n' + objMeta.get(Number(resM[1])).hdrStr;
+        }
+        const fmap = new Map();
+        const fRe = /\/(F\d+)\s+(\d+)\s+0\s+R/g;
+        let fm;
+        while ((fm = fRe.exec(resTxt)) !== null) {
+          fmap.set(fm[1], Number(fm[2]));
+        }
+
+        let curFont = null, curY = null, curX = 0;
+        const linesByY = new Map();
+        const tokRe = /\/(F\d+)\s+[\d.]+\s+Tf|1\s+0\s+0\s+-1\s+([\d.-]+)\s+([\d.-]+)\s+Tm|<([0-9A-Fa-f]+)>\s*Tj|\[([\s\S]*?)\]\s*TJ/g;
+        let tmTok;
+        while ((tmTok = tokRe.exec(ctxt)) !== null) {
+          if (tmTok[1]) {
+            curFont = tmTok[1];
+          } else if (tmTok[3] !== undefined) {
+            curX = parseFloat(tmTok[2]);
+            curY = Math.round(parseFloat(tmTok[3]) * 10) / 10;
+          } else if (tmTok[4] !== undefined || tmTok[5] !== undefined) {
+            const cmap = fontCmaps.get(fmap.get(curFont));
+            if (!cmap || curY === null) continue;
+            const hexChunks = tmTok[4] !== undefined
+              ? [tmTok[4]]
+              : Array.from(tmTok[5].matchAll(/<([0-9A-Fa-f]+)>/g), x => x[1]);
+            let strPiece = '';
+            for (const hxRaw of hexChunks) {
+              const hx = hxRaw.toUpperCase();
+              const step = (hx.length % 4 === 0 && cmap.has(hx.slice(0, 4))) ? 4 : (cmap.has(hx.slice(0, 2)) ? 2 : 4);
+              for (let i = 0; i < hx.length; i += step) {
+                strPiece += cmap.get(hx.slice(i, i + step)) || '';
+              }
+            }
+            if (strPiece) {
+              const prev = linesByY.get(curY);
+              linesByY.set(curY, {
+                minX: prev ? Math.min(prev.minX, curX) : curX,
+                text: (prev ? prev.text : '') + strPiece
+              });
+            }
+          }
+        }
+
+        const sortedLines = Array.from(linesByY.entries()).sort((a, b) => a[0] - b[0]);
+        const pageDates = [];
+        for (const [ty, info] of sortedLines) {
+          if (ty < 130 || info.minX > 160 || info.text.includes('•') || info.text.includes(':')) continue;
+          if ((info.text.match(/20\d{2}/g) || []).length >= 2) continue;
+          const ymd = parseClarityChartTitleDate(info.text);
+          if (ymd && !pageDates.includes(ymd)) pageDates.push(ymd);
+        }
+
+        const rePositions = [];
+        const boxRe = /0\s+0\s+770\s+126\s+re/g;
+        let bm;
+        while ((bm = boxRe.exec(ctxt)) !== null) rePositions.push(bm.index);
+
+        const numSlots = Math.floor(rePositions.length / 3);
+        for (let slotIdx = 0; slotIdx < Math.min(numSlots, pageDates.length); slotIdx++) {
+          const ymd = pageDates[slotIdx];
+          const seg = ctxt.slice(rePositions[slotIdx * 3], rePositions[slotIdx * 3 + 2]);
+          const day5MinMap = new Map();
+
+          const pathRe = /(?:0?\.1333\s+){3}RG\b([\s\S]*?)\bS\b/g;
+          let pm;
+          while ((pm = pathRe.exec(seg)) !== null) {
+            const pbody = pm[1];
+            const opRe = /([\d.-]+)\s+([\d.-]+)\s+m\b|([\d.-]+)\s+([\d.-]+)\s+l\b|[\d.-]+\s+[\d.-]+\s+[\d.-]+\s+[\d.-]+\s+([\d.-]+)\s+([\d.-]+)\s+c\b/g;
+            let opm;
+            while ((opm = opRe.exec(pbody)) !== null) {
+              const kx = parseFloat(opm[1] ?? opm[3] ?? opm[5]);
+              const ky = parseFloat(opm[2] ?? opm[4] ?? opm[6]);
+              if (isNaN(kx) || isNaN(ky) || kx < -2 || kx > 772 || ky < -5 || ky > 131) continue;
+              const slot5 = Math.round(((kx / 770.0) * 1440.0) / 5.0) * 5;
+              if (slot5 >= 0 && slot5 < 1440) {
+                const bgInt = Math.max(39, Math.min(401, Math.round(100.0 + (103.5 - ky) / 0.325)));
+                const hm = `${String(Math.floor(slot5 / 60)).padStart(2, '0')}:${String(slot5 % 60).padStart(2, '0')}`;
+                day5MinMap.set(slot5, { hm, bg: bgInt });
+              }
+            }
+          }
+
+          Array.from(day5MinMap.keys()).sort((a, b) => a - b).forEach(s => {
+            const item = day5MinMap.get(s);
+            const norm = normalizeHistoricalTimestampToIran(`${ymd}T${item.hm}:00`, tzMode);
+            if (norm) {
+              points.push({ ymd: norm.ymd, hm: norm.hm, bg: item.bg });
+            }
+          });
+        }
+      }
+
+      return { points };
+    }
+    window.parseDexcomClarityPdfArrayBuffer = parseDexcomClarityPdfArrayBuffer;
+
     async function importDexcomHistoryFiles(event) {
       const files = Array.from(event?.target?.files || []);
       if (files.length === 0) return;
@@ -11665,27 +11962,46 @@ svg, img, video, canvas {
       const resBox = document.getElementById('dexcomImportResultBox');
       const t = UI_TEXT[currentLang] || UI_TEXT.zh;
 
+      if (resBox) {
+        resBox.classList.remove('hidden');
+        resBox.className = 'px-3 py-2 rounded-lg bg-sky-50 border border-sky-200 text-[11px] font-bold text-sky-900 leading-relaxed';
+        resBox.textContent = t.clarityCloudUploading;
+      }
+      showToast(t.clarityCloudUploading, 'info', 2500);
+
       const byDatePairs = {}; // { 'YYYY-MM-DD': [[hm, bg], ...] }
       let rawPtsCount = 0;
       let backupDaysMerged = 0;
 
       for (const file of files) {
         try {
-          const text = await file.text();
-          const parsed = parseDexcomHistoryFileContent(text, file.name, tzMode);
-          if (parsed.fullStoreBackup) {
-            Object.keys(parsed.fullStoreBackup).forEach(k => {
-              if (/^\d{4}-\d{2}-\d{2}$/.test(k) && isDayMeaningfullyLogged(parsed.fullStoreBackup[k])) {
-                allDaysStore[k] = mergeRemoteAndLocalDayLossless(allDaysStore[k], ensureDaySchemaIntegrity(parsed.fullStoreBackup[k]));
-                backupDaysMerged++;
-              }
+          const buf = await file.arrayBuffer();
+          const headBytes = new Uint8Array(buf.slice(0, 8));
+          const isPdf = /\.pdf$/i.test(file.name || '') || u8ToLatin1String(headBytes).startsWith('%PDF-');
+          if (isPdf) {
+            const pdfParsed = await parseDexcomClarityPdfArrayBuffer(buf, tzMode);
+            pdfParsed.points.forEach(pt => {
+              if (!byDatePairs[pt.ymd]) byDatePairs[pt.ymd] = [];
+              byDatePairs[pt.ymd].push([pt.hm, pt.bg]);
+              rawPtsCount++;
+            });
+          } else {
+            const text = new TextDecoder('utf-8').decode(buf);
+            const parsed = parseDexcomHistoryFileContent(text, file.name, tzMode);
+            if (parsed.fullStoreBackup) {
+              Object.keys(parsed.fullStoreBackup).forEach(k => {
+                if (/^\d{4}-\d{2}-\d{2}$/.test(k) && isDayMeaningfullyLogged(parsed.fullStoreBackup[k])) {
+                  allDaysStore[k] = mergeRemoteAndLocalDayLossless(allDaysStore[k], ensureDaySchemaIntegrity(parsed.fullStoreBackup[k]));
+                  backupDaysMerged++;
+                }
+              });
+            }
+            parsed.points.forEach(pt => {
+              if (!byDatePairs[pt.ymd]) byDatePairs[pt.ymd] = [];
+              byDatePairs[pt.ymd].push([pt.hm, pt.bg]);
+              rawPtsCount++;
             });
           }
-          parsed.points.forEach(pt => {
-            if (!byDatePairs[pt.ymd]) byDatePairs[pt.ymd] = [];
-            byDatePairs[pt.ymd].push([pt.hm, pt.bg]);
-            rawPtsCount++;
-          });
         } catch (err) {}
       }
 
@@ -11699,7 +12015,7 @@ svg, img, video, canvas {
           resBox.className = 'px-3 py-2 rounded-lg bg-rose-50 border border-rose-200 text-[11px] font-bold text-rose-800 leading-relaxed';
           resBox.textContent = t.clarityImportNoPts;
         }
-        showToast(t.clarityImportNoPts, 'warn', 4000);
+        showToast(t.clarityImportNoPts, 'warn', 4500);
         return;
       }
 
@@ -11745,17 +12061,32 @@ svg, img, video, canvas {
       const spanStr = affectedDates.length > 0
         ? `${affectedDates[0]} ~ ${affectedDates[affectedDates.length - 1]}`
         : `${backupDaysMerged}d`;
-      const summaryMsg = `${t.clarityImportDonePrefix} 📅 ${affectedDates.length || backupDaysMerged} ${t.annDaysUnit} (${spanStr}) ｜ 📡 ${rawPtsCount.toLocaleString()} pts${totalBackfilledCells > 0 ? ` ｜ ✨ +${totalBackfilledCells}` : ''}`;
+      const baseSummary = `${t.clarityImportDonePrefix} 📅 ${affectedDates.length || backupDaysMerged} ${t.annDaysUnit} (${spanStr}) ｜ 📡 ${rawPtsCount.toLocaleString()} pts${totalBackfilledCells > 0 ? ` ｜ ✨ +${totalBackfilledCells}` : ''}`;
+
+      // Upload merged historical curves to Cloudflare Worker (KV monthly buckets share to all connected users!)
+      const cloudRes = await saveCurrentDayToServer(true);
+      let finalMsg = baseSummary;
+      let boxCls = 'px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-900 leading-relaxed';
+      let toastType = 'success';
+
+      if (cloudRes && cloudRes.ok) {
+        finalMsg = `${baseSummary} ｜ ${t.clarityCloudSyncedSuffix}`;
+      } else if (cloudRes && cloudRes.status === 401) {
+        finalMsg = `${baseSummary} — ${t.clarityCloudPinWarn}`;
+        boxCls = 'px-3 py-2 rounded-lg bg-amber-50 border border-amber-300 text-[11px] font-bold text-amber-900 leading-relaxed';
+        toastType = 'warn';
+      } else {
+        finalMsg = `${baseSummary} — ${t.clarityCloudNetWarn}`;
+        boxCls = 'px-3 py-2 rounded-lg bg-amber-50 border border-amber-300 text-[11px] font-bold text-amber-900 leading-relaxed';
+        toastType = 'warn';
+      }
 
       if (resBox) {
         resBox.classList.remove('hidden');
-        resBox.className = 'px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-900 leading-relaxed';
-        resBox.textContent = summaryMsg;
+        resBox.className = boxCls;
+        resBox.textContent = finalMsg;
       }
-      showToast(summaryMsg, 'success', 4500);
-
-      // Push merged historical curves to Cloudflare Worker (KV monthly buckets handle multi-year data in 1 call!)
-      await saveCurrentDayToServer(true);
+      showToast(finalMsg, toastType, 6000);
     }
 
     function importFullJsonBackup(event) {
