@@ -625,14 +625,17 @@ svg, img, video, canvas {
 .bg-teal-200\/80 { background-color: rgba(153, 246, 228, 0.8); }
 .bg-sky-50 { background-color: rgb(240, 249, 255); }
 .bg-sky-50\/80 { background-color: rgba(240, 249, 255, 0.8); }
+.bg-emerald-50\/30 { background-color: rgba(236, 253, 245, 0.3); }
 .bg-purple-100\/70 { background-color: rgba(243, 232, 255, 0.7); }
 .border-sky-200\/70 { border-color: rgba(186, 230, 253, 0.7); }
 .border-sky-200\/90 { border-color: rgba(186, 230, 253, 0.9); }
 .border-slate-200\/90 { border-color: rgba(226, 232, 240, 0.9); }
+.text-purple-900 { color: rgb(88, 28, 135); }
 .text-sky-600 { color: rgb(2, 132, 199); }
 .text-teal-950 { color: rgb(4, 47, 46); }
 .text-sky-950 { color: rgb(8, 47, 73); }
 .hover\:bg-sky-700:hover { background-color: rgb(3, 105, 161); }
+.hover\:border-emerald-500:hover { border-color: rgb(16, 185, 129); }
 .hover\:text-rose-600:hover { color: rgb(225, 29, 72); }
 .min-w-\[170px\] { min-width: 170px; }
 .gap-0\.5 { gap: 0.125rem; }
@@ -901,6 +904,10 @@ svg, img, video, canvas {
               <option value="30" id="optPanoAgp30">30d</option>
               <option value="all" id="optPanoAgpAll">All</option>
             </select>
+            <label class="px-2.5 py-1 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold cursor-pointer shadow-sm transition inline-flex items-center gap-1" title="Import Dexcom Clarity CSV / XML">
+              <span>📥</span> <span id="uiPanoImportClarityBtn">导入10月至今Dexcom历史CSV</span>
+              <input type="file" multiple accept=".csv,.tsv,.xml,.json,.txt" onchange="importDexcomHistoryFiles(event)" class="hidden" />
+            </label>
             <div id="daily24hStatsPills" class="flex flex-wrap items-center gap-1.5 text-[11px]">
               <!-- Dynamically populated: Points count, Mean BG, 70-180 TIR, 80-160 Tight TIR, CV% -->
             </div>
@@ -1049,8 +1056,10 @@ svg, img, video, canvas {
               含早餐前零食、早/中/晚正餐及餐后额外摄入 · 餐后2小时自动从 Dexcom 抓取血糖回填 · 手动输入食物支持 Gemini AI 四语互译
             </p>
           </div>
-          <!-- Quick Jump Pills for 7 Meal Nodes (With Active Selection State) -->
-          <div class="flex flex-wrap gap-1.5 text-xs">
+          <!-- Quick Jump Pills for 7 Meal Nodes + Expand All / Collapse All -->
+          <div class="flex flex-wrap items-center gap-1.5 text-xs">
+            <button type="button" onclick="setAllMealsExpanded(true)" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 font-bold shadow-sm transition" id="uiBtnExpandAllMeals">📂 全部展开</button>
+            <button type="button" onclick="setAllMealsExpanded(false)" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold shadow-sm transition" id="uiBtnCollapseAllMeals">📁 全部折叠</button>
             <button type="button" onclick="scrollToSection('mealNode-pre_breakfast')" id="uiJump0" data-sec="mealNode-pre_breakfast" class="sec-jump-btn px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-emerald-400 hover:text-emerald-700 font-semibold shadow-sm transition">🥚 早前零食</button>
             <button type="button" onclick="scrollToSection('mealNode-breakfast')" id="uiJump1" data-sec="mealNode-breakfast" class="sec-jump-btn px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-emerald-400 hover:text-emerald-700 font-semibold shadow-sm transition">🌅 早餐</button>
             <button type="button" onclick="scrollToSection('mealNode-breakfast_extra')" id="uiJump2" data-sec="mealNode-breakfast_extra" class="sec-jump-btn px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-emerald-400 hover:text-emerald-700 font-semibold shadow-sm transition">➕ 早后额外</button>
@@ -1463,6 +1472,10 @@ svg, img, video, canvas {
             <button onclick="copyAllHistoryReportText()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition flex items-center gap-1">
               <span>📋</span> <span id="uiBtnCopyAllHist">复制全部历史报告</span>
             </button>
+            <label class="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-sm cursor-pointer transition flex items-center gap-1">
+              <span>📥</span> <span id="uiBtnImportClarityTop">导入10月至今 Dexcom 历史 CSV</span>
+              <input type="file" multiple accept=".csv,.tsv,.xml,.json,.txt" onchange="importDexcomHistoryFiles(event)" class="hidden" />
+            </label>
             <button onclick="exportAllHistoryDoctorCSV()" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition flex items-center gap-1">
               <span>📥</span> <span id="uiBtnExportAllHistCsv">导出全量医生分析 CSV</span>
             </button>
@@ -1503,17 +1516,22 @@ svg, img, video, canvas {
         </div>
       </div>
 
-      <!-- Visual Chart 1: Daily BG Fluctuation Trend Line Chart (Fasting / Pre-Meal / 2h Post-Meal / Min-Max Band) -->
+      <!-- Visual Chart 1: Daily BG Fluctuation Trend Line Chart (Fasting / Pre-Meal / 2h Post-Meal / 24h Mean / Min-Max Band) -->
       <div class="glass-card rounded-2xl p-4 sm:p-6 shadow-sm space-y-3">
+        <div id="annualStaleBgAlertBox" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-300 flex flex-wrap items-center justify-between gap-2 text-xs"></div>
         <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
           <div>
-            <h3 id="uiAnnualBgChartTitle" class="text-sm sm:text-base font-bold text-slate-800">📈 全周期每日血糖波动折线图（空腹 vs 餐前均值 vs 餐后2h均值）</h3>
-            <p id="uiAnnualBgChartSub" class="text-xs text-slate-500">绿色背景带为 80–160 mg/dL 稳态目标区，灰色阴影带为当日最低~最高血糖波动范围</p>
+            <h3 id="uiAnnualBgChartTitle" class="text-sm sm:text-base font-bold text-slate-800">📈 全周期每日血糖波动折线图（空腹 vs 全天CGM均值 vs 餐前/餐后2h均值）</h3>
+            <p id="uiAnnualBgChartSub" class="text-xs text-slate-500">绿色背景带为 80–160 mg/dL 稳态目标区，灰色阴影带为当日最低~最高血糖波动范围（含无打卡纯 Dexcom 历史日曲线）</p>
           </div>
           <div class="flex flex-wrap items-center gap-3 text-xs">
             <label class="inline-flex items-center gap-1.5 font-bold text-emerald-700 cursor-pointer">
               <input type="checkbox" id="chkChartFasting" checked onchange="renderAnnualReportTab()" class="rounded text-emerald-600" />
               <span id="uiChkFasting">🟢 空腹血糖</span>
+            </label>
+            <label class="inline-flex items-center gap-1.5 font-bold text-purple-900 cursor-pointer">
+              <input type="checkbox" id="chkChartMean" checked onchange="renderAnnualReportTab()" class="rounded text-emerald-600" />
+              <span id="uiChkMean">🟣 全天平均血糖</span>
             </label>
             <label class="inline-flex items-center gap-1.5 font-bold text-sky-900 cursor-pointer">
               <input type="checkbox" id="chkChartPre" checked onchange="renderAnnualReportTab()" class="rounded text-emerald-600" />
@@ -2453,7 +2471,15 @@ svg, img, video, canvas {
         geminiLiveOkPrefix: '👑 Gemini AI 已真实连通！当前命中模型:',
         geminiFallbackWarn: '⚠️ 云端尚未更新最新 wirj.txt（或项目额度繁忙），本次暂由 Google 翻译兜底完成四语转换:',
         clarityImportDonePrefix: '🎉 历史全量导入完成！',
-        clarityImportNoPts: '⚠️ 未在所选文件中识别到有效血糖点，请确认导出的是 Dexcom Clarity CSV / XML 文件'
+        clarityImportNoPts: '⚠️ 未在所选文件中识别到有效血糖点，请确认导出的是 Dexcom Clarity CSV / XML 文件',
+        panoImportClarityBtn: '导入10月至今Dexcom历史CSV',
+        btnExpandAllMeals: '📂 全部展开',
+        btnCollapseAllMeals: '📁 全部折叠',
+        expandAnyMealHint: '点击展开选择食物 / 填写血糖与胰岛素',
+        chkMean: '🟣 全天平均血糖',
+        staleBgAutoCleanToast: '🧹 已自动清除历史缓存误填的重复假血糖（如固定124）并同步云端，真实饮食与胰岛素 100% 保留！',
+        staleBgBannerPrefix: '⚠️ 检测到历史缓存冻结的重复假血糖正在拉平折线：',
+        staleBgBannerBtn: '🧹 立即一键清除假血糖并同步云端'
       },
       ko: {
         appTitle: '혈당 건강 체크인 시스템',
@@ -2952,7 +2978,15 @@ svg, img, video, canvas {
         geminiLiveOkPrefix: '👑 Gemini AI 실시간 연결 성공! 사용 모델:',
         geminiFallbackWarn: '⚠️ Worker가 아직 업데이트 전이거나 할당량 초과로 Google 번역 폴백 처리됨:',
         clarityImportDonePrefix: '🎉 과거 Dexcom 기록 일괄 가져오기 완료!',
-        clarityImportNoPts: '⚠️ 선택한 파일에서 유효한 혈당 데이터를 찾지 못했습니다. Dexcom Clarity CSV / XML 파일인지 확인하세요.'
+        clarityImportNoPts: '⚠️ 선택한 파일에서 유효한 혈당 데이터를 찾지 못했습니다. Dexcom Clarity CSV / XML 파일인지 확인하세요.',
+        panoImportClarityBtn: '10월~현재 Dexcom CSV 가져오기',
+        btnExpandAllMeals: '📂 전체 펼치기',
+        btnCollapseAllMeals: '📁 전체 접기',
+        expandAnyMealHint: '터치하여 음식 선택 / 혈당 및 인슐린 입력 열기',
+        chkMean: '🟣 하루 평균 혈당',
+        staleBgAutoCleanToast: '🧹 과거 캐시 오류로 반복 기록된 고정 가짜 혈당(예: 124)을 자동 정리하고 클라우드에 동기화했습니다!',
+        staleBgBannerPrefix: '⚠️ 과거 캐시 고정 혈당으로 인해 그래프가 평평하게 왜곡됨:',
+        staleBgBannerBtn: '🧹 가짜 중복 혈당 즉시 정리'
       },
       fa: {
         appTitle: 'سیستم ثبت سلامت قند خون',
@@ -3451,7 +3485,15 @@ svg, img, video, canvas {
         geminiLiveOkPrefix: '👑 اتصال مستقیم به هوش مصنوعی Gemini برقرار شد! مدل فعال:',
         geminiFallbackWarn: '⚠️ در انتظار بروزرسانی Worker (یا تکمیل سهمیه)؛ ترجمه با مترجم جایگزین گوگل انجام شد:',
         clarityImportDonePrefix: '🎉 ورود کامل سوابق تاریخی Dexcom انجام شد!',
-        clarityImportNoPts: '⚠️ هیچ داده قند خونی در این فایل یافت نشد؛ لطفاً فایل CSV یا XML خروجی Dexcom Clarity را انتخاب کنید.'
+        clarityImportNoPts: '⚠️ هیچ داده قند خونی در این فایل یافت نشد؛ لطفاً فایل CSV یا XML خروجی Dexcom Clarity را انتخاب کنید.',
+        panoImportClarityBtn: 'ورود سوابق Dexcom از مهرماه (CSV)',
+        btnExpandAllMeals: '📂 باز کردن همه وعده‌ها',
+        btnCollapseAllMeals: '📁 بستن همه وعده‌ها',
+        expandAnyMealHint: 'برای انتخاب غذا / ثبت قند خون و انسولین ضربه بزنید',
+        chkMean: '🟣 میانگین قند ۲۴ ساعته',
+        staleBgAutoCleanToast: '🧹 اعداد تکراری کاذب قدیمی (مانند ۱۲۴ ثابت) به‌طور خودکار پاکسازی و با فضای ابری همگام شد (غذا و انسولین کاملاً حفظ شد)!',
+        staleBgBannerPrefix: '⚠️ عدد تکراری کاذب کش قدیمی در نمودار شناسایی شد:',
+        staleBgBannerBtn: '🧹 پاکسازی فوری اعداد کاذب تکراری'
       },
       en: {
         appTitle: 'BG Health Check-in System',
@@ -3950,7 +3992,15 @@ svg, img, video, canvas {
         geminiLiveOkPrefix: '👑 Live Gemini AI Connected! Active Model:',
         geminiFallbackWarn: '⚠️ Worker not yet redeployed (or quota busy); completed via Google Translate fallback:',
         clarityImportDonePrefix: '🎉 Historical Dexcom Import Complete!',
-        clarityImportNoPts: '⚠️ No valid glucose readings found in selected file(s). Please select a Dexcom Clarity CSV or XML export.'
+        clarityImportNoPts: '⚠️ No valid glucose readings found in selected file(s). Please select a Dexcom Clarity CSV or XML export.',
+        panoImportClarityBtn: 'Import Oct–Now Dexcom CSV',
+        btnExpandAllMeals: '📂 Expand All',
+        btnCollapseAllMeals: '📁 Collapse All',
+        expandAnyMealHint: 'Tap to expand & select foods / log BG & insulin',
+        chkMean: '🟣 24h Mean BG',
+        staleBgAutoCleanToast: '🧹 Auto-cleaned frozen stale cached BG values (e.g. flat 124) & synced to cloud — 100% of real meals & insulin preserved!',
+        staleBgBannerPrefix: '⚠️ Frozen cached duplicate BG values detected flattening chart:',
+        staleBgBannerBtn: '🧹 Purge Stale Duplicate BGs Now'
       }
     };
 
@@ -4085,12 +4135,19 @@ svg, img, video, canvas {
       renderMeals();
     }
 
-    // Accurate section scroll accounting for sticky header height + active button highlight
+    function setAllMealsExpanded(expandFlag) {
+      MEAL_NODES_META.forEach(meta => {
+        expandedExtraMeals[meta.key] = !!expandFlag;
+      });
+      renderMeals();
+    }
+
+    // Accurate section scroll accounting for sticky header height + active button highlight (auto-expands ANY meal card!)
     function scrollToSection(elementId) {
       highlightActiveSectionButtons(elementId);
       if (elementId && elementId.startsWith('mealNode-')) {
         const mKey = elementId.replace('mealNode-', '');
-        if (isExtraMealKey(mKey) && !expandedExtraMeals[mKey]) {
+        if (!expandedExtraMeals[mKey]) {
           expandedExtraMeals[mKey] = true;
           renderMeals();
         }
@@ -6918,20 +6975,46 @@ svg, img, video, canvas {
           (md.postBg !== '' && md.postBg !== null && md.postBg !== undefined) ||
           (md.insStatus && md.insStatus !== 'none');
 
-        const isCollapsibleExtra = isExtraMealKey(meta.key);
-        const isCollapsed = isCollapsibleExtra && !hasDataInMeal && !expandedExtraMeals[meta.key];
+        const isCollapsed = !expandedExtraMeals[meta.key];
 
         if (isCollapsed) {
+          const hasFoodsNow = (md.selectedFoods && md.selectedFoods.length > 0) || (md.customFoods && md.customFoods.length > 0);
+          const shotTakenNow = isInsulinShotTaken(md.insStatus) && (Number(md.regUnits) > 0 || Number(md.nphUnits) > 0);
+          const statusPrefix = md.insStatus === 'post_done' ? '⏱️' : (md.insStatus === 'correction' ? '🎯' : '');
+          const summaryPills = [];
+          if (hasDataInMeal) {
+            summaryPills.push(`<span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-mono font-bold">🇮🇷${escapeHtmlSafe(md.time)}</span>`);
+            if (md.preBg || md.postBg) {
+              summaryPills.push(`<span class="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 font-mono font-bold">🩸${md.preBg || '--'}➔${md.postBg || '--'}</span>`);
+            }
+            if (shotTakenNow) {
+              summaryPills.push(`<span class="px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-900 font-mono font-bold">${statusPrefix}${btl.icon1}${md.regUnits}U+${btl.icon2}${md.nphUnits}U</span>`);
+            }
+            if (hasFoodsNow) {
+              const shortFood = formatFoodListLocalized(md);
+              const clippedFood = shortFood.length > 36 ? shortFood.slice(0, 36) + '…' : shortFood;
+              summaryPills.push(`<span class="text-slate-700 font-semibold">${escapeHtmlSafe(clippedFood)}</span>`);
+            }
+          }
+          const cardBorderCls = hasDataInMeal
+            ? 'border-emerald-300 bg-emerald-50/30 hover:border-emerald-500'
+            : 'border-slate-200/80 hover:border-emerald-400';
+
           return `
-            <div id="mealNode-${meta.key}" onclick="toggleExtraMealExpand('${meta.key}')" class="glass-card rounded-2xl px-4 py-3 shadow-sm border border-slate-200/80 hover:border-emerald-400 cursor-pointer transition flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-2.5">
-                <span class="text-lg">${meta.icon}</span>
-                <div>
-                  <h3 class="text-xs sm:text-sm font-bold text-slate-700">${meta.title[currentLang] || meta.title.zh}</h3>
-                  <p class="text-[11px] text-emerald-700 font-medium">${t.expandExtraMealHint}</p>
+            <div id="mealNode-${meta.key}" onclick="toggleExtraMealExpand('${meta.key}')" class="glass-card rounded-2xl px-4 py-3 shadow-sm border ${cardBorderCls} cursor-pointer transition flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                <span class="text-xl shrink-0">${meta.icon}</span>
+                <div class="min-w-0 space-y-1">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-800">${meta.title[currentLang] || meta.title.zh}</h3>
+                    ${hasDataInMeal ? '<span class="px-1.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold">✓</span>' : ''}
+                  </div>
+                  ${hasDataInMeal
+                    ? `<div class="flex flex-wrap items-center gap-1.5 text-[11px]">${summaryPills.join('')}</div>`
+                    : `<p class="text-[11px] text-emerald-700 font-medium">${t.expandAnyMealHint || t.expandExtraMealHint}</p>`}
                 </div>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold shrink-0">${t.expandMealBtn}</span>
+              <span class="px-3 py-1 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold shrink-0">${t.expandMealBtn}</span>
             </div>
           `;
         }
@@ -7051,10 +7134,10 @@ svg, img, video, canvas {
           <div id="mealNode-${meta.key}" class="glass-card rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
               <div>
-                <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2">
+                <h3 class="text-sm sm:text-base font-bold text-slate-800 flex flex-wrap items-center gap-2">
                   <span class="text-xl">${meta.icon}</span>
                   <span>${meta.title[currentLang] || meta.title.zh}</span>
-                  ${isCollapsibleExtra && !hasDataInMeal ? `<button type="button" onclick="toggleExtraMealExpand('${meta.key}')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-[11px] font-bold">${t.collapseMealBtn}</button>` : ''}
+                  <button type="button" onclick="toggleExtraMealExpand('${meta.key}')" class="px-2.5 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-[11px] font-bold transition">${t.collapseMealBtn}</button>
                 </h3>
                 <p class="text-[11px] text-slate-500 mt-0.5">${meta.subtitle[currentLang] || meta.subtitle.zh}</p>
               </div>
@@ -8415,12 +8498,16 @@ svg, img, video, canvas {
               allDaysStore[k] = mergeRemoteAndLocalDayLossless(allDaysStore[k], remDay);
             });
           }
+          await autoSanitizeFrozenStaleBgInStore(true);
           persistStateLocally();
           renderModule2();
           renderMeals();
           updateTopSteadyStateDashboard();
           populateDailyReportSelector();
+          renderDailyReport();
+          renderWeeklyReport();
           renderFoodImpactTab();
+          renderAnnualReportTab();
           isInitialCloudPullDone = true;
           const statusText = document.getElementById('autoSyncStatusText');
           const { krHm } = getFormattedDualClocks();
@@ -8527,58 +8614,90 @@ svg, img, video, canvas {
       }
     }
 
-    // 一键清理历史缓存误填的连续重复血糖（例如连续多日自动盖章同一个过期值 124 且无餐后血糖），100% 保留饮食、胰岛素与保健品记录
-    async function cleanStaleRepeatedBgArtifacts() {
+    // 检测多日重复冻结的缓存假血糖（例如旧版将过期缓存 124 连续多日盖章到空腹与餐前、且全天无任何餐后2h血糖或CGM曲线）
+    function detectStaleFrozenBgCandidates(minUniqueDates = 3, minTotalHits = 4) {
       const valueOccurrences = {};
       const sortedDates = Object.keys(allDaysStore).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort();
       sortedDates.forEach(dStr => {
         const day = allDaysStore[dStr];
         if (!day || !day.meals) return;
+        // 仅扫描全天无 CGM 连续曲线、且无任何餐后2h实测血糖的异常单边记录
+        if (day.cgmCurve && parseCgmCurveString(day.cgmCurve).length >= 6) return;
+        let hasAnyPost = false;
+        MEAL_NODES_META.forEach(meta => {
+          const md = day.meals?.[meta.key];
+          if (md && md.postBg !== '' && md.postBg !== null && md.postBg !== undefined) hasAnyPost = true;
+        });
+        if (hasAnyPost) return;
+
+        if (day.fastingBg !== '' && day.fastingBg !== null && day.fastingBg !== undefined) {
+          const fk = String(day.fastingBg).trim();
+          if (fk) {
+            if (!valueOccurrences[fk]) valueOccurrences[fk] = [];
+            valueOccurrences[fk].push({ date: dStr, type: 'fasting' });
+          }
+        }
         MEAL_NODES_META.forEach(meta => {
           const md = day.meals[meta.key];
           if (!md) return;
-          if (md.preBg && (!md.postBg || md.postBg === '')) {
+          if (md.preBg !== '' && md.preBg !== null && md.preBg !== undefined && (!md.postBg || md.postBg === '')) {
             const vKey = String(md.preBg).trim();
-            if (!valueOccurrences[vKey]) valueOccurrences[vKey] = [];
-            valueOccurrences[vKey].push({ date: dStr, type: 'meal', mealKey: meta.key });
+            if (vKey) {
+              if (!valueOccurrences[vKey]) valueOccurrences[vKey] = [];
+              valueOccurrences[vKey].push({ date: dStr, type: 'meal', mealKey: meta.key });
+            }
           }
         });
       });
 
-      // 识别在 >=3 个不同日期、>=5 个无餐后血糖的餐次中完全一致的缓存冻结值（如 124）
-      const staleCandidates = Object.entries(valueOccurrences).filter(([, list]) => {
+      return Object.entries(valueOccurrences).filter(([, list]) => {
         const uniqDates = new Set(list.map(x => x.date));
-        return list.length >= 5 && uniqDates.size >= 3;
+        return uniqDates.size >= minUniqueDates && list.length >= minTotalHits;
       });
+    }
 
-      if (staleCandidates.length === 0) {
-        showToast('✅ 未检测到多日重复冻结的缓存误填血糖记录！', 'info', 3200);
-        return;
+    // 判断清除冻结假血糖后，某一天是否属于「纯浏览残留幽灵空白日」（无任何食物、无保健品、无其他血糖，仅有旧版默认模板 15U+40U）
+    function isPureGhostTemplateDayAfterBgPurge(day) {
+      if (!day) return true;
+      if (day.cgmCurve && day.cgmCurve.trim().length > 0) return false;
+      if (day.fastingBg || day.bedtimeBg || day.night3amBg) return false;
+      if (Array.isArray(day.extraBgPoints) && day.extraBgPoints.length > 0) return false;
+      if (Array.isArray(day.hypoEvents) && day.hypoEvents.length > 0) return false;
+      if (day.care && (day.care.kondoshOil || day.care.postDinnerWalk)) return false;
+      if (day.supplements && Object.values(day.supplements).some(s => s && s.checked)) return false;
+      if (day.meals) {
+        for (const meta of MEAL_NODES_META) {
+          const md = day.meals[meta.key];
+          if (!md) continue;
+          if ((md.selectedFoods && md.selectedFoods.length > 0) || (md.customFoods && md.customFoods.length > 0)) return false;
+          if (md.preBg || md.postBg) return false;
+          if (md.insStatus && md.insStatus !== 'none') {
+            // 若是额外餐次打针，或剂量并非旧版默认早晚模板 (15U + 40U)，则视为真实手动打针记录予以保留
+            const isLegacyDefaultTemplate =
+              (meta.key === 'breakfast' || meta.key === 'dinner') &&
+              md.insStatus === 'done' &&
+              Number(md.regUnits) === 15 &&
+              Number(md.nphUnits) === 40 &&
+              !md.preBolus &&
+              !md.rolledNph;
+            if (!isLegacyDefaultTemplate) return false;
+          }
+        }
       }
+      return true;
+    }
 
-      const summaryParts = staleCandidates.map(([val, list]) => {
-        const datesArr = Array.from(new Set(list.map(x => x.date))).sort();
-        return `数值 ${val} mg/dL（共 ${list.length} 餐，涉及 ${datesArr[0]} ~ ${datesArr[datesArr.length - 1]}）`;
-      });
-
-      const ok = window.confirm(
-        `🔍 检测到历史过期缓存自动填入的重复血糖：\n\n• ${summaryParts.join('\n• ')}\n\n确认仅清除这些误填的重复血糖数值（100% 保留所有食物、用餐时间、胰岛素剂量与保健品记录）并同步云端吗？`
-      );
-      if (!ok) return;
-
+    function executeStaleCandidatesPurge(staleCandidates) {
       let clearedCells = 0;
       const touchedDates = new Set();
+      let ghostDeleted = 0;
+
       staleCandidates.forEach(([val, list]) => {
         const affectedDates = new Set(list.map(x => x.date));
         affectedDates.forEach(dStr => {
           const day = allDaysStore[dStr];
           if (!day) return;
-          let allMealsHadNoPost = true;
-          MEAL_NODES_META.forEach(meta => {
-            const md = day.meals?.[meta.key];
-            if (md && md.postBg) allMealsHadNoPost = false;
-          });
-          if (String(day.fastingBg).trim() === val && allMealsHadNoPost) {
+          if (String(day.fastingBg).trim() === val) {
             day.fastingBg = '';
             clearedCells++;
             touchedDates.add(dStr);
@@ -8594,7 +8713,57 @@ svg, img, video, canvas {
         });
       });
 
-      touchedDates.forEach(dStr => touchDayTimestamp(allDaysStore[dStr]));
+      touchedDates.forEach(dStr => {
+        const day = allDaysStore[dStr];
+        if (!day) return;
+        if (isPureGhostTemplateDayAfterBgPurge(day)) {
+          deletedDatesMap[dStr] = Date.now();
+          delete allDaysStore[dStr];
+          ghostDeleted++;
+        } else {
+          touchDayTimestamp(day);
+        }
+      });
+
+      return { clearedCells, touchedCount: touchedDates.size, ghostDeleted };
+    }
+
+    // 启动与拉取云端后自动静默净化连续多日冻结的假血糖（如 11-07 ~ 11-13 连续 124），100% 保留真实饮食与胰岛素！
+    async function autoSanitizeFrozenStaleBgInStore(syncCloudAfter = true) {
+      const candidates = detectStaleFrozenBgCandidates(4, 5);
+      if (candidates.length === 0) return false;
+      const { clearedCells } = executeStaleCandidatesPurge(candidates);
+      if (clearedCells > 0) {
+        persistStateLocally();
+        if (syncCloudAfter && serverConfig.jsonServerUrl) {
+          await saveCurrentDayToServer(true);
+        }
+        showToast(tMsg('staleBgAutoCleanToast'), 'success', 4200);
+        return true;
+      }
+      return false;
+    }
+
+    // 手动一键清理入口（降低阈值至 >=3 天即可检出）
+    async function cleanStaleRepeatedBgArtifacts(skipConfirm = false) {
+      const staleCandidates = detectStaleFrozenBgCandidates(3, 4);
+      if (staleCandidates.length === 0) {
+        showToast('✅ 未检测到多日重复冻结的缓存误填血糖记录！', 'info', 3200);
+        return;
+      }
+
+      if (!skipConfirm) {
+        const summaryParts = staleCandidates.map(([val, list]) => {
+          const datesArr = Array.from(new Set(list.map(x => x.date))).sort();
+          return `数值 ${val} mg/dL（共 ${list.length} 处，涉及 ${datesArr[0]} ~ ${datesArr[datesArr.length - 1]}）`;
+        });
+        const ok = window.confirm(
+          `🔍 检测到历史过期缓存自动填入的重复血糖：\n\n• ${summaryParts.join('\n• ')}\n\n确认清除这些误填的重复血糖数值（100% 保留所有食物、用餐时间、真实胰岛素与保健品记录）并同步云端吗？`
+        );
+        if (!ok) return;
+      }
+
+      const { clearedCells, touchedCount } = executeStaleCandidatesPurge(staleCandidates);
       persistStateLocally();
       renderModule2();
       renderMeals();
@@ -8605,7 +8774,7 @@ svg, img, video, canvas {
       renderFoodImpactTab();
       renderAnnualReportTab();
       await saveCurrentDayToServer(true);
-      showToast(`🧹 已精准清理 ${touchedDates.size} 天共 ${clearedCells} 处缓存误填血糖！`, 'success', 3800);
+      showToast(`🧹 已精准清理 ${touchedCount} 天共 ${clearedCells} 处缓存误填血糖！`, 'success', 3800);
     }
 
     async function testGeminiAndTranslateExisting() {
@@ -9050,6 +9219,10 @@ svg, img, video, canvas {
         uiPanoSub: t.panoSub,
         uiPanoModeSingle: t.panoModeSingleBtn,
         uiPanoModeAgp: t.panoModeAgpBtn,
+        uiPanoImportClarityBtn: t.panoImportClarityBtn,
+        uiBtnImportClarityTop: t.panoImportClarityBtn,
+        uiBtnExpandAllMeals: t.btnExpandAllMeals,
+        uiBtnCollapseAllMeals: t.btnCollapseAllMeals,
         optPanoAgp7: t.agpDays7,
         optPanoAgp14: t.agpDays14,
         optPanoAgp30: t.agpDays30,
@@ -9094,6 +9267,7 @@ svg, img, video, canvas {
         uiAnnualBgChartTitle: t.annualBgChartTitle,
         uiAnnualBgChartSub: t.annualBgChartSub,
         uiChkFasting: t.chkFasting,
+        uiChkMean: t.chkMean,
         uiChkPre: t.chkPre,
         uiChkPost: t.chkPost,
         uiAnnualFoodChartTitle: t.annualFoodChartTitle,
@@ -10884,6 +11058,7 @@ svg, img, video, canvas {
           cachedAnnualDayPoints.push({
             date: dStr,
             fastingBg: fastVal,
+            meanBg: dSt.mean,
             bedtimeBg: day.bedtimeBg || null,
             avgPreBg: preBgs.length > 0 ? Math.round(preBgs.reduce((a, b) => a + b, 0) / preBgs.length) : null,
             avgPostBg: postBgs.length > 0 ? Math.round(postBgs.reduce((a, b) => a + b, 0) / postBgs.length) : null,
@@ -10892,12 +11067,32 @@ svg, img, video, canvas {
             tir: dSt.tir80_160,
             tir70_180: dSt.tir70_180,
             cv: dSt.cv,
+            cgmCount: parseCgmCurveString(day.cgmCurve).length,
             dayReg,
             dayNph,
             quadrant: day.quadrant || 'LU'
           });
         }
       });
+
+      const staleBannerEl = document.getElementById('annualStaleBgAlertBox');
+      if (staleBannerEl) {
+        const remStale = detectStaleFrozenBgCandidates(3, 4);
+        if (remStale.length > 0) {
+          const desc = remStale.map(([v, list]) => {
+            const ds = Array.from(new Set(list.map(x => x.date))).sort();
+            return `<b>${escapeHtmlSafe(v)} mg/dL</b> (${ds[0]} ~ ${ds[ds.length - 1]})`;
+          }).join(' · ');
+          staleBannerEl.classList.remove('hidden');
+          staleBannerEl.innerHTML = `
+            <span class="text-amber-900 font-semibold">${t.staleBgBannerPrefix} ${desc}</span>
+            <button type="button" onclick="cleanStaleRepeatedBgArtifacts(true)" class="px-3 py-1 rounded-lg bg-amber-600 hover:bg-amber-600 text-white font-bold text-xs shadow-sm">${t.staleBgBannerBtn}</button>
+          `;
+        } else {
+          staleBannerEl.classList.add('hidden');
+          staleBannerEl.innerHTML = '';
+        }
+      }
 
       const pSt = calculateClinicalStatsFromValues(allPeriodBgs);
       const insDenom = Math.max(1, insLoggedDays);
@@ -10980,6 +11175,7 @@ svg, img, video, canvas {
         return `<div class="py-10 text-center text-xs text-slate-400">${tMsg('annDailyChartEmpty')}</div>`;
       }
       const showFast = document.getElementById('chkChartFasting') ? document.getElementById('chkChartFasting').checked : true;
+      const showMean = document.getElementById('chkChartMean') ? document.getElementById('chkChartMean').checked : true;
       const showPre = document.getElementById('chkChartPre') ? document.getElementById('chkChartPre').checked : true;
       const showPost = document.getElementById('chkChartPost') ? document.getElementById('chkChartPost').checked : true;
 
@@ -10994,6 +11190,7 @@ svg, img, video, canvas {
       dayPts.forEach(d => {
         allVals.push(d.minBg, d.maxBg);
         if (d.fastingBg) allVals.push(d.fastingBg);
+        if (d.meanBg) allVals.push(d.meanBg);
         if (d.avgPreBg) allVals.push(d.avgPreBg);
         if (d.avgPostBg) allVals.push(d.avgPostBg);
       });
@@ -11030,6 +11227,7 @@ svg, img, video, canvas {
         return `
           <g class="cursor-pointer" onclick="inspectAnnualDayPoint(${i})">
             <line x1="${x}" y1="${yTop}" x2="${x}" y2="${yBot}" stroke="#94a3b8" stroke-width="6" stroke-linecap="round" opacity="0.25" />
+            ${showMean && d.meanBg ? `<circle cx="${x}" cy="${getY(d.meanBg)}" r="4" fill="#9333ea" stroke="#fff" stroke-width="1.5" />` : ''}
             ${showFast && d.fastingBg ? `<circle cx="${x}" cy="${getY(d.fastingBg)}" r="4.5" fill="#059669" stroke="#fff" stroke-width="1.5" />` : ''}
             ${showPre && d.avgPreBg ? `<circle cx="${x}" cy="${getY(d.avgPreBg)}" r="4.5" fill="#0284c7" stroke="#fff" stroke-width="1.5" />` : ''}
             ${showPost && d.avgPostBg ? `<circle cx="${x}" cy="${getY(d.avgPostBg)}" r="5" fill="#e11d48" stroke="#fff" stroke-width="1.5" />` : ''}
@@ -11044,6 +11242,7 @@ svg, img, video, canvas {
           <line x1="${padL}" y1="${y160}" x2="${width - padR}" y2="${y160}" stroke="#10b981" stroke-width="1" stroke-dasharray="4,4" />
           <line x1="${padL}" y1="${y80}" x2="${width - padR}" y2="${y80}" stroke="#10b981" stroke-width="1" stroke-dasharray="4,4" />
           ${gridLines.join('')}
+          ${showMean ? buildLine('meanBg', '#9333ea') : ''}
           ${showFast ? buildLine('fastingBg', '#059669') : ''}
           ${showPre ? buildLine('avgPreBg', '#0284c7') : ''}
           ${showPost ? buildLine('avgPostBg', '#e11d48') : ''}
@@ -11058,7 +11257,8 @@ svg, img, video, canvas {
       if (!el || !d) return;
       const t = UI_TEXT[currentLang] || UI_TEXT.zh;
       const btl = getBottleLabels(currentLang);
-      el.innerHTML = `📅 <b>${d.date}</b> ｜ 🎯 ${t.lblDayTir} <b>${d.tir}%</b> (70-180: <b>${d.tir70_180}%</b> | CV: <b>${d.cv}%</b>) ｜ 🩸 ${t.lblFastingShort} <b>${d.fastingBg ?? '--'}</b> / ${t.lblPreAvgShort} <b>${d.avgPreBg ?? '--'}</b> / ${t.lblPostAvgShort} <b>${d.avgPostBg ?? '--'}</b> / ${t.lblBedtimeShort} <b>${d.bedtimeBg ?? '--'} mg/dL</b>（${t.lblDayExtrema} ${d.minBg}~${d.maxBg} mg/dL） ｜ 💉 ${t.lblInsulinShort} ${btl.icon1}<b>${d.dayReg}U</b> + ${btl.icon2}<b>${d.dayNph}U</b> ｜ 🔄 <b>${d.quadrant}</b>`;
+      const cgmBadge = d.cgmCount > 0 ? ` ｜ 📡 CGM <b>${d.cgmCount}</b>pts` : '';
+      el.innerHTML = `📅 <b>${d.date}</b> ｜ 🎯 ${t.lblDayTir} <b>${d.tir}%</b> (70-180: <b>${d.tir70_180}%</b> | CV: <b>${d.cv}%</b>)${cgmBadge} ｜ 🩸 ${t.lblFastingShort} <b>${d.fastingBg ?? '--'}</b> / ${t.annMeanLabel} <b>${d.meanBg ?? '--'}</b> / ${t.lblPreAvgShort} <b>${d.avgPreBg ?? '--'}</b> / ${t.lblPostAvgShort} <b>${d.avgPostBg ?? '--'}</b> / ${t.lblBedtimeShort} <b>${d.bedtimeBg ?? '--'} mg/dL</b>（${t.lblDayExtrema} ${d.minBg}~${d.maxBg} mg/dL） ｜ 💉 ${t.lblInsulinShort} ${btl.icon1}<b>${d.dayReg}U</b> + ${btl.icon2}<b>${d.dayNph}U</b> ｜ 🔄 <b>${d.quadrant}</b>`;
     }
 
     function renderAnnualFoodChart() {
@@ -11791,6 +11991,7 @@ svg, img, video, canvas {
       seedInitial7DaysData();
       restoreHypoTimerStateFromStorage();
       Object.keys(allDaysStore).forEach(k => ensureDaySchemaIntegrity(allDaysStore[k]));
+      autoSanitizeFrozenStaleBgInStore(false);
       if (liveDexcomState.bg) {
         updateLiveBgManually(liveDexcomState.bg, true);
         updateLiveTrendManually(liveDexcomState.trend || '→');
