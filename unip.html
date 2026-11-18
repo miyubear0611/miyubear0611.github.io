@@ -895,9 +895,9 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
         <button type="button" class="ctrl-btn" data-font-step="-1" title="Smaller text">A-</button>
         <button type="button" class="ctrl-btn" data-font-step="1" title="Larger text">A+</button>
         <nav class="lang-switch" aria-label="Language Switcher">
-          <a href="zh.html" class="lang-pill current">中文</a>
-          <a href="en.html" class="lang-pill ">English</a>
-          <a href="fa.html" class="lang-pill ">فارسی</a>
+          <a href="unip.html" class="lang-pill current">中文</a>
+          <a href="unipen.html" class="lang-pill ">English</a>
+          <a href="unipfa.html" class="lang-pill ">فارسی</a>
         </nav>
       </div>
     </div>
@@ -912,23 +912,23 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
     <main class="main-column">
       
         <div class="portal-strip" aria-label="Language Editions">
-          <a href="zh.html" class="portal-card active-ed">
+          <a href="unip.html" class="portal-card active-ed">
             <div>
-              <div style="font-weight:800;font-size:0.95rem;">🇨🇳 中文完整版 (zh.html)</div>
+              <div style="font-weight:800;font-size:0.95rem;">🇨🇳 中文完整版 (unip.html)</div>
               <div style="font-size:0.77rem;color:#475569;">100% 原文一字不落 · 专业术语与职业导读 · 交互图表</div>
             </div>
-            <span style="font-weight:800;color:#0d9488;">当前默认 →</span>
+            <span style="font-weight:800;color:#0d9488;">当前版本 →</span>
           </a>
-          <a href="en.html" class="portal-card">
+          <a href="unipen.html" class="portal-card">
             <div>
-              <div style="font-weight:800;font-size:0.95rem;">🇬🇧 English Complete Edition (en.html)</div>
+              <div style="font-weight:800;font-size:0.95rem;">🇬🇧 English Complete Edition (unipen.html)</div>
               <div style="font-size:0.77rem;color:#475569;">100% Unabridged · Career &amp; Term Glossary · Interactive</div>
             </div>
             <span style="font-weight:800;color:#0284c7;">Open →</span>
           </a>
-          <a href="fa.html" class="portal-card" dir="rtl">
+          <a href="unipfa.html" class="portal-card" dir="rtl">
             <div>
-              <div style="font-weight:800;font-size:0.95rem;">🇮🇷 نسخه کامل فارسی (fa.html)</div>
+              <div style="font-weight:800;font-size:0.95rem;">🇮🇷 نسخه کامل فارسی (unipfa.html)</div>
               <div style="font-size:0.77rem;color:#475569;">ترجمه کامل کلمه‌به‌کلمه · راست‌به‌چپ استاندارد · دانشنامه مشاغل</div>
             </div>
             <span style="font-weight:800;color:#0284c7;">مشاهده ←</span>
@@ -1687,13 +1687,12 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
   const W = META.w;
   const EX = META.ex;
 
-  // Optional ?lang=en|fa redirect on index.html
-  if (META.is_index) {
-    const params = new URLSearchParams(window.location.search);
-    const ql = params.get('lang');
-    if (ql === 'en') window.location.replace('en.html' + window.location.hash);
-    else if (ql === 'fa') window.location.replace('fa.html' + window.location.hash);
-  }
+  // Optional ?lang=en|fa|zh redirect
+  const params = new URLSearchParams(window.location.search);
+  const ql = params.get('lang');
+  if (ql === 'en' && META.lang !== 'en') window.location.replace('unipen.html' + window.location.hash);
+  else if (ql === 'fa' && META.lang !== 'fa') window.location.replace('unipfa.html' + window.location.hash);
+  else if (ql === 'zh' && META.lang !== 'zh') window.location.replace('unip.html' + window.location.hash);
 
   // 1. Scroll progress + Active TOC ScrollSpy
   const progBar = document.getElementById('progress-bar');
