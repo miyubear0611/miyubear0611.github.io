@@ -41,7 +41,7 @@
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.03);
   --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
   --base-font: 16.5px;
-  --toc-width: 276px;
+  --toc-width: 248px;
 }
 
 * { box-sizing: border-box; }
@@ -49,6 +49,7 @@ html { scroll-behavior: smooth; font-size: var(--base-font); }
 
 body {
   margin: 0;
+  overflow-x: clip;
   background: var(--bg-canvas);
   color: var(--ink-body);
   font-family: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -98,39 +99,76 @@ body.hl-active .pi-card-field-val strong {
   height: 3px;
   width: 0%;
   background: linear-gradient(90deg, var(--teal), var(--brand), var(--indigo));
-  z-index: 1000;
+  z-index: 1400;
   transition: width 0.1s linear;
 }
 
-.top-header {
+.sticky-nav-stack {
   position: sticky;
   top: 0;
   z-index: 900;
-  background: rgba(255, 255, 255, 0.93);
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.top-header {
+  min-height: 50px;
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-light);
-  padding: 0.55rem 1.25rem;
+  padding: 0.32rem 1rem;
+  display: flex;
+  align-items: center;
 }
 
 .header-inner {
+  width: 100%;
   max-width: 1460px;
   margin: 0 auto;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(160px, 265px) auto;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  gap: 0.6rem;
 }
 
-.brand-group { display: flex; align-items: center; gap: 0.65rem; min-width: 0; }
+.brand-group { display: flex; align-items: center; gap: 0.5rem; min-width: 0; flex-shrink: 1; }
 .brand-dot {
-  width: 11px; height: 11px;
+  width: 9px; height: 9px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--teal), var(--brand));
   flex-shrink: 0;
-  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12);
 }
-.brand-title { font-weight: 700; font-size: 0.95rem; color: var(--ink-strong); white-space: nowrap; }
+.brand-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--ink-strong);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+
+.toc-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-subtle);
+  color: var(--ink-strong);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.28rem 0.62rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.toc-toggle-btn:hover { border-color: var(--brand); color: var(--brand-dark); background: var(--brand-soft); }
+
+.mob-search-btn { display: none; }
+.mob-search-close { display: none; }
 
 .search-wrap {
   display: flex;
@@ -138,10 +176,10 @@ body.hl-active .pi-card-field-val strong {
   background: var(--bg-subtle);
   border: 1px solid var(--border-light);
   border-radius: 999px;
-  padding: 0.25rem 0.75rem;
-  gap: 0.4rem;
-  flex: 1 1 230px;
-  max-width: 370px;
+  padding: 0.22rem 0.68rem;
+  gap: 0.35rem;
+  flex: 0 1 250px;
+  min-width: 150px;
 }
 .search-wrap:focus-within {
   border-color: var(--brand);
@@ -153,36 +191,41 @@ body.hl-active .pi-card-field-val strong {
   background: transparent;
   outline: none;
   width: 100%;
-  font-size: 0.84rem;
+  min-width: 0;
+  font-size: 0.82rem;
   color: var(--ink-strong);
   font-family: inherit;
 }
-.search-count { font-size: 0.75rem; color: var(--ink-muted); white-space: nowrap; }
+.search-count { font-size: 0.73rem; color: var(--ink-muted); white-space: nowrap; }
 .search-nav-btn {
   border: none;
   background: #e2e8f0;
   color: var(--ink-strong);
   border-radius: 4px;
-  padding: 1px 6px;
-  font-size: 0.72rem;
+  padding: 1px 5px;
+  font-size: 0.7rem;
   cursor: pointer;
+  flex-shrink: 0;
 }
 .search-nav-btn:hover { background: #cbd5e1; }
 
-.controls-group { display: flex; align-items: center; gap: 0.42rem; flex-wrap: wrap; }
+.controls-group { display: flex; align-items: center; gap: 0.35rem; flex-wrap: nowrap; flex-shrink: 0; }
 .ctrl-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.32rem;
+  justify-content: center;
+  gap: 0.28rem;
   border: 1px solid var(--border-light);
   background: #fff;
   color: var(--ink-secondary);
-  font-size: 0.79rem;
+  font-size: 0.77rem;
   font-weight: 600;
-  padding: 0.34rem 0.68rem;
+  padding: 0.28rem 0.58rem;
   border-radius: 999px;
   cursor: pointer;
   font-family: inherit;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.15s ease;
   text-decoration: none;
 }
@@ -192,26 +235,111 @@ body.hl-active .pi-card-field-val strong {
 .lang-switch {
   display: inline-flex;
   background: var(--bg-subtle);
-  padding: 3px;
+  padding: 2px;
   border-radius: 999px;
   border: 1px solid var(--border-light);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .lang-pill {
   text-decoration: none;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--ink-secondary);
-  padding: 0.25rem 0.68rem;
+  padding: 0.22rem 0.54rem;
   border-radius: 999px;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 .lang-pill:hover { color: var(--ink-strong); }
 .lang-pill.current { background: var(--ink-strong); color: #fff; }
 
-/* Trilingual Portal Strip on index.html */
+/* Mobile & Tablet Persistent Horizontal Chapter Navigation Strip */
+.mobile-toc-strip {
+  display: none;
+  align-items: center;
+  gap: 0.35rem;
+  height: 38px;
+  padding: 0 0.65rem;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-light);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.mobile-toc-strip::-webkit-scrollbar { display: none; }
+.mob-strip-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-subtle);
+  color: var(--ink-strong);
+  border-radius: 6px;
+  padding: 0.18rem 0.48rem;
+  font-size: 0.74rem;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+.mob-toc-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+.mob-toc-pill.active {
+  background: var(--brand-soft);
+  border-color: #7dd3fc;
+  color: var(--brand-dark);
+  font-weight: 700;
+}
+
+@media (max-width: 1240px) {
+  .ctrl-lbl { display: none; }
+}
+@media (max-width: 960px) {
+  .brand-title, .brand-dot { display: none; }
+  .top-header { min-height: 46px; padding: 0.28rem 0.7rem; }
+  .header-inner {
+    grid-template-columns: auto 1fr;
+    row-gap: 0.38rem;
+  }
+  .controls-group { justify-self: end; }
+  .mob-search-btn { display: inline-flex; }
+  .mob-search-close { display: inline-flex; }
+  .search-wrap {
+    display: none;
+    grid-column: 1 / -1;
+    order: 3;
+    width: 100%;
+    max-width: none;
+    border-radius: 8px;
+    background: var(--bg-subtle);
+    padding: 0.32rem 0.7rem;
+  }
+  .sticky-nav-stack.search-open .search-wrap { display: flex; }
+}
+@media (max-width: 520px) {
+  .desktop-font-btn { display: none; }
+  .top-header { min-height: 44px; padding: 0.24rem 0.55rem; }
+  .lang-pill { padding: 0.2rem 0.44rem; font-size: 0.72rem; }
+}
+
+/* Trilingual Portal Strip on unip.html */
 .portal-strip {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   gap: 0.85rem;
   background: #fff;
   border: 1px solid var(--border-light);
@@ -246,32 +374,52 @@ body.hl-active .pi-card-field-val strong {
   margin: 0 auto;
   display: grid;
   grid-template-columns: var(--toc-width) minmax(0, 1fr);
-  gap: 1.75rem;
-  padding: 1.5rem 1.25rem 4rem;
+  gap: 1.5rem;
+  padding: 1.35rem 1.25rem 4rem;
   align-items: start;
+}
+body.toc-collapsed .layout-shell {
+  grid-template-columns: minmax(0, 1fr);
+}
+body.toc-collapsed .toc-sidebar {
+  display: none;
 }
 
 .toc-sidebar {
   position: sticky;
-  top: 4.3rem;
-  max-height: calc(100vh - 5.2rem);
+  top: calc(50px + 1rem);
+  max-height: calc(100vh - 50px - 2rem);
   overflow-y: auto;
   background: var(--bg-surface);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  padding: 1rem 0.85rem;
+  padding: 0.9rem 0.75rem;
   box-shadow: var(--shadow-sm);
+  transition: top 0.22s ease, max-height 0.22s ease;
+}
+body.nav-tucked .toc-sidebar {
+  top: 1rem;
+  max-height: calc(100vh - 2rem);
+}
+.toc-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0 0.45rem 0.55rem;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 0.5rem;
 }
 .toc-heading {
   font-size: 0.74rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   color: var(--ink-muted);
-  padding: 0 0.5rem 0.6rem;
-  border-bottom: 1px solid var(--border-light);
-  margin-bottom: 0.55rem;
 }
+.toc-drawer-actions { display: none; align-items: center; gap: 0.3rem; }
+.toc-backdrop { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.42); z-index: 1250; }
+.toc-backdrop.open { display: block; }
 .toc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.2rem; }
 .toc-link {
   display: flex;
@@ -331,7 +479,7 @@ body.hl-active .pi-card-field-val strong {
   letter-spacing: -0.015em;
 }
 
-.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(195px, 1fr)); gap: 0.8rem; }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 175px), 1fr)); gap: 0.75rem; }
 .kpi-card {
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid var(--border-light);
@@ -356,7 +504,7 @@ body.hl-active .pi-card-field-val strong {
   border-radius: var(--radius-lg);
   padding: 1.85rem 2.1rem;
   box-shadow: var(--shadow-sm);
-  scroll-margin-top: 4.6rem;
+  scroll-margin-top: 6rem;
 }
 .section-card.onboarding-card { border-top: 4px solid var(--teal); }
 .eyebrow {
@@ -521,7 +669,7 @@ body.hl-active .pi-card-field-val strong {
   font-family: inherit;
   margin-bottom: 0.9rem;
 }
-.glossary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 0.85rem; }
+.glossary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr)); gap: 0.85rem; }
 .g-card {
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
@@ -637,7 +785,7 @@ body.hl-active .pi-card-field-val strong {
 
 .pi-cards-grid {
   display: none;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr));
   gap: 0.95rem;
   margin: 0.75rem 0 1.15rem;
 }
@@ -692,21 +840,21 @@ body.hl-active .pi-card-field-val strong {
 .w-title { margin: 0 0 0.35rem; font-size: 1.08rem; font-weight: 800; color: var(--ink-strong); }
 .w-sub { margin: 0 0 1rem; font-size: 0.84rem; color: var(--ink-secondary); }
 
-/* Illustrated 3-Module Schematic Diagram (Matching Original Visual Module) */
+/* Illustrated 3-Module Schematic Diagram (5-Col x 3-Row Symmetrical Grid) */
 .schematic-box {
   background: #ffffff;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
-  padding: 1.25rem 1.15rem 1rem;
+  padding: 1.2rem 1.05rem 1rem;
   margin-bottom: 1.1rem;
 }
 .schem-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr) 36px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr) 32px minmax(0, 1fr);
+  grid-template-rows: auto 26px auto;
   align-items: stretch;
-  gap: 0.25rem;
+  column-gap: 0.25rem;
 }
-.schem-col { display: flex; flex-direction: column; align-items: stretch; }
 .schem-card {
   border-radius: 13px;
   border: 2px solid #2f6fb8;
@@ -714,7 +862,6 @@ body.hl-active .pi-card-field-val strong {
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.16s ease, box-shadow 0.16s ease;
-  flex: 1;
   display: flex;
   flex-direction: column;
 }
@@ -728,13 +875,29 @@ body.hl-active .pi-card-field-val strong {
 .schem-hdr {
   color: #fff;
   font-weight: 800;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   line-height: 1.32;
   text-align: center;
-  padding: 0.65rem 0.6rem;
+  padding: 0.6rem 0.55rem;
+  min-height: 62px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.schem-hdr-sub {
+  font-size: 0.74rem;
+  font-weight: 600;
+  opacity: 0.94;
+  line-height: 1.35;
+}
+.rtl-sub {
+  font-family: 'Vazirmatn', 'Inter', sans-serif;
+  unicode-bidi: isolate;
 }
 .schem-body {
-  padding: 0.65rem 0.75rem 0.9rem;
+  padding: 0.6rem 0.65rem 0.85rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -742,26 +905,35 @@ body.hl-active .pi-card-field-val strong {
 }
 .schem-lines {
   text-align: center;
-  font-size: 0.81rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  line-height: 1.6;
+  line-height: 1.55;
   color: var(--ink-strong);
   margin-top: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
 }
 .schem-sub-inline {
   font-weight: 500;
   color: var(--ink-secondary);
   font-size: 0.9em;
 }
+.schem-sub-fa {
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  line-height: 1.4;
+}
 .schem-arrow {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-bottom: 5.5rem;
 }
 .schem-dotted {
   width: 0;
-  height: 28px;
+  height: 26px;
   margin: 0 auto;
   border-left: 2px dotted #94a3b8;
 }
@@ -770,26 +942,62 @@ body.hl-active .pi-card-field-val strong {
   border-radius: 11px;
   overflow: hidden;
   background: #fff;
+  display: flex;
+  flex-direction: column;
 }
 .schem-lab-hdr {
   background: #8e9aa8;
   color: #fff;
-  font-size: 0.78rem;
+  font-size: 0.77rem;
   font-weight: 700;
+  line-height: 1.32;
   text-align: center;
   padding: 0.42rem 0.5rem;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+.schem-lab-hdr-sub {
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.95;
+  font-family: 'Vazirmatn', 'Noto Sans SC', 'Inter', sans-serif;
 }
 .schem-lab-body {
   text-align: center;
-  font-size: 0.77rem;
-  font-weight: 600;
-  line-height: 1.5;
   color: var(--ink-strong);
-  padding: 0.55rem 0.5rem;
-  min-height: 54px;
+  padding: 0.58rem 0.45rem;
+  min-height: 62px;
+  flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.28rem;
+}
+.schem-pi-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.22rem;
+  line-height: 1.42;
+}
+.schem-pi-tag {
+  display: inline-block;
+  white-space: nowrap;
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  unicode-bidi: isolate;
+}
+.schem-sep {
+  color: #94a3b8;
+  font-size: 0.74rem;
+  padding: 0 1px;
 }
 .schem-caption {
   margin: 1rem 0 0;
@@ -799,12 +1007,22 @@ body.hl-active .pi-card-field-val strong {
   line-height: 1.72;
   color: var(--ink-secondary);
 }
-@media (max-width: 860px) {
-  .schem-grid { grid-template-columns: 1fr; gap: 0.75rem; }
-  .schem-arrow { display: none; }
+@media (max-width: 880px) {
+  .schem-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    row-gap: 0;
+  }
+  .schem-spacer { display: none; }
+  .sg-m1 { order: 1; } .sg-d1 { order: 2; height: 18px; } .sg-l1 { order: 3; }
+  .sg-a1 { order: 4; padding: 0.5rem 0; }
+  .sg-m2 { order: 5; } .sg-d2 { order: 6; height: 18px; } .sg-l2 { order: 7; }
+  .sg-a2 { order: 8; padding: 0.5rem 0; }
+  .sg-m3 { order: 9; } .sg-d3 { order: 10; height: 18px; } .sg-l3 { order: 11; }
+  .schem-arrow svg { transform: rotate(90deg); }
 }
 
-.mapper-modules { display: grid; grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)); gap: 0.7rem; margin-bottom: 0.95rem; }
+.mapper-modules { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 225px), 1fr)); gap: 0.7rem; margin-bottom: 0.95rem; }
 .m-box {
   border: 1.5px solid var(--border-light);
   border-radius: var(--radius-md);
@@ -857,7 +1075,7 @@ body.hl-active .pi-card-field-val strong {
   font-weight: 600;
   margin-bottom: 0.95rem;
 }
-.cal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.75rem; }
+.cal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr)); gap: 0.75rem; }
 .cal-card {
   background: #fff;
   border: 1px solid var(--border-light);
@@ -898,7 +1116,7 @@ body.hl-active .pi-card-field-val strong {
   font-family: inherit;
 }
 .w-tab-btn.active { background: var(--ink-strong); border-color: var(--ink-strong); color: #fff; }
-.sal-stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(225px, 1fr)); gap: 0.75rem; }
+.sal-stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 215px), 1fr)); gap: 0.75rem; }
 .sal-stage-card { background: #fff; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 0.85rem 0.95rem; }
 .sal-stage-title { font-size: 0.85rem; font-weight: 800; color: var(--ink-strong); margin-bottom: 0.6rem; }
 .sal-bar-item { margin-bottom: 0.55rem; }
@@ -947,77 +1165,91 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
   color: var(--ink-muted);
 }
 
-.mobile-toc-btn {
-  display: none;
-  position: fixed;
-  bottom: 1.2rem;
-  inset-inline-end: 1.2rem;
-  z-index: 950;
-  background: var(--ink-strong);
-  color: #fff;
-  border: none;
-  border-radius: 999px;
-  padding: 0.65rem 1.05rem;
-  font-size: 0.84rem;
-  font-weight: 700;
-  box-shadow: var(--shadow-md);
-  cursor: pointer;
-}
-
-@media (max-width: 1024px) {
-  .layout-shell { grid-template-columns: 1fr; padding: 1rem 0.85rem 4.5rem; }
+@media (max-width: 1120px) {
+  .mobile-toc-strip { display: flex; }
+  .layout-shell { grid-template-columns: 1fr; padding: 0.95rem 0.8rem 3.5rem; gap: 1.15rem; }
+  body.toc-collapsed .toc-sidebar { display: block; }
   .toc-sidebar {
-    display: none;
     position: fixed;
-    inset: 4rem 1rem auto 1rem;
-    z-index: 1050;
-    max-height: 75vh;
-    box-shadow: 0 20px 40px rgba(15,23,42,0.2);
+    top: 0;
+    bottom: 0;
+    inset-inline-start: -340px;
+    width: min(310px, 86vw);
+    max-height: 100dvh;
+    border-radius: 0;
+    z-index: 1300;
+    padding: 1rem 0.9rem 2rem;
+    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.25);
+    transition: inset-inline-start 0.24s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .toc-sidebar.mobile-open { display: block; }
-  .mobile-toc-btn { display: inline-flex; align-items: center; gap: 0.4rem; }
-  .section-card, .hero-card { padding: 1.35rem 1.15rem; }
+  body.nav-tucked .toc-sidebar { top: 0; max-height: 100dvh; }
+  .toc-sidebar.mobile-open { inset-inline-start: 0; }
+  .toc-drawer-actions { display: inline-flex; }
+  .section-card, .hero-card { padding: 1.25rem 1.05rem; }
+  .interactive-widget { padding: 1.05rem 0.95rem; }
   .rate-row-main { grid-template-columns: 1fr; gap: 0.35rem; }
+}
+@media (max-width: 640px) {
+  .hero-card h1 { font-size: 1.28rem; line-height: 1.42; margin-bottom: 1rem; }
+  .section-h2 { font-size: 1.16rem; }
+  .section-h3 { font-size: 1.01rem; }
 }
 </style>
 </head>
 <body class="hl-active" dir="ltr">
   <div id="progress-bar"></div>
 
-  <header class="top-header">
-    <div class="header-inner">
-      <div class="brand-group">
-        <span class="brand-dot"></span>
-        <div>
+  <div class="sticky-nav-stack" id="sticky-nav-stack">
+    <header class="top-header" id="top-header">
+      <div class="header-inner">
+        <div class="brand-group">
+          <button type="button" class="toc-toggle-btn" data-toggle-toc="1" title="全书章节导航">☰ 目录</button>
+          <span class="brand-dot"></span>
           <div class="brand-title">2027 KR Dry-Lab M.S. 战略全书</div>
         </div>
-      </div>
 
-      <div class="search-wrap">
-        <span>🔍</span>
-        <input type="search" id="doc-search-input" placeholder="搜索导师（如 이주용）、模型（ESM-2）、药企或术语...">
-        <span id="doc-search-count" class="search-count"></span>
-        <button type="button" id="doc-search-prev" class="search-nav-btn" title="Previous">▲</button>
-        <button type="button" id="doc-search-next" class="search-nav-btn" title="Next">▼</button>
-      </div>
+        <div class="search-wrap" id="search-wrap">
+          <span>🔍</span>
+          <input type="search" id="doc-search-input" placeholder="搜索导师（如 이주용）、模型（ESM-2）、药企或术语...">
+          <span id="doc-search-count" class="search-count"></span>
+          <button type="button" id="doc-search-prev" class="search-nav-btn" title="Previous">▲</button>
+          <button type="button" id="doc-search-next" class="search-nav-btn" title="Next">▼</button>
+          <button type="button" id="mob-search-close" class="search-nav-btn mob-search-close" title="Close">✕</button>
+        </div>
 
-      <div class="controls-group">
-        <button type="button" class="ctrl-btn active" id="hl-toggle-btn">✨ 重点标亮</button>
-        <button type="button" class="ctrl-btn" data-open-drawer="1">📖 名词与职业速查</button>
-        <button type="button" class="ctrl-btn" data-font-step="-1" title="Smaller text">A-</button>
-        <button type="button" class="ctrl-btn" data-font-step="1" title="Larger text">A+</button>
-        <nav class="lang-switch" aria-label="Language Switcher">
-          <a href="unip.html" class="lang-pill current">中文</a>
-          <a href="unipen.html" class="lang-pill ">English</a>
-          <a href="unipfa.html" class="lang-pill ">فارسی</a>
-        </nav>
+        <div class="controls-group">
+          <button type="button" class="ctrl-btn mob-search-btn" id="mob-search-btn" title="Search">🔍</button>
+          <button type="button" class="ctrl-btn active" id="hl-toggle-btn" title="重点标亮">✨<span class="ctrl-lbl">重点标亮</span></button>
+          <button type="button" class="ctrl-btn" data-open-drawer="1" title="名词与职业速查">📖<span class="ctrl-lbl">名词与职业速查</span></button>
+          <button type="button" class="ctrl-btn desktop-font-btn" data-font-step="-1" title="Smaller text">A-</button>
+          <button type="button" class="ctrl-btn desktop-font-btn" data-font-step="1" title="Larger text">A+</button>
+          <nav class="lang-switch" aria-label="Language Switcher">
+            <a href="unip.html" class="lang-pill current" title="中文">中文</a>
+            <a href="unipen.html" class="lang-pill " title="English">EN</a>
+            <a href="unipfa.html" class="lang-pill " title="فارسی">فارسی</a>
+          </nav>
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
+
+    <nav class="mobile-toc-strip" id="mobile-toc-strip" aria-label="全书章节导航">
+      <button type="button" class="mob-strip-menu-btn" data-toggle-toc="1" aria-label="全书章节导航">☰</button>
+      <a class="mob-toc-pill" href="#sec-onboarding">导读</a><a class="mob-toc-pill" href="#sec-overview">总纲</a><a class="mob-toc-pill" href="#sec-ch1">一·12位导师</a><a class="mob-toc-pill" href="#sec-ch2">二·GitHub项目</a><a class="mob-toc-pill" href="#sec-ch3">三·套磁窗口</a><a class="mob-toc-pill" href="#sec-ch4">四·Zoom面试</a><a class="mob-toc-pill" href="#sec-ch5">五·内诺率</a><a class="mob-toc-pill" href="#sec-ch6">六·毕业去向</a><a class="mob-toc-pill" href="#sec-ch7">七·薪资税改</a>
+    </nav>
+  </div>
+
+  <div class="toc-backdrop" id="toc-backdrop"></div>
 
   <div class="layout-shell">
     <aside class="toc-sidebar" id="toc-sidebar">
-      <div class="toc-heading">全书章节导航</div>
+      <div class="toc-heading-row">
+        <div class="toc-heading">全书章节导航</div>
+        <div class="toc-drawer-actions">
+          <button type="button" class="ctrl-btn" data-font-step="-1" style="padding:0.18rem 0.45rem;">A-</button>
+          <button type="button" class="ctrl-btn" data-font-step="1" style="padding:0.18rem 0.45rem;">A+</button>
+          <button type="button" class="ctrl-btn" id="toc-close-btn" style="padding:0.18rem 0.5rem;">✕</button>
+        </div>
+      </div>
       <ul class="toc-list"><li><a class="toc-link" href="#sec-onboarding"><span class="toc-num">导读</span><span>专业名词与职业岗位全景百科</span></a></li><li><a class="toc-link" href="#sec-overview"><span class="toc-num">总纲</span><span>核心破局策略与三大全局摘要</span></a></li><li><a class="toc-link" href="#sec-ch1"><span class="toc-num">一</span><span>12位重点导师代表作与套磁切入点</span></a></li><li><a class="toc-link" href="#sec-ch2"><span class="toc-num">二</span><span>1个月不耽误雅思的GitHub项目设计</span></a></li><li><a class="toc-link" href="#sec-ch3"><span class="toc-num">三</span><span>套磁黄金窗口推算与高情商英文话术</span></a></li><li><a class="toc-link" href="#sec-ch4"><span class="toc-num">四</span><span>12位导师Zoom面试定制与追问预测</span></a></li><li><a class="toc-link" href="#sec-ch5"><span class="toc-num">五</span><span>套磁内诺率分级与15周紧凑日程</span></a></li><li><a class="toc-link" href="#sec-ch6"><span class="toc-num">六</span><span>12位导师课题组毕业专属去向剖析</span></a></li><li><a class="toc-link" href="#sec-ch7"><span class="toc-num">七</span><span>分年限薪资、企业读博与2027税改</span></a></li></ul>
     </aside>
 
@@ -1296,157 +1528,104 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
       
     <div class="schematic-box">
       <div class="schem-grid" dir="ltr">
-        <!-- Column 1 -->
-        <div class="schem-col">
-          <div class="schem-card sc-blue" data-schem-jump="nb1">
-            <div class="schem-hdr">Module 1:<br>Epitope PLM Benchmark<div style="font-size:0.74rem;font-weight:600;opacity:0.92;margin-top:2px;">表位蛋白质语言模型基准</div></div>
-            <div class="schem-body">
-              
-<svg viewBox="0 0 236 124" width="100%" height="122" aria-label="Peptide chain to neural embedding matrix">
-  <!-- Continuous S-curve polypeptide chain beads -->
+        <!-- Row 1: Module Cards & Horizontal Arrows -->
+        <div class="schem-card sc-blue sg-m1" data-schem-jump="nb1">
+          <div class="schem-hdr"><div>Module 1:<br>Epitope PLM Benchmark</div><div class="schem-hdr-sub">表位蛋白质语言模型基准</div></div>
+          <div class="schem-body">
+            
+<svg viewBox="0 0 236 124" width="100%" height="120" aria-label="Peptide chain to neural embedding matrix">
   <path d="M26,52 C14,42 16,24 32,24 C48,24 50,42 38,54 C24,68 18,86 30,96 C42,104 54,90 60,72 C66,54 76,40 88,46 C98,52 92,70 82,82 C74,92 78,104 90,102" fill="none" stroke="#475569" stroke-width="1.4"/>
   <g stroke="#1e293b" stroke-width="1.25">
-    <circle cx="26" cy="52" r="4.8" fill="#93c5fd"/>
-    <circle cx="19" cy="43" r="4.8" fill="#60a5fa"/>
-    <circle cx="19" cy="32" r="4.8" fill="#3b82f6"/>
-    <circle cx="27" cy="25" r="4.8" fill="#bfdbfe"/>
-    <circle cx="38" cy="26" r="4.8" fill="#60a5fa"/>
-    <circle cx="46" cy="34" r="4.8" fill="#93c5fd"/>
-    <circle cx="45" cy="45" r="4.8" fill="#e2e8f0"/>
-    <circle cx="38" cy="54" r="4.8" fill="#60a5fa"/>
-    <circle cx="30" cy="63" r="4.8" fill="#93c5fd"/>
-    <circle cx="24" cy="73" r="4.8" fill="#3b82f6"/>
-    <circle cx="22" cy="84" r="4.8" fill="#bfdbfe"/>
-    <circle cx="28" cy="94" r="4.8" fill="#60a5fa"/>
-    <circle cx="39" cy="98" r="4.8" fill="#e2e8f0"/>
-    <circle cx="49" cy="92" r="4.8" fill="#93c5fd"/>
-    <circle cx="56" cy="82" r="4.8" fill="#60a5fa"/>
-    <circle cx="61" cy="71" r="4.8" fill="#3b82f6"/>
-    <circle cx="66" cy="60" r="4.8" fill="#bfdbfe"/>
-    <circle cx="73" cy="50" r="4.8" fill="#60a5fa"/>
-    <circle cx="83" cy="45" r="4.8" fill="#e2e8f0"/>
-    <circle cx="92" cy="51" r="4.8" fill="#60a5fa"/>
-    <circle cx="92" cy="62" r="4.8" fill="#3b82f6"/>
-    <circle cx="86" cy="73" r="4.8" fill="#93c5fd"/>
-    <circle cx="80" cy="84" r="4.8" fill="#bfdbfe"/>
-    <circle cx="80" cy="95" r="4.8" fill="#60a5fa"/>
+    <circle cx="26" cy="52" r="4.8" fill="#93c5fd"/><circle cx="19" cy="43" r="4.8" fill="#60a5fa"/>
+    <circle cx="19" cy="32" r="4.8" fill="#3b82f6"/><circle cx="27" cy="25" r="4.8" fill="#bfdbfe"/>
+    <circle cx="38" cy="26" r="4.8" fill="#60a5fa"/><circle cx="46" cy="34" r="4.8" fill="#93c5fd"/>
+    <circle cx="45" cy="45" r="4.8" fill="#e2e8f0"/><circle cx="38" cy="54" r="4.8" fill="#60a5fa"/>
+    <circle cx="30" cy="63" r="4.8" fill="#93c5fd"/><circle cx="24" cy="73" r="4.8" fill="#3b82f6"/>
+    <circle cx="22" cy="84" r="4.8" fill="#bfdbfe"/><circle cx="28" cy="94" r="4.8" fill="#60a5fa"/>
+    <circle cx="39" cy="98" r="4.8" fill="#e2e8f0"/><circle cx="49" cy="92" r="4.8" fill="#93c5fd"/>
+    <circle cx="56" cy="82" r="4.8" fill="#60a5fa"/><circle cx="61" cy="71" r="4.8" fill="#3b82f6"/>
+    <circle cx="66" cy="60" r="4.8" fill="#bfdbfe"/><circle cx="73" cy="50" r="4.8" fill="#60a5fa"/>
+    <circle cx="83" cy="45" r="4.8" fill="#e2e8f0"/><circle cx="92" cy="51" r="4.8" fill="#60a5fa"/>
+    <circle cx="92" cy="62" r="4.8" fill="#3b82f6"/><circle cx="86" cy="73" r="4.8" fill="#93c5fd"/>
+    <circle cx="80" cy="84" r="4.8" fill="#bfdbfe"/><circle cx="80" cy="95" r="4.8" fill="#60a5fa"/>
     <circle cx="90" cy="101" r="4.8" fill="#93c5fd"/>
   </g>
-  <!-- Arrow -->
   <line x1="104" y1="68" x2="124" y2="68" stroke="#1e293b" stroke-width="1.8"/>
   <polygon points="123,64 132,68 123,72" fill="#1e293b"/>
-  <!-- Matrix label -->
   <text x="179" y="18" text-anchor="middle" font-size="10.5" font-weight="600" fill="#1e293b" font-family="Inter, sans-serif">Neural embedding</text>
   <text x="179" y="31" text-anchor="middle" font-size="10.5" font-weight="600" fill="#1e293b" font-family="Inter, sans-serif">matrix</text>
-  <!-- Matrix square brackets -->
   <path d="M143,38 L137,38 L137,108 L143,108" fill="none" stroke="#334155" stroke-width="1.6"/>
   <path d="M215,38 L221,38 L221,108 L215,108" fill="none" stroke="#334155" stroke-width="1.6"/>
-  <!-- 4x4 Heatmap Grid -->
   <g stroke="#334155" stroke-width="1">
-    <rect x="145" y="41" width="17" height="15.5" fill="#5b9bd5"/>
-    <rect x="162" y="41" width="17" height="15.5" fill="#bdd7ee"/>
-    <rect x="179" y="41" width="17" height="15.5" fill="#deebf7"/>
-    <rect x="196" y="41" width="17" height="15.5" fill="#9dc3e6"/>
-    <rect x="145" y="56.5" width="17" height="15.5" fill="#9dc3e6"/>
-    <rect x="162" y="56.5" width="17" height="15.5" fill="#deebf7"/>
-    <rect x="179" y="56.5" width="17" height="15.5" fill="#9dc3e6"/>
-    <rect x="196" y="56.5" width="17" height="15.5" fill="#f0f6fc"/>
-    <rect x="145" y="72" width="17" height="15.5" fill="#bdd7ee"/>
-    <rect x="162" y="72" width="17" height="15.5" fill="#deebf7"/>
-    <rect x="179" y="72" width="17" height="15.5" fill="#2e75b6"/>
-    <rect x="196" y="72" width="17" height="15.5" fill="#9dc3e6"/>
-    <rect x="145" y="87.5" width="17" height="15.5" fill="#9dc3e6"/>
-    <rect x="162" y="87.5" width="17" height="15.5" fill="#f0f6fc"/>
-    <rect x="179" y="87.5" width="17" height="15.5" fill="#bdd7ee"/>
-    <rect x="196" y="87.5" width="17" height="15.5" fill="#5b9bd5"/>
+    <rect x="145" y="41" width="17" height="15.5" fill="#5b9bd5"/><rect x="162" y="41" width="17" height="15.5" fill="#bdd7ee"/>
+    <rect x="179" y="41" width="17" height="15.5" fill="#deebf7"/><rect x="196" y="41" width="17" height="15.5" fill="#9dc3e6"/>
+    <rect x="145" y="56.5" width="17" height="15.5" fill="#9dc3e6"/><rect x="162" y="56.5" width="17" height="15.5" fill="#deebf7"/>
+    <rect x="179" y="56.5" width="17" height="15.5" fill="#9dc3e6"/><rect x="196" y="56.5" width="17" height="15.5" fill="#f0f6fc"/>
+    <rect x="145" y="72" width="17" height="15.5" fill="#bdd7ee"/><rect x="162" y="72" width="17" height="15.5" fill="#deebf7"/>
+    <rect x="179" y="72" width="17" height="15.5" fill="#2e75b6"/><rect x="196" y="72" width="17" height="15.5" fill="#9dc3e6"/>
+    <rect x="145" y="87.5" width="17" height="15.5" fill="#9dc3e6"/><rect x="162" y="87.5" width="17" height="15.5" fill="#f0f6fc"/>
+    <rect x="179" y="87.5" width="17" height="15.5" fill="#bdd7ee"/><rect x="196" y="87.5" width="17" height="15.5" fill="#5b9bd5"/>
   </g>
 </svg>
-              <div class="schem-lines">IEDB / PyTDC Peptides <span class='schem-sub-inline'>(多肽集)</span><br>Homology Group Split <span class='schem-sub-inline'>(同源分簇)</span><br>Frozen ESM-2 + LightGBM</div>
-            </div>
-          </div>
-          <div class="schem-dotted"></div>
-          <div class="schem-lab-box">
-            <div class="schem-lab-hdr">Epitope &amp; PLM Labs · 表位与语言模型组</div>
-            <div class="schem-lab-body">이주용 (Juyong Lee) / 정원영 (Wonyeong Jung)<br>홍승희 (Seunghee Hong) / 신웅희 (Woong-Hee Shin)</div>
+            <div class="schem-lines"><div>IEDB / PyTDC Peptides <span class="schem-sub-inline">(多肽集)</span></div><div>Homology Group Split <span class="schem-sub-inline">(同源分簇)</span></div><div>Frozen ESM-2 + LightGBM</div></div>
           </div>
         </div>
 
-        <!-- Arrow 1->2 -->
-        <div class="schem-arrow" aria-hidden="true">
-          <svg viewBox="0 0 36 24" width="34" height="24">
-            <line x1="2" y1="12" x2="26" y2="12" stroke="#3574b8" stroke-width="2.4"/>
-            <polygon points="24,6 35,12 24,18" fill="#3574b8"/>
+        <div class="schem-arrow sg-a1" aria-hidden="true">
+          <svg viewBox="0 0 36 24" width="32" height="22">
+            <line x1="2" y1="12" x2="25" y2="12" stroke="#3574b8" stroke-width="2.4"/>
+            <polygon points="23,6 34,12 23,18" fill="#3574b8"/>
           </svg>
         </div>
 
-        <!-- Column 2 -->
-        <div class="schem-col">
-          <div class="schem-card sc-teal" data-schem-jump="nb2">
-            <div class="schem-hdr">Module 2:<br>Pharm Safety Gate<div style="font-size:0.74rem;font-weight:600;opacity:0.92;margin-top:2px;">药理与溶血安全窗门控</div></div>
-            <div class="schem-body">
-              
-<svg viewBox="0 0 236 124" width="100%" height="122" aria-label="Pharmacological safety gate funnel">
-  <!-- Toxic spiky peptides at top -->
+        <div class="schem-card sc-teal sg-m2" data-schem-jump="nb2">
+          <div class="schem-hdr"><div>Module 2:<br>Pharm Safety Gate</div><div class="schem-hdr-sub">药理与溶血安全窗门控</div></div>
+          <div class="schem-body">
+            
+<svg viewBox="0 0 236 124" width="100%" height="120" aria-label="Pharmacological safety gate funnel">
   <g stroke="#1e293b" stroke-width="1.2">
     <polygon points="96,11 99,16 105,14 102,20 107,24 101,26 102,32 96,28 90,32 91,26 85,24 90,20 87,14 93,16" fill="#e05252"/>
     <polygon points="122,20 124,24 130,23 127,27 132,31 126,33 127,38 122,34 117,38 118,33 112,31 117,27 114,23 120,24" fill="#ef6b6b"/>
     <path d="M135,14 C140,10 147,15 144,21 C141,25 133,22 135,14 Z" fill="#d94646"/>
   </g>
-  <!-- L-shaped Callout to Toxic peptide -->
   <polyline points="83,22 61,22 61,51" fill="none" stroke="#334155" stroke-width="1.2"/>
   <text x="58" y="64" text-anchor="middle" font-size="10.5" font-weight="600" fill="#1e293b" font-family="Inter, sans-serif">Toxic</text>
   <text x="58" y="77" text-anchor="middle" font-size="10.5" font-weight="600" fill="#1e293b" font-family="Inter, sans-serif">peptide</text>
-  <!-- Main Conical Funnel -->
   <path d="M84,40 L148,40 L122,73 L122,90 L110,90 L110,73 Z" fill="#b7ebe0" stroke="#0f172a" stroke-width="1.4"/>
   <ellipse cx="116" cy="40" rx="32" ry="6.2" fill="#dcf7f0" stroke="#0f172a" stroke-width="1.4"/>
-  <!-- Dotted pointer & Mini Selectivity filter icon -->
   <line x1="138" y1="56" x2="170" y2="56" stroke="#334155" stroke-width="1.2" stroke-dasharray="2.5,2.5"/>
   <path d="M174,50 L196,50 L187,62 L187,71 L183,71 L183,62 Z" fill="#a7f3d0" stroke="#0f172a" stroke-width="1.3"/>
   <text x="185" y="84" text-anchor="middle" font-size="10" font-weight="600" fill="#1e293b" font-family="Inter, sans-serif">Selectivity</text>
   <text x="185" y="96" text-anchor="middle" font-size="10" font-weight="600" fill="#1e293b" font-family="Inter, sans-serif">filter</text>
-  <!-- Safe non-toxic green peptides exiting spout -->
   <g fill="#5ac8a8" stroke="#0f172a" stroke-width="1.2">
     <circle cx="106" cy="98" r="3.8"/>
     <path d="M117,95 C123,93 127,99 122,103 C117,106 113,99 117,95 Z"/>
     <path d="M105,108 C111,106 116,112 111,116 C106,119 101,112 105,108 Z"/>
   </g>
 </svg>
-              <div class="schem-lines">Toxicity &amp; Hemolysis Filter <span class='schem-sub-inline'>(溶血过滤)</span><br>Therapeutic Index Ranking <span class='schem-sub-inline'>(治疗指数)</span><br>SHAP Residue Attribution <span class='schem-sub-inline'>(残基归因)</span></div>
-            </div>
-          </div>
-          <div class="schem-dotted"></div>
-          <div class="schem-lab-box">
-            <div class="schem-lab-hdr">Peptide Safety &amp; AI Pharma · 多肽安全与AI制药</div>
-            <div class="schem-lab-body">B. Manavalan / 남호정 (Hojung Nam)<br>이윤지 (Yoonji Lee) / 전민지 (Minji Jeon)</div>
+            <div class="schem-lines"><div>Toxicity &amp; Hemolysis Filter <span class="schem-sub-inline">(溶血过滤)</span></div><div>Therapeutic Index Ranking <span class="schem-sub-inline">(治疗指数)</span></div><div>SHAP Residue Attribution <span class="schem-sub-inline">(残基归因)</span></div></div>
           </div>
         </div>
 
-        <!-- Arrow 2->3 -->
-        <div class="schem-arrow" aria-hidden="true">
-          <svg viewBox="0 0 36 24" width="34" height="24">
-            <line x1="2" y1="12" x2="26" y2="12" stroke="#0d9b76" stroke-width="2.4"/>
-            <polygon points="24,6 35,12 24,18" fill="#0d9b76"/>
+        <div class="schem-arrow sg-a2" aria-hidden="true">
+          <svg viewBox="0 0 36 24" width="32" height="22">
+            <line x1="2" y1="12" x2="25" y2="12" stroke="#0d9b76" stroke-width="2.4"/>
+            <polygon points="23,6 34,12 23,18" fill="#0d9b76"/>
           </svg>
         </div>
 
-        <!-- Column 3 -->
-        <div class="schem-col">
-          <div class="schem-card sc-amber" data-schem-jump="nb3">
-            <div class="schem-hdr">Module 3:<br>mRNA Construct Profiler<div style="font-size:0.74rem;font-weight:600;opacity:0.92;margin-top:2px;">mRNA 疫苗序列构建体评估</div></div>
-            <div class="schem-body">
-              
-<svg viewBox="0 0 236 124" width="100%" height="122" aria-label="mRNA hairpin secondary structure">
-  <!-- Hairpin stem-loop in warm brown -->
+        <div class="schem-card sc-amber sg-m3" data-schem-jump="nb3">
+          <div class="schem-hdr"><div>Module 3:<br>mRNA Construct Profiler</div><div class="schem-hdr-sub">mRNA 疫苗序列构建体评估</div></div>
+          <div class="schem-body">
+            
+<svg viewBox="0 0 236 124" width="100%" height="120" aria-label="mRNA hairpin secondary structure">
   <g fill="none" stroke="#593e25" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-    <!-- 5' flanking base + left stem + left internal bulge + upper stem + apical loop + right stem + 3' flanking base -->
     <path d="M54,104 L103,104 L103,76 C90,76 90,60 103,60 L103,39 C93,33 95,14 113,14 C131,14 133,33 123,39 L123,104 L172,104"/>
-    <!-- Base-pair rungs -->
     <line x1="103" y1="45" x2="123" y2="45" stroke-width="1.35"/>
     <line x1="103" y1="52" x2="123" y2="52" stroke-width="1.35"/>
     <line x1="103" y1="80" x2="123" y2="80" stroke-width="1.35"/>
     <line x1="103" y1="87" x2="123" y2="87" stroke-width="1.35"/>
     <line x1="103" y1="94" x2="123" y2="94" stroke-width="1.35"/>
-    <!-- 5' and 3' unpaired nucleotide ticks -->
     <line x1="60" y1="104" x2="60" y2="95" stroke-width="1.35"/>
     <line x1="69" y1="104" x2="69" y2="95" stroke-width="1.35"/>
     <line x1="78" y1="104" x2="78" y2="95" stroke-width="1.35"/>
@@ -1460,14 +1639,31 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
   <text x="44" y="107" font-size="10" font-weight="700" fill="#78350f" font-family="Inter, sans-serif">5'</text>
   <text x="177" y="107" font-size="10" font-weight="700" fill="#78350f" font-family="Inter, sans-serif">3'</text>
 </svg>
-              <div class="schem-lines">5-Prime UTR + CDS Assembly <span class='schem-sub-inline'>(序列组装)</span><br>CAI &amp; GC Balance <span class='schem-sub-inline'>(密码子与GC平衡)</span><br>ViennaRNA Folding Stability <span class='schem-sub-inline'>(折叠稳定性)</span></div>
-            </div>
+            <div class="schem-lines"><div>5-Prime UTR + CDS Assembly <span class="schem-sub-inline">(序列组装)</span></div><div>CAI &amp; GC Balance <span class="schem-sub-inline">(密码子与GC平衡)</span></div><div>ViennaRNA Folding Stability <span class="schem-sub-inline">(折叠稳定性)</span></div></div>
           </div>
-          <div class="schem-dotted"></div>
-          <div class="schem-lab-box">
-            <div class="schem-lab-hdr">mRNA Vaccine Design · mRNA 疫苗设计组</div>
-            <div class="schem-lab-body">남진우 (Jin-Wu Nam) / 장혜식 (Hyeshik Chang)</div>
-          </div>
+        </div>
+
+        <!-- Row 2: Dotted Vertical Connectors -->
+        <div class="schem-dotted sg-d1"></div>
+        <div class="schem-spacer"></div>
+        <div class="schem-dotted sg-d2"></div>
+        <div class="schem-spacer"></div>
+        <div class="schem-dotted sg-d3"></div>
+
+        <!-- Row 3: Perfectly Aligned Lab Group Boxes -->
+        <div class="schem-lab-box sg-l1">
+          <div class="schem-lab-hdr"><div>Epitope &amp; PLM Labs</div><div class="schem-lab-hdr-sub">表位与语言模型组</div></div>
+          <div class="schem-lab-body"><div class="schem-pi-line"><span class="schem-pi-tag">이주용 (Juyong Lee)</span><span class="schem-sep">/</span><span class="schem-pi-tag">정원영 (Wonyeong Jung)</span></div><div class="schem-pi-line"><span class="schem-pi-tag">홍승희 (Seunghee Hong)</span><span class="schem-sep">/</span><span class="schem-pi-tag">신웅희 (Woong-Hee Shin)</span></div></div>
+        </div>
+        <div class="schem-spacer"></div>
+        <div class="schem-lab-box sg-l2">
+          <div class="schem-lab-hdr"><div>Peptide Safety &amp; AI Pharma</div><div class="schem-lab-hdr-sub">多肽安全与 AI 制药组</div></div>
+          <div class="schem-lab-body"><div class="schem-pi-line"><span class="schem-pi-tag">B. Manavalan</span><span class="schem-sep">/</span><span class="schem-pi-tag">남호정 (Hojung Nam)</span></div><div class="schem-pi-line"><span class="schem-pi-tag">이윤지 (Yoonji Lee)</span><span class="schem-sep">/</span><span class="schem-pi-tag">전민지 (Minji Jeon)</span></div></div>
+        </div>
+        <div class="schem-spacer"></div>
+        <div class="schem-lab-box sg-l3">
+          <div class="schem-lab-hdr"><div>mRNA Vaccine Design</div><div class="schem-lab-hdr-sub">mRNA 疫苗序列设计组</div></div>
+          <div class="schem-lab-body"><div class="schem-pi-line"><span class="schem-pi-tag">남진우 (Jin-Wu Nam)</span><span class="schem-sep">/</span><span class="schem-pi-tag">장혜식 (Hyeshik Chang)</span></div></div>
         </div>
       </div>
       <p class="schem-caption" dir="ltr">核心迷你项目由三个轻量级 Google Colab 模块串联而成：模块一对比传统理化特征与冻结轻量级 ESM-2 蛋白质语言模型在防同源泄露划分下的表位免疫原性预测；模块二引入药理学安全窗门控过滤溶血与细胞毒性多肽并做残基归因分析；模块三评估候选表位反向翻译后的 mRNA 密码子适应性与二级结构折叠稳定性，一套代码即可精准呼应十余位纯干实验导师的核心课题。</p>
@@ -1508,8 +1704,7 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
       <div class="tz-banner">⏰ 定时发信换算：韩国时间周二/周三 09:15 KST ＝ 德黑兰时间 03:45 IRST（务必使用 Gmail 定时发送，避开周末与深夜邮件堆积）</div>
       
     <div style="overflow-x:auto;margin-bottom:1rem;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:0.75rem;">
-      <svg viewBox="0 0 860 198" width="100%" style="min-width:680px;display:block;" dir="ltr">
-        <!-- Month grid -->
+      <svg viewBox="0 0 860 198" width="100%" style="min-width:660px;display:block;" dir="ltr">
         <g font-family="Inter, Vazirmatn, sans-serif" font-size="11" fill="#64748b" font-weight="700">
           <text x="155" y="20">2026.11</text>
           <text x="275" y="20">2026.12</text>
@@ -1522,13 +1717,11 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
           <line x1="445" y1="28" x2="445" y2="182"/><line x1="635" y1="28" x2="635" y2="182"/>
           <line x1="800" y1="28" x2="800" y2="182"/>
         </g>
-        <!-- Row labels -->
         <g font-family="Inter, Noto Sans SC, Vazirmatn, sans-serif" font-size="11.5" font-weight="700" fill="#0f172a">
           <text x="12" y="62">韩国学界日程</text>
           <text x="12" y="114">套磁发信窗口</text>
           <text x="12" y="166">双线备战排期</text>
         </g>
-        <!-- Lane 1: KR Academic Blackouts -->
         <rect x="145" y="42" width="150" height="30" rx="6" fill="#ffe4e6" stroke="#fb7185"/>
         <text x="220" y="61" text-anchor="middle" font-size="10.5" font-weight="700" fill="#be123c" font-family="Inter, Noto Sans SC, Vazirmatn, sans-serif">🚫 NRF截稿盲区</text>
         <rect x="302" y="42" width="138" height="30" rx="6" fill="#fef3c7" stroke="#fbbf24"/>
@@ -1536,13 +1729,11 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
         <rect x="655" y="42" width="68" height="30" rx="6" fill="#ffe4e6" stroke="#fb7185"/>
         <text x="689" y="61" text-anchor="middle" font-size="10" font-weight="700" fill="#be123c" font-family="Inter, Noto Sans SC, Vazirmatn, sans-serif">🚫 春节禁发</text>
 
-        <!-- Lane 2: Cold-Email Golden Waves -->
         <rect x="462" y="94" width="142" height="32" rx="7" fill="#d1fae5" stroke="#10b981" stroke-width="1.6"/>
         <text x="533" y="114" text-anchor="middle" font-size="10.5" font-weight="800" fill="#065f46" font-family="Inter, Noto Sans SC, Vazirmatn, sans-serif">✅ 第一波黄金期 (01.05–01.26)</text>
         <rect x="728" y="94" width="68" height="32" rx="7" fill="#d1fae5" stroke="#10b981" stroke-width="1.6"/>
         <text x="762" y="114" text-anchor="middle" font-size="10" font-weight="800" fill="#065f46" font-family="Inter, Noto Sans SC, Vazirmatn, sans-serif">✅ 第二波 (02.15–25)</text>
 
-        <!-- Lane 3: GitHub + IELTS Dual Prep -->
         <rect x="145" y="146" width="215" height="30" rx="6" fill="#e0f2fe" stroke="#38bdf8"/>
         <text x="252" y="165" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0369a1" font-family="Inter, Noto Sans SC, Vazirmatn, sans-serif">💻 Notebook 01–03 (VaxScreen)</text>
         <rect x="366" y="146" width="88" height="30" rx="6" fill="#ede9fe" stroke="#a78bfa"/>
@@ -1621,13 +1812,11 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
       <p class="w-sub">点击任意导师条目可展开其课题组生源结构、在研经费与核心命中依据（支持按批次筛选与多指标排序）：</p>
       
     <div style="overflow-x:auto;margin-bottom:0.95rem;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:0.75rem;">
-      <svg viewBox="0 0 860 300" width="100%" style="min-width:660px;display:block;" dir="ltr">
-        <!-- Tier background bands -->
+      <svg viewBox="0 0 860 300" width="100%" style="min-width:640px;display:block;" dir="ltr">
         <rect x="65" y="24" width="770" height="75" fill="#ecfdf5" fill-opacity="0.55"/>
         <rect x="65" y="99" width="770" height="68" fill="#f0f9ff" fill-opacity="0.55"/>
         <rect x="65" y="167" width="770" height="52" fill="#fffbeb" fill-opacity="0.55"/>
         <rect x="65" y="219" width="770" height="41" fill="#fff1f2" fill-opacity="0.55"/>
-        <!-- Grid lines -->
         <g stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3">
           <line x1="65" y1="63" x2="835" y2="63"/><line x1="65" y1="132" x2="835" y2="132"/>
           <line x1="65" y1="201" x2="835" y2="201"/><line x1="250" y1="24" x2="250" y2="260"/>
@@ -1635,7 +1824,6 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
         </g>
         <line x1="65" y1="260" x2="835" y2="260" stroke="#475569" stroke-width="1.5"/>
         <line x1="65" y1="24" x2="65" y2="260" stroke="#475569" stroke-width="1.5"/>
-        <!-- Axis ticks -->
         <g font-size="10" fill="#64748b" font-family="Inter, sans-serif">
           <text x="56" y="67" text-anchor="end">60%</text>
           <text x="56" y="136" text-anchor="end">40%</text>
@@ -1801,27 +1989,20 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
           
     <div style="overflow-x:auto;margin-bottom:0.9rem;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:0.7rem;">
       <svg id="tax-crossover-svg" viewBox="0 0 780 230" width="100%" style="min-width:560px;display:block;" dir="ltr">
-        <!-- Shaded green savings zone below 180M -->
         <polygon points="107,183 107,165 205,152 335,127 465,97 527,70 465,108 335,149 205,175 107,183" fill="#d1fae5" fill-opacity="0.65"/>
-        <!-- Grid -->
         <g stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3">
           <line x1="65" y1="45" x2="735" y2="45"/><line x1="65" y1="95" x2="735" y2="95"/>
           <line x1="65" y1="145" x2="735" y2="145"/><line x1="527" y1="25" x2="527" y2="195"/>
         </g>
         <line x1="65" y1="195" x2="735" y2="195" stroke="#475569" stroke-width="1.5"/>
         <line x1="65" y1="25" x2="65" y2="195" stroke="#475569" stroke-width="1.5"/>
-        <!-- Flat 23.1% straight line -->
         <line x1="65" y1="167" x2="725" y2="29" stroke="#e11d48" stroke-width="2.5"/>
-        <!-- Progressive curve -->
         <polyline points="65,190 114,184 197,167 329,133 428,103 527,70 725,16" fill="none" stroke="#059669" stroke-width="2.8"/>
-        <!-- Crossover marker at ~18,000 -->
         <circle cx="527" cy="70" r="5" fill="#0f172a"/>
         <text x="527" y="57" text-anchor="middle" font-size="10.5" font-weight="800" fill="#0f172a" font-family="Inter, Noto Sans SC, Vazirmatn, sans-serif">~1.8亿反转点</text>
-        <!-- Dynamic live cursor line synced to slider -->
         <line id="svg-tax-cursor" x1="114" y1="25" x2="114" y2="195" stroke="#0284c7" stroke-width="2" stroke-dasharray="4,3"/>
         <circle id="svg-dot-flat" cx="114" cy="157" r="5" fill="#e11d48"/>
         <circle id="svg-dot-prog" cx="114" cy="184" r="5" fill="#059669"/>
-        <!-- Labels -->
         <text x="275" y="102" font-size="10.5" font-weight="700" fill="#be123c" font-family="Inter, Noto Sans SC, Vazirmatn, sans-serif">🔴 23.1% 单一税率线</text>
         <text x="355" y="156" font-size="10.5" font-weight="700" fill="#047857" font-family="Inter, Noto Sans SC, Vazirmatn, sans-serif">🟢 普通累进税率曲线</text>
         <text x="190" y="189" font-size="10" font-weight="700" fill="#065f46" font-family="Inter, Noto Sans SC, Vazirmatn, sans-serif">✨ 立省 ~890万 (5,500万处)</text>
@@ -1884,8 +2065,6 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
       </footer>
     </main>
   </div>
-
-  <button type="button" class="mobile-toc-btn" id="mobile-toc-btn">☰ 全书章节导航</button>
 
   <div class="drawer-backdrop" id="drawer-backdrop"></div>
   <aside class="glossary-drawer" id="glossary-drawer">
@@ -2087,7 +2266,7 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
         </div></div>
   </aside>
 
-  <script>window.__PAGE_META__ = {"lang": "zh", "is_index": true, "w": {"lang_code": "zh-CN", "dir": "ltr", "page_title": "2027秋季韩国名校纯干实验硕士套磁、GitHub迷你项目与分导师职业薪资深度攻略", "nav_brand": "2027 KR Dry-Lab M.S. 战略全书", "nav_subtitle": "伊朗药理背景 · 韩国顶尖纯干实验硕士申请与留韩职业指南", "search_placeholder": "搜索导师（如 이주용）、模型（ESM-2）、药企或术语...", "highlight_btn": "重点标亮", "glossary_btn": "名词与职业速查", "toc_title": "全书章节导航", "toc_items": [{"id": "sec-onboarding", "num": "导读", "label": "专业名词与职业岗位全景百科"}, {"id": "sec-overview", "num": "总纲", "label": "核心破局策略与三大全局摘要"}, {"id": "sec-ch1", "num": "一", "label": "12位重点导师代表作与套磁切入点"}, {"id": "sec-ch2", "num": "二", "label": "1个月不耽误雅思的GitHub项目设计"}, {"id": "sec-ch3", "num": "三", "label": "套磁黄金窗口推算与高情商英文话术"}, {"id": "sec-ch4", "num": "四", "label": "12位导师Zoom面试定制与追问预测"}, {"id": "sec-ch5", "num": "五", "label": "套磁内诺率分级与15周紧凑日程"}, {"id": "sec-ch6", "num": "六", "label": "12位导师课题组毕业专属去向剖析"}, {"id": "sec-ch7", "num": "七", "label": "分年限薪资、企业读博与2027税改"}], "hero_badges": ["100% 原文一字不落完整呈现", "伊斯兰自由大学医药背景 (17–17.5/20)", "12 位纯干实验 PI 深度拆解", "中 / EN / فارسی 三语精准版"], "kpis": [{"val": "85%–87.5%", "lbl": "本科医药均分 (17–17.5/20)", "sub": "药理毒理直觉 + Python 计算转型"}, {"val": "1.5h / 天", "lbl": "3–4 周双仓库代码实战", "sub": "主力保住每日 3.5–4h 线下雅思"}, {"val": "01.05–01.26", "lbl": "2027 第一波寒假套磁黄金期", "sub": "周二/周三 09:15 KST 定时送达"}, {"val": "45%–65%", "lbl": "第一梯队导师预计内诺率", "sub": "B. Manavalan · 정원영 · 이윤지"}, {"val": "7,000–8,000万", "lbl": "生物大厂硕士首年含奖总包 (KRW)", "sub": "AI 药企另享早期股票期权杠杆"}, {"val": "立省 ~890万", "lbl": "2027 税改首年避坑节税额 (KRW)", "sub": "年薪 <1.8亿韩元必选普通累进税率"}], "onboarding": {"eyebrow": "ONBOARDING & TERMINOLOGY ENCYCLOPEDIA · 零门槛阅读导引", "title": "导入导读：全领域专业名词、核心算法与职业岗位全景解析", "desc": "本文横跨「计算生物 AI 算法」「药理毒理与疫苗 mRNA 工程」「韩国名校申研机制」与「韩国药企研发岗位/签证税法」四大领域。在进入正文前，可通过下方分类标签或搜索框快速掌握所有专业缩写与各研发岗位的真实工作内容；阅读正文时亦可随时点击顶部「名词与职业速查」抽屉对照查阅。", "search_ph": "输入关键词过滤（如：先导物、주임、ESM-2、Scaffold、CYP450、MFE、OPI、CAYSS...）", "expand_all": "全部展开详情", "collapse_all": "全部收起详情", "cats": [{"id": "all", "label": "全部词条 (21)"}, {"id": "career", "label": "💼 职业岗位与企业职级 (6)"}, {"id": "ai", "label": "🤖 AI模型与防泄露工程 (6)"}, {"id": "pharm", "label": "🧬 药理毒理与疫苗/mRNA (5)"}, {"id": "korea", "label": "🎓 韩国学界、签证与税改 (4)"}]}, "ui": {"copy_btn": "复制英文话术", "copied": "已复制！", "table_view": "完整学术表格视图", "card_view": "分导师卡片视图", "flashcard_mode": "模拟面试抽考模式（隐藏/点击展开应答）", "reveal_answer": "点击展开高分药理/免疫应答逻辑", "hide_answer": "收起应答", "filter_all": "全部导师 (12)", "filter_t1": "第一梯队 45–65% (3)", "filter_t2": "第二梯队 30–50% (5)", "filter_t3": "第三梯队 20–40% (3)", "filter_reach": "顶流冲刺 8–15% (1)", "sort_default": "原表默认顺序", "sort_cite": "总被引次数 ↓", "sort_h": "h-index ↓", "sort_rate": "预计内诺率 ↓", "progress_done": "已完成阶段", "reset_checks": "重置打卡进度"}, "w1_mapper": {"badge": "交互组件 01 · 一鱼多吃代码架构与导师映射台", "title": "双迷你仓库模块 × 12位目标导师管线精准映射图", "subtitle": "点击任一代码模块查看技术栈与对标顶刊，或点击下方任意导师查看套磁信应重点亮出的 Notebook 组合：", "modules": [{"id": "nb1", "code": "ImmunoPharm-VaxScreen / Notebook 01", "time": "第 1–2 周 (Colab T4 < 2 min)", "name": "防同源泄露的表位 PLM 基准对比", "stack": "PyTDC + Biopython 理化描述符 + 冻结 ESM-2 (35M, 480维) Mean Pooling + LightGBM / MLP", "highlight": "并列绘制 Random Split vs. Homology Cluster Split 的 AUROC / AUPRC / MCC 对比图，实测复现跨未见等位基因 PLM 优势收窄规律", "papers": "PREpiBind (2026), IgPose (2026), CONTRA-IL6 (2026), KASSPer / CoBRA (2026)", "pis": ["juyong", "manavalan", "woonghee", "wonyeong", "seunghee"]}, {"id": "nb2", "code": "ImmunoPharm-VaxScreen / Notebook 02", "time": "第 3–4 周", "name": "多肽治疗窗安全门控与 SHAP 残基归因", "stack": "免疫原性 + 细胞毒性/红细胞溶血 (Hemolysis) 双目标分类器 + SHAP 特征归因散点图", "highlight": "构建类似药理学「治疗指数 (Therapeutic Index)」二维安全筛选区，用膜药理学解释高阳离子净电荷与疏水残基致溶血机制", "papers": "HyPepTox-Fuse (2025), AMP-RL / HemoDL (2025)", "pis": ["manavalan", "hojung", "wonyeong"]}, {"id": "nb3", "code": "ImmunoPharm-VaxScreen / Notebook 03", "time": "第 4–5 周", "name": "下游 mRNA 构建体折叠自由能与降解剖析", "stack": "Top-5 串联表位 + HBA1 5'/3' UTR 模板 + ViennaRNA (MFE) + CAI / GC% / 降解基序四维雷达对比", "highlight": "对比「高频密码子简单替换」与「GC 含量平衡策略」，权衡 CDS 稳定性与 5' UTR 核糖体扫描效率", "papers": "VaxLab (2026), 增强型 5' UTR 专利 (10-2023-0116096), circRNA (2024)", "pis": ["hyeshik", "jinwu", "seunghee"]}, {"id": "admet", "code": "PharmADMET-ScaffoldBench (独立轻量插件)", "time": "第 6 周 (仅需 5–7 天)", "name": "Murcko 分子骨架划分与 CYP450 代谢软点归因", "stack": "PyTDC (HLM / hERG / CYP450) + RDKit 摩根指纹 vs. 冻结 ChemBERTa (768维) + Bemis–Murcko 骨架划分", "highlight": "可视化误差最大的 4 个测试分子并依据药理学教材人工圈注易水解酯键/易脱烷基等 CYP450 代谢软点", "papers": "MetaboGNN (2025), ArcDFI (2025), ADMET-FM (2025), KASSPer (2026)", "pis": ["yoonji", "minji", "hojung", "woonghee", "juyong"]}, {"id": "omics", "code": "README 附录拓展脚本 (肿瘤组学高维筛选)", "time": "套磁前 1 天增补", "name": "公开肿瘤表达矩阵 LASSO / FDR 差异基因筛选", "stack": "Python / Scikit-learn LASSO 正则化降维 + 多重假设检验 FDR 校正", "highlight": "针对数万维基因特征 vs. 数百例患者队列场景，直观证明高维癌症/单细胞组学矩阵规范处理基本功", "papers": "ecDNA Nature Genetics (2024), scHumanNet / Cell Rep. Med. (2025), Systems Serology", "pis": ["hoon", "insuk", "wonyeong", "minji"]}]}, "w2_calendar": {"badge": "交互组件 02 · 韩国学界日程与跨时区精准发信台", "title": "2026.11 – 2027.03 韩国高校收件箱盲区 vs. 套磁黄金窗口全景日历", "tz_note": "⏰ 定时发信换算：韩国时间周二/周三 09:15 KST ＝ 德黑兰时间 03:45 IRST（务必使用 Gmail 定时发送，避开周末与深夜邮件堆积）", "phases": [{"period": "2026.11.16 – 12.08", "status": "stop", "tag": "🚫 收件箱盲区 1", "title": "NRF 2027 第1轮个人基础研究课题截稿高峰", "detail": "11.16 公布格式、12.08 截止提交。严禁无 GitHub 成品盲目裸发邮件！集中报名线下雅思并跑通 Notebook 01。"}, {"period": "2026.12.09 – 2027.01.04", "status": "prep", "tag": "🛠️ 潜心打磨期 (盲区 2)", "title": "韩国高校期末阅卷季与年末休假低谷", "detail": "完成 Notebook 02、03 与 PharmADMET-ScaffoldBench 插件，拼合 README 首屏双联图，定稿单页 CV 与首批定制邮件。"}, {"period": "2027.01.05 – 01.26", "status": "go", "tag": "✅ 第一波黄金窗口", "title": "寒假科研盘点期（抢在首尔大 1 月底发简章前）", "detail": "教授无本科教学负担，正盘点 3 月新课题 T.O.！周二/周三 09:15 KST 首发 6 位核心导师（顺带冲刺 장혜식），满 8 个工作日未回礼貌跟进 1 次。"}, {"period": "2027.01.27 – 02.04", "status": "interview", "tag": "🎤 首轮面试与实考", "title": "第一批回复导师 Zoom 面试 & 线下雅思实考", "detail": "8 页英文 PPT 共享屏幕汇报 + 提前打开 Colab 备查代码；月底查阅首尔大 2027 秋季外国人招生简章。"}, {"period": "2027.02.05 – 02.10", "status": "stop", "tag": "🚫 收件箱盲区 3", "title": "2027 韩国春节（설날）连休及前后拼假静默期", "detail": "2.7 春节、2.6–2.9 四天连休加 2.5/2.10–12 拼假，严禁发新邮件！期间启动伊朗毕业证（Daneshnameh）与成绩单/亲属公证。"}, {"period": "2027.02.15 – 02.25", "status": "go", "tag": "✅ 第二波黄金窗口", "title": "节后补申定夺期 & 校方全奖推荐信锁定", "detail": "2.16（周二）09:15 KST 错峰投递第二批（신웅희/전민지 择一间隔两周、이인석、남호정、김훈），注意避开 2.27–3.1 三一节连休，2月底敲定 CAYSS/GSFS/STEM 推荐。"}]}, "w3_rates": {"badge": "交互组件 03 · 12位重点导师内诺率与学术指标交互看板", "title": "预计套磁内诺率 (T.O.) 区间 × Google Scholar 被引与 h-index 全景对比", "subtitle": "点击任意导师条目可展开其课题组生源结构、在研经费与核心命中依据（支持按批次筛选与多指标排序）：", "wave_all": "全部 (12)", "wave_1": "第一批首发主攻 (6)", "wave_2": "第二批错峰拓展 (5)", "wave_3": "顶流冲刺 (1)"}, "w4_salary_tax": {"badge": "交互组件 04 · 三大赛道分年限薪酬演进图 & 2027外籍人才个税计算器", "tab_salary": "📊 三大赛道分年限年薪轨迹对比", "tab_tax": "🧮 2027 韩国外籍研发个税避坑测算器", "salary_note": "单位：万韩元（KRW）。柱状展示各阶段总现金/基本区间，AI Biotech 额外享有早期股票期权（Stock Option）与管线 L/O 弹性收益。", "tracks": ["头部生物药大厂 (三星生物/Celltrion/SK/柳韩)", "传统一线药企 R&D (韩美/大熊/绿十字/HK)", "导师关联 AI Biotech (Galux/AIGEN/Arontier/Proteina)"], "stages": ["第 1–2 年 (주임·대리)", "第 3–5 年 (과장/专任·先任)", "第 7–10 年 (차장·부장/Team长)", "10 年以上 (VP/首席科学家)"], "tax_slider_label": "拖动滑块设定税前总年薪（万韩元 KRW）：", "tax_progressive": "普通累进税率（含地方税 10% 及标准勤劳抵扣）", "tax_flat": "2027 外国人单一税率特例（21% + 地方税 = 23.1% 无抵扣直征）", "tax_ktech": "K-Tech Pass 尖端人才减半（满8年且 ≥1.5亿韩元享 10 年减免 50%）", "tax_verdict_prog": "✅ 强烈建议选择【普通累进税率】！比误选 23.1% 单一税率每年合法省税约 ", "tax_verdict_flat": "💡 年薪已突破约 1.8 亿韩元反转线！此时【23.1% 单一税率】开始比普通累进税率每年省税约 ", "tax_unit": " 万韩元", "presets": [{"val": 5500, "lbl": "5,500万 (原文算例)"}, {"val": 7500, "lbl": "7,500万 (大厂首年总包)"}, {"val": 11000, "lbl": "1.10亿 (骨干期均薪)"}, {"val": 15000, "lbl": "1.50亿 (K-Tech门槛)"}, {"val": 19000, "lbl": "1.90亿 (高管高薪期)"}]}, "source_notice": {"title": "数据完整性与可视化图表说明", "body": "本页面已将原分享页（gemini.google.com）正文共七大章节、四张核心数据详表及全部注释内容 100% 一字不落完整收录；并在对应原位完整搭载了三模块 Google Colab 串联架构矢量图解（含一字不落原版图注）、双线备战甘特排期图、12 位导师内诺率×被引四象限气泡图及 2027 外籍人才个税反转曲线测算器。"}}, "ex": {"pillars": ["🎯 战略支柱 01 · 核心破局策略与 12 组算法方法学共性", "⏰ 战略支柱 02 · 三大收件箱盲区、两波黄金窗口与四梯队内诺率", "💼 战略支柱 03 · 分导师就业/读博学脉、总包薪资与 2027 税改红线"], "w1_labels": {"stack": "核心技术栈", "hl": "方法学与药理亮点", "papers": "对标导师代表作", "matched": "套磁重点亮出模块"}, "cited_lbl": "被引", "c6_filters": {"all": "全部课题组 (12)", "exec": "🚀 导师任药企 CTO/CEO/国策PD (6)", "intl": "🌍 含外籍就业/国际生先例 (5)", "phd": "🎓 欧美顶流研究所读博实绩 (7)"}}, "pis": [{"key": "manavalan", "order_table1": 8, "name_zh": "B. Manavalan", "name_en": "B. Manavalan", "name_fa": "B. Manavalan", "univ_zh": "成均馆大 融合生命工学科", "univ_en": "SKKU · Integrative Biotechnology", "univ_fa": "دانشگاه سونگ‌کیون‌کوان (SKKU) · زیست‌فناوری یکپارچه", "school_tag": "SKKU", "tier": "t1", "wave": "w1", "rate_min": 50, "rate_max": 65, "citations": 9591, "citations_2021": 7468, "h_index": 55, "reason_zh": "外籍高产学者，常年公开招募国际生且全英文指导，复现 CONTRA-IL6 + HyPepTox-Fuse 极易获面试，两年易产出 Q1 一作。", "reason_en": "Prolific international faculty; actively recruits global students in full English. Reproducing CONTRA-IL6 + HyPepTox-Fuse yields high interview conversion & Q1 first-author papers.", "reason_fa": "استاد بین‌المللی بسیار پرکار با راهنمایی کاملاً انگلیسی و جذب مستمر دانشجوی خارجی؛ بازتولید CONTRA-IL6 و HyPepTox-Fuse شانس مصاحبه و چاپ مقاله Q1 را بسیار بالا می‌برد."}, {"key": "wonyeong", "order_table1": 0, "name_zh": "정원영 (Wonyeong Jung)", "name_en": "Wonyeong Jung (정원영)", "name_fa": "Wonyeong Jung (정원영)", "univ_zh": "高丽大 生物系统医科学部", "univ_en": "Korea Univ. · Biosystems & Biomedical Sci.", "univ_fa": "دانشگاه کره (Korea Univ.) · علوم زیست‌سیستم و زیست‌پزشکی", "school_tag": "KU", "tier": "t1", "wave": "w1", "rate_min": 45, "rate_max": 60, "citations": 810, "citations_2021": 663, "h_index": 17, "reason_zh": "2025 刚从哈佛/MIT Ragon 归国建组，手握启动资金急需首届研究生，机械转免疫背景对药理转码生极友好，直通北美计算免疫 PhD。", "reason_en": "Newly launched lab (2025) returning from Harvard/MIT Ragon Institute with startup funding; mechanical-to-immunology interdisciplinary background welcomes pharmacology-to-coding applicants.", "reason_fa": "آزمایشگاه تازه‌تأسیس (۲۰۲۵) پس از بازگشت از مؤسسه Harvard/MIT Ragon با بودجه راه‌اندازی و نیاز فوری به دانشجویان نسل اول؛ پیشینه میان‌رشته‌ای استاد بسیار پذیرای تغییرمسیر از داروشناسی به کدنویسی است."}, {"key": "yoonji", "order_table1": 3, "name_zh": "이윤지 (Yoonji Lee)", "name_en": "Yoonji Lee (이윤지)", "name_fa": "Yoonji Lee (이윤지)", "univ_zh": "中央大 药学大学", "univ_en": "Chung-Ang Univ. · College of Pharmacy", "univ_fa": "دانشگاه چونگ‌آنگ (CAU) · دانشکده داروسازی", "school_tag": "CAU", "tier": "t1", "wave": "w1", "rate_min": 45, "rate_max": 60, "citations": 2657, "citations_2021": 1657, "h_index": 29, "reason_zh": "药学院本院纯干实验组，历届 5 名药学硕士全部 2.0 年整毕业，对接 MetaboGNN 极有希望拿稳 CAYSS 全额学费奖学金推荐。", "reason_en": "Pure dry-lab inside a top Pharmacy school; all 5 past pharmacy M.S. alumni graduated in exactly 2.0 years. Aligning with MetaboGNN strongly positions for CAYSS full-tuition scholarship.", "reason_fa": "گروه تماماً محاسباتی در دل دانشکده داروسازی؛ هر ۵ دانشجوی ارشد پیشین دقیقاً ۲.۰ ساله فارغ‌التحصیل شده‌اند و هم‌راستایی با MetaboGNN شانس دریافت بورسیه کامل شهریه CAYSS را بسیار تقویت می‌کند."}, {"key": "jinwu", "order_table1": 2, "name_zh": "남진우 (Jin-Wu Nam)", "name_en": "Jin-Wu Nam (남진우)", "name_fa": "Jin-Wu Nam (남진우)", "univ_zh": "汉阳大 生命科学科 (FTC1123)", "univ_en": "Hanyang Univ. · Life Science (FTC1123)", "univ_fa": "دانشگاه هانیانگ (Hanyang) · علوم زیستی (مرکز FTC1123)", "school_tag": "HYU", "tier": "t2", "wave": "w1", "rate_min": 35, "rate_max": 50, "citations": 19751, "citations_2021": 9210, "h_index": 35, "reason_zh": "国家 K-Moonshot AI 新药总负责人，在研经费超 34 亿韩元，现有 3 名外籍博士及外籍硕士留韩药企全职先例（明确申 FTC1123 干实验中心）。", "reason_en": "National K-Moonshot AI Drug Discovery PD with >3.4B KRW active grants, 3 current foreign PhDs, and proven foreign M.S. alumni hired full-time in Korean biotech (specify FTC1123 dry-lab).", "reason_fa": "مدیر کل ملی طرح داروسازی هوش مصنوعی K-Moonshot با بودجه فعال بیش از ۳.۴ میلیارد وون، ۳ دانشجوی دکترای خارجی و سابقه استخدام تمام‌وقت فارغ‌التحصیل ارشد خارجی در شرکت دارویی کره‌ای."}, {"key": "seunghee", "order_table1": 6, "name_zh": "홍승희 (Seunghee Hong)", "name_en": "Seunghee Hong (홍승희)", "name_fa": "Seunghee Hong (홍승희)", "univ_zh": "延世大 生化学科 (IMIL)", "univ_en": "Yonsei Univ. · Biochemistry (IMIL)", "univ_fa": "دانشگاه یونسی (Yonsei) · بیوشیمی (آزمایشگاه IMIL)", "school_tag": "YU", "tier": "t2", "wave": "w1", "rate_min": 35, "rate_max": 45, "citations": 2662, "citations_2021": 1841, "h_index": 17, "reason_zh": "2026 连发 Cell 与 Cell Rep. Med.，线上曝光少避开考研扎堆，契合免疫药理与 mRNA 干扰素调控，联动 Severance 医院与北美名校学脉。", "reason_en": "2026 Cell & Cell Rep. Med. publications; lower online crowding avoids applicant bottlenecks. Strong fit for immunopharmacology & Type-I IFN mRNA modulation with Weill Cornell/Baylor links.", "reason_fa": "انتشار مقالات Cell و Cell Rep. Med. در ۲۰۲۶؛ به دلیل دیده‌شدن کمتر در فضای عمومی، ازدحام داوطلبان پایین‌تر بوده و تناسب عالی با ایمونوفارماکولوژی و تنظیم اینترفرون در واکسن‌های mRNA دارد."}, {"key": "juyong", "order_table1": 1, "name_zh": "이주용 (Juyong Lee)", "name_en": "Juyong Lee (이주용)", "name_fa": "Juyong Lee (이주용)", "univ_zh": "首尔大 药学大学制药学科", "univ_en": "SNU · College of Pharmacy (LCBC)", "univ_fa": "دانشگاه ملی سئول (SNU) · دانشکده داروسازی (LCBC)", "school_tag": "SNU", "tier": "t2", "wave": "w1", "rate_min": 30, "rate_max": 45, "citations": 2810, "citations_2021": 1947, "h_index": 31, "reason_zh": "逆袭首尔大最佳切入口：现役 5 名独立硕士中 3 人来自地方国立江原大学，含外籍博后/博士，本人兼任 Arontier CTO 并互通 Galux。", "reason_en": "Highest-odds gateway into SNU: 3 of 5 current M.S. students come from regional Kangwon National Univ., plus international postdoc/PhD; concurrently serves as CTO of Arontier Co.", "reason_fa": "بهترین دروازه ورود به دانشگاه ملی سئول (SNU): ۳ نفر از ۵ دانشجوی فعلی ارشد از دانشگاه منطقه‌ای کانگوون هستند، اعضای بین‌المللی دارد و خود استاد هم‌زمان مدیر ارشد فناوری (CTO) شرکت Arontier است."}, {"key": "woonghee", "order_table1": 4, "name_zh": "신웅희 (Woong-Hee Shin)", "name_en": "Woong-Hee Shin (신웅희)", "name_fa": "Woong-Hee Shin (신웅희)", "univ_zh": "高丽大 医科大学医疗情报学", "univ_en": "Korea Univ. Med · Biomedical Informatics (LSBI)", "univ_fa": "دانشکده پزشکی دانشگاه کره · انفورماتیک زیست‌پزشکی (LSBI)", "school_tag": "KU", "tier": "t2", "wave": "w2", "rate_min": 30, "rate_max": 45, "citations": 2310, "citations_2021": 1568, "h_index": 23, "reason_zh": "兼任 Arontier 药物设计总监，2026 密集产出 CoBRA/KASSPer（冻结语言模型+骨架划分），注意与同系 전민지 严格间隔两周错峰联系。", "reason_en": "Head of Drug Design at Arontier; prolific 2026 CoBRA & KASSPer frozen-LM + Murcko scaffold pipelines. Stagger outreach by ≥2 weeks from dept. colleague Minji Jeon (전민지).", "reason_fa": "مدیر کل طراحی دارو در شرکت Arontier با مقالات شاخص ۲۰۲۶ (CoBRA و KASSPer مبتنی بر مدل زبانی منجمد)؛ حتماً با فاصله حداقل ۲ هفته‌ای نسبت به هم‌گروهی ایشان Minji Jeon (전민지) مکاتبه شود."}, {"key": "insuk", "order_table1": 10, "name_zh": "이인석 (Insuk Lee)", "name_en": "Insuk Lee (이인석)", "name_fa": "Insuk Lee (이인석)", "univ_zh": "延世大 生命工学科", "univ_en": "Yonsei Univ. · Biotechnology (NetBioLab)", "univ_fa": "دانشگاه یونسی (Yonsei) · زیست‌فناوری (NetBioLab)", "school_tag": "YU", "tier": "t2", "wave": "w2", "rate_min": 30, "rate_max": 40, "citations": 14096, "citations_2021": 7051, "h_index": 47, "reason_zh": "兼任 DECODE BIOME CEO，2026 年 9 月刚招收外籍生，历届 8 名独立硕士全员 2–2.5 年准时毕业，握有 UT Austin 与 EMBL-EBI 学脉。", "reason_en": "CEO of DECODE BIOME Inc.; recruited a new international student in Sep 2026, and all 8 past M.S. graduates finished on time in 2–2.5 years; strong UT Austin & EMBL-EBI network.", "reason_fa": "مدیرعامل (CEO) شرکت DECODE BIOME؛ در سپتامبر ۲۰۲۶ دانشجوی خارجی جدید جذب کرده و هر ۸ فارغ‌التحصیل پیشین ارشد سر موعد ۲ تا ۲.۵ ساله فارغ‌التحصیل شده‌اند."}, {"key": "hojung", "order_table1": 7, "name_zh": "남호정 (Hojung Nam)", "name_en": "Hojung Nam (남호정)", "name_fa": "Hojung Nam (남호정)", "univ_zh": "延世大 药学大学 (松岛 BIIL)", "univ_en": "Yonsei Univ. · Pharmacy (Songdo BIIL)", "univ_fa": "دانشگاه یونسی · دانشکده داروسازی (پردیس سونگدو BIIL)", "school_tag": "YU", "tier": "t3", "wave": "w2", "rate_min": 25, "rate_max": 40, "citations": 5491, "citations_2021": 3545, "h_index": 31, "reason_zh": "统领 177 亿韩元 AI 新药 6 大雇主联盟，在读唯一硕士为药学出身且有外籍博士，核心需在面试时确认仁川松岛通勤或远程混合模式。", "reason_en": "Leads a 17.7B KRW 6-employer AI drug consortium; sole current M.S. holds a B.Pharm and lab includes foreign PhDs. Confirm Songdo campus commute / hybrid remote flexibility during Zoom.", "reason_fa": "سرپرست کل کنسرسیوم ملی ۱۷.۷ میلیارد وونی هوش مصنوعی دارویی با ۶ کارفرمای بزرگ؛ تنها دانشجوی ارشد فعلی پیشینه داروسازی دارد. در مصاحبه درباره امکان کار ترکیبی/راه‌دور با پردیس سونگدو سؤال شود."}, {"key": "hoon", "order_table1": 9, "name_zh": "김훈 (Hoon Kim)", "name_en": "Hoon Kim (김훈)", "name_fa": "Hoon Kim (김훈)", "univ_zh": "成均馆大 药学大学", "univ_en": "SKKU · School of Pharmacy (Hoon Lab)", "univ_fa": "دانشگاه سونگ‌کیون‌کوان (SKKU) · دانشکده داروسازی (Hoon Lab)", "school_tag": "SKKU", "tier": "t3", "wave": "w2", "rate_min": 25, "rate_max": 35, "citations": 40146, "citations_2021": 27904, "h_index": 33, "reason_zh": "4 万+高被引癌症基因组名师，2024 届药院独立硕士共一发表 Nature Genetics 后直通剑桥 Sanger 读博，但目前组内尚无外籍生先例。", "reason_en": "40k+ cited cancer genomics leader; a 2024 SKKU Pharmacy M.S. co-first-authored Nature Genetics and went straight to a Cambridge Wellcome Sanger PhD (no foreign student record yet).", "reason_fa": "استاد برجسته ژنومیک سرطان با بیش از ۴۰ هزار ارجاع؛ فارغ‌التحصیل ارشد ۲۰۲۴ ایشان با هم‌نویسندگی اول در Nature Genetics مستقیماً وارد دکترای مؤسسه Wellcome Sanger کمبریج شد (هنوز سابقه دانشجوی خارجی ندارد)."}, {"key": "minji", "order_table1": 5, "name_zh": "전민지 (Minji Jeon)", "name_en": "Minji Jeon (전민지)", "name_fa": "Minji Jeon (전민지)", "univ_zh": "高丽大 医大医疗情报/医科学", "univ_en": "Korea Univ. Med · MedAI Lab", "univ_fa": "دانشکده پزشکی دانشگاه کره · آزمایشگاه MedAI", "school_tag": "KU", "tier": "t3", "wave": "w2", "rate_min": 20, "rate_max": 30, "citations": 7667, "citations_2021": 7224, "h_index": 23, "reason_zh": "直通高丽大 AIGEN Sciences 生态与西奈山医学院系统药理网，但官网硬性严审生科/药学申请者的编程与 ML 实战代码功底。", "reason_en": "Direct pipeline to AIGEN Sciences & Mount Sinai systems pharmacology, but lab website strictly screens bio/chem applicants for solid coding & ML validation fundamentals.", "reason_fa": "مسیر مستقیم به اکوسیستم شرکت AIGEN Sciences و گروه فارماکولوژی سیستمی Mount Sinai نیویورک، اما وب‌سایت آزمایشگاه به‌طور سخت‌گیرانه تجربه عملی کدنویسی و یادگیری ماشین را بررسی می‌کند."}, {"key": "hyeshik", "order_table1": 11, "name_zh": "장혜식 (Hyeshik Chang)", "name_en": "Hyeshik Chang (장혜식)", "name_fa": "Hyeshik Chang (장혜식)", "univ_zh": "首尔大 生科部/生信/IBS（冲刺）", "univ_en": "SNU · Biological Sci. / Bioinfo / IBS (Reach)", "univ_fa": "دانشگاه ملی سئول (SNU) · علوم زیستی / بیوانفورماتیک / IBS (رقابتی)", "school_tag": "SNU", "tier": "reach", "wave": "w3", "rate_min": 8, "rate_max": 15, "citations": 7570, "citations_2021": 4907, "h_index": 20, "reason_zh": "共享 김빛내리 IBS RNA 顶流生态且 2026 开源 VaxLab，硕士直赴德国马普所/莱比锡读博；生源多为本校实习尖子，附 VaxLab 复现顺带冲刺。", "reason_en": "Shares V. Narry Kim's IBS RNA ecosystem and released VaxLab (2026); M.S. alumni go to Max Planck/Leipzig PhDs. Mostly recruits internal SNU interns—apply as a bonus sprint with Colab VaxLab run.", "reason_fa": "همکار مرکز تراز اول RNA در IBS (گروه 김빛내리) و سازنده پلتفرم متن‌باز VaxLab؛ به دلیل جذب عمدتاً از کارآموزان داخلی SNU، به‌عنوان گزینه امتیازی همراه با بازتولید VaxLab امتحان شود."}]};</script>
+  <script>window.__PAGE_META__ = {"lang": "zh", "is_index": true, "w": {"lang_code": "zh-CN", "dir": "ltr", "page_title": "2027秋季韩国名校纯干实验硕士套磁、GitHub迷你项目与分导师职业薪资深度攻略", "nav_brand": "2027 KR Dry-Lab M.S. 战略全书", "nav_subtitle": "伊朗药理背景 · 韩国顶尖纯干实验硕士申请与留韩职业指南", "search_placeholder": "搜索导师（如 이주용）、模型（ESM-2）、药企或术语...", "highlight_btn": "重点标亮", "glossary_btn": "名词与职业速查", "toc_title": "全书章节导航", "toc_items": [{"id": "sec-onboarding", "num": "导读", "label": "专业名词与职业岗位全景百科"}, {"id": "sec-overview", "num": "总纲", "label": "核心破局策略与三大全局摘要"}, {"id": "sec-ch1", "num": "一", "label": "12位重点导师代表作与套磁切入点"}, {"id": "sec-ch2", "num": "二", "label": "1个月不耽误雅思的GitHub项目设计"}, {"id": "sec-ch3", "num": "三", "label": "套磁黄金窗口推算与高情商英文话术"}, {"id": "sec-ch4", "num": "四", "label": "12位导师Zoom面试定制与追问预测"}, {"id": "sec-ch5", "num": "五", "label": "套磁内诺率分级与15周紧凑日程"}, {"id": "sec-ch6", "num": "六", "label": "12位导师课题组毕业专属去向剖析"}, {"id": "sec-ch7", "num": "七", "label": "分年限薪资、企业读博与2027税改"}], "hero_badges": ["100% 原文一字不落完整呈现", "伊斯兰自由大学医药背景 (17–17.5/20)", "12 位纯干实验 PI 深度拆解", "中 / EN / فارسی 三语精准版"], "kpis": [{"val": "85%–87.5%", "lbl": "本科医药均分 (17–17.5/20)", "sub": "药理毒理直觉 + Python 计算转型"}, {"val": "1.5h / 天", "lbl": "3–4 周双仓库代码实战", "sub": "主力保住每日 3.5–4h 线下雅思"}, {"val": "01.05–01.26", "lbl": "2027 第一波寒假套磁黄金期", "sub": "周二/周三 09:15 KST 定时送达"}, {"val": "45%–65%", "lbl": "第一梯队导师预计内诺率", "sub": "B. Manavalan · 정원영 · 이윤지"}, {"val": "7,000–8,000万", "lbl": "生物大厂硕士首年含奖总包 (KRW)", "sub": "AI 药企另享早期股票期权杠杆"}, {"val": "立省 ~890万", "lbl": "2027 税改首年避坑节税额 (KRW)", "sub": "年薪 <1.8亿韩元必选普通累进税率"}], "onboarding": {"eyebrow": "ONBOARDING & TERMINOLOGY ENCYCLOPEDIA · 零门槛阅读导引", "title": "导入导读：全领域专业名词、核心算法与职业岗位全景解析", "desc": "本文横跨「计算生物 AI 算法」「药理毒理与疫苗 mRNA 工程」「韩国名校申研机制」与「韩国药企研发岗位/签证税法」四大领域。在进入正文前，可通过下方分类标签或搜索框快速掌握所有专业缩写与各研发岗位的真实工作内容；阅读正文时亦可随时点击顶部「名词与职业速查」抽屉对照查阅。", "search_ph": "输入关键词过滤（如：先导物、주임、ESM-2、Scaffold、CYP450、MFE、OPI、CAYSS...）", "expand_all": "全部展开详情", "collapse_all": "全部收起详情", "cats": [{"id": "all", "label": "全部词条 (21)"}, {"id": "career", "label": "💼 职业岗位与企业职级 (6)"}, {"id": "ai", "label": "🤖 AI模型与防泄露工程 (6)"}, {"id": "pharm", "label": "🧬 药理毒理与疫苗/mRNA (5)"}, {"id": "korea", "label": "🎓 韩国学界、签证与税改 (4)"}]}, "ui": {"copy_btn": "复制英文话术", "copied": "已复制！", "table_view": "完整学术表格视图", "card_view": "分导师卡片视图", "flashcard_mode": "模拟面试抽考模式（隐藏/点击展开应答）", "reveal_answer": "点击展开高分药理/免疫应答逻辑", "hide_answer": "收起应答", "filter_all": "全部导师 (12)", "filter_t1": "第一梯队 45–65% (3)", "filter_t2": "第二梯队 30–50% (5)", "filter_t3": "第三梯队 20–40% (3)", "filter_reach": "顶流冲刺 8–15% (1)", "sort_default": "原表默认顺序", "sort_cite": "总被引次数 ↓", "sort_h": "h-index ↓", "sort_rate": "预计内诺率 ↓", "progress_done": "已完成阶段", "reset_checks": "重置打卡进度"}, "w1_mapper": {"badge": "交互组件 01 · 一鱼多吃代码架构与导师映射台", "title": "双迷你仓库模块 × 12位目标导师管线精准映射图", "subtitle": "点击任一代码模块查看技术栈与对标顶刊，或点击下方任意导师查看套磁信应重点亮出的 Notebook 组合：", "modules": [{"id": "nb1", "code": "ImmunoPharm-VaxScreen / Notebook 01", "time": "第 1–2 周 (Colab T4 < 2 min)", "name": "防同源泄露的表位 PLM 基准对比", "stack": "PyTDC + Biopython 理化描述符 + 冻结 ESM-2 (35M, 480维) Mean Pooling + LightGBM / MLP", "highlight": "并列绘制 Random Split vs. Homology Cluster Split 的 AUROC / AUPRC / MCC 对比图，实测复现跨未见等位基因 PLM 优势收窄规律", "papers": "PREpiBind (2026), IgPose (2026), CONTRA-IL6 (2026), KASSPer / CoBRA (2026)", "pis": ["juyong", "manavalan", "woonghee", "wonyeong", "seunghee"]}, {"id": "nb2", "code": "ImmunoPharm-VaxScreen / Notebook 02", "time": "第 3–4 周", "name": "多肽治疗窗安全门控与 SHAP 残基归因", "stack": "免疫原性 + 细胞毒性/红细胞溶血 (Hemolysis) 双目标分类器 + SHAP 特征归因散点图", "highlight": "构建类似药理学「治疗指数 (Therapeutic Index)」二维安全筛选区，用膜药理学解释高阳离子净电荷与疏水残基致溶血机制", "papers": "HyPepTox-Fuse (2025), AMP-RL / HemoDL (2025)", "pis": ["manavalan", "hojung", "wonyeong"]}, {"id": "nb3", "code": "ImmunoPharm-VaxScreen / Notebook 03", "time": "第 4–5 周", "name": "下游 mRNA 构建体折叠自由能与降解剖析", "stack": "Top-5 串联表位 + HBA1 5'/3' UTR 模板 + ViennaRNA (MFE) + CAI / GC% / 降解基序四维雷达对比", "highlight": "对比「高频密码子简单替换」与「GC 含量平衡策略」，权衡 CDS 稳定性与 5' UTR 核糖体扫描效率", "papers": "VaxLab (2026), 增强型 5' UTR 专利 (10-2023-0116096), circRNA (2024)", "pis": ["hyeshik", "jinwu", "seunghee"]}, {"id": "admet", "code": "PharmADMET-ScaffoldBench (独立轻量插件)", "time": "第 6 周 (仅需 5–7 天)", "name": "Murcko 分子骨架划分与 CYP450 代谢软点归因", "stack": "PyTDC (HLM / hERG / CYP450) + RDKit 摩根指纹 vs. 冻结 ChemBERTa (768维) + Bemis–Murcko 骨架划分", "highlight": "可视化误差最大的 4 个测试分子并依据药理学教材人工圈注易水解酯键/易脱烷基等 CYP450 代谢软点", "papers": "MetaboGNN (2025), ArcDFI (2025), ADMET-FM (2025), KASSPer (2026)", "pis": ["yoonji", "minji", "hojung", "woonghee", "juyong"]}, {"id": "omics", "code": "README 附录拓展脚本 (肿瘤组学高维筛选)", "time": "套磁前 1 天增补", "name": "公开肿瘤表达矩阵 LASSO / FDR 差异基因筛选", "stack": "Python / Scikit-learn LASSO 正则化降维 + 多重假设检验 FDR 校正", "highlight": "针对数万维基因特征 vs. 数百例患者队列场景，直观证明高维癌症/单细胞组学矩阵规范处理基本功", "papers": "ecDNA Nature Genetics (2024), scHumanNet / Cell Rep. Med. (2025), Systems Serology", "pis": ["hoon", "insuk", "wonyeong", "minji"]}]}, "w2_calendar": {"badge": "交互组件 02 · 韩国学界日程与跨时区精准发信台", "title": "2026.11 – 2027.03 韩国高校收件箱盲区 vs. 套磁黄金窗口全景日历", "tz_note": "⏰ 定时发信换算：韩国时间周二/周三 09:15 KST ＝ 德黑兰时间 03:45 IRST（务必使用 Gmail 定时发送，避开周末与深夜邮件堆积）", "phases": [{"period": "2026.11.16 – 12.08", "status": "stop", "tag": "🚫 收件箱盲区 1", "title": "NRF 2027 第1轮个人基础研究课题截稿高峰", "detail": "11.16 公布格式、12.08 截止提交。严禁无 GitHub 成品盲目裸发邮件！集中报名线下雅思并跑通 Notebook 01。"}, {"period": "2026.12.09 – 2027.01.04", "status": "prep", "tag": "🛠️ 潜心打磨期 (盲区 2)", "title": "韩国高校期末阅卷季与年末休假低谷", "detail": "完成 Notebook 02、03 与 PharmADMET-ScaffoldBench 插件，拼合 README 首屏双联图，定稿单页 CV 与首批定制邮件。"}, {"period": "2027.01.05 – 01.26", "status": "go", "tag": "✅ 第一波黄金窗口", "title": "寒假科研盘点期（抢在首尔大 1 月底发简章前）", "detail": "教授无本科教学负担，正盘点 3 月新课题 T.O.！周二/周三 09:15 KST 首发 6 位核心导师（顺带冲刺 장혜식），满 8 个工作日未回礼貌跟进 1 次。"}, {"period": "2027.01.27 – 02.04", "status": "interview", "tag": "🎤 首轮面试与实考", "title": "第一批回复导师 Zoom 面试 & 线下雅思实考", "detail": "8 页英文 PPT 共享屏幕汇报 + 提前打开 Colab 备查代码；月底查阅首尔大 2027 秋季外国人招生简章。"}, {"period": "2027.02.05 – 02.10", "status": "stop", "tag": "🚫 收件箱盲区 3", "title": "2027 韩国春节（설날）连休及前后拼假静默期", "detail": "2.7 春节、2.6–2.9 四天连休加 2.5/2.10–12 拼假，严禁发新邮件！期间启动伊朗毕业证（Daneshnameh）与成绩单/亲属公证。"}, {"period": "2027.02.15 – 02.25", "status": "go", "tag": "✅ 第二波黄金窗口", "title": "节后补申定夺期 & 校方全奖推荐信锁定", "detail": "2.16（周二）09:15 KST 错峰投递第二批（신웅희/전민지 择一间隔两周、이인석、남호정、김훈），注意避开 2.27–3.1 三一节连休，2月底敲定 CAYSS/GSFS/STEM 推荐。"}]}, "w3_rates": {"badge": "交互组件 03 · 12位重点导师内诺率与学术指标交互看板", "title": "预计套磁内诺率 (T.O.) 区间 × Google Scholar 被引与 h-index 全景对比", "subtitle": "点击任意导师条目可展开其课题组生源结构、在研经费与核心命中依据（支持按批次筛选与多指标排序）：", "wave_all": "全部 (12)", "wave_1": "第一批首发主攻 (6)", "wave_2": "第二批错峰拓展 (5)", "wave_3": "顶流冲刺 (1)"}, "w4_salary_tax": {"badge": "交互组件 04 · 三大赛道分年限薪酬演进图 & 2027外籍人才个税计算器", "tab_salary": "📊 三大赛道分年限年薪轨迹对比", "tab_tax": "🧮 2027 韩国外籍研发个税避坑测算器", "salary_note": "单位：万韩元（KRW）。柱状展示各阶段总现金/基本区间，AI Biotech 额外享有早期股票期权（Stock Option）与管线 L/O 弹性收益。", "tracks": ["头部生物药大厂 (三星生物/Celltrion/SK/柳韩)", "传统一线药企 R&D (韩美/大熊/绿十字/HK)", "导师关联 AI Biotech (Galux/AIGEN/Arontier/Proteina)"], "stages": ["第 1–2 年 (주임·대리)", "第 3–5 年 (과장/专任·先任)", "第 7–10 年 (차장·부장/Team长)", "10 年以上 (VP/首席科学家)"], "tax_slider_label": "拖动滑块设定税前总年薪（万韩元 KRW）：", "tax_progressive": "普通累进税率（含地方税 10% 及标准勤劳抵扣）", "tax_flat": "2027 外国人单一税率特例（21% + 地方税 = 23.1% 无抵扣直征）", "tax_ktech": "K-Tech Pass 尖端人才减半（满8年且 ≥1.5亿韩元享 10 年减免 50%）", "tax_verdict_prog": "✅ 强烈建议选择【普通累进税率】！比误选 23.1% 单一税率每年合法省税约 ", "tax_verdict_flat": "💡 年薪已突破约 1.8 亿韩元反转线！此时【23.1% 单一税率】开始比普通累进税率每年省税约 ", "tax_unit": " 万韩元", "presets": [{"val": 5500, "lbl": "5,500万 (原文算例)"}, {"val": 7500, "lbl": "7,500万 (大厂首年总包)"}, {"val": 11000, "lbl": "1.10亿 (骨干期均薪)"}, {"val": 15000, "lbl": "1.50亿 (K-Tech门槛)"}, {"val": 19000, "lbl": "1.90亿 (高管高薪期)"}]}, "source_notice": {"title": "数据完整性与可视化图表说明", "body": "本页面已将原分享页（gemini.google.com）正文共七大章节、四张核心数据详表及全部注释内容 100% 一字不落完整收录；并在对应原位完整搭载了三模块 Google Colab 串联架构矢量图解（含一字不落原版图注）、双线备战甘特排期图、12 位导师内诺率×被引四象限气泡图及 2027 外籍人才个税反转曲线测算器。"}}, "ex": {"pillars": ["🎯 战略支柱 01 · 核心破局策略与 12 组算法方法学共性", "⏰ 战略支柱 02 · 三大收件箱盲区、两波黄金窗口与四梯队内诺率", "💼 战略支柱 03 · 分导师就业/读博学脉、总包薪资与 2027 税改红线"], "w1_labels": {"stack": "核心技术栈", "hl": "方法学与药理亮点", "papers": "对标导师代表作", "matched": "套磁重点亮出模块"}, "cited_lbl": "被引", "toc_btn_short": "目录", "short_toc": ["导读", "总纲", "一·12位导师", "二·GitHub项目", "三·套磁窗口", "四·Zoom面试", "五·内诺率", "六·毕业去向", "七·薪资税改"], "c6_filters": {"all": "全部课题组 (12)", "exec": "🚀 导师任药企 CTO/CEO/国策PD (6)", "intl": "🌍 含外籍就业/国际生先例 (5)", "phd": "🎓 欧美顶流研究所读博实绩 (7)"}}, "pis": [{"key": "manavalan", "order_table1": 8, "name_zh": "B. Manavalan", "name_en": "B. Manavalan", "name_fa": "B. Manavalan", "univ_zh": "成均馆大 融合生命工学科", "univ_en": "SKKU · Integrative Biotechnology", "univ_fa": "دانشگاه سونگ‌کیون‌کوان (SKKU) · زیست‌فناوری یکپارچه", "school_tag": "SKKU", "tier": "t1", "wave": "w1", "rate_min": 50, "rate_max": 65, "citations": 9591, "citations_2021": 7468, "h_index": 55, "reason_zh": "外籍高产学者，常年公开招募国际生且全英文指导，复现 CONTRA-IL6 + HyPepTox-Fuse 极易获面试，两年易产出 Q1 一作。", "reason_en": "Prolific international faculty; actively recruits global students in full English. Reproducing CONTRA-IL6 + HyPepTox-Fuse yields high interview conversion & Q1 first-author papers.", "reason_fa": "استاد بین‌المللی بسیار پرکار با راهنمایی کاملاً انگلیسی و جذب مستمر دانشجوی خارجی؛ بازتولید CONTRA-IL6 و HyPepTox-Fuse شانس مصاحبه و چاپ مقاله Q1 را بسیار بالا می‌برد."}, {"key": "wonyeong", "order_table1": 0, "name_zh": "정원영 (Wonyeong Jung)", "name_en": "Wonyeong Jung (정원영)", "name_fa": "Wonyeong Jung (정원영)", "univ_zh": "高丽大 生物系统医科学部", "univ_en": "Korea Univ. · Biosystems & Biomedical Sci.", "univ_fa": "دانشگاه کره (Korea Univ.) · علوم زیست‌سیستم و زیست‌پزشکی", "school_tag": "KU", "tier": "t1", "wave": "w1", "rate_min": 45, "rate_max": 60, "citations": 810, "citations_2021": 663, "h_index": 17, "reason_zh": "2025 刚从哈佛/MIT Ragon 归国建组，手握启动资金急需首届研究生，机械转免疫背景对药理转码生极友好，直通北美计算免疫 PhD。", "reason_en": "Newly launched lab (2025) returning from Harvard/MIT Ragon Institute with startup funding; mechanical-to-immunology interdisciplinary background welcomes pharmacology-to-coding applicants.", "reason_fa": "آزمایشگاه تازه‌تأسیس (۲۰۲۵) پس از بازگشت از مؤسسه Harvard/MIT Ragon با بودجه راه‌اندازی و نیاز فوری به دانشجویان نسل اول؛ پیشینه میان‌رشته‌ای استاد بسیار پذیرای تغییرمسیر از داروشناسی به کدنویسی است."}, {"key": "yoonji", "order_table1": 3, "name_zh": "이윤지 (Yoonji Lee)", "name_en": "Yoonji Lee (이윤지)", "name_fa": "Yoonji Lee (이윤지)", "univ_zh": "中央大 药学大学", "univ_en": "Chung-Ang Univ. · College of Pharmacy", "univ_fa": "دانشگاه چونگ‌آنگ (CAU) · دانشکده داروسازی", "school_tag": "CAU", "tier": "t1", "wave": "w1", "rate_min": 45, "rate_max": 60, "citations": 2657, "citations_2021": 1657, "h_index": 29, "reason_zh": "药学院本院纯干实验组，历届 5 名药学硕士全部 2.0 年整毕业，对接 MetaboGNN 极有希望拿稳 CAYSS 全额学费奖学金推荐。", "reason_en": "Pure dry-lab inside a top Pharmacy school; all 5 past pharmacy M.S. alumni graduated in exactly 2.0 years. Aligning with MetaboGNN strongly positions for CAYSS full-tuition scholarship.", "reason_fa": "گروه تماماً محاسباتی در دل دانشکده داروسازی؛ هر ۵ دانشجوی ارشد پیشین دقیقاً ۲.۰ ساله فارغ‌التحصیل شده‌اند و هم‌راستایی با MetaboGNN شانس دریافت بورسیه کامل شهریه CAYSS را بسیار تقویت می‌کند."}, {"key": "jinwu", "order_table1": 2, "name_zh": "남진우 (Jin-Wu Nam)", "name_en": "Jin-Wu Nam (남진우)", "name_fa": "Jin-Wu Nam (남진우)", "univ_zh": "汉阳大 生命科学科 (FTC1123)", "univ_en": "Hanyang Univ. · Life Science (FTC1123)", "univ_fa": "دانشگاه هانیانگ (Hanyang) · علوم زیستی (مرکز FTC1123)", "school_tag": "HYU", "tier": "t2", "wave": "w1", "rate_min": 35, "rate_max": 50, "citations": 19751, "citations_2021": 9210, "h_index": 35, "reason_zh": "国家 K-Moonshot AI 新药总负责人，在研经费超 34 亿韩元，现有 3 名外籍博士及外籍硕士留韩药企全职先例（明确申 FTC1123 干实验中心）。", "reason_en": "National K-Moonshot AI Drug Discovery PD with >3.4B KRW active grants, 3 current foreign PhDs, and proven foreign M.S. alumni hired full-time in Korean biotech (specify FTC1123 dry-lab).", "reason_fa": "مدیر کل ملی طرح داروسازی هوش مصنوعی K-Moonshot با بودجه فعال بیش از ۳.۴ میلیارد وون، ۳ دانشجوی دکترای خارجی و سابقه استخدام تمام‌وقت فارغ‌التحصیل ارشد خارجی در شرکت دارویی کره‌ای."}, {"key": "seunghee", "order_table1": 6, "name_zh": "홍승희 (Seunghee Hong)", "name_en": "Seunghee Hong (홍승희)", "name_fa": "Seunghee Hong (홍승희)", "univ_zh": "延世大 生化学科 (IMIL)", "univ_en": "Yonsei Univ. · Biochemistry (IMIL)", "univ_fa": "دانشگاه یونسی (Yonsei) · بیوشیمی (آزمایشگاه IMIL)", "school_tag": "YU", "tier": "t2", "wave": "w1", "rate_min": 35, "rate_max": 45, "citations": 2662, "citations_2021": 1841, "h_index": 17, "reason_zh": "2026 连发 Cell 与 Cell Rep. Med.，线上曝光少避开考研扎堆，契合免疫药理与 mRNA 干扰素调控，联动 Severance 医院与北美名校学脉。", "reason_en": "2026 Cell & Cell Rep. Med. publications; lower online crowding avoids applicant bottlenecks. Strong fit for immunopharmacology & Type-I IFN mRNA modulation with Weill Cornell/Baylor links.", "reason_fa": "انتشار مقالات Cell و Cell Rep. Med. در ۲۰۲۶؛ به دلیل دیده‌شدن کمتر در فضای عمومی، ازدحام داوطلبان پایین‌تر بوده و تناسب عالی با ایمونوفارماکولوژی و تنظیم اینترفرون در واکسن‌های mRNA دارد."}, {"key": "juyong", "order_table1": 1, "name_zh": "이주용 (Juyong Lee)", "name_en": "Juyong Lee (이주용)", "name_fa": "Juyong Lee (이주용)", "univ_zh": "首尔大 药学大学制药学科", "univ_en": "SNU · College of Pharmacy (LCBC)", "univ_fa": "دانشگاه ملی سئول (SNU) · دانشکده داروسازی (LCBC)", "school_tag": "SNU", "tier": "t2", "wave": "w1", "rate_min": 30, "rate_max": 45, "citations": 2810, "citations_2021": 1947, "h_index": 31, "reason_zh": "逆袭首尔大最佳切入口：现役 5 名独立硕士中 3 人来自地方国立江原大学，含外籍博后/博士，本人兼任 Arontier CTO 并互通 Galux。", "reason_en": "Highest-odds gateway into SNU: 3 of 5 current M.S. students come from regional Kangwon National Univ., plus international postdoc/PhD; concurrently serves as CTO of Arontier Co.", "reason_fa": "بهترین دروازه ورود به دانشگاه ملی سئول (SNU): ۳ نفر از ۵ دانشجوی فعلی ارشد از دانشگاه منطقه‌ای کانگوون هستند، اعضای بین‌المللی دارد و خود استاد هم‌زمان مدیر ارشد فناوری (CTO) شرکت Arontier است."}, {"key": "woonghee", "order_table1": 4, "name_zh": "신웅희 (Woong-Hee Shin)", "name_en": "Woong-Hee Shin (신웅희)", "name_fa": "Woong-Hee Shin (신웅희)", "univ_zh": "高丽大 医科大学医疗情报学", "univ_en": "Korea Univ. Med · Biomedical Informatics (LSBI)", "univ_fa": "دانشکده پزشکی دانشگاه کره · انفورماتیک زیست‌پزشکی (LSBI)", "school_tag": "KU", "tier": "t2", "wave": "w2", "rate_min": 30, "rate_max": 45, "citations": 2310, "citations_2021": 1568, "h_index": 23, "reason_zh": "兼任 Arontier 药物设计总监，2026 密集产出 CoBRA/KASSPer（冻结语言模型+骨架划分），注意与同系 전민지 严格间隔两周错峰联系。", "reason_en": "Head of Drug Design at Arontier; prolific 2026 CoBRA & KASSPer frozen-LM + Murcko scaffold pipelines. Stagger outreach by ≥2 weeks from dept. colleague Minji Jeon (전민지).", "reason_fa": "مدیر کل طراحی دارو در شرکت Arontier با مقالات شاخص ۲۰۲۶ (CoBRA و KASSPer مبتنی بر مدل زبانی منجمد)؛ حتماً با فاصله حداقل ۲ هفته‌ای نسبت به هم‌گروهی ایشان Minji Jeon (전민지) مکاتبه شود."}, {"key": "insuk", "order_table1": 10, "name_zh": "이인석 (Insuk Lee)", "name_en": "Insuk Lee (이인석)", "name_fa": "Insuk Lee (이인석)", "univ_zh": "延世大 生命工学科", "univ_en": "Yonsei Univ. · Biotechnology (NetBioLab)", "univ_fa": "دانشگاه یونسی (Yonsei) · زیست‌فناوری (NetBioLab)", "school_tag": "YU", "tier": "t2", "wave": "w2", "rate_min": 30, "rate_max": 40, "citations": 14096, "citations_2021": 7051, "h_index": 47, "reason_zh": "兼任 DECODE BIOME CEO，2026 年 9 月刚招收外籍生，历届 8 名独立硕士全员 2–2.5 年准时毕业，握有 UT Austin 与 EMBL-EBI 学脉。", "reason_en": "CEO of DECODE BIOME Inc.; recruited a new international student in Sep 2026, and all 8 past M.S. graduates finished on time in 2–2.5 years; strong UT Austin & EMBL-EBI network.", "reason_fa": "مدیرعامل (CEO) شرکت DECODE BIOME؛ در سپتامبر ۲۰۲۶ دانشجوی خارجی جدید جذب کرده و هر ۸ فارغ‌التحصیل پیشین ارشد سر موعد ۲ تا ۲.۵ ساله فارغ‌التحصیل شده‌اند."}, {"key": "hojung", "order_table1": 7, "name_zh": "남호정 (Hojung Nam)", "name_en": "Hojung Nam (남호정)", "name_fa": "Hojung Nam (남호정)", "univ_zh": "延世大 药学大学 (松岛 BIIL)", "univ_en": "Yonsei Univ. · Pharmacy (Songdo BIIL)", "univ_fa": "دانشگاه یونسی · دانشکده داروسازی (پردیس سونگدو BIIL)", "school_tag": "YU", "tier": "t3", "wave": "w2", "rate_min": 25, "rate_max": 40, "citations": 5491, "citations_2021": 3545, "h_index": 31, "reason_zh": "统领 177 亿韩元 AI 新药 6 大雇主联盟，在读唯一硕士为药学出身且有外籍博士，核心需在面试时确认仁川松岛通勤或远程混合模式。", "reason_en": "Leads a 17.7B KRW 6-employer AI drug consortium; sole current M.S. holds a B.Pharm and lab includes foreign PhDs. Confirm Songdo campus commute / hybrid remote flexibility during Zoom.", "reason_fa": "سرپرست کل کنسرسیوم ملی ۱۷.۷ میلیارد وونی هوش مصنوعی دارویی با ۶ کارفرمای بزرگ؛ تنها دانشجوی ارشد فعلی پیشینه داروسازی دارد. در مصاحبه درباره امکان کار ترکیبی/راه‌دور با پردیس سونگدو سؤال شود."}, {"key": "hoon", "order_table1": 9, "name_zh": "김훈 (Hoon Kim)", "name_en": "Hoon Kim (김훈)", "name_fa": "Hoon Kim (김훈)", "univ_zh": "成均馆大 药学大学", "univ_en": "SKKU · School of Pharmacy (Hoon Lab)", "univ_fa": "دانشگاه سونگ‌کیون‌کوان (SKKU) · دانشکده داروسازی (Hoon Lab)", "school_tag": "SKKU", "tier": "t3", "wave": "w2", "rate_min": 25, "rate_max": 35, "citations": 40146, "citations_2021": 27904, "h_index": 33, "reason_zh": "4 万+高被引癌症基因组名师，2024 届药院独立硕士共一发表 Nature Genetics 后直通剑桥 Sanger 读博，但目前组内尚无外籍生先例。", "reason_en": "40k+ cited cancer genomics leader; a 2024 SKKU Pharmacy M.S. co-first-authored Nature Genetics and went straight to a Cambridge Wellcome Sanger PhD (no foreign student record yet).", "reason_fa": "استاد برجسته ژنومیک سرطان با بیش از ۴۰ هزار ارجاع؛ فارغ‌التحصیل ارشد ۲۰۲۴ ایشان با هم‌نویسندگی اول در Nature Genetics مستقیماً وارد دکترای مؤسسه Wellcome Sanger کمبریج شد (هنوز سابقه دانشجوی خارجی ندارد)."}, {"key": "minji", "order_table1": 5, "name_zh": "전민지 (Minji Jeon)", "name_en": "Minji Jeon (전민지)", "name_fa": "Minji Jeon (전민지)", "univ_zh": "高丽大 医大医疗情报/医科学", "univ_en": "Korea Univ. Med · MedAI Lab", "univ_fa": "دانشکده پزشکی دانشگاه کره · آزمایشگاه MedAI", "school_tag": "KU", "tier": "t3", "wave": "w2", "rate_min": 20, "rate_max": 30, "citations": 7667, "citations_2021": 7224, "h_index": 23, "reason_zh": "直通高丽大 AIGEN Sciences 生态与西奈山医学院系统药理网，但官网硬性严审生科/药学申请者的编程与 ML 实战代码功底。", "reason_en": "Direct pipeline to AIGEN Sciences & Mount Sinai systems pharmacology, but lab website strictly screens bio/chem applicants for solid coding & ML validation fundamentals.", "reason_fa": "مسیر مستقیم به اکوسیستم شرکت AIGEN Sciences و گروه فارماکولوژی سیستمی Mount Sinai نیویورک، اما وب‌سایت آزمایشگاه به‌طور سخت‌گیرانه تجربه عملی کدنویسی و یادگیری ماشین را بررسی می‌کند."}, {"key": "hyeshik", "order_table1": 11, "name_zh": "장혜식 (Hyeshik Chang)", "name_en": "Hyeshik Chang (장혜식)", "name_fa": "Hyeshik Chang (장혜식)", "univ_zh": "首尔大 生科部/生信/IBS（冲刺）", "univ_en": "SNU · Biological Sci. / Bioinfo / IBS (Reach)", "univ_fa": "دانشگاه ملی سئول (SNU) · علوم زیستی / بیوانفورماتیک / IBS (رقابتی)", "school_tag": "SNU", "tier": "reach", "wave": "w3", "rate_min": 8, "rate_max": 15, "citations": 7570, "citations_2021": 4907, "h_index": 20, "reason_zh": "共享 김빛내리 IBS RNA 顶流生态且 2026 开源 VaxLab，硕士直赴德国马普所/莱比锡读博；生源多为本校实习尖子，附 VaxLab 复现顺带冲刺。", "reason_en": "Shares V. Narry Kim's IBS RNA ecosystem and released VaxLab (2026); M.S. alumni go to Max Planck/Leipzig PhDs. Mostly recruits internal SNU interns—apply as a bonus sprint with Colab VaxLab run.", "reason_fa": "همکار مرکز تراز اول RNA در IBS (گروه 김빛내리) و سازنده پلتفرم متن‌باز VaxLab؛ به دلیل جذب عمدتاً از کارآموزان داخلی SNU، به‌عنوان گزینه امتیازی همراه با بازتولید VaxLab امتحان شود."}]};</script>
   <script>
 (function() {
   const META = window.__PAGE_META__;
@@ -2102,26 +2281,75 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
   else if (ql === 'fa' && META.lang !== 'fa') window.location.replace('unipfa.html' + window.location.hash);
   else if (ql === 'zh' && META.lang !== 'zh') window.location.replace('unip.html' + window.location.hash);
 
-  // 1. Scroll progress + Active TOC ScrollSpy
+  // 1. Scroll progress + Active TOC ScrollSpy + Smart Auto-Tuck Header
   const progBar = document.getElementById('progress-bar');
+  const navStack = document.getElementById('sticky-nav-stack');
+  const topHeader = document.getElementById('top-header');
+  const mobStrip = document.getElementById('mobile-toc-strip');
   const sections = Array.from(document.querySelectorAll('section[id]'));
   const tocLinks = Array.from(document.querySelectorAll('.toc-link'));
+  const mobPills = Array.from(document.querySelectorAll('.mob-toc-pill'));
+  let lastScrollY = window.scrollY;
+  let lastActiveId = '';
+  let isTucked = false;
+
+  function setHeaderTuck(tuck) {
+    if (!navStack || !topHeader) return;
+    if (navStack.classList.contains('search-open')) tuck = false;
+    isTucked = tuck;
+    if (!tuck) {
+      navStack.style.transform = 'translateY(0)';
+      document.body.classList.remove('nav-tucked');
+    } else {
+      if (window.innerWidth <= 1120) {
+        navStack.style.transform = 'translateY(-' + topHeader.offsetHeight + 'px)';
+      } else {
+        navStack.style.transform = 'translateY(-100%)';
+      }
+      document.body.classList.add('nav-tucked');
+    }
+  }
 
   function onScroll() {
+    const y = window.scrollY;
     const docH = document.documentElement.scrollHeight - window.innerHeight;
-    const pct = docH > 0 ? Math.min(100, Math.max(0, (window.scrollY / docH) * 100)) : 0;
+    const pct = docH > 0 ? Math.min(100, Math.max(0, (y / docH) * 100)) : 0;
     if (progBar) progBar.style.width = pct + '%';
 
+    // Smart auto-tuck: hide utility/language bar when scrolling down, show immediately on scroll up
+    const dy = y - lastScrollY;
+    if (y < 70) {
+      if (isTucked) setHeaderTuck(false);
+    } else if (dy > 8 && !isTucked) {
+      setHeaderTuck(true);
+    } else if (dy < -8 && isTucked) {
+      setHeaderTuck(false);
+    }
+    lastScrollY = y;
+
     let currentId = sections[0] ? sections[0].id : '';
-    const offset = window.scrollY + 140;
+    const offset = y + 130;
     for (const sec of sections) {
       if (sec.offsetTop <= offset) currentId = sec.id;
     }
     tocLinks.forEach(a => {
       a.classList.toggle('active', a.getAttribute('href') === '#' + currentId);
     });
+    mobPills.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + currentId);
+    });
+
+    if (currentId !== lastActiveId) {
+      lastActiveId = currentId;
+      const activePill = mobPills.find(a => a.getAttribute('href') === '#' + currentId);
+      if (activePill && mobStrip && window.innerWidth <= 1120) {
+        const targetLeft = activePill.offsetLeft - (mobStrip.clientWidth / 2) + (activePill.offsetWidth / 2);
+        mobStrip.scrollTo({ left: targetLeft, behavior: 'smooth' });
+      }
+    }
   }
   window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', () => { if (isTucked) setHeaderTuck(true); }, { passive: true });
   onScroll();
 
   document.querySelectorAll('.lang-pill').forEach(a => {
@@ -2132,11 +2360,47 @@ mark.search-hit.current-hit { background: #f97316; color: #fff; }
     });
   });
 
-  const mobBtn = document.getElementById('mobile-toc-btn');
+  // TOC Drawer (Mobile <= 1120px) & Collapsible Sidebar (Desktop > 1120px)
   const tocBox = document.getElementById('toc-sidebar');
-  if (mobBtn && tocBox) {
-    mobBtn.addEventListener('click', () => tocBox.classList.toggle('mobile-open'));
-    tocBox.querySelectorAll('a').forEach(a => a.addEventListener('click', () => tocBox.classList.remove('mobile-open')));
+  const tocBackdrop = document.getElementById('toc-backdrop');
+  const tocCloseBtn = document.getElementById('toc-close-btn');
+
+  function closeMobileToc() {
+    if (tocBox) tocBox.classList.remove('mobile-open');
+    if (tocBackdrop) tocBackdrop.classList.remove('open');
+  }
+  document.querySelectorAll('[data-toggle-toc]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (window.innerWidth <= 1120) {
+        const willOpen = !tocBox.classList.contains('mobile-open');
+        tocBox.classList.toggle('mobile-open', willOpen);
+        if (tocBackdrop) tocBackdrop.classList.toggle('open', willOpen);
+      } else {
+        document.body.classList.toggle('toc-collapsed');
+      }
+    });
+  });
+  if (tocBackdrop) tocBackdrop.addEventListener('click', closeMobileToc);
+  if (tocCloseBtn) tocCloseBtn.addEventListener('click', closeMobileToc);
+  if (tocBox) {
+    tocBox.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobileToc));
+  }
+
+  // Mobile Search Dropdown Toggle
+  const mobSearchBtn = document.getElementById('mob-search-btn');
+  const mobSearchClose = document.getElementById('mob-search-close');
+  if (mobSearchBtn && navStack) {
+    mobSearchBtn.addEventListener('click', () => {
+      const open = navStack.classList.toggle('search-open');
+      if (open) {
+        setHeaderTuck(false);
+        const inp = document.getElementById('doc-search-input');
+        if (inp) setTimeout(() => inp.focus(), 50);
+      }
+    });
+  }
+  if (mobSearchClose && navStack) {
+    mobSearchClose.addEventListener('click', () => navStack.classList.remove('search-open'));
   }
 
   // 2. Highlight Toggle & Font Size Controls
