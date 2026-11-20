@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2027秋季韩国名校硕士（M.S.）全奖申请全周期规划</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Noto Sans SC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans SC"', 'Inter', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
+                        en: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans SC', 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            line-height: 1.75;
+            overflow-x: hidden;
+        }
+
+        /* 自定义清爽滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* 行内专业名词触发标签 */
+        .term-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.05rem 0.5rem;
+            margin: 0 0.15rem;
+            border-radius: 0.5rem;
+            background-color: #f0fdfa;
+            color: #0f766e;
+            border: 1px dashed #5eead4;
+            font-weight: 600;
+            font-size: 0.92em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .term-chip:hover {
+            background-color: #ccfbf1;
+            border-color: #0d9488;
+            transform: translateY(-1px);
+        }
+
+        /* 柔和渐显动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade {
+            animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* 从教授卡片跳转到对应课题时的脉冲高亮 */
+        @keyframes highlightRing {
+            0% { box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.5); }
+            70% { box-shadow: 0 0 0 14px rgba(13, 148, 136, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(13, 148, 136, 0); }
+        }
+        .pulse-focus {
+            animation: highlightRing 1.4s ease-out 2;
+        }
+
+        /* 隐藏移动端横向导航滚动条 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-100 selection:text-brand-900">
+
+    <!-- 顶部悬浮导航栏 -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+            <!-- 品牌标题 -->
+            <a href="#top" class="flex items-center gap-2.5 shrink-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-600 to-teal-800 text-white flex items-center justify-center font-bold shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="text-sm sm:text-base font-bold text-slate-900 leading-tight">韩国名校硕士申请蓝图</div>
+                    <div class="text-[11px] text-slate-500 leading-tight hidden sm:block">纯学术型 M.S. • 2027年秋季入学</div>
+                </div>
+            </a>
+
+            <!-- 四大模块快捷跳转 -->
+            <nav class="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar py-1 text-xs sm:text-sm font-medium text-slate-600">
+                <a href="#universities" class="px-2.5 py-1.5 rounded-lg hover:bg-slate-100 hover:text-brand-700 whitespace-nowrap transition">一、学校与导师</a>
+                <a href="#projects" class="px-2.5 py-1.5 rounded-lg hover:bg-slate-100 hover:text-brand-700 whitespace-nowrap transition">二、5大实战课题</a>
+                <a href="#strategy" class="px-2.5 py-1.5 rounded-lg hover:bg-slate-100 hover:text-brand-700 whitespace-nowrap transition">三、推进大逻辑</a>
+                <a href="#timeline" class="px-2.5 py-1.5 rounded-lg hover:bg-slate-100 hover:text-brand-700 whitespace-nowrap transition">四、总用时梳理</a>
+            </nav>
+
+            <!-- 名词词卡快捷入口 -->
+            <a href="#glossary" class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-50 text-brand-700 border border-brand-200 hover:bg-brand-100 text-xs sm:text-sm font-semibold transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+                <span>名词词卡</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- 主内容容器 -->
+    <main id="top" class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-14 sm:space-y-20">
+
+        <!-- 顶部总览 Hero 卡片 -->
+        <section class="relative bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-10 overflow-hidden">
+            <!-- 装饰性柔光背景 -->
+            <div class="absolute -top-24 -right-24 w-72 h-72 bg-brand-100/50 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-blue-100/40 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative space-y-6">
+                <!-- 核心定位标签 -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand-600 text-white shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
+                        2027年秋季入学（9月1日）
+                    </span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
+                        绕开语学院预科 • 100%全英文科研环境
+                    </span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                        资金目标：第1学期起 100%学费覆盖 + 生活津贴
+                    </span>
+                </div>
+
+                <!-- 主标题与导语 -->
+                <div class="max-w-4xl space-y-3">
+                    <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 leading-snug">
+                        冲击韩国4所顶尖名校“两年制纯学术型硕士（M.S.）”全周期战略方案
+                    </h1>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                        这不是一套被动等中介或盲目海投的普通申请，而是直击
+                        <button onclick="openTermModal('ms_research')" class="term-chip">两年制纯学术型硕士 (M.S.) ⓘ</button>、用硬核生物医学AI开源作品集敲开教授大门，并自入学首学期起锁定
+                        <button onclick="openTermModal('bk21_ra')" class="term-chip">校奖 + BK21/RA全额资助 ⓘ</button>
+                        的精密战略工程。全盘计划清晰拆解为以下 <strong>四大核心模块</strong>：
+                    </p>
+                </div>
+
+                <!-- 4大模块核心指标卡片（点击可直达对应章节） -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 pt-2">
+                    <a href="#universities" class="group p-4 rounded-2xl bg-slate-50 hover:bg-brand-50/70 border border-slate-200/80 hover:border-brand-300 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-500 group-hover:text-brand-700">模块一</span>
+                            <span class="text-xs text-brand-600 font-bold">查看详情 →</span>
+                        </div>
+                        <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">4所名校 / 5位教授</div>
+                        <p class="text-xs text-slate-600 mt-1">锁定理工/医学院全英文且经费充足课题组</p>
+                    </a>
+
+                    <a href="#projects" class="group p-4 rounded-2xl bg-slate-50 hover:bg-brand-50/70 border border-slate-200/80 hover:border-brand-300 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-500 group-hover:text-brand-700">模块二</span>
+                            <span class="text-xs text-brand-600 font-bold">查看详情 →</span>
+                        </div>
+                        <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">5个GitHub项目</div>
+                        <p class="text-xs text-slate-600 mt-1">定向复现导师最新论文，60秒直观展现深度</p>
+                    </a>
+
+                    <a href="#strategy" class="group p-4 rounded-2xl bg-slate-50 hover:bg-brand-50/70 border border-slate-200/80 hover:border-brand-300 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-500 group-hover:text-brand-700">模块三</span>
+                            <span class="text-xs text-brand-600 font-bold">查看详情 →</span>
+                        </div>
+                        <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">自费支出归零</div>
+                        <p class="text-xs text-slate-600 mt-1">错峰套磁 + 90天公证卡点 + 奖学金RA闭环</p>
+                    </a>
+
+                    <a href="#timeline" class="group p-4 rounded-2xl bg-slate-50 hover:bg-brand-50/70 border border-slate-200/80 hover:border-brand-300 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-500 group-hover:text-brand-700">模块四</span>
+                            <span class="text-xs text-brand-600 font-bold">查看详情 →</span>
+                        </div>
+                        <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">144小时 / 9个月</div>
+                        <p class="text-xs text-slate-600 mt-1">30h前置 + 114h实战；2026.11至2027.09</p>
+                    </a>
+                </div>
+
+                <!-- 交互式阅读提示栏 -->
+                <div class="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-blue-50/80 border border-blue-100 text-xs sm:text-sm text-blue-900">
+                    <svg class="w-5 h-5 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>
+                        <strong>交互导览提示：</strong>点击文中带虚线框的绿色词条（如
+                        <button onclick="openTermModal('cold_email')" class="term-chip">寒假精准套磁 ⓘ</button>）即可弹出通俗解释词卡；在下方课题模块中，还可以一键切换 <strong>“通俗生活化讲法”</strong> 与 <strong>“硬核学术细节”</strong>。
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             模块一：瞄准的4所大学与5位核心教授
+             ========================================== -->
+        <section id="universities" class="scroll-mt-20 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div class="space-y-2">
+                    <div class="inline-flex items-center gap-2 text-xs font-bold text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200">
+                        <span>核心模块一</span>
+                        <span>•</span>
+                        <span>绕开耗时漫长的语学院，直击核心实验室</span>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">一、瞄准的4所大学与5位核心教授</h2>
+                    <p class="text-sm sm:text-base text-slate-600 max-w-3xl">
+                        彻底避开耗费1—1.5年的韩语预科，直接锁定4所顶尖名校药学院、生命科学系与医学院的5位核心导师——全部具备 <strong>100%全英文科研环境</strong> 与 <strong>充足国家级/校级课题经费</strong>。
+                    </p>
+                </div>
+
+                <!-- 学校筛选按钮组 -->
+                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1" id="uni-filters">
+                    <button onclick="filterProfessors('all')" data-uni="all" class="uni-filter-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white shadow-sm whitespace-nowrap transition">
+                        全部导师 (5)
+                    </button>
+                    <button onclick="filterProfessors('CAU')" data-uni="CAU" class="uni-filter-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 whitespace-nowrap transition">
+                        中央大学 (CAU)
+                    </button>
+                    <button onclick="filterProfessors('HYU')" data-uni="HYU" class="uni-filter-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 whitespace-nowrap transition">
+                        汉阳大学 (HYU · 2位)
+                    </button>
+                    <button onclick="filterProfessors('KU')" data-uni="KU" class="uni-filter-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 whitespace-nowrap transition">
+                        高丽大学 (KU)
+                    </button>
+                    <button onclick="filterProfessors('YU')" data-uni="YU" class="uni-filter-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 whitespace-nowrap transition">
+                        延世医学院 (YU)
+                    </button>
+                </div>
+            </div>
+
+            <!-- 教授卡片网格 -->
+            <div id="professors-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- 由 JS 动态渲染 -->
+            </div>
+        </section>
+
+        <!-- ==========================================
+             模块二：准备的5大科研实战项目（GitHub代码库）
+             ========================================== -->
+        <section id="projects" class="scroll-mt-20 space-y-6">
+            <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6">
+                <!-- 头部与通俗/专业双模式切换器 -->
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 border-b border-slate-100 pb-6">
+                    <div class="space-y-2 max-w-2xl">
+                        <div class="inline-flex items-center gap-2 text-xs font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+                            <span>核心模块二</span>
+                            <span>•</span>
+                            <span>弥补无SCI短板的降维打击武器</span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">二、准备的5大科研实战项目（GitHub开源代码库 · 共114小时）</h2>
+                        <p class="text-sm sm:text-base text-slate-600">
+                            为了弥补本科刚跨学科、尚无SCI论文发表的短板，专门设计了 <strong>“底层通用机器学习引擎 + 针对导师最新论文定向复现”</strong> 的开源作品集（4大主题、5个仓库），让教授点开链接 <strong>60秒内</strong> 即可看到真实实验图表与代码深度。
+                        </p>
+                    </div>
+
+                    <!-- 讲解模式切换开关 -->
+                    <div class="shrink-0 bg-slate-100 p-1.5 rounded-2xl inline-flex items-center gap-1 self-start lg:self-center border border-slate-200/80">
+                        <button id="mode-simple-btn" onclick="setProjectMode('simple')" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white text-brand-700 shadow-sm transition flex items-center gap-2">
+                            <span>💬</span>
+                            <span>通俗生活化讲法（给男友讲）</span>
+                        </button>
+                        <button id="mode-tech-btn" onclick="setProjectMode('tech')" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition flex items-center gap-2">
+                            <span>🔬</span>
+                            <span>硬核学术与技术细节</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 5个课题选项卡 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5" id="project-tabs">
+                    <!-- 由 JS 动态渲染 -->
+                </div>
+
+                <!-- 当前选中课题详情面板 -->
+                <div id="active-project-panel" class="rounded-2xl bg-slate-50/90 border border-slate-200/90 p-5 sm:p-7 transition-all">
+                    <!-- 由 JS 动态渲染 -->
+                </div>
+
+                <!-- 一览总表折叠开关 -->
+                <div class="pt-2">
+                    <button onclick="toggleSummaryTable()" class="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-700 hover:text-brand-700 transition">
+                        <span id="table-toggle-icon" class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">+</span>
+                        <span id="table-toggle-text">展开查看5个课题完整对比总表</span>
+                    </button>
+
+                    <div id="projects-summary-table" class="hidden mt-4 overflow-x-auto rounded-2xl border border-slate-200">
+                        <table class="w-full text-left text-xs sm:text-sm bg-white">
+                            <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3.5 whitespace-nowrap">课题编号与 GitHub 仓库</th>
+                                    <th class="p-3.5 whitespace-nowrap">针对目标教授与学校</th>
+                                    <th class="p-3.5">核心研究逻辑与本科背景咬合点</th>
+                                    <th class="p-3.5 whitespace-nowrap text-center">预计耗时</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-slate-700">
+                                <tr class="hover:bg-slate-50 cursor-pointer" onclick="selectProject(0)">
+                                    <td class="p-3.5 font-en font-semibold text-brand-700">1. ClinTox-SHAP-Dock</td>
+                                    <td class="p-3.5">中央大：이윤지 教授<br><span class="text-xs text-slate-500">（副推：延世 윤덕용）</span></td>
+                                    <td class="p-3.5">基于TDC基准集、Bemis-Murcko骨架划分与XGBoost+SHAP解释致毒基团，结合PDB结构做AutoDock Vina对接；咬合药理毒理及肝肾毒性指标背景。</td>
+                                    <td class="p-3.5 text-center font-bold">28 小时</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 cursor-pointer" onclick="selectProject(1)">
+                                    <td class="p-3.5 font-en font-semibold text-brand-700">2. Dynamic-Lab-AKI</td>
+                                    <td class="p-3.5">延世医大：윤덕용 教授<br><span class="text-xs text-slate-500">（副推：中央 / 高丽）</span></td>
+                                    <td class="p-3.5">1:1复现尹教授2026最新论文工具链，基于韩国VitalDB手术检验时序数据预测术后持续性急性肾损伤；最大化释放检验科实习与生统满分优势。</td>
+                                    <td class="p-3.5 text-center font-bold">22 小时</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 cursor-pointer" onclick="selectProject(2)">
+                                    <td class="p-3.5 font-en font-semibold text-brand-700">3. Thermostable-UTR-shRNA</td>
+                                    <td class="p-3.5">汉阳大：남진우 教授<br><span class="text-xs text-amber-700 font-semibold">（同系第 1 棒）</span></td>
+                                    <td class="p-3.5">紧扣南教授45亿韩元AI mRNA大课题及shRNAI论文，用ViennaRNA计算热力学自由能结合3层1D-CNN与XGBoost；咬合分子生物技术与遗传物理满分基础。</td>
+                                    <td class="p-3.5 text-center font-bold">24 小时</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 cursor-pointer" onclick="selectProject(3)">
+                                    <td class="p-3.5 font-en font-semibold text-brand-700">4-D1. SysSero-HIV-Correlates</td>
+                                    <td class="p-3.5">高丽大：정원영 教授</td>
+                                    <td class="p-3.5">直接调用郑教授在哈佛Dataverse开源的多维血清学真实数据，以LASSO与PLS-DA筛选保护性抗体特征并用VaxiJen注释表位；展现免疫实验+生信双重能力。</td>
+                                    <td class="p-3.5 text-center font-bold">18 小时</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 cursor-pointer" onclick="selectProject(4)">
+                                    <td class="p-3.5 font-en font-semibold text-brand-700">4-D2. scTCR-Immunotherapy-Atlas</td>
+                                    <td class="p-3.5">汉阳大：조재원 教授<br><span class="text-xs text-slate-500 font-semibold">（同系第 2 棒）</span></td>
+                                    <td class="p-3.5">复现赵教授核心标志物（CD161+组织驻留记忆T细胞），用Scanpy+Scirpy分析单细胞转录组与TCR克隆扩增，并结合NetMHCpan预测新抗原亲和力。</td>
+                                    <td class="p-3.5 text-center font-bold">22 小时</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             模块三：整个申请规划的大逻辑（三大支柱）
+             ========================================== -->
+        <section id="strategy" class="scroll-mt-20 space-y-6">
+            <div class="space-y-2">
+                <div class="inline-flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                    <span>核心模块三</span>
+                    <span>•</span>
+                    <span>精密咬合、零撞车、零过期风险</span>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">三、整个申请规划的三大推进逻辑</h2>
+                <p class="text-sm sm:text-base text-slate-600 max-w-3xl">
+                    整个方案不是被动看招生简章，而是围绕 <strong>“错峰套磁防撞车”、“双线公证时效卡点”与“全额奖学金闭环”</strong> 三大支柱展开的精密工程：
+                </p>
+            </div>
+
+            <!-- 三大支柱切换按钮 -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <button onclick="switchStrategyTab('outreach')" id="strat-btn-outreach" class="strat-tab-btn p-4 rounded-2xl text-left border-2 border-brand-600 bg-white shadow-sm transition">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="w-8 h-8 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center font-extrabold text-sm">1</span>
+                        <span class="text-xs font-bold text-brand-700">当前查看</span>
+                    </div>
+                    <div class="font-bold text-slate-900 text-sm sm:text-base mt-2">学术套磁与错峰防撞车逻辑</div>
+                    <p class="text-xs text-slate-500 mt-1">1月寒假抢跑、汉阳同系串行与土耳其雅思二次谈判</p>
+                </button>
+
+                <button onclick="switchStrategyTab('documents')" id="strat-btn-documents" class="strat-tab-btn p-4 rounded-2xl text-left border border-slate-200 bg-slate-50 hover:bg-white transition">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="w-8 h-8 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center font-extrabold text-sm">2</span>
+                        <span class="text-xs font-medium text-slate-400">点击查看</span>
+                    </div>
+                    <div class="font-bold text-slate-900 text-sm sm:text-base mt-2">双线并行与领事认证90天卡点</div>
+                    <p class="text-xs text-slate-500 mt-1">交互模拟：为什么2月15—26日在德黑兰认证是唯一最优解？</p>
+                </button>
+
+                <button onclick="switchStrategyTab('funding')" id="strat-btn-funding" class="strat-tab-btn p-4 rounded-2xl text-left border border-slate-200 bg-slate-50 hover:bg-white transition">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="w-8 h-8 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center font-extrabold text-sm">3</span>
+                        <span class="text-xs font-medium text-slate-400">点击查看</span>
+                    </div>
+                    <div class="font-bold text-slate-900 text-sm sm:text-base mt-2">资金与奖学金闭环（自费归零）</div>
+                    <p class="text-xs text-slate-500 mt-1">CAYSS全奖、高丽C冲A校奖与汉阳/延世BK21+RA兜底</p>
+                </button>
+            </div>
+
+            <!-- 支柱 1 面板：套磁与防撞车 -->
+            <div id="strat-panel-outreach" class="strat-panel bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6 animate-fade">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                    <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">支柱一：学术套磁、汉阳同系串行与雅思出分二次谈判</h3>
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-brand-50 text-brand-700 self-start">2027年1月12日 — 2月中旬</span>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <!-- 步骤 A -->
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                        <div class="inline-flex items-center gap-2 text-xs font-bold text-brand-700 bg-white px-2.5 py-1 rounded-lg border border-brand-200">
+                            <span>第1步</span>
+                            <span>•</span>
+                            <span>1月12日 — 1月26日</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base">1月中旬黄金期提前抢跑</h4>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            1月中旬正是韩国教授寒假规划次年实验室预算与招生名额的黄金窗口。此时发出精简的
+                            <button onclick="openTermModal('cold_email')" class="term-chip">学术套磁信 ⓘ</button>，直接附上<strong>已上线的GitHub开源仓库</strong>与<strong>1页纸科研作品集（Portfolio）</strong>，在春季海投潮之前提前锁定意向名额。
+                        </p>
+                    </div>
+
+                    <!-- 步骤 B：汉阳严格串行 -->
+                    <div class="p-5 rounded-2xl bg-amber-50/60 border border-amber-200/90 space-y-3">
+                        <div class="inline-flex items-center gap-2 text-xs font-bold text-amber-800 bg-white px-2.5 py-1 rounded-lg border border-amber-200">
+                            <span>第2步</span>
+                            <span>•</span>
+                            <span>核心防撞车铁律</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base">汉阳大学同系严格串行策略</h4>
+                        <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                            汉阳大学两位目标导师同处<strong>生命科学系</strong>，同时发信极易引发同系撞车争议，因此严格按先后棒次执行：
+                        </p>
+                        <div class="space-y-2 pt-1 text-xs">
+                            <div class="p-2.5 rounded-xl bg-white border border-amber-200 flex items-center justify-between">
+                                <span class="font-bold text-slate-800">第1棒：系主任 南镇宇教授</span>
+                                <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-semibold">1月12日发信</span>
+                            </div>
+                            <div class="text-center text-amber-700 font-semibold">↓ 预留 11–14 天观察窗 ↓</div>
+                            <div class="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between">
+                                <span class="font-bold text-slate-800">第2棒：赵在元教授（若无名额/未回）</span>
+                                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">1月25/26日转投</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 步骤 C：2月雅思二次谈判 -->
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                        <div class="inline-flex items-center gap-2 text-xs font-bold text-indigo-700 bg-white px-2.5 py-1 rounded-lg border border-indigo-200">
+                            <span>第3步</span>
+                            <span>•</span>
+                            <span>2月7日考试 & 2月中旬出分</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base">土耳其雅思出分当天二次谈判</h4>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            首封套磁信中透明说明将于 <strong>2月7日赴土耳其参加机考雅思</strong>。2月中旬出分（保底6.5冲7.0）当天，第一时间携正式成绩单邀约 Zoom 视频面试，当面敲定 <strong>RA津贴补足学费差额</strong> 以及汉阳大学
+                            <button onclick="openTermModal('korean_waiver')" class="term-chip">《韩语标准免除申请书》 ⓘ</button>。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 支柱 2 面板：双线并行与90天有效期交互模拟 -->
+            <div id="strat-panel-documents" class="strat-panel hidden bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6 animate-fade">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">支柱二：双线并行与“德黑兰领事认证90天有效期”卡点模拟器</h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">点击下方三种时间情景，直观对比为什么 2月15日—26日在德黑兰集中办4套原件是唯一完美卡点：</p>
+                    </div>
+                </div>
+
+                <!-- 交互式时效模拟器 -->
+                <div class="space-y-4">
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="setLegalScenario('early')" id="scen-early" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+                            ❌ 如果办太早（如1月初）
+                        </button>
+                        <button onclick="setLegalScenario('optimal')" id="scen-optimal" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-brand-600 text-white shadow-sm transition">
+                            ✅ 方案锁定的黄金窗口（2月15日—26日德黑兰）
+                        </button>
+                        <button onclick="setLegalScenario('late')" id="scen-late" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+                            ❌ 如果办太晚（3月下旬）
+                        </button>
+                    </div>
+
+                    <div id="legal-scenario-box" class="p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-4">
+                        <!-- 由 JS 动态渲染 -->
+                    </div>
+                </div>
+
+                <!-- A/B 双线汇总卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+                        <div class="font-bold text-slate-900 mb-2 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-brand-600"></span>
+                            <span>线 A：母校开具与官方领事认证（德黑兰）</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            母校开具成绩单、毕业证及专业排名证明后，于 <strong>2027年2月15日—26日在德黑兰</strong> 集中办妥 <strong>4套<button onclick="openTermModal('consular_90')" class="term-chip">韩国使馆领事认证原件 ⓘ</button></strong>。既赶上3月寄件截止日，又确保5月寄送中央大学时严格落在“公证后90天有效期”安全边界内。
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+                        <div class="font-bold text-slate-900 mb-2 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+                            <span>线 B：分批网申、寄件与线上面试（3月—6月）</span>
+                        </div>
+                        <ul class="text-xs sm:text-sm text-slate-600 space-y-1.5">
+                            <li>• <strong>2027年3月：</strong>网申并跨国寄送 <strong>高丽大学 (KU)</strong> 与 <strong>汉阳大学 (HYU)</strong></li>
+                            <li>• <strong>2027年4月：</strong>纯线上网申 <strong>延世大学医学院 (YU)</strong>（初审免线下寄件）</li>
+                            <li>• <strong>2027年5月：</strong>寄送 <strong>中央大学 (CAU)</strong> 全套认证原件（第3套，完美处于90天有效期内）</li>
+                            <li>• <strong>2027年6月：</strong>参加各校正式线上面试，查收录取通知并定校</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 支柱 3 面板：资金与奖学金闭环 -->
+            <div id="strat-panel-funding" class="strat-panel hidden bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6 animate-fade">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">支柱三：资金与奖学金闭环——如何实现“自费支出归零”？</h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">通过“校方学费减免奖学金 + 导师课题组每月劳务津贴（RA / BK21）”双重叠加，第1学期即实现收支平衡：</p>
+                    </div>
+                    <span class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 self-start">核心目标：第1学期起0自费</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- 中央大学 -->
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-900">中央大学 (CAU)</span>
+                                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">100%全奖闭环</span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-600">
+                                凭导师推荐直接锁定 <button onclick="openTermModal('cayss')" class="term-chip">CAYSS青年科学家全奖 ⓘ</button>：
+                            </p>
+                            <ul class="text-xs text-slate-700 space-y-1.5 pt-1">
+                                <li>✅ <strong>免除 100% 全部学费</strong></li>
+                                <li>✅ <strong>免除 100% 入学金</strong></li>
+                                <li>✅ <strong>导师每月发放实验室生活津贴</strong>，覆盖首尔日常开销</li>
+                            </ul>
+                        </div>
+                        <div class="pt-3 border-t border-slate-200/80 text-xs font-bold text-brand-700">家庭自费支出：0 元</div>
+                    </div>
+
+                    <!-- 高丽大学 -->
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-900">高丽大学 (KU)</span>
+                                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800">校奖 + RA兜底</span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-600">
+                                结合高丽大学理工科国际生奖学金与哈佛/MIT归国新PI充足启动经费：
+                            </p>
+                            <ul class="text-xs text-slate-700 space-y-1.5 pt-1">
+                                <li>✅ <strong>第1学期：</strong>保底理工科C类校奖（免65%学费），第2学期凭绩点冲A类（100%全免）</li>
+                                <li>✅ <strong>剩余35%学费差额 + 生活费：</strong>由导师课题RA劳务费全额兜底</li>
+                            </ul>
+                        </div>
+                        <div class="pt-3 border-t border-slate-200/80 text-xs font-bold text-brand-700">家庭自费支出：0 元</div>
+                    </div>
+
+                    <!-- 汉阳 & 延世 -->
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-900">汉阳 (HYU) & 延世 (YU)</span>
+                                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800">BK21 + RA叠加</span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-600">
+                                依托国家级大型课题（如45亿韩元K-Moonshot、医疗AI重点项目）：
+                            </p>
+                            <ul class="text-xs text-slate-700 space-y-1.5 pt-1">
+                                <li>✅ 叠加国际生校级奖学金与韩国国家级 <button onclick="openTermModal('bk21_ra')" class="term-chip">BK21研究生津贴 ⓘ</button></li>
+                                <li>✅ 导师课题组按月发放高额 <strong>RA助研劳务费</strong>，完整覆盖剩余学费与生活成本</li>
+                            </ul>
+                        </div>
+                        <div class="pt-3 border-t border-slate-200/80 text-xs font-bold text-brand-700">家庭自费支出：0 元</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             模块四：总用时梳理（144小时 + 9个月全周期）
+             ========================================== -->
+        <section id="timeline" class="scroll-mt-20 space-y-8">
+            <div class="space-y-2">
+                <div class="inline-flex items-center gap-2 text-xs font-bold text-slate-700 bg-slate-200/80 px-3 py-1 rounded-full">
+                    <span>核心模块四</span>
+                    <span>•</span>
+                    <span>精确到小时的工作量与9个月时间线</span>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">四、总用时梳理：144小时代码实战 + 9个月全流程战役</h2>
+                <p class="text-sm sm:text-base text-slate-600 max-w-3xl">
+                    前期硬核科研储备与代码开发总计投入 <strong>144 小时</strong>；全流程执行跨度从2026年11月下旬启动至2027年9月1日赴韩入学，历时约 <strong>9 个月</strong>。
+                </p>
+            </div>
+
+            <!-- 第一部分：144小时可点击交互拆解条 -->
+            <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-slate-900">科研项目代码实战总耗时：144 小时精准拆解</h3>
+                        <p class="text-xs sm:text-sm text-slate-500">点击下方彩色进度条的任意区块，即可查看对应模块的详细用时构成：</p>
+                    </div>
+                    <div class="text-left sm:text-right">
+                        <span class="text-2xl font-extrabold text-brand-700">144 小时</span>
+                        <span class="text-xs text-slate-500 block">30h 前置技能储备 + 114h 5大项目开发</span>
+                    </div>
+                </div>
+
+                <!-- 交互式堆叠进度条 -->
+                <div class="space-y-3">
+                    <div class="h-10 w-full rounded-2xl overflow-hidden flex p-1 bg-slate-100 gap-1">
+                        <button onclick="highlightHourBlock(0)" style="width: 20.8%" class="h-full rounded-xl bg-slate-600 hover:opacity-90 transition text-white text-[11px] font-bold flex items-center justify-center" title="前置技能储备：30小时">30h</button>
+                        <button onclick="highlightHourBlock(1)" style="width: 19.4%" class="h-full rounded-xl bg-teal-600 hover:opacity-90 transition text-white text-[11px] font-bold flex items-center justify-center" title="课题1：28小时">28h</button>
+                        <button onclick="highlightHourBlock(2)" style="width: 15.3%" class="h-full rounded-xl bg-cyan-600 hover:opacity-90 transition text-white text-[11px] font-bold flex items-center justify-center" title="课题2：22小时">22h</button>
+                        <button onclick="highlightHourBlock(3)" style="width: 16.7%" class="h-full rounded-xl bg-indigo-600 hover:opacity-90 transition text-white text-[11px] font-bold flex items-center justify-center" title="课题3：24小时">24h</button>
+                        <button onclick="highlightHourBlock(4)" style="width: 12.5%" class="h-full rounded-xl bg-violet-600 hover:opacity-90 transition text-white text-[11px] font-bold flex items-center justify-center" title="课题4-D1：18小时">18h</button>
+                        <button onclick="highlightHourBlock(5)" style="width: 15.3%" class="h-full rounded-xl bg-amber-600 hover:opacity-90 transition text-white text-[11px] font-bold flex items-center justify-center" title="课题4-D2：22小时">22h</button>
+                    </div>
+
+                    <!-- 选中区块详情框 -->
+                    <div id="hour-detail-box" class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <!-- 由 JS 动态渲染 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第二部分：9个月全流程时间轴（6大节点） -->
+            <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-slate-900">9个月全流程执行时间跨度（2026年11月下旬 — 2027年9月1日）</h3>
+                        <p class="text-xs sm:text-sm text-slate-500">点击下方6个关键阶段卡片，查看每个月份的核心里程碑动作：</p>
+                    </div>
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-700 self-start">6 大战役节点</span>
+                </div>
+
+                <!-- 时间轴步骤按钮 -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5" id="timeline-steps">
+                    <!-- 由 JS 动态渲染 -->
+                </div>
+
+                <!-- 当前阶段详情卡片 -->
+                <div id="timeline-detail-card" class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-brand-50/80 to-slate-50 border border-brand-200/80">
+                    <!-- 由 JS 动态渲染 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             模块五：深度名词解释词卡（10张交互科普卡）
+             ========================================== -->
+        <section id="glossary" class="scroll-mt-20 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div class="space-y-2">
+                    <div class="inline-flex items-center gap-2 text-xs font-bold text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200">
+                        <span>配套名词词卡库</span>
+                        <span>•</span>
+                        <span>把硬核术语变成大白话</span>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">深度名词解释词卡（与波斯语版一一对应）</h2>
+                    <p class="text-sm sm:text-base text-slate-600 max-w-3xl">
+                        无论是学制奖学金术语还是AI生信专有名词，点击任意卡片即可查看 <strong>“通俗一句话解释”</strong> 与 <strong>“在规划中的核心作用”</strong>：
+                    </p>
+                </div>
+
+                <!-- 词卡分类筛选 -->
+                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+                    <button onclick="filterGlossary('all')" data-gcat="all" class="gcat-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white transition whitespace-nowrap">全部词卡 (10)</button>
+                    <button onclick="filterGlossary('admission')" data-gcat="admission" class="gcat-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition whitespace-nowrap">申请、认证与奖学金</button>
+                    <button onclick="filterGlossary('science')" data-gcat="science" class="gcat-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition whitespace-nowrap">AI与生物医学前沿</button>
+                </div>
+            </div>
+
+            <!-- 词卡网格 -->
+            <div id="glossary-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- 由 JS 动态渲染 -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="border-t border-slate-200 bg-white mt-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-slate-500">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-brand-600"></span>
+                <span>2027秋季韩国名校纯学术型硕士（M.S.）全周期战略规划 • 中文对照交互版</span>
+            </div>
+            <div>4所名校 • 5个开源实战代码库 • 首学期起100%学费覆盖+生活津贴</div>
+        </div>
+    </footer>
+
+    <!-- ==========================================
+         专业名词解释词卡弹窗（Modal）
+         ========================================== -->
+    <div id="term-modal-backdrop" onclick="closeTermModal()" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div onclick="event.stopPropagation()" class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-200 space-y-4 animate-fade">
+            <div class="flex items-start justify-between gap-3">
+                <div>
+                    <span id="modal-category" class="inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200 mb-2">核心词卡</span>
+                    <h3 id="modal-title" class="text-lg sm:text-xl font-extrabold text-slate-900"></h3>
+                    <div id="modal-en" class="text-xs font-en text-slate-400 font-medium mt-0.5"></div>
+                </div>
+                <button onclick="closeTermModal()" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold transition" aria-label="关闭">
+                    ✕
+                </button>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+                <div class="text-xs font-bold text-slate-500">💡 通俗大白话解释：</div>
+                <p id="modal-simple" class="text-sm text-slate-800 leading-relaxed"></p>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-brand-50/60 border border-brand-200/70 space-y-1.5">
+                <div class="text-xs font-bold text-brand-800">🎯 为什么在我的规划里至关重要？</div>
+                <p id="modal-impact" class="text-sm text-slate-800 leading-relaxed"></p>
+            </div>
+
+            <div class="pt-1 flex justify-end">
+                <button onclick="closeTermModal()" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold transition">
+                    明白了
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         数据配置与交互逻辑脚本
+         ========================================== -->
+    <script>
+        // 1. 10张深度名词解释词卡数据（与波斯语版 1:1 对应）
+        const glossaryTerms = {
+            ms_research: {
+                category: 'admission',
+                catLabel: '学制与申请机制',
+                title: '两年制纯学术型硕士 (M.S.)',
+                en: '2-Year Pure Academic Master of Science (M.S.)',
+                simple: '不同于纯上课且高昂自费的授课型硕士，纯学术型硕士从入学第1天起就正式进入教授的实验室团队参与科研，全英文交流汇报，完全不需要先读1—1.5年的韩语语学院。',
+                impact: '不仅直接节省1.5年时间成本，更因为直接参与导师的科研课题，可以通过校方奖学金+导师科研津贴覆盖全部学费和生活费。'
+            },
+            cold_email: {
+                category: 'admission',
+                catLabel: '套磁抢跑策略',
+                title: '寒假精准学术套磁',
+                en: 'Academic Cold Emailing / Pre-Admission Contact',
+                simple: '在韩国顶尖理工/医学院，真正的录取决定权和奖学金名额并不在网申填表那一刻，而是在网申前几个月通过学术邮件与目标教授一对一沟通敲定的。',
+                impact: '抓住1月12—26日韩国教授寒假规划次年招生预算的黄金窗口，带着已上线的GitHub复现代码发信，能在春季竞争大军涌入前提前锁定席位。'
+            },
+            bk21_ra: {
+                category: 'admission',
+                catLabel: '资金与奖学金',
+                title: 'BK21国家计划与助研津贴 (RA)',
+                en: 'Brain Korea 21 (BK21) & Research Assistantship (RA)',
+                simple: 'BK21是韩国政府扶持顶尖大学实验室研究生的国家级专项基金；RA（助研津贴）则是导师从自己的课题经费中按月发给实验室研究生的科研劳务工资。',
+                impact: '在汉阳、延世和高丽大学，BK21叠加导师RA津贴能够兜底覆盖校奖之外的剩余学费差额以及首尔每月生活开销。'
+            },
+            cayss: {
+                category: 'admission',
+                catLabel: '资金与奖学金',
+                title: '中央大学 CAYSS 青年科学家全奖',
+                en: 'CAU Young Scientist Scholarship (CAYSS)',
+                simple: '中央大学专为理工医药类优秀国际研究生设立的顶级全额奖学金，只要获得接收导师的正式推荐即可锁定。',
+                impact: '直接免除4个学期100%学费 + 入学金，再配合李教授课题组发放的每月生活津贴，从第1学期起实现纯零自费。'
+            },
+            consular_90: {
+                category: 'admission',
+                catLabel: '材料时效工程',
+                title: '领事认证与“90天有效期”铁律',
+                en: 'Embassy Consular Legalization & 90-Day Validity Rule',
+                simple: '韩国名校要求学历和成绩单公证件必须加盖韩国驻伊朗大使馆的领事认证章。最苛刻的细节在于：部分学校（如5月寄件的中央大学）严格要求认证件开具时间距提交日不得超过90天。',
+                impact: '精准卡在2027年2月15—26日于德黑兰一次性办妥4套认证原件，既赶得上3月高丽与汉阳寄件，又能让第3套在5月寄往中央大学时处于约第75天的安全边界内！'
+            },
+            korean_waiver: {
+                category: 'admission',
+                catLabel: '语言豁免政策',
+                title: '汉阳大学《韩语标准免除申请书》',
+                en: 'Korean Proficiency Exemption Form (Hanyang Univ.)',
+                simple: '汉阳大学针对理工科国际生的一项官方豁免机制：由接收教授签字担保“本实验室所有指导、组会与论文均以全英文进行”，即可免除韩语TOPIK成绩要求。',
+                impact: '2月中旬土耳其机考雅思出分当天约见教授Zoom面试，同步敲定RA津贴与这份免除申请书签字，彻底扫清语言门槛。'
+            },
+            shap_dock: {
+                category: 'science',
+                catLabel: 'AI新药研发',
+                title: '可解释AI (SHAP) 与 3D分子对接',
+                en: 'Explainable AI (SHAP) & 3D Molecular Docking',
+                simple: '普通AI只会像黑盒一样给出“这药有毒”的结论，而SHAP算法能像专家一样在化学结构上精准标红“到底是哪个基团引发了心脏或肝脏毒性”；3D分子对接则像模拟钥匙插锁孔一样，计算药物分子如何嵌入人体蛋白靶点。',
+                impact: '课题1的核心技术，精准对接中央大学药学系李允智教授的研究方向，将药理毒理背景与计算化学完美融合。'
+            },
+            dynamic_aki: {
+                category: 'science',
+                catLabel: '临床医疗AI',
+                title: '围术期动态检验轨迹与急性肾损伤 (AKI) 预测',
+                en: 'Dynamic Clinical Time-Series Prediction for AKI',
+                simple: '大手术后部分患者肾脏会突然衰竭。传统方法只看某一次抽血化验单（像看一张静态照片），而动态时序AI则是连续追踪手术前后化验指标的波动曲线（像看实时监控录像），提前预警持续性肾损伤。',
+                impact: '1:1复现延世医学院尹德龙教授2026最新论文工具链，把临床检验科实习经历与生物统计满分优势发挥到极致。'
+            },
+            kmrna: {
+                category: 'science',
+                catLabel: '核酸深度学习',
+                title: '韩国国家级 K-Moonshot 与热稳定 mRNA 设计',
+                en: 'K-Moonshot Initiative & Thermostable mRNA Design',
+                simple: '新一代mRNA疫苗和基因药物在体内像纸折的千纸鹤一样娇贵易降解。韩国政府投入45亿韩元启动K-Moonshot大课题，利用热力学折叠自由能结合深度学习，设计既稳固又能高效表达蛋白的mRNA序列。',
+                impact: '汉阳大学生命科学系主任南镇宇教授正是该国家级大课题的总负责人，课题3直接切中他当下最核心的用人需求。'
+            },
+            sys_sero_tcr: {
+                category: 'science',
+                catLabel: '计算免疫与单细胞',
+                title: '系统血清学与单细胞肿瘤 TCR 组库分析',
+                en: 'Systems Serology & Single-Cell TCR Profiling',
+                simple: '不再笼统地看血液或肿瘤块，而是用高维算法在几十种抗体特征中筛出真正的“保护盾”（系统血清学），或在成千上万个免疫细胞中逐个识别能精准杀伤癌细胞的特种T细胞克隆（单细胞TCR分析）。',
+                impact: '分别精准咬合高丽大学郑元英教授（哈佛/MIT归国）与汉阳大学赵在元教授（哈佛归国）两位年轻新PI的实验室核心方向。'
+            }
+        };
+
+        // 2. 4所大学与5位核心教授数据
+        const professorsData = [
+            {
+                id: 'lee',
+                uniCode: 'CAU',
+                uniName: '中央大学 (CAU)',
+                dept: '药学系',
+                nameZh: '이윤지（李允智）教授',
+                nameEnKr: 'Prof. Yoonji Lee (이윤지)',
+                roleBadge: 'CAYSS全奖核心锁定目标',
+                badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+                field: '化学生物信息学与 AI 新药研发 (Cheminformatics & AI Drug Discovery)',
+                highlights: [
+                    '全英文科研环境，课题组在新药虚拟筛选与分子建模方向经费充足',
+                    '导师推荐即可锁定中央大学 CAYSS 全额奖学金（免100%学费+入学金+每月津贴）',
+                    '与药理毒理知识及临床肝肾毒性指标背景高度契合'
+                ],
+                targetProjectIndex: 0,
+                targetProjectCode: 'ClinTox-SHAP-Dock',
+                termKey: 'cayss'
+            },
+            {
+                id: 'nam',
+                uniCode: 'HYU',
+                uniName: '汉阳大学 (HYU)',
+                dept: '生命科学系',
+                nameZh: '남진우（南镇宇）教授',
+                nameEnKr: 'Prof. Jin-Wu Nam (남진우)',
+                roleBadge: '汉阳同系第1棒（1月12日）• 系主任',
+                badgeColor: 'bg-amber-50 text-amber-800 border-amber-200',
+                field: 'mRNA 与核酸深度学习（国家级 K-Moonshot 总负责人）',
+                highlights: [
+                    '牵头45亿韩元韩国国家级 AI mRNA 设计大课题，BK21与RA经费极其雄厚',
+                    '现任生命科学系主任，招生与奖学金话语权极强',
+                    '1月12日首棒发信套磁，预留11–14天独立观察窗'
+                ],
+                targetProjectIndex: 2,
+                targetProjectCode: 'Thermostable-UTR-shRNA',
+                termKey: 'kmrna'
+            },
+            {
+                id: 'cho',
+                uniCode: 'HYU',
+                uniName: '汉阳大学 (HYU)',
+                dept: '生命科学系',
+                nameZh: '조재원（赵在元）教授',
+                nameEnKr: 'Prof. Jaewon Cho (조재원)',
+                roleBadge: '汉阳同系第2棒（1月25/26日）• 哈佛归国新PI',
+                badgeColor: 'bg-slate-100 text-slate-700 border-slate-300',
+                field: '单细胞系统生物学与肿瘤免疫治疗',
+                highlights: [
+                    '哈佛大学归国新任PI，手握充足新实验室启动经费且急需能写生信代码的学生',
+                    '严格遵守串行防撞车原则：仅当第1棒无名额或观察窗未回时于1月25/26日转投',
+                    '聚焦单细胞转录组、TCR组库与CD161+肿瘤浸润T细胞研究'
+                ],
+                targetProjectIndex: 4,
+                targetProjectCode: 'scTCR-Immunotherapy-Atlas',
+                termKey: 'sys_sero_tcr'
+            },
+            {
+                id: 'jung',
+                uniCode: 'KU',
+                uniName: '高丽大学 (KU)',
+                dept: '医生命融合科学系',
+                nameZh: '정원영（郑元英）教授',
+                nameEnKr: 'Prof. Wonyeong Jung (정원영)',
+                roleBadge: '哈佛 / MIT Ragon研究所归国新PI',
+                badgeColor: 'bg-blue-50 text-blue-800 border-blue-200',
+                field: '系统血清学与抗体免疫工程 (Systems Serology)',
+                highlights: [
+                    '哈佛/MIT Ragon研究所归国新PI，纯正美式全英文实验室文化',
+                    '急需兼具免疫学湿实验理解与多维生信统计建模能力的研究生',
+                    '可组合高丽大学理工科C类/A类校奖与课题组RA劳务津贴'
+                ],
+                targetProjectIndex: 3,
+                targetProjectCode: 'SysSero-HIV-Correlates',
+                termKey: 'sys_sero_tcr'
+            },
+            {
+                id: 'yoon',
+                uniCode: 'YU',
+                uniName: '延世大学医学院 (YU)',
+                dept: '医科学系 / 生物医学系统信息学系',
+                nameZh: '윤덕용（尹德龙）教授',
+                nameEnKr: 'Prof. Dukyong Yoon (윤덕용)',
+                roleBadge: '临床医疗AI领军课题组 • 4月纯线上网申',
+                badgeColor: 'bg-indigo-50 text-indigo-800 border-indigo-200',
+                field: '医疗AI与临床检验时间序列动态预测',
+                highlights: [
+                    '依托延世医疗院海量临床数据，深耕重症与围术期动态风险预测AI',
+                    '延世大学4月纯线上网申（免除初审跨国寄送纸质原件环节）',
+                    '与医院临床检验科实习经历及生物统计学满分优势100%契合'
+                ],
+                targetProjectIndex: 1,
+                targetProjectCode: 'Dynamic-Lab-AKI',
+                termKey: 'dynamic_aki'
+            }
+        ];
+
+        // 3. 5大科研实战项目数据（支持“通俗生活化讲法”与“硬核技术细节”双模式）
+        const projectsData = [
+            {
+                id: 'p1',
+                shortTab: '课题1：AI药物毒性筛选',
+                code: 'ClinTox-SHAP-Dock',
+                titleZh: '结构感知的 hERG 心脏毒性与 DILI 肝损伤可解释 AI 预测及 3D 分子对接',
+                hours: 28,
+                mainTarget: '中央大学：이윤지 教授',
+                subTarget: '副推复用：延世医大 윤덕용 教授',
+                simpleAnalogyTitle: '给男友的1分钟生活化讲法（“新药安检仪 + 3D钥匙配锁”）：',
+                simpleAnalogy: '很多候选新药研发到一半会失败，是因为吃进去会意外损伤心脏或肝脏。在这个项目里，我写了一套“AI新药安检系统”：新药还没进实验室合成前，AI先扫描它的分子结构，不仅能提前预警它会不会伤心伤肝，还能像医生拿红笔批注一样，精准圈出到底是分子上的哪一小块结构导致了毒性！接着第二步，再用3D模拟算出这个分子是怎么像“钥匙插进锁孔”一样卡进人体蛋白质里的。',
+                techSummary: '采用TDC基准数据集，通过 Bemis-Murcko 分子骨架划分（严防数据泄露），训练 XGBoost + SHAP 模型定位致毒子结构（Toxicophores），并结合 PDB 冷冻电镜蛋白结构运行 AutoDock Vina 3D分子对接。',
+                fitReason: '完美咬合本科药理毒理知识储备及临床肝肾毒性检验指标背景。',
+                tags: ['TDC Benchmark', 'Bemis-Murcko', 'XGBoost + SHAP', 'AutoDock Vina', 'PDB Cryo-EM'],
+                termKey: 'shap_dock'
+            },
+            {
+                id: 'p2',
+                shortTab: '课题2：临床动态肾衰预警',
+                code: 'Dynamic-Lab-AKI',
+                titleZh: '围术期动态临床检验轨迹预测持续性急性肾损伤 (Persistent AKI)',
+                hours: 22,
+                mainTarget: '延世医学院：윤덕용 教授',
+                subTarget: '副推复用：中央大学 / 高丽大学',
+                simpleAnalogyTitle: '给男友的1分钟生活化讲法（把“单张化验快照”变成“实时预警雷达”）：',
+                simpleAnalogy: '病人在做完大型手术后，肾脏很容易突然罢工衰竭。以前医生主要看某一张化验单上的数字（就像只看一张静态照片），而我做的这套AI模型，是把病人手术前后每隔几小时的抽血指标连成一条“动态变化电影”，提前揪出谁只是暂时波动、谁真的会陷入持续性肾衰竭。最绝的是，我直接1:1复现了尹教授2026年最新发表论文里的整套代码工具链！',
+                techSummary: '1:1复现尹德龙教授2026最新论文工具链（tableone + miceforest多重插补 + xgboost + shap），基于韩国本土 VitalDB 手术临床检验时序数据库，区分并预测术后短暂性与持续性急性肾损伤。',
+                fitReason: '最大化释放我在医院临床检验科实习的一线经验与生物统计学满分优势。',
+                tags: ['Korean VitalDB', 'tableone', 'miceforest', 'Time-Series ML', 'SHAP'],
+                termKey: 'dynamic_aki'
+            },
+            {
+                id: 'p3',
+                shortTab: '课题3：热稳定mRNA设计',
+                code: 'Thermostable-UTR-shRNA',
+                titleZh: '融合 RNA 二级结构热力学与卷积特征的 mRNA 5\'-UTR 及 shRNA 活性建模',
+                hours: 24,
+                mainTarget: '汉阳大学：남진우 教授（第1棒）',
+                subTarget: '直击 45亿韩元 K-Moonshot 国家大课题',
+                simpleAnalogyTitle: '给男友的1分钟生活化讲法（用AI设计“折不断”的基因折纸）：',
+                simpleAnalogy: '像mRNA疫苗这样的新一代基因药物，进入人体后就像一条极脆弱的纸带，会自己折叠成各种形状——折得不够紧就会迅速散架失效。我在这个项目里把“物理学折叠稳定度”和“深度学习神经网络”结合起来，让电脑自动预测哪种RNA序列既折得稳固耐热、又能高效生产治疗蛋白。这恰好就是汉阳大学系主任南教授刚拿到45亿韩元国家经费的核心课题！',
+                techSummary: '紧扣南教授牵头的45亿韩元 AI mRNA 大课题及 shRNAI 论文，利用 ViennaRNA 计算二级结构最小自由能（MFE）等热力学特征，融合三层 1D-CNN 卷积神经网络与 XGBoost 预测翻译载荷与沉默活性。',
+                fitReason: '深度咬合分子生物技术与遗传生物物理满分功底，精准命中导师最急需的课题方向。',
+                tags: ['ViennaRNA', 'Thermodynamics', '3-Layer 1D-CNN', 'XGBoost', 'shRNAI'],
+                termKey: 'kmrna'
+            },
+            {
+                id: 'p4d1',
+                shortTab: '课题4-D1：系统血清学建模',
+                code: 'SysSero-HIV-Correlates',
+                titleZh: '系统血清学抗体 Fc 保护性特征筛选与多元回归建模',
+                hours: 18,
+                mainTarget: '高丽大学：정원영 教授',
+                subTarget: '直接采用郑教授哈佛开源真实数据',
+                simpleAnalogyTitle: '给男友的1分钟生活化讲法（用教授自己的数据帮他找“最强免疫护盾”）：',
+                simpleAnalogy: '同样打了疫苗或接触病毒，人体会产生几十种五花八门的抗体反应，但到底哪几种才是真正保护我们不生病的“核心护盾”？最硬核的是，我直接找到了高丽大学郑教授当年在哈佛公开的真实实验数据！用机器学习算法从几十个繁杂指标里精准筛出最关键的保护性抗体特征——教授点开就能看到我在熟练处理他最熟悉的数据。',
+                techSummary: '直接调用郑元英教授在 Harvard Dataverse 开源的真实多维系统血清学数据，运用 LASSO 稀疏回归与 PLS-DA 偏最小二乘判别分析筛选保护性抗体 Fc 特征，并结合 VaxiJen 注释抗原表位。',
+                fitReason: '同时向归国新PI证明免疫学湿实验理解力与高维生信统计建模实力。',
+                tags: ['Harvard Dataverse', 'LASSO', 'PLS-DA', 'VaxiJen', 'Systems Serology'],
+                termKey: 'sys_sero_tcr'
+            },
+            {
+                id: 'p4d2',
+                shortTab: '课题4-D2：单细胞肿瘤免疫',
+                code: 'scTCR-Immunotherapy-Atlas',
+                titleZh: '单细胞肿瘤浸润 TCR 组库分析与新抗原呈递亲和力预测',
+                hours: 22,
+                mainTarget: '汉阳大学：조재원 教授（第2棒）',
+                subTarget: '汉阳生命科学系双保险战略储备',
+                simpleAnalogyTitle: '给男友的1分钟生活化讲法（在成千上万细胞里锁定“抗癌特种兵”）：',
+                simpleAnalogy: '肿瘤里挤满了成千上万个免疫细胞，但大多数已经“累趴下”了，只有极少数特种兵细胞还能真正杀死癌细胞。汉阳大学刚从哈佛回国的赵教授曾发现过这类特种兵的关键标志（CD161+）。我用Python单细胞分析工具逐个扫描肿瘤里的细胞和它们的“专属条形码”，复现出教授发现的标志物，并预测它们锁定癌细胞靶点的能力有多强。',
+                techSummary: '定向复现赵在元教授发表的核心免疫标志物（CD161+组织驻留记忆T细胞），使用 Scanpy + Scirpy 联合分析配对单细胞转录组（scRNA-seq）与 TCR 克隆扩增图谱，并用 NetMHCpan 预测肿瘤新抗原结合亲和力。',
+                fitReason: '作为汉阳大学同系第2棒的定制级杀手锏，确保生命科学系申请拥有万无一失的双重保障。',
+                tags: ['Scanpy + Scirpy', 'scRNA-seq + TCR', 'CD161+ Trm', 'NetMHCpan', 'Immuno-Oncology'],
+                termKey: 'sys_sero_tcr'
+            }
+        ];
+
+        // 4. 144小时用时构成明细数据
+        const hourBlocks = [
+            {
+                title: '前置技能储备：Python数据科学与生信/化信脚本（30 小时）',
+                hours: '30 小时（占总实战时长 20.8%）',
+                desc: '包含 Kaggle Python数据科学/机器学习微课 18 小时 + 生物信息学与化学信息学专业工具脚本实战 12 小时，为后续5个定向课题打牢工程底座。'
+            },
+            {
+                title: '课题 1：ClinTox-SHAP-Dock（28 小时）',
+                hours: '28 小时（主攻中央大学药学系）',
+                desc: '体量最大的旗舰项目：涵盖TDC药物毒性清洗、骨架划分、XGBoost+SHAP可解释建模及AutoDock Vina三维分子对接可视化。'
+            },
+            {
+                title: '课题 2：Dynamic-Lab-AKI（22 小时）',
+                hours: '22 小时（主攻延世大学医学院）',
+                desc: '1:1复现尹德龙教授2026最新论文完整工具链，处理韩国VitalDB围术期时序检验数据并完成临床可解释预测图表。'
+            },
+            {
+                title: '课题 3：Thermostable-UTR-shRNA（24 小时）',
+                hours: '24 小时（主攻汉阳大学第1棒）',
+                desc: '运行ViennaRNA二级结构热力学自由能提取，构建三层1D-CNN深度学习与XGBoost融合管线，对齐45亿韩元mRNA大课题。'
+            },
+            {
+                title: '课题 4-D1：SysSero-HIV-Correlates（18 小时）',
+                hours: '18 小时（主攻高丽大学）',
+                desc: '基于哈佛Dataverse开源血清学真实数据，完成LASSO特征筛选、PLS-DA多维分群可视化及VaxiJen抗原表位注释。'
+            },
+            {
+                title: '课题 4-D2：scTCR-Immunotherapy-Atlas（22 小时）',
+                hours: '22 小时（主攻汉阳大学第2棒）',
+                desc: '使用Scanpy与Scirpy处理配对单细胞转录组与TCR克隆扩增数据，复现CD161+标志物并运行NetMHCpan新抗原亲和力预测。'
+            }
+        ];
+
+        // 5. 9个月全流程6大里程碑数据
+        const timelineData = [
+            {
+                step: '1',
+                period: '2026年11月下旬 — 12月',
+                shortTitle: '证件开具与代码攻坚',
+                location: '本科母校 + 本地实战开发',
+                tasks: [
+                    '向母校申请开具官方成绩单、毕业证明及专业排名证明',
+                    '推进雅思全真模考与提分冲刺训练',
+                    '集中完成 30 小时前置技能储备与 GitHub 5大定向科研项目主体开发'
+                ]
+            },
+            {
+                step: '2',
+                period: '2027年1月12日 — 26日',
+                shortTitle: '寒假黄金期错峰套磁',
+                location: '线上精准学术沟通',
+                tasks: [
+                    '趁韩国教授寒假规划次年招生预算黄金期，发送精简学术套磁信 + 上线GitHub链接 + 1页纸科研作品集',
+                    '严格执行汉阳大学同系串行策略：1月12日首棒联系南镇宇教授 → 留出11–14天观察窗 → 若无名额于1月25/26日转投赵在元教授'
+                ]
+            },
+            {
+                step: '3',
+                period: '2027年2月',
+                shortTitle: '土耳其雅思 + 德黑兰认证',
+                location: '土耳其（2.7）& 德黑兰（2.15–26）',
+                tasks: [
+                    '2月7日：赴土耳其参加机考雅思（目标保底6.5、冲刺7.0）',
+                    '2月中旬出分当天：第一时间携成绩单邀约教授Zoom面试，敲定RA津贴补足学费差额及汉阳《韩语标准免除申请书》',
+                    '2月15日—26日：在德黑兰集中办妥 4 套韩国领事认证原件（精准卡住3月寄件与5月90天有效期双重边界）'
+                ]
+            },
+            {
+                step: '4',
+                period: '2027年3月 — 5月',
+                shortTitle: '4校分批网申与寄件',
+                location: '网申系统 + 国际快递寄送',
+                tasks: [
+                    '3月：完成高丽大学 (KU) 与汉阳大学 (HYU) 网申及纸质认证材料寄送',
+                    '4月：完成延世大学医学院 (YU) 纯线上网申（免线下寄件）',
+                    '5月：寄送中央大学 (CAU) 全套材料（第3套认证原件严格落在公证后90天安全有效期内）'
+                ]
+            },
+            {
+                step: '5',
+                period: '2027年6月',
+                shortTitle: '正式面试与录取定校',
+                location: '线上面试 & 奖学金核定',
+                tasks: [
+                    '在前期导师意向锁定的基础上，稳妥参加各院系官方线上面试',
+                    '查收各校正式录取通知书（Offer）及奖学金/RA资助确认函，优中选优敲定最终就读学校'
+                ]
+            },
+            {
+                step: '6',
+                period: '2027年8月 — 9月1日',
+                shortTitle: '办妥D-2签证赴韩入学',
+                location: '韩国大使馆 → 首尔',
+                tasks: [
+                    '8月：凭标准入学许可书（COA）与全奖资助证明稳妥办妥韩国 D-2 留学签证',
+                    '2027年9月1日：正式飞赴首尔入学报到，开启第1学期即100%学费覆盖+生活津贴的硕士科研之旅！'
+                ]
+            }
+        ];
+
+        // 6. 德黑兰领事认证90天有效期模拟器情景数据
+        const legalScenarios = {
+            early: {
+                boxClass: 'p-5 rounded-2xl bg-rose-50/80 border border-rose-200 space-y-3',
+                badge: '❌ 过早办理情景（例如1月初办妥认证）：5月寄中央大学时超期作废！',
+                summary: '如果在1月初就早早把4套领事认证办完，虽然3月寄高丽和汉阳没问题，但等到5月中旬给中央大学（CAU）寄送第3套原件时，距离认证日已超过110—120天，直接突破中央大学“公证/认证后90天内有效”的硬性红线，导致原件作废、被迫重办！',
+                statuses: [
+                    { uni: '高丽大学（3月寄件）', ok: true, note: '有效（约第60天）' },
+                    { uni: '汉阳大学（3月寄件）', ok: true, note: '有效（约第60天）' },
+                    { uni: '延世医学院（4月网申）', ok: true, note: '纯线上免寄件' },
+                    { uni: '中央大学（5月寄件）', ok: false, note: '超90天过期作废 ❌' }
+                ]
+            },
+            optimal: {
+                boxClass: 'p-5 rounded-2xl bg-emerald-50/80 border border-emerald-200 space-y-3',
+                badge: '✅ 方案黄金窗口（2027年2月15日—26日德黑兰集中办4套）：四校通吃零失误！',
+                summary: '从土耳其考完雅思归来后，于2月15日—26日在德黑兰集中办妥4套领事认证原件：一方面稳稳赶上3月中旬高丽与汉阳的寄件截止日；另一方面等到5月中旬寄给中央大学时，刚好处于第75天左右，严丝合缝落在“90天有效期”安全边界之内！',
+                statuses: [
+                    { uni: '高丽大学（3月寄件）', ok: true, note: '准时寄出 ✅' },
+                    { uni: '汉阳大学（3月寄件）', ok: true, note: '准时寄出 ✅' },
+                    { uni: '延世医学院（4月网申）', ok: true, note: '纯线上网申 ✅' },
+                    { uni: '中央大学（5月寄件）', ok: true, note: '约第75天（<90天安全 ✅）' }
+                ]
+            },
+            late: {
+                boxClass: 'p-5 rounded-2xl bg-amber-50/80 border border-amber-200 space-y-3',
+                badge: '❌ 过晚办理情景（拖到3月下旬办理）：直接错过高丽与汉阳截止日！',
+                summary: '如果把公证和使馆认证拖到3月中下旬，撞上伊朗诺鲁孜节（Nowruz）长假及跨国快递时效，将直接错过3月高丽大学（KU）与汉阳大学（HYU）的材料寄达截止日！',
+                statuses: [
+                    { uni: '高丽大学（3月寄件）', ok: false, note: '错过寄件截止日 ❌' },
+                    { uni: '汉阳大学（3月寄件）', ok: false, note: '错过寄件截止日 ❌' },
+                    { uni: '延世医学院（4月网申）', ok: true, note: '纯线上网申' },
+                    { uni: '中央大学（5月寄件）', ok: true, note: '有效（约第50天）' }
+                ]
+            }
+        };
+
+        // 页面状态变量
+        let currentUniFilter = 'all';
+        let currentProjectIndex = 0;
+        let currentProjectMode = 'simple'; // 'simple' 或 'tech'
+        let currentGlossaryCat = 'all';
+
+        // ==========================================
+        // 渲染与交互函数
+        // ==========================================
+
+        // 渲染教授网格
+        function renderProfessors() {
+            const grid = document.getElementById('professors-grid');
+            const filtered = currentUniFilter === 'all'
+                ? professorsData
+                : professorsData.filter(p => p.uniCode === currentUniFilter);
+
+            grid.innerHTML = filtered.map(prof => `
+                <article class="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-md hover:border-brand-300 transition p-6 flex flex-col justify-between space-y-5 animate-fade">
+                    <div class="space-y-3">
+                        <div class="flex items-start justify-between gap-2">
+                            <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-slate-900 text-white">${prof.uniName}</span>
+                            <span class="text-[11px] font-bold px-2.5 py-1 rounded-full border ${prof.badgeColor}">${prof.roleBadge}</span>
+                        </div>
+
+                        <div>
+                            <div class="text-xs font-semibold text-slate-500">${prof.dept}</div>
+                            <h3 class="text-lg font-extrabold text-slate-900 mt-0.5">${prof.nameZh}</h3>
+                            <div class="text-xs font-en text-slate-500 font-medium">${prof.nameEnKr}</div>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
+                            <div class="text-[11px] font-bold text-brand-700 mb-0.5">核心研究方向：</div>
+                            <div class="text-xs sm:text-sm font-semibold text-slate-800">${prof.field}</div>
+                        </div>
+
+                        <ul class="space-y-1.5 text-xs text-slate-600">
+                            ${prof.highlights.map(h => `
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-brand-600 font-bold mt-0.5">•</span>
+                                    <span>${h}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                        <button onclick="openTermModal('${prof.termKey}')" class="text-xs font-semibold text-slate-500 hover:text-brand-700 transition">
+                            ⓘ 关联名词词卡
+                        </button>
+                        <button onclick="jumpToProject(${prof.targetProjectIndex})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-600 text-brand-700 hover:text-white text-xs font-bold transition">
+                            <span>查看定向课题</span>
+                            <span>→</span>
+                        </button>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function filterProfessors(uni) {
+            currentUniFilter = uni;
+            document.querySelectorAll('.uni-filter-btn').forEach(btn => {
+                if (btn.dataset.uni === uni) {
+                    btn.className = 'uni-filter-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white shadow-sm whitespace-nowrap transition';
+                } else {
+                    btn.className = 'uni-filter-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 whitespace-nowrap transition';
+                }
+            });
+            renderProfessors();
+        }
+
+        // 从教授卡片平滑跳转并高亮对应实战课题
+        function jumpToProject(idx) {
+            selectProject(idx);
+            const projSection = document.getElementById('projects');
+            projSection.scrollIntoView({ behavior: 'smooth' });
+            const panel = document.getElementById('active-project-panel');
+            panel.classList.remove('pulse-focus');
+            void panel.offsetWidth;
+            panel.classList.add('pulse-focus');
+        }
+
+        // 渲染5大科研项目选项卡与详情面板
+        function renderProjects() {
+            const tabsContainer = document.getElementById('project-tabs');
+            tabsContainer.innerHTML = projectsData.map((p, i) => {
+                const active = i === currentProjectIndex;
+                return `
+                    <button onclick="selectProject(${i})" class="p-3 rounded-2xl text-left border transition flex flex-col justify-between ${
+                        active
+                            ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                            : 'bg-slate-50 hover:bg-white text-slate-700 border-slate-200'
+                    }">
+                        <div class="flex items-center justify-between gap-1 w-full mb-1">
+                            <span class="text-xs font-bold ${active ? 'text-brand-200' : 'text-brand-700'}">${p.shortTab}</span>
+                            <span class="text-[11px] px-2 py-0.5 rounded-full ${active ? 'bg-white/15 text-white' : 'bg-slate-200/80 text-slate-700'} font-bold">${p.hours}h</span>
+                        </div>
+                        <div class="text-[11px] font-en truncate opacity-85">${p.code}</div>
+                    </button>
+                `;
+            }).join('');
+
+            const p = projectsData[currentProjectIndex];
+            const panel = document.getElementById('active-project-panel');
+
+            const explanationBlock = currentProjectMode === 'simple'
+                ? `
+                    <div class="p-5 rounded-2xl bg-white border-2 border-brand-200 shadow-sm space-y-2 animate-fade">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="text-xs sm:text-sm font-extrabold text-brand-700 flex items-center gap-1.5">
+                                <span>💬</span>
+                                <span>${p.simpleAnalogyTitle}</span>
+                            </div>
+                            <button onclick="setProjectMode('tech')" class="text-xs font-semibold text-slate-400 hover:text-indigo-600 transition">切换看技术细节 →</button>
+                        </div>
+                        <p class="text-sm sm:text-base text-slate-800 leading-relaxed">${p.simpleAnalogy}</p>
+                    </div>
+                `
+                : `
+                    <div class="p-5 rounded-2xl bg-white border-2 border-indigo-200 shadow-sm space-y-3 animate-fade">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="text-xs sm:text-sm font-extrabold text-indigo-700 flex items-center gap-1.5">
+                                <span>🔬</span>
+                                <span>GitHub 仓库硬核研究逻辑与方法学栈：</span>
+                            </div>
+                            <button onclick="setProjectMode('simple')" class="text-xs font-semibold text-slate-400 hover:text-brand-600 transition">切换回通俗讲法 →</button>
+                        </div>
+                        <p class="text-sm sm:text-base text-slate-800 leading-relaxed">${p.techSummary}</p>
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+                            ${p.tags.map(t => `<span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-800 font-en text-xs font-semibold border border-indigo-100">${t}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+
+            panel.innerHTML = `
+                <div class="space-y-5">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div class="space-y-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="px-3 py-1 rounded-lg bg-brand-600 text-white font-en text-xs font-bold">${p.code}</span>
+                                <span class="px-3 py-1 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-800">🎯 主攻目标：${p.mainTarget}</span>
+                                <span class="px-2.5 py-1 rounded-lg bg-slate-200/70 text-xs font-medium text-slate-600">${p.subTarget}</span>
+                            </div>
+                            <h3 class="text-base sm:text-lg font-extrabold text-slate-900 pt-1">${p.titleZh}</h3>
+                        </div>
+
+                        <div class="shrink-0 flex items-center gap-3 bg-white px-4 py-2.5 rounded-2xl border border-slate-200 self-start">
+                            <div>
+                                <div class="text-[11px] text-slate-500">预计实战耗时</div>
+                                <div class="text-lg font-extrabold text-slate-900">${p.hours} 小时</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    ${explanationBlock}
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 text-xs sm:text-sm">
+                        <div class="text-slate-700">
+                            <strong class="text-slate-900">🔗 本科背景咬合优势：</strong>${p.fitReason}
+                        </div>
+                        <button onclick="openTermModal('${p.termKey}')" class="shrink-0 self-start sm:self-center px-3.5 py-2 rounded-xl bg-white hover:bg-brand-50 text-brand-700 border border-brand-200 font-bold text-xs transition">
+                            ⓘ 点开该课题核心名词词卡
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectProject(idx) {
+            currentProjectIndex = idx;
+            renderProjects();
+        }
+
+        function setProjectMode(mode) {
+            currentProjectMode = mode;
+            const simpleBtn = document.getElementById('mode-simple-btn');
+            const techBtn = document.getElementById('mode-tech-btn');
+            if (mode === 'simple') {
+                simpleBtn.className = 'px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white text-brand-700 shadow-sm transition flex items-center gap-2';
+                techBtn.className = 'px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition flex items-center gap-2';
+            } else {
+                techBtn.className = 'px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white text-indigo-700 shadow-sm transition flex items-center gap-2';
+                simpleBtn.className = 'px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition flex items-center gap-2';
+            }
+            renderProjects();
+        }
+
+        function toggleSummaryTable() {
+            const tbl = document.getElementById('projects-summary-table');
+            const icon = document.getElementById('table-toggle-icon');
+            const txt = document.getElementById('table-toggle-text');
+            if (tbl.classList.contains('hidden')) {
+                tbl.classList.remove('hidden');
+                icon.textContent = '−';
+                txt.textContent = '收起5个课题完整对比总表';
+            } else {
+                tbl.classList.add('hidden');
+                icon.textContent = '+';
+                txt.textContent = '展开查看5个课题完整对比总表';
+            }
+        }
+
+        // 三大战略支柱标签切换
+        function switchStrategyTab(tabId) {
+            const tabs = ['outreach', 'documents', 'funding'];
+            tabs.forEach(t => {
+                const panel = document.getElementById('strat-panel-' + t);
+                const btn = document.getElementById('strat-btn-' + t);
+                const badgeSpan = btn.querySelector('div span:last-child');
+                const numSpan = btn.querySelector('div span:first-child');
+
+                if (t === tabId) {
+                    panel.classList.remove('hidden');
+                    btn.className = 'strat-tab-btn p-4 rounded-2xl text-left border-2 border-brand-600 bg-white shadow-sm transition';
+                    badgeSpan.textContent = '当前查看';
+                    badgeSpan.className = 'text-xs font-bold text-brand-700';
+                    numSpan.className = 'w-8 h-8 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center font-extrabold text-sm';
+                } else {
+                    panel.classList.add('hidden');
+                    btn.className = 'strat-tab-btn p-4 rounded-2xl text-left border border-slate-200 bg-slate-50 hover:bg-white transition';
+                    badgeSpan.textContent = '点击查看';
+                    badgeSpan.className = 'text-xs font-medium text-slate-400';
+                    numSpan.className = 'w-8 h-8 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center font-extrabold text-sm';
+                }
+            });
+        }
+
+        // 德黑兰领事认证90天有效期模拟器切换
+        function setLegalScenario(key) {
+            const s = legalScenarios[key];
+            const box = document.getElementById('legal-scenario-box');
+            box.className = s.boxClass + ' animate-fade';
+
+            ['early', 'optimal', 'late'].forEach(k => {
+                const b = document.getElementById('scen-' + k);
+                if (k === key) {
+                    b.className = k === 'optimal'
+                        ? 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-brand-600 text-white shadow-sm transition'
+                        : 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white shadow-sm transition';
+                } else {
+                    b.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition';
+                }
+            });
+
+            box.innerHTML = `
+                <div class="font-extrabold text-slate-900 text-sm sm:text-base">${s.badge}</div>
+                <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">${s.summary}</p>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
+                    ${s.statuses.map(st => `
+                        <div class="p-3 rounded-xl bg-white border ${st.ok ? 'border-emerald-200' : 'border-rose-300'}">
+                            <div class="text-xs font-bold text-slate-800">${st.uni}</div>
+                            <div class="text-xs font-semibold mt-1 ${st.ok ? 'text-emerald-700' : 'text-rose-600'}">${st.note}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // 144小时分段点击高亮明细
+        function highlightHourBlock(index) {
+            const item = hourBlocks[index];
+            const box = document.getElementById('hour-detail-box');
+            box.innerHTML = `
+                <div class="space-y-1 animate-fade">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="font-extrabold text-slate-900 text-sm sm:text-base">${item.title}</span>
+                        <span class="px-2.5 py-0.5 rounded-full bg-brand-100 text-brand-800 text-xs font-bold">${item.hours}</span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-600">${item.desc}</p>
+                </div>
+            `;
+        }
+
+        // 9个月时间轴渲染
+        function renderTimeline(activeIdx = 0) {
+            const stepsContainer = document.getElementById('timeline-steps');
+            stepsContainer.innerHTML = timelineData.map((m, idx) => {
+                const isAct = idx === activeIdx;
+                return `
+                    <button onclick="renderTimeline(${idx})" class="p-3.5 rounded-2xl text-left border transition flex flex-col justify-between ${
+                        isAct
+                            ? 'bg-brand-600 text-white border-brand-600 shadow-sm'
+                            : 'bg-slate-50 hover:bg-white text-slate-700 border-slate-200'
+                    }">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="w-6 h-6 rounded-lg text-xs font-extrabold flex items-center justify-center ${isAct ? 'bg-white text-brand-700' : 'bg-slate-200 text-slate-700'}">${m.step}</span>
+                            <span class="text-[10px] font-semibold ${isAct ? 'text-brand-100' : 'text-slate-400'}">阶段 ${m.step}</span>
+                        </div>
+                        <div class="text-xs font-extrabold leading-snug">${m.shortTitle}</div>
+                        <div class="text-[11px] mt-1 ${isAct ? 'text-brand-100' : 'text-slate-500'}">${m.period}</div>
+                    </button>
+                `;
+            }).join('');
+
+            const activeItem = timelineData[activeIdx];
+            const detailCard = document.getElementById('timeline-detail-card');
+            detailCard.innerHTML = `
+                <div class="space-y-3 animate-fade">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <span class="text-xs font-bold text-brand-700">阶段 ${activeItem.step} / 6 • ${activeItem.period}</span>
+                            <h4 class="text-base sm:text-lg font-extrabold text-slate-900 mt-0.5">${activeItem.shortTitle}</h4>
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-white border border-brand-200 text-xs font-semibold text-slate-700 self-start">📍 执行场景：${activeItem.location}</span>
+                    </div>
+                    <ul class="space-y-2 pt-1 text-xs sm:text-sm text-slate-700">
+                        ${activeItem.tasks.map(t => `
+                            <li class="flex items-start gap-2">
+                                <span class="w-5 h-5 rounded-full bg-brand-600 text-white text-[11px] flex items-center justify-center shrink-0 mt-0.5">✓</span>
+                                <span>${t}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        // 渲染底部10张名词解释词卡
+        function renderGlossary() {
+            const grid = document.getElementById('glossary-grid');
+            const entries = Object.entries(glossaryTerms).filter(([_, item]) =>
+                currentGlossaryCat === 'all' ? true : item.category === currentGlossaryCat
+            );
+
+            grid.innerHTML = entries.map(([key, item]) => `
+                <div onclick="openTermModal('${key}')" class="group cursor-pointer bg-white rounded-2xl border border-slate-200/90 hover:border-brand-400 hover:shadow-md p-5 transition flex flex-col justify-between space-y-3 animate-fade">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
+                                item.category === 'admission'
+                                    ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                                    : 'bg-indigo-50 text-indigo-800 border border-indigo-200'
+                            }">${item.catLabel}</span>
+                            <span class="text-xs font-bold text-brand-600 group-hover:translate-x-[2px] transition">点开详解 →</span>
+                        </div>
+                        <h3 class="font-extrabold text-slate-900 text-sm sm:text-base">${item.title}</h3>
+                        <div class="text-[11px] font-en text-slate-400">${item.en}</div>
+                        <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed">${item.simple}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterGlossary(cat) {
+            currentGlossaryCat = cat;
+            document.querySelectorAll('.gcat-btn').forEach(btn => {
+                if (btn.dataset.gcat === cat) {
+                    btn.className = 'gcat-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white transition whitespace-nowrap';
+                } else {
+                    btn.className = 'gcat-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition whitespace-nowrap';
+                }
+            });
+            renderGlossary();
+        }
+
+        // 弹窗控制
+        function openTermModal(key) {
+            const term = glossaryTerms[key];
+            if (!term) return;
+            document.getElementById('modal-category').textContent = term.catLabel;
+            document.getElementById('modal-title').textContent = term.title;
+            document.getElementById('modal-en').textContent = term.en;
+            document.getElementById('modal-simple').textContent = term.simple;
+            document.getElementById('modal-impact').textContent = term.impact;
+            document.getElementById('term-modal-backdrop').classList.remove('hidden');
+        }
+
+        function closeTermModal() {
+            document.getElementById('term-modal-backdrop').classList.add('hidden');
+        }
+
+        // 支持按 Esc 关闭弹窗
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeTermModal();
+        });
+
+        // 初始化页面
+        window.addEventListener('DOMContentLoaded', () => {
+            renderProfessors();
+            renderProjects();
+            setLegalScenario('optimal');
+            highlightHourBlock(0);
+            renderTimeline(0);
+            renderGlossary();
+        });
+    </script>
+</body>
+</html>
