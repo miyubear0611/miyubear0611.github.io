@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMDA 공동 제작 지원금</title>
+    
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Fonts (Pretendard for Korean, Inter for English) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Pretendard', 'Inter', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .ko-text {
+            word-break: keep-all;
+            letter-spacing: -0.015em;
+            line-height: 1.6;
+        }
+
+        .en-text {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Tab Content Animation */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.35s ease-out forwards;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f8fafc; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Utility Classes for Badges */
+        .badge-tap {
+            display: inline-block; padding: 0.25rem 0.5rem; background-color: #dbeafe; color: #1e40af; 
+            font-size: 0.625rem; font-weight: 700; text-transform: uppercase; border-radius: 0.25rem; 
+            margin-right: 0.5rem; margin-bottom: 0.25rem; border: 1px solid #bfdbfe;
+        }
+        .badge-guide {
+            display: inline-block; padding: 0.25rem 0.5rem; background-color: #f3e8ff; color: #6b21a8; 
+            font-size: 0.625rem; font-weight: 700; text-transform: uppercase; border-radius: 0.25rem; 
+            margin-right: 0.5rem; margin-bottom: 0.25rem; border: 1px solid #e9d5ff;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 selection:bg-blue-200">
+
+<div class="max-w-6xl mx-auto">
+    
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-slate-900 via-[#0f2a4a] to-[#003366] text-white p-6 md:p-8 rounded-t-2xl shadow-lg relative overflow-hidden">
+        <div class="relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 ko-text drop-shadow-sm">IMDA 공동 제작 지원금</h1>
+                    <h2 class="text-lg md:text-xl text-blue-200 font-semibold tracking-wide en-text">Co-Production Funding Dashboard</h2>
+                </div>
+                <div class="bg-white/10 px-5 py-2.5 rounded-xl border border-white/20 backdrop-blur-md shadow-inner">
+                    <div class="text-[10px] text-blue-200 uppercase tracking-widest font-bold mb-0.5 en-text">Target Project</div>
+                    <div class="text-xl font-black text-white tracking-wide en-text">Kitchen X</div>
+                </div>
+            </div>
+            
+            <!-- Context Explainer Box -->
+            <div class="mt-8 bg-white/10 border border-white/20 p-5 rounded-xl text-sm leading-relaxed backdrop-blur-sm ko-text font-medium shadow-sm">
+                <div class="flex items-start">
+                    <span class="text-amber-400 font-bold mr-3 mt-0.5 text-lg">💡</span> 
+                    <div>
+                        <p class="mb-2">본 가이드는 글로벌 유통 TV/OTT 시리즈를 위한 2026년 최신 심사 및 집행 기준을 담고 있습니다:</p>
+                        <ul class="space-y-1 ml-2 text-blue-50">
+                            <li><span class="inline-block w-2 h-2 bg-blue-400 rounded-full mr-2"></span><strong class="text-white">TAP TV 핵심 규정 (2026.09 업데이트):</strong> 글로벌 공동제작 공식 자격 요건, 지원 비율 및 에피소드당 지원 한도.</li>
+                            <li><span class="inline-block w-2 h-2 bg-purple-400 rounded-full mr-2"></span><strong class="text-white">TAP 공통 집행 지침 (2026 CFP/실무 기준):</strong> 적격 비용(QE), 현지 인력 KPI 및 BGP-GMS 약정·정산 실무 기준 (최종 조건은 승인 후 발급되는 Letter of Offer 기준).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Decorative Background -->
+        <div class="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-blue-500 rounded-full opacity-20 blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-10 w-64 h-64 bg-purple-500 rounded-full opacity-20 blur-3xl pointer-events-none"></div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-white border-b border-l border-r border-gray-200 overflow-x-auto custom-scrollbar shadow-sm sticky top-0 z-20">
+        <nav class="flex min-w-max px-2 pt-2" id="tab-nav">
+            <!-- Tab 1 -->
+            <button onclick="switchTab('tab-eligibility')" id="btn-tab-eligibility" class="tab-btn flex items-center px-6 py-4 text-sm md:text-base font-bold transition-all focus:outline-none ko-text rounded-t-lg mx-1 bg-blue-50 text-blue-700 border-t-2 border-l border-r border-blue-200 shadow-[0_4px_0_0_#eff6ff_inset]">
+                <svg class="w-5 h-5 mr-2 icon-svg text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                자격 요건
+            </button>
+            <!-- Tab 2 -->
+            <button onclick="switchTab('tab-funding')" id="btn-tab-funding" class="tab-btn flex items-center px-6 py-4 text-sm md:text-base font-bold transition-all focus:outline-none ko-text rounded-t-lg mx-1 text-gray-500 hover:text-gray-900 hover:bg-gray-50 border-t-2 border-transparent">
+                <svg class="w-5 h-5 mr-2 icon-svg text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                지원 규모
+            </button>
+            <!-- Tab 3 -->
+            <button onclick="switchTab('tab-expenses')" id="btn-tab-expenses" class="tab-btn flex items-center px-6 py-4 text-sm md:text-base font-bold transition-all focus:outline-none ko-text rounded-t-lg mx-1 text-gray-500 hover:text-gray-900 hover:bg-gray-50 border-t-2 border-transparent">
+                <svg class="w-5 h-5 mr-2 icon-svg text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                비용 항목
+            </button>
+            <!-- Tab 4 -->
+            <button onclick="switchTab('tab-application')" id="btn-tab-application" class="tab-btn flex items-center px-6 py-4 text-sm md:text-base font-bold transition-all focus:outline-none ko-text rounded-t-lg mx-1 text-gray-500 hover:text-gray-900 hover:bg-gray-50 border-t-2 border-transparent">
+                <svg class="w-5 h-5 mr-2 icon-svg text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                신청 절차
+            </button>
+            <!-- Tab 5 -->
+            <button onclick="switchTab('tab-timeline')" id="btn-tab-timeline" class="tab-btn flex items-center px-6 py-4 text-sm md:text-base font-bold transition-all focus:outline-none ko-text rounded-t-lg mx-1 text-gray-500 hover:text-gray-900 hover:bg-gray-50 border-t-2 border-transparent">
+                <svg class="w-5 h-5 mr-2 icon-svg text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                예상 소요 기간
+            </button>
+            <!-- Tab 6 -->
+            <button onclick="switchTab('tab-references')" id="btn-tab-references" class="tab-btn flex items-center px-6 py-4 text-sm md:text-base font-bold transition-all focus:outline-none ko-text rounded-t-lg mx-1 text-gray-500 hover:text-gray-900 hover:bg-gray-50 border-t-2 border-transparent">
+                <svg class="w-5 h-5 mr-2 icon-svg text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                공식 출처/링크
+            </button>
+        </nav>
+    </div>
+
+    <!-- Content Area -->
+    <main class="bg-white border-l border-r border-b border-gray-200 rounded-b-2xl p-6 md:p-10 shadow-xl min-h-[600px]">
+        
+        <!-- Tab 1: Eligibility -->
+        <div id="tab-eligibility" class="tab-content active space-y-6">
+            <div class="border-b-2 border-gray-100 pb-3 mb-5 mt-2">
+                <h3 class="text-xl font-bold text-gray-900 ko-text">필수 자격 요건</h3>
+                <h4 class="text-sm text-gray-400 font-medium uppercase tracking-wider en-text">Eligibility Criteria</h4>
+            </div>
+            
+            <p class="text-gray-700 mb-6 ko-text bg-gray-50 p-4 rounded-lg border border-gray-100">
+                지원자는 아래의 TAP TV 필수 자격 요건 및 집행 기준을 <strong>모두 충족</strong>해야 합니다. <br/>
+                <span class="text-sm text-gray-500 italic en-text">Applicants must meet all the following TAP TV eligibility and grant administration requirements:</span>
+            </p>
+            
+            <div class="space-y-4">
+                <div class="flex items-start bg-white border border-gray-200 p-4 rounded-lg shadow-sm">
+                    <div class="mt-1 mr-3 text-green-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                    <div>
+                        <span class="badge-tap">TAP TV 최신 규정</span>
+                        <div class="mb-2">
+                            <div class="font-bold text-gray-900 ko-text">싱가포르 등록 기업</div>
+                            <div class="text-sm text-gray-500 mt-1 italic en-text">Be a Singapore-registered company.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-start bg-white border border-gray-200 p-4 rounded-lg shadow-sm">
+                    <div class="mt-1 mr-3 text-green-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                    <div>
+                        <span class="badge-tap">TAP TV 최신 규정</span>
+                        <div class="mb-2">
+                            <div class="font-bold text-gray-900 ko-text">미디어 프리랜서를 위한 서비스 조달 관련 노사정 표준(TAFEP) 채택</div>
+                            <div class="text-sm text-gray-500 mt-1 italic en-text">Adopt the Tripartite Standards for Procurement of Services (TAFEP) for Media Freelancers.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-start bg-blue-50 border border-blue-200 p-4 rounded-lg shadow-sm">
+                    <div class="mt-1 mr-3 text-green-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                    <div>
+                        <span class="badge-tap">TAP TV 최신 규정</span>
+                        <span class="inline-block px-2 py-0.5 bg-blue-600 text-white text-[10px] font-bold rounded mb-2">핵심 (Critical)</span>
+                        <div class="mb-2">
+                            <div class="font-bold text-gray-900 ko-text">의향서(LOI), 거래 메모, 파트너십 계약 등 제안된 프로젝트에 대한 커미셔너의 관심이나 약정을 증명할 수 있을 것.</div>
+                            <div class="text-sm text-gray-500 mt-1 italic en-text">Able to show proof of commissioner interest or commitment for the proposed project, e.g. letter of intent, deal memo, partnership agreement, etc.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-start bg-purple-50 border border-purple-200 p-4 rounded-lg shadow-sm">
+                    <div class="mt-1 mr-3 text-purple-600 flex-shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                    <div>
+                        <span class="badge-guide">TAP 2026 실무 기준</span>
+                        <span class="inline-block px-2 py-0.5 bg-purple-600 text-white text-[10px] font-bold rounded mb-2">약정 체결 필수 요건</span>
+                        <div class="mb-2">
+                            <div class="font-medium text-gray-900 ko-text"><strong class="font-bold">확정 자금 조달 증빙 (Proof of Confirmed Financing):</strong> 초기 제안 단계에서는 의향서(LOI)로 접수 가능하나, 최종 보조금 약정(Letter of Offer) 체결 단계에서는 구속력 있는 편성·투자 확정 계약서 및 프로젝트 현금 흐름 계획 제출이 필수입니다.</div>
+                            <div class="text-sm text-gray-500 mt-1 italic en-text">Proof of Confirmed Financing: While an LOI suffices at initial proposal stage, binding financing/commissioning agreements and project cash flow plans are required prior to executing the Letter of Offer.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-start bg-red-50 border border-red-200 p-4 rounded-lg shadow-sm">
+                    <div class="mt-1 mr-3 text-red-600 flex-shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
+                    <div>
+                        <span class="badge-guide">TAP 필수 레드라인</span>
+                        <span class="inline-block px-2 py-0.5 bg-red-600 text-white text-[10px] font-bold rounded mb-2">소급 지원 불가 (Critical)</span>
+                        <div class="mb-2">
+                            <div class="font-medium text-gray-900 ko-text"><strong class="font-bold text-red-900">사전 착수 금지 (No Retrospective Funding):</strong> IMDA의 최종 승인 및 보조금 약정서(Letter of Offer) 체결 이전에 본 촬영(Principal Photography)을 개시하거나 기집행된 비용은 지원 및 정산 대상에서 전액 제외됩니다.</div>
+                            <div class="text-sm text-gray-500 mt-1 italic en-text">No Retrospective Funding: Principal photography must not commence prior to formal grant approval / Letter of Offer. Expenses incurred retroactively do not qualify for support.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Funding -->
+        <div id="tab-funding" class="tab-content space-y-6">
+            <div class="border-b-2 border-gray-100 pb-3 mb-5 mt-2">
+                <h3 class="text-xl font-bold text-gray-900 ko-text">지원 규모 및 비율</h3>
+                <h4 class="text-sm text-gray-400 font-medium uppercase tracking-wider en-text">Grant Support & Quantums</h4>
+            </div>
+            
+            <p class="text-gray-700 mb-6 ko-text bg-gray-50 p-4 rounded-lg border border-gray-100">
+                보조금은 IMDA가 지원 대상으로 인정하는 프로젝트 비용(적격 비용)을 기준으로 결정됩니다.<br/>
+                <span class="text-sm text-gray-500 italic en-text">Grants are determined based on project expenses that IMDA qualifies for support.</span>
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-xl text-center shadow-sm">
+                    <span class="badge-tap">TAP TV 최신 규정</span>
+                    <div class="text-sm text-emerald-800 font-bold mt-2">중소기업 (SMEs)</div>
+                    <div class="text-4xl font-black text-emerald-600 my-2 en-text">최대 50%</div>
+                    <div class="text-sm text-emerald-700 en-text">적격 비용 기준 (Up to 50% of qualified spend)</div>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl text-center shadow-sm">
+                    <span class="badge-tap">TAP TV 최신 규정</span>
+                    <div class="text-sm text-slate-800 font-bold mt-2">비중소기업 (Non-SMEs)</div>
+                    <div class="text-4xl font-black text-slate-600 my-2 en-text">최대 30%</div>
+                    <div class="text-sm text-slate-600 en-text">적격 비용 기준 (Up to 30% of qualified spend)</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-5 border-2 border-blue-500 bg-blue-50/50 rounded-xl relative overflow-hidden shadow-sm">
+                    <div class="absolute top-0 right-0 bg-blue-500 text-white text-xs px-3 py-1 rounded-bl-lg font-bold">Kitchen X 해당</div>
+                    <span class="badge-tap">TAP TV 최신 규정</span>
+                    <div class="mb-2">
+                        <div class="font-bold text-gray-900 ko-text">대본형 시리즈 (Scripted series)</div>
+                        <div class="text-sm text-gray-500 mt-1 italic en-text">IMDA's funding will be capped at S$1 million per episode.</div>
+                    </div>
+                    <p class="text-3xl font-black text-blue-700 mt-2 en-text">S$ 1,000,000 <span class="text-base font-bold text-gray-600 ko-text">/ 에피소드당 상한</span></p>
+                </div>
+                
+                <div class="p-5 border border-gray-200 bg-white rounded-xl shadow-sm opacity-60 hover:opacity-100 transition-opacity">
+                    <span class="badge-tap">TAP TV 최신 규정</span>
+                    <div class="mb-2">
+                        <div class="font-bold text-gray-900 ko-text">비대본형 시리즈 (Unscripted series)</div>
+                        <div class="text-sm text-gray-500 mt-1 italic en-text">IMDA's funding will be capped at S$700k per episode.</div>
+                    </div>
+                    <p class="text-3xl font-black text-gray-700 mt-2 en-text">S$ 700,000 <span class="text-base font-bold text-gray-500 ko-text">/ 에피소드당 상한</span></p>
+                </div>
+            </div>
+
+            <div class="mt-6 p-5 bg-amber-50 rounded-xl border border-amber-200 space-y-3">
+                <h4 class="font-bold text-amber-900 flex items-center mb-2">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    주요 상한선 주의사항 (Caps)
+                </h4>
+                <div class="pl-7">
+                    <span class="badge-tap">TAP TV 최신 규정</span>
+                    <div class="mb-2">
+                        <div class="font-medium text-gray-900 ko-text">프로젝트 총괄 한도: 에피소드당 상한액과 별개로, 전체 프로젝트에 대한 총 지원 한도가 심사 후 적용됩니다.</div>
+                        <div class="text-sm text-gray-500 mt-1 italic en-text">Overall project cap: Applicants should also be aware that an overall project cap will apply for the whole project.</div>
+                    </div>
+                </div>
+                <div class="pl-7 border-t border-amber-200 pt-3">
+                    <span class="badge-guide">TAP 2026 실무 기준</span>
+                    <div class="mb-2">
+                        <div class="font-medium text-gray-900 ko-text">핵심 성과지표(KPI) 연동 및 싱가포르 적격 지출 기준: 최종 보조금 지급액은 약정된 최소 적격 지출액(Minimum Qualifying Expenses, 주로 싱가포르 현지 지출 및 SC/PR 인건비)과 싱가포르 국민·영주권자(SC/PR) 참여 인원 KPI 달성 여부에 연동되며, 미달 시 지원금이 비례 감액될 수 있습니다.</div>
+                        <div class="text-sm text-gray-500 mt-1 italic en-text">KPI-Linked Disbursement & Singapore Spend: Final grant payout is tied to meeting committed project KPIs — specifically Minimum Qualifying Expenses (primarily Singapore spend & SC/PR manpower) and the committed headcount of Singaporeans/PRs engaged. Shortfalls may result in pro-rated grant reductions.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Expenses -->
+        <div id="tab-expenses" class="tab-content space-y-6">
+            <div class="border-b-2 border-gray-100 pb-3 mb-5 mt-2">
+                <h3 class="text-xl font-bold text-gray-900 ko-text">커버 가능한 비용 항목</h3>
+                <h4 class="text-sm text-gray-400 font-medium uppercase tracking-wider en-text">Qualifying Expenses</h4>
+            </div>
+
+            <p class="text-gray-700 mb-6 ko-text bg-purple-50 p-4 rounded-lg border border-purple-100">
+                <span class="badge-guide">TAP 2026 실무 기준</span> 해당 비용들은 프로젝트와 <strong>직접적으로 연결</strong>되어야 하며, 신청자의 고정 간접비/경상비는 인정되지 않습니다. <br/>
+                <span class="text-sm text-purple-700 italic en-text">The following items can be considered as qualifying expenses (Applicant's fixed overheads / recurring expenses do not qualify):</span>
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <h4 class="font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2">인력 & 서비스 (Manpower & Services)</h4>
+                    <ul class="space-y-3 ko-text text-gray-700 font-medium">
+                        <li>
+                            • 인건비 (기본급 및 고용주 CPF 기여금) / 출연료 / 창업자·주주 직접 투입 인건비(IMDA 적정성 심사 후 인정)
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Manpower (basic salary & Employer's CPF) / Talent / Project-specific Founder & Shareholder fees (subject to IMDA assessment)</div>
+                        </li>
+                        <li>
+                            • 전문 수수료 / 서비스
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Professional Fees / Services</div>
+                        </li>
+                        <li>
+                            • 법률 및 회계 감사 비용 (프로젝트 직접 관련 비용)
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Project-specific Legal & Audit Fees</div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <h4 class="font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2">제작 인프라 (Production Infrastructure)</h4>
+                    <ul class="space-y-3 ko-text text-gray-700 font-medium">
+                        <li>
+                            • 프로젝트 전용 저장 매체 구매 및 지식재산권(IP) 라이선싱 (일반 하드웨어·소프트웨어 자산 구매 제외)
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Project-specific Storage Media & Intellectual Property Licensing (general hardware/software asset purchases excluded)</div>
+                        </li>
+                        <li>
+                            • 장비 대여 및 로케이션·스튜디오 대여 비용
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Equipment, Location & Studio Rental</div>
+                        </li>
+                        <li>
+                            • 미술 / 세트 / 의상 / 후반 작업(Post-production) 부서 비용
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Art / Set / Wardrobe / Post-production Department</div>
+                        </li>
+                        <li>
+                            • 디지털 마스터링 및 최종 납품물 제작 비용
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Digital Mastering & Delivery Materials</div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm md:col-span-2">
+                    <h4 class="font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2">부대 비용 (Ancillary Costs)</h4>
+                    <ul class="space-y-3 ko-text text-gray-700 font-medium grid md:grid-cols-2 gap-x-4 gap-y-3">
+                        <li>
+                            • 여행 및 숙박 비용
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Travel & Accommodation Costs</div>
+                        </li>
+                        <li>
+                            • 지상 교통비 및 촬영 현장 식음료비
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Ground Transport & Production F&B</div>
+                        </li>
+                        <li class="md:col-span-2">
+                            • 프로젝트 보험, 완료 보증 및 IMDA 승인 파이낸싱 비용
+                            <div class="text-xs text-gray-500 italic en-text ml-3 mt-0.5">Project Insurance, Completion Bond & IMDA-approved Financing Charges</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                <h4 class="font-bold text-blue-900 mb-2 text-lg">🎯 싱가포르 인력 참여 인정 직무</h4>
+                <div class="mb-2">
+                    <div class="text-sm text-gray-500 mt-1 italic en-text">List of credited roles expected of Singaporeans/PRs includes:</div>
+                    <p class="text-xs font-semibold text-blue-800 mt-1 ko-text">※ 연출(Direction)·프로듀싱(Production)·각본(Writing) 핵심 크리에이티브 부문에 싱가포르 국민/영주권자(SC/PR) 참여가 요구됩니다.</p>
+                </div>
+                <div class="flex flex-wrap gap-2 mt-4">
+                    <span class="bg-white px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-700 border border-indigo-200 shadow-sm">총괄 프로듀서 (Executive Producer)</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-700 border border-indigo-200 shadow-sm">감독 (Director)</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-700 border border-indigo-200 shadow-sm">주요 출연진 (Key cast)</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-700 border border-indigo-200 shadow-sm">대본 작가 (Scriptwriter)</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-700 border border-indigo-200 shadow-sm">촬영 감독 (Cinematographer)</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-700 border border-indigo-200 shadow-sm">카메라 오퍼레이터 (Camera Operator)</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-700 border border-indigo-200 shadow-sm">미술 감독 / 세트 디자이너 / 의상 디자이너</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-700 border border-indigo-200 shadow-sm">편집자 (Editor)</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-700 border border-indigo-200 shadow-sm">사운드 디자이너 / 음악 작곡가 (Sound/Music)</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-700 border border-indigo-200 shadow-sm">버추얼 프로덕션 (Virtual Production)</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-700 border border-indigo-200 shadow-sm">DIT / 컬러리스트 (DIT / Colorist)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Application -->
+        <div id="tab-application" class="tab-content space-y-6">
+            <div class="border-b-2 border-gray-100 pb-3 mb-5 mt-2">
+                <h3 class="text-xl font-bold text-gray-900 ko-text">신청 절차 및 필수 서류</h3>
+                <h4 class="text-sm text-gray-400 font-medium uppercase tracking-wider en-text">Mode of Application & Required Documents</h4>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-blue-50 p-5 rounded-xl border-2 border-blue-200 relative shadow-sm">
+                    <div class="absolute -top-3 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">우리의 타겟 (Track 1)</div>
+                    <span class="badge-tap">TAP TV 최신 규정</span>
+                    <h4 class="font-bold text-lg text-blue-900 mb-2 mt-2 ko-text">플랫폼 확약을 이미 확보한 경우 (상시 직접 제출)</h4>
+                    <div class="mb-2">
+                        <div class="font-medium text-gray-900 ko-text">모든 자격 요건을 충족하고 플랫폼 확약(LOI 등)을 보유한 지원자는 공개 공모 일정과 무관하게 연중 상시 IMDA TAP TV 공식 채널로 프로젝트 제안서를 제출할 수 있습니다.</div>
+                        <div class="text-sm text-gray-500 mt-1 italic en-text">Interested applicants who meet all the eligibility criteria described above, may write to IMDA with your project proposal year-round via the official TAP TV channel.</div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 opacity-90">
+                    <span class="badge-tap">TAP TV 최신 규정</span>
+                    <h4 class="font-bold text-lg text-gray-800 mb-2 mt-2 ko-text">플랫폼 확약을 아직 못한 경우</h4>
+                    <div class="mb-2">
+                        <div class="font-medium text-gray-900 ko-text">아직 플랫폼 약정을 확보하지 못한 경우, ① IMDA 공식 공모 캘린더(Calendar of Calls)에 게시되는 글로벌 플랫폼 공동 공모에 지원하거나, ② 해외 바이어·플랫폼 대상 공식 피칭 일정(Secured Pitch)을 확보한 경우 피칭 일자 증빙을 첨부해 IMDA에 개발·피칭 지원을 신청할 수 있습니다.</div>
+                        <div class="text-sm text-gray-500 mt-1 italic en-text">Applicants without platform commitment may (1) apply via open calls published on IMDA's Calendar of Calls, or (2) if a pitch with international buyers/platforms is secured, write directly to IMDA with proof of pitch date for development/pitch support.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-purple-50 p-5 rounded-xl border border-purple-200 mb-8 shadow-sm">
+                <span class="badge-guide">TAP 2026 실무 기준</span>
+                <h4 class="font-bold text-lg text-purple-900 mb-2 ko-text">온라인 제안 접수 및 보조금 약정 시스템 (FormSG & BGP-GMS)</h4>
+                <div class="mb-2">
+                    <div class="font-medium text-gray-900 ko-text">초기 프로젝트 제안서 및 공모 접수는 IMDA 공식 온라인 접수처(FormSG / TAP TV 전용 문의 링크)를 통해 제출합니다. 심사를 통과한 최종 승인 프로젝트는 싱가포르 기업 보조금 포털(BGP-GMS, Business Grants Portal) 및 공식 약정서(Letter of Offer)를 통해 계약을 체결하고 단계별(Milestone) 정산을 진행합니다.</div>
+                    <div class="text-sm text-gray-500 mt-1 italic en-text">Initial proposals and open-call submissions are made via IMDA's official online forms (FormSG / TAP TV portal). Approved projects execute the Letter of Offer and manage milestone disbursements through the Business Grants Portal (BGP-GMS).</div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-6">
+                <h4 class="font-bold text-xl text-gray-900 mb-4 text-center ko-text">📝 필수 제출 3대 서류 (Proposals must minimally include) <span class="badge-tap ml-2">TAP TV 최신 규정</span></h4>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="p-5 bg-white border border-gray-200 shadow-sm rounded-xl hover:border-indigo-300 transition-colors">
+                        <h5 class="font-bold text-indigo-700 mb-3 text-lg ko-text">1. 프로젝트 문서 <span class="text-sm font-medium en-text block text-indigo-400 mt-0.5">Project documentation</span></h5>
+                        <ul class="text-sm space-y-4 text-gray-700 font-medium ko-text list-disc pl-4">
+                            <li>
+                                시놉시스, 에피소드 수, 재생 시간
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Synopsis and key story arcs. State number of episodes in series and duration per episode.</div>
+                            </li>
+                            <li>
+                                타겟 관객층 및 어필 이유
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Target audience and state why concept will appeal to them.</div>
+                            </li>
+                            <li class="font-bold text-red-600 bg-red-50 p-2 rounded-md -ml-2">
+                                커미셔너/플랫폼 약정 증빙 (LOI 등)
+                                <div class="text-[11px] text-red-500 italic en-text mt-1 font-normal">Evidence of commissioner / platform interest or commitment.</div>
+                            </li>
+                            <li>
+                                공동 제작 파트너십 계약서
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Co-production partnership agreements or letters of intent.</div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="p-5 bg-white border border-gray-200 shadow-sm rounded-xl hover:border-green-300 transition-colors">
+                        <h5 class="font-bold text-green-700 mb-3 text-lg ko-text">2. 재무 문서 <span class="text-sm font-medium en-text block text-green-400 mt-0.5">Financial documentation</span></h5>
+                        <ul class="text-sm space-y-4 text-gray-700 font-medium ko-text list-disc pl-4">
+                            <li>
+                                상세 예산 내역
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Detailed budget breakdown.</div>
+                            </li>
+                            <li>
+                                자금 조달 계획
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Financing plan.</div>
+                            </li>
+                            <li>
+                                수익 예측 및 상업화 계획
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Revenue projections and monetisation / commercialisation plan.</div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="p-5 bg-white border border-gray-200 shadow-sm rounded-xl hover:border-purple-300 transition-colors">
+                        <h5 class="font-bold text-purple-700 mb-3 text-lg ko-text">3. 크리에이티브 문서 <span class="text-sm font-medium en-text block text-purple-400 mt-0.5">Creative documentation</span></h5>
+                        <ul class="text-sm space-y-4 text-gray-700 font-medium ko-text list-disc pl-4">
+                            <li>
+                                배급 및 마케팅 전략
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Distribution and marketing strategy.</div>
+                            </li>
+                            <li>
+                                장르 전문성 증빙
+                                <div class="text-xs text-gray-500 italic en-text mt-1 font-normal">Evidence of genre expertise and target audience identification.</div>
+                            </li>
+                            <li class="font-bold text-blue-700 bg-blue-50 p-2 rounded-md -ml-2">
+                                제작진 자격 증명 및 실적
+                                <div class="text-[11px] text-blue-500 italic en-text mt-1 font-normal leading-tight">Creative team credentials and track record. Credentials of Showrunner / Producer, Director and Scriptwriter will be critical information.</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 5: Timeline -->
+        <div id="tab-timeline" class="tab-content space-y-8">
+            
+            <!-- Timeline -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center py-8">
+                <div class="border-b-2 border-gray-100 pb-3 mb-5 mt-2">
+                    <h3 class="text-xl font-bold text-gray-900 ko-text">2026 트랙별 예상 심사 및 약정 소요 기간</h3>
+                    <h4 class="text-sm text-gray-400 font-medium uppercase tracking-wider en-text">Evaluation, Contracting & Disbursement Timeline</h4>
+                </div>
+                
+                <div class="inline-flex flex-col items-center justify-center p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-full border-4 border-white shadow-lg w-52 h-52 my-4 mx-auto">
+                    <svg class="w-8 h-8 text-blue-600 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="text-3xl font-black text-blue-800 mt-1 tracking-tight whitespace-nowrap en-text">3–4 Months</span>
+                    <span class="text-xs font-bold text-blue-600 mt-1.5 ko-text">권장 사전 준비 기간</span>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-4 text-left mt-6">
+                    <div class="bg-blue-50 p-5 rounded-xl border border-blue-200 shadow-sm">
+                        <span class="badge-tap">Track 1 · 상시 트랙</span>
+                        <h4 class="font-bold text-base text-blue-900 mt-1 mb-2 ko-text">Track 1 — 플랫폼 확약 보유 상시 트랙</h4>
+                        <div class="font-medium text-gray-900 text-sm ko-text">제안서 접수 후 IMDA 담당관 협의, 확정 파이낸싱 검증 및 최종 약정서(Letter of Offer) 체결까지 통상 약 8~12주 소요 (사전 협의 포함 최소 3~4개월 여유 확보 권장, 약정 체결 전 크랭크인 불가).</div>
+                        <div class="text-xs text-gray-500 mt-2 italic en-text">Typically 8–12 weeks from full submission to Letter of Offer execution (allow 3–4 months total lead time including pre-application consultation; filming cannot start before grant execution).</div>
+                    </div>
+
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="badge-tap">Track 2 · 공모 트랙</span>
+                        <h4 class="font-bold text-base text-slate-900 mt-1 mb-2 ko-text">Track 2 — 공개 공모(Open Call) 트랙</h4>
+                        <div class="font-medium text-gray-900 text-sm ko-text">공모 마감 후 선정 통보까지 약 4개월 소요되며, 선정 통보일로부터 3개월 이내에 BGP-GMS를 통해 정식 보조금 신청서를 제출해야 합니다.</div>
+                        <div class="text-xs text-gray-500 mt-2 italic en-text">Approximately 4 months from open call launch to shortlisting notification; shortlisted applicants must submit formal grant applications via BGP-GMS within 3 months.</div>
+                    </div>
+
+                    <div class="md:col-span-2 bg-purple-50 p-5 rounded-xl border border-purple-200 shadow-sm">
+                        <span class="badge-guide">TAP 2026 실무 기준</span>
+                        <h4 class="font-bold text-base text-purple-900 mt-1 mb-2 ko-text">단계별 분할 지급 및 회계 감사 (Milestone Disbursement)</h4>
+                        <div class="font-medium text-gray-900 text-sm ko-text">보조금은 일시 선지급이 아닌 제작 단계별 마일스톤 달성 시 분할 지급되며, 최종 잔금은 납품 완료·싱가포르 인력 크레딧 확인 및 외부 회계 감사(Audit) 완료 후 정산됩니다.</div>
+                        <div class="text-xs text-gray-500 mt-2 italic en-text">Grants are disbursed progressively upon achieving project milestones, with the final tranche released after project delivery, credit verification, and external audit.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 6: References & Links -->
+        <div id="tab-references" class="tab-content space-y-8">
+            <!-- Official Links -->
+            <div class="bg-slate-50 p-6 rounded-xl shadow-inner border border-slate-200">
+                <div class="border-b-2 border-gray-200 pb-3 mb-5 mt-2">
+                    <h3 class="text-xl font-bold text-gray-900 ko-text">공식 출처 및 참조 링크 바로가기</h3>
+                    <h4 class="text-sm text-gray-400 font-medium uppercase tracking-wider en-text">Official References & Direct Links</h4>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- TAP Links -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-lg text-blue-900 border-b border-blue-200 pb-2 flex items-center ko-text">
+                            <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span> 1. TAP 핵심 정책 및 TV 지원 공식 페이지 (2026 최신)
+                        </h4>
+                        
+                        <a href="https://www.imda.gov.sg/about-imda/research-and-statistics/support-for-industry-sectors/media/tap" target="_blank" rel="noopener noreferrer" 
+                           class="block p-4 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all group">
+                            <div class="flex justify-between items-center mb-1">
+                                <div class="font-bold text-gray-900 ko-text text-sm">TAP 프로그램 종합 안내 (2026.10 업데이트)</div>
+                                <svg class="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </div>
+                            <div class="text-[11px] text-gray-500 truncate en-text">https://www.imda.gov.sg/.../media/tap</div>
+                        </a>
+
+                        <a href="https://www.imda.gov.sg/about-imda/research-and-statistics/support-for-industry-sectors/media/tap/tv" target="_blank" rel="noopener noreferrer" 
+                           class="block p-4 bg-blue-50 border border-blue-300 rounded-lg hover:border-blue-500 hover:shadow-md transition-all group relative overflow-hidden">
+                            <div class="absolute right-0 top-0 w-1 h-full bg-blue-500"></div>
+                            <div class="flex justify-between items-center mb-1">
+                                <div class="font-bold text-blue-900 ko-text text-sm">TAP TV 프로젝트 세부 지원 기준 (2026.09 업데이트 · 핵심)</div>
+                                <svg class="w-4 h-4 text-blue-400 group-hover:text-blue-600 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </div>
+                            <div class="text-[11px] text-blue-500 truncate en-text">https://www.imda.gov.sg/.../media/tap/tv</div>
+                        </a>
+
+                        <a href="https://www.imda.gov.sg/assets/613ec188-4b0d-4104-8f68-eff503e941d7.pdf" target="_blank" rel="noopener noreferrer" 
+                           class="block p-4 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all group">
+                            <div class="flex justify-between items-center mb-1">
+                                <div class="font-bold text-gray-900 ko-text text-sm flex items-center">
+                                    <span class="bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded mr-1.5 uppercase flex-shrink-0">[PDF]</span>
+                                    TAP 해외 개발·피칭·국제경쟁 보조금 지침 (ODG, 2026.10 업데이트)
+                                </div>
+                                <svg class="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </div>
+                            <div class="text-[11px] text-gray-500 truncate en-text">https://www.imda.gov.sg/assets/... (Updated 15 Oct 2026)</div>
+                        </a>
+                    </div>
+
+                    <!-- Open Calls & 2026 Guidelines Links -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-lg text-purple-900 border-b border-purple-200 pb-2 flex items-center ko-text">
+                            <span class="w-3 h-3 rounded-full bg-purple-500 mr-2"></span> 2. 공개 공모 캘린더 및 2026 실무 참고 지침
+                        </h4>
+                        
+                        <a href="https://www.imda.gov.sg/about-imda/research-and-statistics/support-for-industry-sectors/media/calendar-of-calls" target="_blank" rel="noopener noreferrer" 
+                           class="block p-4 bg-white border border-gray-200 rounded-lg hover:border-purple-500 hover:shadow-md transition-all group">
+                            <div class="flex justify-between items-center mb-1">
+                                <div class="font-bold text-gray-900 ko-text text-sm">IMDA 미디어 공개 공모 캘린더 (Calendar of Calls)</div>
+                                <svg class="w-4 h-4 text-gray-400 group-hover:text-purple-500 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </div>
+                            <div class="text-[11px] text-gray-500 truncate en-text">https://www.imda.gov.sg/.../media/calendar-of-calls</div>
+                            <p class="text-xs text-gray-600 mt-1.5 ko-text leading-tight">글로벌 플랫폼·배급사와 함께 진행하는 최신 공모 일정 및 마감일 확인 페이지입니다.</p>
+                        </a>
+
+                        <a href="https://www.imda.gov.sg/assets/cd8711fc-3467-4a28-b462-698d1ab3a7c4.pdf" target="_blank" rel="noopener noreferrer" 
+                           class="block p-4 bg-purple-50 border border-purple-300 rounded-lg hover:border-purple-500 hover:shadow-md transition-all group relative overflow-hidden">
+                            <div class="absolute right-0 top-0 w-1 h-full bg-purple-500"></div>
+                            <div class="flex justify-between items-center mb-1">
+                                <div class="font-bold text-purple-900 ko-text text-sm flex items-center">
+                                    <span class="bg-purple-600 text-white text-[9px] px-1.5 py-0.5 rounded mr-1.5 uppercase flex-shrink-0">[PDF]</span>
+                                    2026 TAP 공동제작 적격비용·인력 기준 참고 지침 (2026.10)
+                                </div>
+                                <svg class="w-4 h-4 text-purple-400 group-hover:text-purple-600 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </div>
+                            <p class="text-xs text-purple-700 mt-1.5 ko-text font-medium leading-tight">✅ 2026년 최신 TAP 공모 브리프 원문으로, 공동제작 적격 비용(QE), 싱가포르 인력 인정 범위 및 BGP-GMS 절차를 확인할 수 있는 최신 공식 참고 문서입니다.</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+
+</div>
+
+<script>
+    function switchTab(tabId) {
+        // 1. Hide all tab contents
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(content => {
+            content.classList.remove('active');
+        });
+
+        // 2. Remove active styling from all buttons
+        const buttons = document.querySelectorAll('.tab-btn');
+        buttons.forEach(btn => {
+            // Remove active classes
+            btn.classList.remove('bg-blue-50', 'text-blue-700', 'border-t-2', 'border-l', 'border-r', 'border-blue-200', 'shadow-[0_4px_0_0_#eff6ff_inset]');
+            // Add inactive classes
+            btn.classList.add('text-gray-500', 'border-t-2', 'border-transparent');
+            
+            // Adjust SVG icons inside inactive buttons
+            const svg = btn.querySelector('svg');
+            if(svg) {
+                svg.classList.remove('text-blue-600');
+                svg.classList.add('text-gray-400');
+            }
+        });
+
+        // 3. Show selected tab content
+        const selectedContent = document.getElementById(tabId);
+        if(selectedContent) {
+            selectedContent.classList.add('active');
+        }
+
+        // 4. Add active styling to selected button
+        const selectedBtn = document.getElementById('btn-' + tabId);
+        if(selectedBtn) {
+            // Remove inactive classes
+            selectedBtn.classList.remove('text-gray-500', 'border-transparent');
+            // Add active classes
+            selectedBtn.classList.add('bg-blue-50', 'text-blue-700', 'border-t-2', 'border-l', 'border-r', 'border-blue-200', 'shadow-[0_4px_0_0_#eff6ff_inset]');
+            
+            // Adjust SVG icon inside active button
+            const svg = selectedBtn.querySelector('svg');
+            if(svg) {
+                svg.classList.remove('text-gray-400');
+                svg.classList.add('text-blue-600');
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
