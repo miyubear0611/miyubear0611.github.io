@@ -1,0 +1,2945 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arsan 2027秋季韩国四校网申 1:1 仿真样表与预填工作台 / Application Forms Simulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+:root {
+  --bg: #F4F7FB;
+  --surface: #FFFFFF;
+  --surface-2: #F8FAFC;
+  --surface-3: #EFF6FF;
+  --border: #E2E8F0;
+  --border-strong: #CBD5E1;
+  --text: #0F172A;
+  --text-2: #334155;
+  --text-3: #64748B;
+  --primary: #1A73E8;
+  --primary-soft: rgba(26, 115, 232, 0.10);
+  --teal: #0D9488;
+  --teal-soft: rgba(13, 148, 136, 0.10);
+  --green: #0F9D58;
+  --green-soft: #E6F4EA;
+  --amber: #D97706;
+  --amber-soft: #FEF3C7;
+  --orange: #EA580C;
+  --purple: #7C3AED;
+  --purple-soft: #F3E8FF;
+  --red: #D93025;
+  --red-soft: #FCE8E6;
+  --ku-crimson: #8B0029;
+  --ku-soft: #FDF2F5;
+  --hyu-blue: #0E4A84;
+  --hyu-soft: #EFF6FF;
+  --yu-navy: #003876;
+  --yu-soft: #EEF4FF;
+  --cau-blue: #004C97;
+  --cau-soft: #EFF6FF;
+  --paper-bg: #FFFFFF;
+  --paper-ink: #0F172A;
+  --paper-sub: #334155;
+  --paper-border: #94A3B8;
+  --paper-cell-head: #F1F5F9;
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 6px 18px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.04);
+  --shadow-paper: 0 10px 30px rgba(15, 23, 42, 0.10), 0 2px 8px rgba(15, 23, 42, 0.05);
+  --radius: 14px;
+  --radius-sm: 9px;
+}
+
+html[data-theme="dark"] {
+  --bg: #0B1120;
+  --surface: #151F32;
+  --surface-2: #1E293B;
+  --surface-3: #1E3A5F;
+  --border: #2D3D56;
+  --border-strong: #475569;
+  --text: #F1F5F9;
+  --text-2: #CBD5E1;
+  --text-3: #94A3B8;
+  --primary: #60A5FA;
+  --primary-soft: rgba(96, 165, 250, 0.16);
+  --green-soft: rgba(16, 185, 129, 0.16);
+  --amber-soft: rgba(245, 158, 11, 0.17);
+  --purple-soft: rgba(167, 139, 250, 0.16);
+  --red-soft: rgba(239, 68, 68, 0.18);
+  --ku-soft: rgba(139, 0, 41, 0.24);
+  --hyu-soft: rgba(14, 74, 132, 0.28);
+  --yu-soft: rgba(0, 56, 118, 0.28);
+  --cau-soft: rgba(0, 76, 151, 0.28);
+  --paper-bg: #162033;
+  --paper-ink: #F1F5F9;
+  --paper-sub: #CBD5E1;
+  --paper-border: #475569;
+  --paper-cell-head: #1E2D45;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.32);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.38);
+  --shadow-paper: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif;
+  line-height: 1.64;
+  font-size: 14.5px;
+  -webkit-font-smoothing: antialiased;
+}
+
+html[lang="fa"] body {
+  font-family: 'Vazirmatn', 'Tahoma', 'Segoe UI', 'Inter', sans-serif;
+  line-height: 1.82;
+}
+
+/* CRITICAL RULE: All form input values and simulated English/Korean form sheets remain strictly LTR */
+input.ltr-field,
+textarea.ltr-field,
+select.ltr-field,
+.ltr-box,
+.sim-paper {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: isolate;
+  font-family: 'Inter', 'Noto Sans KR', 'Noto Sans SC', 'Segoe UI', sans-serif;
+}
+
+code.ic {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 0.90em;
+  background: rgba(148, 163, 184, 0.18);
+  padding: 1px 5px;
+  border-radius: 4px;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Sticky Topbar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.93);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+html[data-theme="dark"] .topbar {
+  background: rgba(21, 31, 50, 0.95);
+}
+
+.topbar-inner {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.brand-cluster {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.back-guide-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 9px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border: 1.5px solid var(--primary);
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.back-guide-btn:hover {
+  background: var(--primary);
+  color: #FFFFFF;
+}
+
+.brand-title {
+  font-weight: 800;
+  font-size: 15.5px;
+  color: var(--text);
+  line-height: 1.28;
+}
+.brand-sub {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.toolbar-cluster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lang-switch {
+  display: inline-flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 2px;
+}
+.lang-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12.2px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.lang-btn.active {
+  background: var(--primary);
+  color: #FFFFFF;
+}
+
+.ctrl-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-2);
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-size: 12.3px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.ctrl-pill:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.ctrl-pill.primary-cta {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #FFFFFF;
+}
+.ctrl-pill.primary-cta:hover {
+  filter: brightness(1.06);
+  color: #FFFFFF;
+}
+.ctrl-pill.green-cta {
+  background: var(--green-soft);
+  border-color: rgba(15, 157, 88, 0.45);
+  color: var(--green);
+}
+.save-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--green-soft);
+  color: var(--green);
+  border: 1px solid rgba(15, 157, 88, 0.35);
+}
+
+/* Main Container */
+.page-wrap {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 18px 18px 64px;
+}
+
+.section-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.sec-head-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.sec-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+}
+.sec-sub {
+  margin: 4px 0 0;
+  font-size: 13.3px;
+  color: var(--text-3);
+}
+
+/* Readiness Progress Strip */
+.readiness-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+.readiness-track {
+  flex: 1;
+  min-width: 160px;
+  height: 9px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  direction: ltr;
+}
+.readiness-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1A73E8, #0F9D58);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+/* Intake Accordion Groups */
+.intake-groups-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+@media (max-width: 960px) {
+  .intake-groups-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.intake-group {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 15px;
+}
+.intake-group-title {
+  margin: 0 0 12px;
+  font-size: 14.8px;
+  font-weight: 800;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-bottom: 1px dashed var(--border-strong);
+  padding-bottom: 8px;
+}
+
+.fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px 12px;
+}
+.field-span-2 {
+  grid-column: 1 / -1;
+}
+@media (max-width: 600px) {
+  .fields-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.field-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.field-label {
+  font-size: 12.3px;
+  font-weight: 700;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.field-hint {
+  font-size: 11.4px;
+  color: var(--text-3);
+  line-height: 1.45;
+}
+
+input.ltr-field,
+textarea.ltr-field,
+select.ltr-field {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13.4px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input.ltr-field:focus,
+textarea.ltr-field:focus,
+select.ltr-field:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+input.ltr-field.is-pending {
+  border-style: dashed;
+  border-color: #F59E0B;
+  background: rgba(245, 158, 11, 0.06);
+}
+input.ltr-field.is-prefilled {
+  border-color: rgba(15, 157, 88, 0.55);
+}
+input.ltr-field[readonly] {
+  background: var(--surface-3);
+  font-weight: 700;
+  color: var(--primary);
+  cursor: default;
+}
+
+.val-msg {
+  font-size: 11.6px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-top: 2px;
+}
+.val-msg.err { background: var(--red-soft); color: var(--red); border: 1px solid rgba(217, 48, 37, 0.35); }
+.val-msg.warn { background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(217, 119, 6, 0.35); }
+.val-msg.ok { background: var(--green-soft); color: var(--green); border: 1px solid rgba(15, 157, 88, 0.35); }
+
+/* University Switcher Tabs */
+.uni-tabs-bar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+@media (max-width: 860px) {
+  .uni-tabs-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) {
+  .uni-tabs-bar { grid-template-columns: minmax(0, 1fr); }
+}
+
+.uni-tab-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: start;
+  transition: all 0.16s ease;
+}
+.uni-tab-btn:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+.uni-tab-btn.active[data-uni="ku"] { border-color: var(--ku-crimson); background: var(--ku-soft); box-shadow: var(--shadow-sm); }
+.uni-tab-btn.active[data-uni="hyu"] { border-color: var(--hyu-blue); background: var(--hyu-soft); box-shadow: var(--shadow-sm); }
+.uni-tab-btn.active[data-uni="yu"] { border-color: var(--yu-navy); background: var(--yu-soft); box-shadow: var(--shadow-sm); }
+.uni-tab-btn.active[data-uni="cau"] { border-color: var(--cau-blue); background: var(--cau-soft); box-shadow: var(--shadow-sm); }
+
+.uni-tab-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 14.5px;
+}
+.uni-tab-sub {
+  font-size: 11.8px;
+  color: var(--text-3);
+}
+
+/* Badges Legend Strip */
+.legend-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  margin-bottom: 18px;
+  font-size: 12.5px;
+}
+.badge-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  background: rgba(26, 115, 232, 0.12);
+  color: var(--primary);
+  border: 1px solid rgba(26, 115, 232, 0.35);
+}
+.badge-sign {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 800;
+  background: var(--red-soft);
+  color: var(--red);
+  border: 1.5px solid var(--red);
+}
+.badge-blank {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  background: rgba(100, 116, 139, 0.16);
+  color: var(--text-2);
+  border: 1px dashed var(--border-strong);
+}
+
+/* Trilingual Instructional Banner Above Each Simulated Sheet */
+.sheet-guide-banner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-inline-start: 5px solid var(--primary);
+  border-radius: 11px;
+  padding: 12px 16px;
+  margin: 22px 0 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.sheet-guide-banner.warn-red {
+  background: var(--red-soft);
+  border-color: var(--red);
+  border-inline-start-width: 6px;
+}
+
+/* 1:1 Simulated Official Paper Sheet */
+.sim-paper {
+  background: var(--paper-bg);
+  color: var(--paper-ink);
+  border: 1.5px solid var(--paper-border);
+  border-radius: 8px;
+  padding: 26px 28px;
+  margin-bottom: 26px;
+  box-shadow: var(--shadow-paper);
+  position: relative;
+  overflow-x: auto;
+}
+@media (max-width: 680px) {
+  .sim-paper { padding: 14px 12px; }
+}
+
+.paper-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 18px;
+  border-radius: 6px;
+  color: #FFFFFF;
+  margin-bottom: 16px;
+}
+.paper-header.ku { background: linear-gradient(135deg, #8B0029, #65001D); }
+.paper-header.hyu { background: linear-gradient(135deg, #0E4A84, #082F57); }
+.paper-header.yu { background: linear-gradient(135deg, #003876, #00224B); }
+.paper-header.cau { background: linear-gradient(135deg, #004C97, #003166); }
+
+.paper-h-title {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  margin: 0 0 3px;
+}
+.paper-h-sub {
+  font-size: 12px;
+  opacity: 0.9;
+}
+.exam-no-box {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11.5px;
+  text-align: right;
+  min-width: 175px;
+}
+
+/* Official Form Table Grid */
+.form-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 14px;
+  font-size: 13px;
+  min-width: 560px;
+}
+.form-tbl th,
+.form-tbl td {
+  border: 1px solid var(--paper-border);
+  padding: 8px 10px;
+  vertical-align: middle;
+  color: var(--paper-ink);
+}
+.form-tbl th {
+  background: var(--paper-cell-head);
+  font-weight: 700;
+  width: 21%;
+  color: var(--paper-sub);
+  font-size: 12.2px;
+}
+.form-sec-caption {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin: 14px 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--paper-ink);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Values inside simulated forms */
+.f-val {
+  font-weight: 700;
+  color: var(--paper-ink);
+  font-family: 'JetBrains Mono', 'Inter', monospace;
+  font-size: 13px;
+}
+.f-pending {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: rgba(245, 158, 11, 0.16);
+  border: 1px dashed #D97706;
+  color: #B45309;
+  font-size: 12px;
+  font-weight: 700;
+}
+html[data-theme="dark"] .f-pending {
+  color: #FCD34D;
+}
+.f-locked {
+  font-weight: 700;
+  color: var(--primary);
+}
+.f-trap-alert {
+  margin-top: 5px;
+  padding: 5px 9px;
+  border-radius: 5px;
+  background: var(--red-soft);
+  border: 1px solid var(--red);
+  color: var(--red);
+  font-size: 11.8px;
+  font-weight: 700;
+}
+
+/* 3x4 cm ID Photo Box */
+.photo-frame-3x4 {
+  width: 114px;
+  height: 152px;
+  border: 2px dashed var(--paper-border);
+  border-radius: 6px;
+  background: var(--paper-cell-head);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6px;
+  font-size: 11px;
+  color: var(--paper-sub);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.photo-frame-3x4 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Wet-Ink Signature Red Highlight Box */
+.wet-sign-box {
+  border: 2.5px dashed #D93025;
+  background: rgba(217, 48, 37, 0.06);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.wet-sign-line {
+  min-width: 240px;
+  border-bottom: 1.8px solid var(--paper-ink);
+  padding-bottom: 4px;
+  font-style: italic;
+  color: var(--red);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* Diagonal Hatched Locked Official-Use Zone */
+.locked-verifier-zone {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(148, 163, 184, 0.16),
+    rgba(148, 163, 184, 0.16) 10px,
+    rgba(100, 116, 139, 0.26) 10px,
+    rgba(100, 116, 139, 0.26) 20px
+  );
+  border: 2px dashed #64748B;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 12px 0;
+  position: relative;
+}
+
+/* Watermark Stamp for Page 4 Receipt & Discarded Art Pledge */
+.stamp-overlay {
+  display: inline-block;
+  border: 3px solid #64748B;
+  color: #475569;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: 900;
+  font-size: 14px;
+  transform: rotate(-3deg);
+  background: rgba(241, 245, 249, 0.92);
+  letter-spacing: 0.5px;
+}
+html[data-theme="dark"] .stamp-overlay {
+  background: rgba(30, 41, 59, 0.92);
+  color: #CBD5E1;
+}
+.stamp-overlay.discard-red {
+  border-color: #D93025;
+  color: #D93025;
+  background: rgba(252, 232, 230, 0.95);
+}
+
+/* Cut-out Envelope Label */
+.cut-label-box {
+  border: 2px dashed var(--paper-ink);
+  border-radius: 10px;
+  padding: 18px 20px;
+  background: var(--paper-bg);
+  position: relative;
+  margin-top: 10px;
+}
+
+/* CAU 3-Prompt Character Counter Progress */
+.prompt-card {
+  background: var(--surface-2);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.char-bar-track {
+  width: 100%;
+  height: 8px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 6px;
+  position: relative;
+}
+.char-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.15s ease, background 0.15s ease;
+}
+
+/* Print Preview Mode Bar */
+.print-ctrl-bar {
+  display: none;
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 12px 18px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+body.a4-preview-on .print-ctrl-bar {
+  display: flex;
+}
+body.a4-preview-on .intake-card-section,
+body.a4-preview-on .print-hidden-sheet {
+  display: none !important;
+}
+body.a4-preview-on .sim-paper {
+  max-width: 210mm;
+  margin-left: auto;
+  margin-right: auto;
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: #64748B !important;
+}
+body.a4-preview-on .sim-paper th {
+  background: #F1F5F9 !important;
+  color: #1E293B !important;
+}
+body.a4-preview-on .sim-paper td,
+body.a4-preview-on .sim-paper .f-val {
+  color: #0F172A !important;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 11mm 12mm;
+  }
+  html, body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    font-size: 12px !important;
+  }
+  .topbar,
+  .intake-card-section,
+  .uni-tabs-bar,
+  .legend-strip,
+  .sheet-guide-banner,
+  .print-ctrl-bar,
+  .no-print {
+    display: none !important;
+  }
+  .page-wrap {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .sim-paper {
+    box-shadow: none !important;
+    border: 1px solid #475569 !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    padding: 14px 16px !important;
+    margin: 0 0 14px 0 !important;
+    overflow: visible !important;
+    break-inside: avoid;
+  }
+  .sim-paper.print-hidden-sheet {
+    display: none !important;
+  }
+  .sim-paper.page-break-after {
+    page-break-after: always;
+    break-after: page;
+  }
+  .paper-header {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .form-tbl {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .form-tbl th {
+    background: #F1F5F9 !important;
+    color: #0F172A !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .form-tbl td, .f-val {
+    color: #000000 !important;
+  }
+  .wet-sign-box, .locked-verifier-zone {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+</style>
+</head>
+<body>
+  <header class="topbar" id="topbar-root"></header>
+  <main class="page-wrap" id="main-root"></main>
+  <script>const I18N = {"pageTitle": {"zh": "Arsan 2027秋季韩国四校网申 1:1 仿真样表与预填工作台", "en": "Arsan Fall 2027 Korea 4-University Application Forms 1:1 Simulator & Workbench", "fa": "میز کار پیش‌پرکردن و شبیه‌ساز ۱:۱ فرم‌های ثبت‌نام ۴ دانشگاه کره (پاییز ۲۰۲۷)"}, "pageSub": {"zh": "一次填写实时同步四校样表 · LocalStorage 自动防丢 · 支持导出首尔秒填包 (.txt) 与 A4 手签打印预览", "en": "Fill Once, Sync Live Across All 4 Portals · Auto-Saved Locally · One-Click Charlotte .txt Pack & A4 Print Preview", "fa": "یک‌بار ورود اطلاعات (انگلیسی LTR) و درج خودکار در فرم هر ۴ دانشگاه · ذخیره خودکار · خروجی .txt و پیش‌نمایش چاپ A4"}, "backToGuide": {"zh": "← 返回主申请指南 (guide.html)", "en": "← Back to Master Guide (guide.html)", "fa": "← بازگشت به راهنمای اصلی (guide.html)"}, "btnExportTxt": {"zh": "📤 导出给首尔 Charlotte 的网申复制粘贴包 (.txt)", "en": "📤 Export Charlotte Copy-Paste Pack (.txt)", "fa": "📤 خروجی پکیج کپی-پیست برای شارلوت (.txt)"}, "btnExportJson": {"zh": "📦 备份 (.json)", "en": "📦 Backup (.json)", "fa": "📦 پشتیبان (.json)"}, "btnImportJson": {"zh": "📥 导入 (.json)", "en": "📥 Import (.json)", "fa": "📥 بازیابی (.json)"}, "btnPrintA4": {"zh": "🖨️ A4 打印仿真样表预览", "en": "🖨️ A4 Print Preview", "fa": "🖨️ پیش‌نمایش چاپ A4"}, "themeDark": {"zh": "🌙 深色", "en": "🌙 Dark", "fa": "🌙 تیره"}, "themeLight": {"zh": "☀️ 浅色", "en": "☀️ Light", "fa": "☀️ روشن"}, "saveStatus": {"zh": "💾 自动保存正常", "en": "💾 Auto-Saved", "fa": "💾 ذخیره خودکار فعال"}, "ltrNotice": {"zh": "💡 填表铁律：界面说明可随时切换中/英/波斯三语，但所有输入框内的实际填报值均强制锁定为 LTR 英文/数字格式（严格对齐护照拼写与韩国网申系统规范）。", "en": "💡 Input Rule: UI instructions switch across ZH / EN / FA, while all form field values strictly stay in LTR English/ASCII format matching your passport and Korean portals.", "fa": "💡 قانون طلایی تکمیل فرم: زبان راهنمای صفحه به فارسی/انگلیسی/چینی قابل تغییر است، اما مقادیر داخل تمام کادرها الزاماً به صورت انگلیسی چپ‌به‌راست (LTR) مطابق پاسپورت ثبت می‌شوند."}, "m1Title": {"zh": "模块一｜「一次填写 · 四校样表实时自动填入」主数据采集台", "en": "Module 1 | 'Fill Once · Live 4-School Sync' Master Data Intake Workbench", "fa": "بخش اول | میز کار جامع ورود اطلاعات پایه (درج همزمان و زنده در فرم هر ۴ دانشگاه)"}, "m1Collapse": {"zh": "🔼 折叠采集台（专注看下方样表）", "en": "🔼 Collapse Workbench (Focus on Forms)", "fa": "🔼 جمع کردن میز کار (تمرکز روی فرم‌ها)"}, "m1Expand": {"zh": "🔽 展开主数据采集台继续编辑", "en": "🔽 Expand Master Intake Workbench", "fa": "🔽 باز کردن میز کار ورود اطلاعات"}, "btnResetDefaults": {"zh": "🔄 恢复标准预填值", "en": "🔄 Reset to Defaults", "fa": "🔄 بازنشانی به مقادیر پیش‌فرض"}, "resetConfirm": {"zh": "确定清空您已输入的个人字段并恢复初始标准学籍预填值吗？（此操作将清除当前草稿，建议先点【备份 .json】）", "en": "Clear custom entries and restore initial standard academic defaults? (Back up .json first if needed.)", "fa": "آیا از پاک کردن اطلاعات واردشده و بازگشت به پیش‌فرض‌های اولیه مطمئن هستید؟ (پیشنهاد می‌شود ابتدا خروجی .json بگیرید)"}, "readinessLabel": {"zh": "主采集台必填项就绪度", "en": "Master Portal Fields Readiness", "fa": "میزان تکمیل فیلدهای کلیدی ثبت‌نام"}, "printBarTitle": {"zh": "🖨️ A4 仿真打印模式已开启（已隐藏顶部采集台，可直接打印练习湿墨手签或导出正式确认书 PDF）", "en": "🖨️ A4 Print Simulation Mode Active (Workbench hidden—ready to print for wet-ink signing practice or clean PDF scan)", "fa": "🖨️ حالت پیش‌نمایش چاپ A4 فعال است (آماده چاپ روی کاغذ A4 جهت تمرین محل امضای خیس یا چاپ فرم رسمی)"}, "printScopeAll": {"zh": "📄 当前选中院校全套样表", "en": "📄 All Sheets of Active School", "fa": "📄 تمام صفحات دانشگاه انتخاب‌شده"}, "printScopeKuRelease": {"zh": "🧾 仅打印：高丽第③页 Release 学籍核验书", "en": "🧾 Only: KU Page 3 Release Form", "fa": "🧾 فقط صفحه ۳ فرم Release دانشگاه کره"}, "printScopeYuConfirm": {"zh": "🧾 仅打印：延世 Non-Korean 确认书 (1:1净版)", "en": "🧾 Only: Yonsei Non-Korean Confirmation (1:1 Clean)", "fa": "🧾 فقط فرم رسمی Non-Korean یونسی (چاپ تمیز)"}, "printScopeCauConsent": {"zh": "🧾 仅打印：中央大第16项核验与同意书 (1:1)", "en": "🧾 Only: CAU Item #16 Verification & Consent", "fa": "🧾 فقط فرم بند ۱۶ استعلام مدرک چونگ‌آنگ"}, "btnTriggerPrint": {"zh": "🖨️ 立即调用系统打印 / 另存 PDF", "en": "🖨️ Print / Save as A4 PDF Now", "fa": "🖨️ اجرای چاپ / ذخیره PDF سایز A4"}, "btnExitPrint": {"zh": "✕ 退出打印预览返回编辑", "en": "✕ Exit Print Preview", "fa": "✕ خروج از حالت پیش‌نمایش چاپ"}, "groups": {"g1": {"zh": "① 本人证件与护照组 (Applicant Identity)", "en": "① Applicant Identity & Passport", "fa": "۱. مشخصات فردی و پاسپورت متقاضی"}, "g2": {"zh": "② 联系邮箱与双地址组 (Contacts & Dual Addresses)", "en": "② Dual Emails, Phone & Iran/Seoul Addresses", "fa": "۲. ایمیل‌های دوگانه، موبایل و آدرس ایران/سئول"}, "g3": {"zh": "③ 本科学籍与母校核验处组 (标准英文已预填)", "en": "③ Undergraduate Record & IAU Registrar (Pre-Filled)", "fa": "۳. سوابق تحصیلی و مشخصات آموزش اردبیل (پیش‌پرشده)"}, "g4": {"zh": "④ 父母信息、雅思与两位推荐教授组 (Family, IELTS & LORs)", "en": "④ Parents, IELTS e-TRF & 2 Recommenders", "fa": "۴. مشخصات والدین، آیلتس و ۲ استاد معرف"}}, "legend": {"title": {"zh": "样表视觉标识图例：", "en": "Form Sheet Badge Legend:", "fa": "راهنمای علائم روی فرم‌های شبیه‌سازی‌شده:"}, "lock": {"zh": "🔒 系统预锁定标准项（防选错通道/代码）", "en": "🔒 System Pre-Locked Standard Option", "fa": "🔒 گزینه قفل‌شده استاندارد (ضد خطا)"}, "sign": {"zh": "✍️ 需打印湿墨亲笔手签处（红框高亮）", "en": "✍️ Print & Wet-Ink Hand-Sign Area (Red Box)", "fa": "✍️ محل امضای دستی با جوهر خیس پس از چاپ (کادر قرمز)"}, "blank": {"zh": "🚫 留空禁填区（学校/教务核验专用）", "en": "🚫 Official Verification Area — Leave Blank!", "fa": "🚫 بخش مخصوص دانشگاه/آموزش — مطلقاً خالی بماند!"}}, "uniTabs": {"ku": {"name": {"zh": "🏛️ Tab 1｜高丽大学 (KU)", "en": "🏛️ Tab 1 | Korea Univ. (KU)", "fa": "🏛️ تب ۱ | دانشگاه کره (KU)"}, "sub": {"zh": "UWAY 5页全套 + Release + 名片框推荐表", "en": "UWAY 5-Page Set + Release + Business Card LOR", "fa": "۵ صفحه کامل UWAY + فرم Release + فرم توصیه‌نامه"}}, "hyu": {"name": {"zh": "🦁 Tab 2｜汉阳大学 (HYU)", "en": "🦁 Tab 2 | Hanyang Univ. (HYU)", "fa": "🦁 تب ۲ | دانشگاه هانیانگ (HYU)"}, "sub": {"zh": "OIA申请表 + 誓约书(弃艺术表) + 218室封面", "en": "OIA Form + Pledge (Drop Art) + Rm 218 Label", "fa": "فرم OIA + تعهدنامه + برچسب پستی اتاق ۲۱۸"}}, "yu": {"name": {"zh": "🦅 Tab 3｜延世医大 (YU)", "en": "🦅 Tab 3 | Yonsei Med (YU)", "fa": "🦅 تب ۳ | پزشکی یونسی (YU)"}, "sub": {"zh": "GPA选Others(17.50) + $130锁死 + 非韩籍表", "en": "GPA 'Others' 17.50 + $130 Lock + Non-Korean Sheet", "fa": "معدل Others ۱۷.۵۰ + قفل ۱۳۰ دلاری + فرم غیرکره‌ای"}}, "cau": {"name": {"zh": "🐉 Tab 4｜中央大学 (CAU)", "en": "🐉 Tab 4 | Chung-Ang Univ. (CAU)", "fa": "🐉 تب ۴ | دانشگاه چونگ‌آنگ (CAU)"}, "sub": {"zh": "UWAY在线3题计数器 + 第16项核验表 + CAYSS", "en": "3-Prompt Counter + Item #16 Consent + CAYSS LOR", "fa": "شمارنده ۳ سؤال UWAY + فرم بند ۱۶ + توصیه‌نامه پلمپ"}}}, "val": {"passportOk": {"zh": "✅ 护照剩余有效期充裕（距2027.03申请 ≥ 2年，不会截短 D-2 签证居留期）", "en": "✅ Passport validity ≥ 2 years past Mar 2027 (safe against D-2 stay truncation)", "fa": "✅ اعتبار پاسپورت بیش از ۲ سال است (مدت اقامت ویزای D-2 کوتاه نخواهد شد)"}, "passportWarn": {"zh": "⚠️ 护照距 2027.03 不足 2 年！建议换发新护照，防韩国出入境按护照到期日截短 D-2 居留期", "en": "⚠️ Under 2 years remaining from Mar 2027! Renewing recommended so Korean Immigration won't truncate D-2 stay", "fa": "⚠️ اعتبار پاسپورت تا مارس ۲۰۲۷ کمتر از ۲ سال است! جهت جلوگیری از کوتاه شدن اقامت D-2 تعویض توصیه می‌شود"}, "passportExpired": {"zh": "⛔ 护照在 2027 秋季入学前即到期！必须立即换发新护照！", "en": "⛔ Passport expires before Fall 2027 entry! Renewal is mandatory!", "fa": "⛔ پاسپورت پیش از شروع ترم پاییز ۲۰۲۷ منقضی می‌شود! تعویض فوری الزامی است!"}, "emailSameDomain": {"zh": "⛔ 检测到两个邮箱域名相同！高丽网申强制要求填写 2 个不同域名的本人有效邮箱（如 Gmail + Outlook）！", "en": "⛔ Identical email domains detected! Korea Univ. strictly requires 2 DIFFERENT domains (e.g. Gmail + Outlook)!", "fa": "⛔ دامنه هر دو ایمیل یکسان است! دانشگاه کره درج ۲ ایمیل با دامنه متفاوت (مثلاً Gmail و Outlook) را الزامی کرده است!"}, "emailDiffOk": {"zh": "✅ 双邮箱不同域名校验通过（满足高丽大学双域名联系红线）", "en": "✅ 2 distinct email domains verified (satisfies Korea Univ. requirement)", "fa": "✅ تفاوت دامنه دو ایمیل تأیید شد (منطبق با الزام دانشگاه کره)"}, "recPersonalMail": {"zh": "⛔ 警告：检测到私人邮箱域名！高丽大学强制要求教授使用大学官方工作邮箱（@iau.ac.ir）直发推荐信！", "en": "⛔ Personal webmail detected! Korea Univ. strictly requires institutional professor email (@iau.ac.ir)!", "fa": "⛔ هشدار ایمیل شخصی! دانشگاه کره ارسال مستقیم از ایمیل رسمی دانشگاهی استاد (@iau.ac.ir) را الزامی می‌داند!"}, "recOfficialOk": {"zh": "✅ 大学官方机构邮箱格式校验通过", "en": "✅ Institutional academic email verified", "fa": "✅ فرمت ایمیل رسمی دانشگاهی تأیید شد"}}};
+const INITIAL_FORM_VALUES = {"surname": "", "givenName": "", "dob": "", "gender": "Male", "nationality": "Iran", "passportNo": "", "passportExpiry": "", "iranNatId": "", "emailPrimary": "", "emailSecondary": "", "iranMobile": "+98-", "iranAddress": "", "iranPostal": "", "seoulAddress": "", "seoulZip": "", "charlottePhone": "010-", "univName": "Islamic Azad University, Ardabil Branch", "facultyName": "Faculty of Medicine", "degreeMajor": "B.S. in Clinical Laboratory Sciences", "majorShort": "Clinical Laboratory Sciences", "studentId": "", "attendancePeriod": "", "gradStatusDate": "", "regSemesters": "10", "officialCgpa": "17.50 / 20.00", "convertedPct": "87.50 / 100", "scholaroGpa": "", "regOfficeName": "Office of Academic Affairs & Graduates, Islamic Azad University, Ardabil Branch", "regOfficeAddr": "Basij Square, Ardabil, Iran", "regOfficeZip": "", "regOfficeTel": "+98-45-33727799", "regOfficeEmail": "", "regOfficeFax": "", "fatherName": "", "fatherDob": "", "fatherPassport": "", "fatherNat": "Iran", "motherName": "", "motherDob": "", "motherPassport": "", "motherNat": "Iran", "ieltsDate": "2027-02-07", "ieltsOverall": "", "ieltsSubscores": "", "ieltsTrfNo": "", "rec1Name": "", "rec1Title": "", "rec1Course": "", "rec1Email": "", "rec1Phone": "", "rec1KnownYrs": "", "rec1KnownMos": "", "rec2Name": "", "rec2Title": "", "rec2Course": "", "rec2Email": "", "rec2Phone": "", "hyuAdvisor": "#1a Prof. Jin-Wu Nam (남진우 · BIG Lab — Department of Life Science)", "hyuEssayDraft": "", "yuMajorChoice": "Department of Medical Sciences (의과학과 · BK21 Project)", "cauMajorChoice": "Department of Pharmacy (약학과 · College of Pharmacy)", "cauPrompt1": "", "cauPrompt2": "", "cauPrompt3": "", "cauRankPct": "12.5", "cauCohortSize": "32"};
+const INTAKE_SCHEMA = [{"group": "g1", "fields": [{"key": "surname", "span": 1, "placeholder": "e.g. MOHAMMADI", "label": {"zh": "Passport Surname (护照姓 · 大写)", "en": "Passport Surname (UPPERCASE)", "fa": "نام خانوادگی مطابق پاسپورت (بزرگ)"}, "hint": {"zh": "严格按护照机读区大写字母填写", "en": "Exact uppercase spelling on passport bio-page", "fa": "دقیقاً با حروف بزرگ انگلیسی مطابق پاسپورت"}}, {"key": "givenName", "span": 1, "placeholder": "e.g. ARSAN", "label": {"zh": "Passport Given Name (护照名 · 大写)", "en": "Passport Given Name (UPPERCASE)", "fa": "نام کوچک مطابق پاسپورت (بزرگ)"}, "hint": {"zh": "若有中间名按护照空格顺序一并填入", "en": "Include middle name if printed on passport", "fa": "مطابق اسپل دقیق صفحه اول پاسپورت"}}, {"key": "_uwayConcat", "span": 2, "readonly": true, "label": {"zh": "🔗 UWAY 无空格连写名预览（自动拼接 · 防系统截断）", "en": "🔗 UWAY Space-Free Concatenated Name (Auto-Preview)", "fa": "🔗 پیش‌نمایش نام پیوسته بدون فاصله ویژه سامانه UWAY (تولید خودکار)"}, "hint": {"zh": "韩国 UWAY 网申及韩国银行核验常自动合并为 SURNAMEGIVENNAME，此处实时预览供核对", "en": "Korean UWAY portals often store SURNAMEGIVENNAME without spaces—auto-generated here", "fa": "سامانه UWAY کره اغلب نام خانوادگی و نام را بدون فاصله ترکیب می‌کند"}}, {"key": "dob", "span": 1, "placeholder": "YYYY-MM-DD", "label": {"zh": "Date of Birth (出生日期 YYYY-MM-DD)", "en": "Date of Birth (YYYY-MM-DD)", "fa": "تاریخ تولد میلادی (YYYY-MM-DD)"}, "hint": {"zh": "公历格式如 2002-05-18（4校统一用公历）", "en": "Gregorian format YYYY-MM-DD", "fa": "به میلادی دقیق مطابق پاسپورت"}}, {"key": "iranNatId", "span": 1, "placeholder": "10-digit Iran National ID (کد ملی)", "label": {"zh": "Iran National ID No. (伊朗10位国民号)", "en": "Iran National ID No. (10 Digits)", "fa": "شماره ملی ۱۰ رقمی ایران (به انگلیسی)"}, "hint": {"zh": "供外籍身份核验栏填写", "en": "Used in foreign national ID verification box", "fa": "درج با ارقام انگلیسی"}}, {"key": "passportNo", "span": 1, "placeholder": "e.g. A12345678", "label": {"zh": "Passport Number (本人有效护照号)", "en": "Applicant Passport No.", "fa": "شماره پاسپورت معتبر متقاضی"}, "hint": {"zh": "须与宣誓翻译件上拼写及护照号一致", "en": "Must match sworn translation cover page", "fa": "هماهنگ با اسپل ترجمه‌های رسمی"}}, {"key": "passportExpiry", "span": 1, "placeholder": "YYYY-MM-DD (建议 ≥ 2029-03)", "validator": "passportExpiry", "label": {"zh": "Passport Expiry Date (护照到期日 · 实时校验)", "en": "Passport Expiry Date (Live ≥2y Check)", "fa": "تاریخ انقضای پاسپورت (کنترل هوشمند ۲ ساله)"}, "hint": {"zh": "输入 YYYY-MM-DD 自动计算是否满足建议 ≥2年剩余有效期", "en": "Format YYYY-MM-DD; auto-checks ≥2-year buffer for D-2 stay", "fa": "فرمت YYYY-MM-DD؛ بررسی خودکار حداقل ۲ سال اعتبار برای ویزای D-2"}}]}, {"group": "g2", "fields": [{"key": "emailPrimary", "span": 1, "placeholder": "your.name@gmail.com", "validator": "dualEmail", "label": {"zh": "Primary Email (第1主邮箱 · 如 Gmail)", "en": "Primary Email (e.g. Gmail)", "fa": "ایمیل اصلی اول (مثلاً Gmail)"}, "hint": {"zh": "直达 Arsan 本人并每日查收面试/补件通知", "en": "Checked daily by Arsan directly", "fa": "ایمیل مستقیم شخص آرسان"}}, {"key": "emailSecondary", "span": 1, "placeholder": "your.name@outlook.com (必须不同域名!)", "validator": "dualEmail", "label": {"zh": "Secondary Email (第2备用邮箱 · 必异域名!)", "en": "Secondary Email (MUST Be Different Domain!)", "fa": "ایمیل دوم پشتیبان (الزاماً با دامنه متفاوت!)"}, "hint": {"zh": "🚨 高丽必填 2 个不同域名的有效邮箱（如 Gmail + Outlook）", "en": "🚨 KU strictly requires a 2nd email on a DIFFERENT domain", "fa": "🚨 دانشگاه کره ۲ ایمیل با دامنه متفاوت را اجباری کرده است"}}, {"key": "iranMobile", "span": 1, "placeholder": "+98-914-XXX-XXXX", "label": {"zh": "Iran Direct Mobile (本人直达手机)", "en": "Iran Direct Mobile (+98-...)", "fa": "موبایل مستقیم ایران (+98-...)"}, "hint": {"zh": "🚨 延世红线：必须直达申请人本人，严禁填中介或他人号码！", "en": "🚨 Yonsei rule: must reach applicant directly—never third-party!", "fa": "🚨 خط قرمز یونسی: فقط شماره مستقیم شخص متقاضی!"}}, {"key": "iranPostal", "span": 1, "placeholder": "10-digit Iran Postal Code", "label": {"zh": "Iran Postal Code (伊朗家庭邮编)", "en": "Iran Permanent Postal Code", "fa": "کد پستی ۱۰ رقمی منزل در ایران"}, "hint": {"zh": "永久国籍住址邮编", "en": "Home postal code in Ardabil", "fa": "کد پستی آدرس دائمی در اردبیل"}}, {"key": "iranAddress", "span": 2, "placeholder": "No. XX, Street, Ardabil, Iran", "label": {"zh": "Iran Permanent Address (伊朗永久英文住址)", "en": "Iran Permanent Home Address (English)", "fa": "آدرس دائمی منزل در ایران (به انگلیسی)"}, "hint": {"zh": "填国籍国永久地址栏", "en": "For Permanent / Home Country Address field", "fa": "جهت درج در بخش آدرس کشور مبدأ"}}, {"key": "seoulAddress", "span": 2, "placeholder": "Charlotte's Road-Name Address in Seoul, Republic of Korea", "label": {"zh": "Seoul Mailing Address (首尔 Charlotte 收件地址 · 仅快递投递用)", "en": "Seoul Mailing Address (Charlotte's Hub — Delivery Only)", "fa": "آدرس پستی سئول (منزل شارلوت — صرفاً جهت دریافت مرسولات)"}, "hint": {"zh": "用于韩国国内信封寄件人栏及纸质通知收件地址", "en": "Used as domestic Korean return/mailing address on envelopes", "fa": "جهت درج روی پاکت‌های پستی داخلی کره"}}, {"key": "seoulZip", "span": 1, "placeholder": "5-digit Zip (e.g. 04763)", "label": {"zh": "Seoul 5-Digit Zip Code (首尔5位邮编)", "en": "Seoul 5-Digit Zip Code", "fa": "کد پستی ۵ رقمی سئول"}, "hint": {"zh": "韩国现行5位道路名邮编", "en": "5-digit Korean postal code", "fa": "کد پستی ۵ رقمی جدید کره جنوبی"}}, {"key": "charlottePhone", "span": 1, "placeholder": "010-XXXX-XXXX", "label": {"zh": "Charlotte Korea Phone (首尔紧急收件电话)", "en": "Charlotte's Korea Mobile (Courier Contact)", "fa": "تلفن همراه شارلوت در کره (هماهنگی پست)"}, "hint": {"zh": "仅填韩国国内挂号信封/备用收件电话，勿填延世主手机栏！", "en": "For domestic Korea Post labels/emergency courier contact ONLY", "fa": "فقط برای روی پاکت پستی داخلی کره (در فیلد موبایل اصلی یونسی نزنید!)"}}]}, {"group": "g3", "fields": [{"key": "univName", "span": 1, "prefilled": true, "label": {"zh": "University Name (本科毕业院校标准英文)", "en": "Undergraduate University", "fa": "نام رسمی انگلیسی دانشگاه دوره کارشناسی"}, "hint": {"zh": "须与宣誓翻译件完全一致", "en": "Must match sworn translation word-for-word", "fa": "منطبق با متن ترجمه رسمی"}}, {"key": "facultyName", "span": 1, "prefilled": true, "label": {"zh": "Faculty / College (所属学院)", "en": "Faculty / College", "fa": "نام دانشکده (Faculty)"}, "hint": {"zh": "自由大学临床检验属医科分支", "en": "Clinical Lab Sciences under Faculty of Medicine", "fa": "زیرمجموعه دانشکده پزشکی"}}, {"key": "degreeMajor", "span": 1, "prefilled": true, "label": {"zh": "Degree & Major (学位与本科专业)", "en": "Degree & Major", "fa": "مقطع و رشته تحصیلی کارشناسی"}, "hint": {"zh": "含 16学分/816h 医学诊断实验室实训", "en": "Includes 16 cr (816h) diagnostic lab practicum", "fa": "شامل ۱۶ واحد کارورزی آزمایشگاه تشخیص طبی"}}, {"key": "studentId", "span": 1, "placeholder": "[待填本科学号 / Enter Undergrad Student ID]", "label": {"zh": "★ Student ID Number (本科学号 · 中央/高丽核验必填!)", "en": "★ Undergraduate Student ID Number", "fa": "★ شماره دانشجویی کارشناسی (الزامی برای استعلام مدرک!)"}, "hint": {"zh": "中央大第16项 Letter of Consent 标 ★ 必填项", "en": "Mandatory ★ field on CAU Item #16 Letter of Consent", "fa": "فیلد ستاره‌دار الزامی در فرم رضایت‌نامه استعلام مدرک چونگ‌آنگ"}}, {"key": "attendancePeriod", "span": 1, "placeholder": "YYYY.MM – YYYY.MM (e.g. 2021.09 – 2026.09)", "label": {"zh": "Attendance Period (本科就读起止年月)", "en": "Attendance Period (YYYY.MM – YYYY.MM)", "fa": "بازه زمانی تحصیل کارشناسی (به میلادی)"}, "hint": {"zh": "按成绩单首学期入学至毕业年月换算公历", "en": "Gregorian admission month to graduation month", "fa": "تبدیل تاریخ ورود تا فراغت از تحصیل به میلادی"}}, {"key": "regSemesters", "span": 1, "prefilled": true, "label": {"zh": "Registered Semesters (注册总学期数 · 锁 10)", "en": "Registered Semesters (Locked: 10)", "fa": "تعداد کل نیمسال‌های ثبت‌نامی (۱۰ ترم)"}, "hint": {"zh": "高丽 Release 表手动必填项（8常规+延长实训=10学期）", "en": "Mandatory manual field on KU Release Form (= 10)", "fa": "فیلد الزامی فرم Release دانشگاه کره (۱۰ ترم کامل)"}}, {"key": "officialCgpa", "span": 1, "prefilled": true, "label": {"zh": "Official CGPA (原始20分制总均分)", "en": "Official CGPA (20-Point Scale)", "fa": "معدل کل رسمی از ۲۰"}, "hint": {"zh": "延世网申必选 \"Others\" 填入 17.50 / 20.00", "en": "Select 'Others' on Yonsei portal & enter 17.50", "fa": "در سایت یونسی گزینه Others با عدد 17.50 ثبت شود"}}, {"key": "convertedPct", "span": 1, "prefilled": true, "label": {"zh": "Converted Percentage (母校官方百分制换算)", "en": "Converted Percentage (D10-A Cert)", "fa": "معادل درصدی رسمی دانشگاه مبدأ"}, "hint": {"zh": "87.50% 稳超汉阳 HISP (≥80%) 与高丽 C类奖 (≥85%)", "en": "Clears HYU HISP (≥80%) & KU Type C (≥85%)", "fa": "عبور قطعی از حدنصاب بورسیه هانیانگ (۸۰٪) و کره (۸۵٪)"}}, {"key": "scholaroGpa", "span": 2, "placeholder": "[2027.01.10 后录完 Scholaro 10学期逐科报告后填入，如 3.51 / 4.00]", "label": {"zh": "Scholaro 4.0 GPA (1月核出后填入 · 供中央/汉阳装袋核对)", "en": "Scholaro 4.0 GPA (Fill After Jan 10, 2027 Run)", "fa": "معدل معادل از ۴.۰ در گزارش Scholaro (تکمیل پس از ۱۰ ژانویه)"}, "hint": {"zh": "严禁 2026.12.20 前过早盖章！锁定 2027.01.10–02.04 打印盖 3 份母校英文鲜章", "en": "NEVER stamp before Dec 20! Print & wet-stamp 3 copies in Jan 10–Feb 4, 2027", "fa": "ممنوعیت مهر قبل از ۲۰ دسامبر! چاپ و مهر ۳ نسخه در ۱۰ ژانویه تا ۴ فوریه"}}, {"key": "regOfficeName", "span": 2, "prefilled": true, "label": {"zh": "Mother Univ. Registrar Office (母校学籍核验部门标准英文)", "en": "Home Univ. Academic Verification Office", "fa": "نام انگلیسی اداره آموزش/فارغ‌التحصیلان واحد اردبیل"}, "hint": {"zh": "自动同步至高丽 Release 表与中央大第16项核验书蓝框", "en": "Auto-populates KU Release Form & CAU Item #16 header", "fa": "درج خودکار در فرم استعلام مدرک دانشگاه کره و چونگ‌آنگ"}}, {"key": "regOfficeAddr", "span": 1, "prefilled": true, "label": {"zh": "Registrar Address (分校学籍办英文地址)", "en": "Registrar Street Address", "fa": "آدرس انگلیسی واحد اردبیل"}, "hint": {"zh": "Basij Square, Ardabil, Iran", "en": "Basij Square, Ardabil, Iran", "fa": "میدان بسیج، اردبیل، ایران"}}, {"key": "regOfficeZip", "span": 1, "placeholder": "[待填分校邮编 / Branch Zip Code]", "label": {"zh": "Registrar Zip Code (分校邮编)", "en": "Registrar Zip Code", "fa": "کد پستی دانشگاه آزاد واحد اردبیل"}, "hint": {"zh": "核实分校 10 位邮政编码填入", "en": "10-digit university campus postal code", "fa": "کد پستی ۱۰ رقمی واحد دانشگاهی"}}, {"key": "regOfficeTel", "span": 1, "prefilled": true, "label": {"zh": "Registrar Tel (分校总机/核验电话)", "en": "Registrar Official Phone", "fa": "تلفن رسمی آموزش دانشگاه"}, "hint": {"zh": "+98-45-33727799（国际区号标准格式）", "en": "International format +98-45-33727799", "fa": "با پیش‌شماره بین‌المللی ایران"}}, {"key": "regOfficeEmail", "span": 1, "placeholder": "[待去分校核实官方 @iau.ac.ir 核验邮箱]", "label": {"zh": "④ Official Verification E-mail (母校核验官方邮箱)", "en": "④ Official Verification E-mail (@iau.ac.ir)", "fa": "۴. ایمیل رسمی استعلام مدرک واحد اردبیل"}, "hint": {"zh": "高丽/中央大第16项蓝框必填第④项，务必确认能收外网信的 @iau.ac.ir 邮箱", "en": "CAU Item #16 Blue Box #4 & KU Release—confirm active @iau.ac.ir address", "fa": "فیلد ۴ کادر آبی بند ۱۶ چونگ‌آنگ و فرم Release دانشگاه کره"}}, {"key": "regOfficeFax", "span": 2, "placeholder": "e.g. +98-45-3372XXXX (or N/A if branch has no fax)", "label": {"zh": "⑥ Registrar Fax (分校传真 · 中央大第16项蓝框第⑥项)", "en": "⑥ Registrar Official Fax (CAU Item #16 Blue Box #6)", "fa": "۶. شماره فکس رسمی واحد اردبیل (فیلد ۶ کادر آبی بند ۱۶ چونگ‌آنگ)"}, "hint": {"zh": "中央大第16项上半页蓝框 6 项英文必填之一（①校名 ②地址 ③邮编 ④官方邮箱 ⑤电话 ⑥传真）", "en": "Completes all 6 mandatory English fields in CAU Item #16 Upper Blue Box (파란박스 빈칸 영문기재 제출)", "fa": "تکمیل هر ۶ فیلد انگلیسی الزامی در کادر آبی بالای فرم بند ۱۶ چونگ‌آنگ"}}]}, {"group": "g4", "fields": [{"key": "fatherName", "span": 1, "placeholder": "Father's Full Passport Name", "label": {"zh": "Father Full Name (父亲英文全名)", "en": "Father's Full Name", "fa": "نام کامل انگلیسی پدر (مطابق پاسپورت)"}, "hint": {"zh": "与父亲护照及 شناسنامه 宣誓英译完全一致", "en": "Must match father's passport & Shenasnameh translation", "fa": "دقیقاً مطابق پاسپورت و ترجمه شناسنامه پدر"}}, {"key": "fatherDob", "span": 1, "placeholder": "YYYY-MM-DD", "label": {"zh": "Father DOB (父亲出生日期)", "en": "Father's Date of Birth", "fa": "تاریخ تولد میلادی پدر"}, "hint": {"zh": "延世 Non-Korean 确认书必填", "en": "Required on Yonsei Non-Korean Confirmation", "fa": "الزامی در فرم غیرکره‌ای بودن یونسی"}}, {"key": "fatherPassport", "span": 1, "placeholder": "Father's Passport No.", "label": {"zh": "Father Passport No. (父亲有效护照号)", "en": "Father's Passport No.", "fa": "شماره پاسپورت پدر"}, "hint": {"zh": "提交日须在有效期内", "en": "Must be valid at submission", "fa": "معتبر در زمان تحویل مدارک"}}, {"key": "fatherNat", "span": 1, "prefilled": true, "label": {"zh": "Father Nationality (父亲国籍)", "en": "Father's Nationality", "fa": "تابعیت پدر"}, "hint": {"zh": "锁定非韩国籍纯外国人通道", "en": "Confirms Track 1 Pure Foreigner eligibility", "fa": "تثبیت سهمیه ۱ اتباع خارجی"}}, {"key": "motherName", "span": 1, "placeholder": "Mother's Full Passport Name", "label": {"zh": "Mother Full Name (母亲英文全名)", "en": "Mother's Full Name", "fa": "نام کامل انگلیسی مادر (مطابق پاسپورت)"}, "hint": {"zh": "与母亲护照及 شناسنامه 宣誓英译完全一致", "en": "Must match mother's passport & Shenasnameh translation", "fa": "دقیقاً مطابق پاسپورت و ترجمه شناسنامه مادر"}}, {"key": "motherDob", "span": 1, "placeholder": "YYYY-MM-DD", "label": {"zh": "Mother DOB (母亲出生日期)", "en": "Mother's Date of Birth", "fa": "تاریخ تولد میلادی مادر"}, "hint": {"zh": "延世 Non-Korean 确认书必填", "en": "Required on Yonsei Non-Korean Confirmation", "fa": "الزامی در فرم غیرکره‌ای بودن یونسی"}}, {"key": "motherPassport", "span": 1, "placeholder": "Mother's Passport No.", "label": {"zh": "Mother Passport No. (母亲有效护照号)", "en": "Mother's Passport No.", "fa": "شماره پاسپورت مادر"}, "hint": {"zh": "提交日须在有效期内", "en": "Must be valid at submission", "fa": "معتبر در زمان تحویل مدارک"}}, {"key": "motherNat", "span": 1, "prefilled": true, "label": {"zh": "Mother Nationality (母亲国籍)", "en": "Mother's Nationality", "fa": "تابعیت مادر"}, "hint": {"zh": "锁定非韩国籍纯外国人通道", "en": "Confirms Track 1 Pure Foreigner eligibility", "fa": "تثبیت سهمیه ۱ اتباع خارجی"}}, {"key": "ieltsDate", "span": 1, "prefilled": true, "label": {"zh": "IELTS Test Date (机考日期 · 2年有效)", "en": "IELTS CBT Test Date (Valid 2 Yrs)", "fa": "تاریخ آزمون آیلتس کامپیوتری ترکیه"}, "hint": {"zh": "2027-02-07 考取，有效至 2029-02-07", "en": "Valid through 2029-02-07", "fa": "معتبر تا ۷ فوریه ۲۰۲۹"}}, {"key": "ieltsTrfNo", "span": 1, "placeholder": "[02.10–12 出分后填入 18位 TRF Number]", "label": {"zh": "IELTS e-TRF Number (核验编号 · 出分后填)", "en": "IELTS e-TRF Verification Number", "fa": "شماره رهگیری کارنامه e-TRF آیلتس"}, "hint": {"zh": "高丽/延世均凭此号在线核验真伪", "en": "Used by admissions to verify score authenticity", "fa": "کد استعلام اصالت کارنامه در دانشگاه‌ها"}}, {"key": "ieltsOverall", "span": 2, "placeholder": "e.g. Overall 6.5 (L 7.0 / R 7.0 / W 6.0 / S 6.5)", "label": {"zh": "IELTS Score Summary (总分与四项小分 · 出分后填)", "en": "IELTS Overall & Band Subscores", "fa": "نمره کل و ریزنمرات چهار مهارت آیلتس"}, "hint": {"zh": "4校网申均严禁截止后补交语言成绩", "en": "Must be entered before portal submission", "fa": "ثبت قطعی پیش از پایان مهلت ثبت‌نام"}}, {"key": "rec1Name", "span": 1, "placeholder": "Prof. [Full Name]", "label": {"zh": "Recommender 1 Name (推荐教授A姓名 · KU/YU#1/CAU)", "en": "Recommender 1 Full Name (KU / YU #1 / CAU)", "fa": "نام کامل استاد معرف اول (ویژه KU / YU / CAU)"}, "hint": {"zh": "拥有 @iau.ac.ir 邮箱的满分课在职教授", "en": "Active 20/20 course faculty with @iau.ac.ir email", "fa": "استاد رسمی درس ۲۰/۲۰ دارای ایمیل دانشگاهی"}}, {"key": "rec1Title", "span": 1, "placeholder": "e.g. Associate Professor of Medical Biochemistry", "label": {"zh": "Recommender 1 Title (教授A职称)", "en": "Recommender 1 Academic Title", "fa": "مرتبه علمی استاد اول"}, "hint": {"zh": "如 Assistant / Associate / Full Professor", "en": "e.g. Assistant / Associate Professor", "fa": "مثلاً استادیار / دانشیار"}}, {"key": "rec1Course", "span": 1, "placeholder": "e.g. Medical Biochemistry (Score: 20/20)", "label": {"zh": "Recommender 1 Course Taught (教授A所授 20/20 满分课)", "en": "Recommender 1 Course Taught (20/20)", "fa": "نام درس ۲۰/۲۰ تدریس‌شده توسط استاد اول"}, "hint": {"zh": "生化/免疫等 20/20 满分核心课", "en": "20/20 core course (e.g. Biochem / Immunology)", "fa": "درس تخصصی نمره کامل ۲۰ از ۲۰"}}, {"key": "rec1Email", "span": 1, "placeholder": "professor1@iau.ac.ir", "validator": "recEmail", "label": {"zh": "Recommender 1 Official Email (@iau.ac.ir · 实时校验)", "en": "Recommender 1 Institutional Email (@iau.ac.ir)", "fa": "ایمیل رسمی دانشگاهی استاد اول (@iau.ac.ir)"}, "hint": {"zh": "🚨 高丽禁 Gmail/Yahoo 私人邮箱！", "en": "🚨 KU rejects personal Gmail/Yahoo!", "fa": "🚨 ایمیل شخصی جیمیل برای دانشگاه کره باطل است!"}}, {"key": "rec1Phone", "span": 1, "placeholder": "+98-45-XXXXXXXX", "label": {"zh": "Recommender 1 Work Phone (教授A办公电话)", "en": "Recommender 1 Work Phone", "fa": "تلفن محل کار استاد اول"}, "hint": {"zh": "高丽与中央推荐表必填项", "en": "Required on KU & CAU LOR forms", "fa": "الزامی در فرم توصیه‌نامه کره و چونگ‌آنگ"}}, {"key": "rec1KnownYrs", "span": 1, "placeholder": "e.g. 3 Years 6 Months (填如 3y 6m)", "label": {"zh": "KU LOR Acquaintance Duration (高丽表：认识年月)", "en": "KU LOR Acquaintance (Years / Months)", "fa": "مدت آشنایی استاد اول با متقاضی (سال و ماه)"}, "hint": {"zh": "高丽官方推荐表隐藏必填格 (__) Years (__) Months", "en": "Fills KU LOR box: (__) Years (__) Months", "fa": "جهت تکمیل کادر مدت آشنایی در فرم توصیه‌نامه کره"}}, {"key": "rec2Name", "span": 1, "placeholder": "Prof. [Full Name]", "label": {"zh": "Recommender 2 Name (推荐教授B姓名 · 延世第2封)", "en": "Recommender 2 Full Name (YU #2 Biostats)", "fa": "نام کامل استاد معرف دوم (آمار زیستی ۲۰/۲۰ ویژه یونسی)"}, "hint": {"zh": "供延世上限2封（生化/免疫 + 生统黄金组合）", "en": "Pairs with Rec 1 for Yonsei's Max 2 LORs", "fa": "ترکیب مکمل برای سقف ۲ توصیه‌نامه پزشکی یونسی"}}, {"key": "rec2Title", "span": 1, "placeholder": "e.g. Assistant Professor of Biostatistics", "label": {"zh": "Recommender 2 Title (教授B职称)", "en": "Recommender 2 Academic Title", "fa": "مرتبه علمی استاد دوم"}, "hint": {"zh": "延世推荐人信息栏与私密版 CV 底部使用", "en": "Used on Yonsei portal & private CV references", "fa": "درج در سایت یونسی و انتهای رزومه خصوصی"}}, {"key": "rec2Course", "span": 1, "placeholder": "e.g. Biostatistics (Score: 20/20)", "label": {"zh": "Recommender 2 Course Taught (教授B所授 20/20 课程)", "en": "Recommender 2 Course Taught (20/20)", "fa": "نام درس ۲۰/۲۰ تدریس‌شده توسط استاد دوم"}, "hint": {"zh": "如生物统计 Biostatistics (20/20)", "en": "e.g. Biostatistics (20/20)", "fa": "مثلاً آمار زیستی با نمره ۲۰/۲۰"}}, {"key": "rec2Email", "span": 1, "placeholder": "professor2@iau.ac.ir", "validator": "recEmail", "label": {"zh": "Recommender 2 Official Email (@iau.ac.ir)", "en": "Recommender 2 Institutional Email (@iau.ac.ir)", "fa": "ایمیل رسمی دانشگاهی استاد دوم (@iau.ac.ir)"}, "hint": {"zh": "若外网收链接受阻，延世允许申请人直传教授签字 PDF", "en": "YU permits direct upload of signed LOR PDF if link blocked", "fa": "در یونسی امکان آپلود مستقیم PDF امضاشده استاد هم وجود دارد"}}, {"key": "rec2Phone", "span": 2, "placeholder": "+98-45-XXXXXXXX", "label": {"zh": "Recommender 2 Work Phone (教授B办公电话)", "en": "Recommender 2 Work Phone", "fa": "تلفن محل کار استاد دوم"}, "hint": {"zh": "延世在线推荐人登记栏备用", "en": "For Yonsei recommender contact field", "fa": "جهت ثبت در بخش اطلاعات تماس استاد دوم در یونسی"}}]}];
+
+(function() {
+  const STORAGE_KEY = "arsan_forms_v1";
+  const LANG_KEY = "arsan_lang";
+  const THEME_KEY = "arsan_theme";
+  const VALID_LANGS = ["zh", "en", "fa"];
+  const VALID_UNIS = ["ku", "hyu", "yu", "cau"];
+
+  function safeGet(k) {
+    try { return window.localStorage ? localStorage.getItem(k) : null; } catch (_) { return null; }
+  }
+  function safeSet(k, v) {
+    try { if (window.localStorage) localStorage.setItem(k, v); return true; } catch (_) { return false; }
+  }
+
+  function loadInitialForm() {
+    const base = Object.assign({}, INITIAL_FORM_VALUES);
+    const raw = safeGet(STORAGE_KEY);
+    if (!raw) return base;
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        Object.keys(base).forEach(k => {
+          if (typeof parsed[k] === "string") base[k] = parsed[k];
+        });
+      }
+    } catch (_) {}
+    return base;
+  }
+
+  const savedLang = safeGet(LANG_KEY);
+  const savedTheme = safeGet(THEME_KEY);
+  const savedUni = safeGet("arsan_forms_uni");
+
+  const state = {
+    lang: VALID_LANGS.includes(savedLang) ? savedLang : "zh",
+    theme: savedTheme === "dark" ? "dark" : "light",
+    activeUni: VALID_UNIS.includes(savedUni) ? savedUni : "ku",
+    intakeCollapsed: false,
+    a4Preview: false,
+    printScope: "all",
+    photoDataUrl: "",
+    lastSavedTime: "",
+    form: loadInitialForm()
+  };
+
+  function t(obj) {
+    if (!obj) return "";
+    if (typeof obj === "string") return obj;
+    return obj[state.lang] || obj.zh || obj.en || "";
+  }
+
+  function escHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function escAttr(s) {
+    return escHtml(s);
+  }
+
+  function getUwayName() {
+    const s = (state.form.surname || "").replace(/[^A-Za-z]/g, "").toUpperCase();
+    const g = (state.form.givenName || "").replace(/[^A-Za-z]/g, "").toUpperCase();
+    return s + g;
+  }
+
+  function getFullName() {
+    const s = (state.form.surname || "").trim().toUpperCase();
+    const g = (state.form.givenName || "").trim().toUpperCase();
+    if (!s && !g) return "";
+    return [g, s].filter(Boolean).join(" ");
+  }
+
+  function fv(val, placeholderLabel) {
+    const trimmed = String(val == null ? "" : val).trim();
+    if (!trimmed || trimmed === "+98-" || trimmed === "010-") {
+      return `<span class="f-pending">[Pending: ${escHtml(placeholderLabel)}]</span>`;
+    }
+    return `<span class="f-val">${escHtml(trimmed)}</span>`;
+  }
+
+  // ==================== REAL-TIME VALIDATORS ====================
+  function checkPassportExpiry(dateStr) {
+    const s = (dateStr || "").trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return { status: "none", msg: "" };
+    const exp = new Date(s + "T00:00:00Z");
+    if (isNaN(exp.getTime())) return { status: "none", msg: "" };
+    const entryCutoff = new Date("2027-09-01T00:00:00Z");
+    const twoYrTarget = new Date("2029-03-02T00:00:00Z");
+    if (exp <= entryCutoff) return { status: "err", msg: t(I18N.val.passportExpired) };
+    if (exp < twoYrTarget) return { status: "warn", msg: t(I18N.val.passportWarn) };
+    return { status: "ok", msg: t(I18N.val.passportOk) };
+  }
+
+  function extractDomain(email) {
+    const m = String(email || "").trim().toLowerCase().match(/^[^@\s]+@([^@\s]+\.[^@\s]+)$/);
+    return m ? m[1] : "";
+  }
+
+  function checkDualEmail(e1, e2) {
+    const d1 = extractDomain(e1);
+    const d2 = extractDomain(e2);
+    if (!d1 || !d2) return { status: "none", msg: "" };
+    if (d1 === d2) return { status: "err", msg: t(I18N.val.emailSameDomain) };
+    return { status: "ok", msg: t(I18N.val.emailDiffOk) };
+  }
+
+  function checkRecEmail(email) {
+    const d = extractDomain(email);
+    if (!d) return { status: "none", msg: "" };
+    const personalDomains = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com", "aol.com", "proton.me", "protonmail.com"];
+    if (personalDomains.includes(d)) return { status: "err", msg: t(I18N.val.recPersonalMail) };
+    return { status: "ok", msg: t(I18N.val.recOfficialOk) };
+  }
+
+  function getFieldValidation(validatorName, key) {
+    if (validatorName === "passportExpiry") return checkPassportExpiry(state.form.passportExpiry);
+    if (validatorName === "dualEmail") {
+      if (key === "emailPrimary") return { status: "none", msg: "" };
+      return checkDualEmail(state.form.emailPrimary, state.form.emailSecondary);
+    }
+    if (validatorName === "recEmail") return checkRecEmail(state.form[key]);
+    return { status: "none", msg: "" };
+  }
+
+  const READINESS_KEYS = [
+    "surname", "givenName", "dob", "passportNo", "passportExpiry", "iranNatId",
+    "emailPrimary", "emailSecondary", "iranMobile", "iranAddress", "seoulAddress", "seoulZip", "charlottePhone",
+    "univName", "degreeMajor", "studentId", "attendancePeriod", "regSemesters", "officialCgpa", "regOfficeTel", "regOfficeEmail",
+    "fatherName", "fatherDob", "fatherPassport", "motherName", "motherDob", "motherPassport", "rec1Name", "rec1Email"
+  ];
+
+  function computeReadiness() {
+    let filled = 0;
+    READINESS_KEYS.forEach(k => {
+      const v = String(state.form[k] || "").trim();
+      if (v && v !== "+98-" && v !== "010-") filled++;
+    });
+    const total = READINESS_KEYS.length;
+    const pct = Math.round((filled / total) * 100);
+    return { filled, total, pct };
+  }
+
+  function persistFormNow() {
+    const ok = safeSet(STORAGE_KEY, JSON.stringify(state.form));
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, "0");
+    const mm = String(now.getMinutes()).padStart(2, "0");
+    const ss = String(now.getSeconds()).padStart(2, "0");
+    state.lastSavedTime = ok ? `${hh}:${mm}:${ss}` : "Memory";
+    const badge = document.getElementById("save-status-badge");
+    if (badge) {
+      badge.textContent = `${t(I18N.saveStatus)} (${state.lastSavedTime})`;
+    }
+  }
+
+  function renderPhotoBox() {
+    if (state.photoDataUrl) {
+      return `
+        <label class="photo-frame-3x4" title="Click to preview another 3x4 cm JPG photo locally">
+          <img src="${escAttr(state.photoDataUrl)}" alt="3x4 ID Photo Preview" />
+          <input type="file" accept="image/jpeg,image/png" class="no-print" data-photo-upload="1" style="display:none" />
+        </label>
+      `;
+    }
+    return `
+      <label class="photo-frame-3x4" title="Click to test-preview your 3x4 cm photo locally (never uploaded)">
+        <div style="font-weight:800;font-size:12px;color:var(--paper-ink)">3 × 4 cm</div>
+        <div style="margin-top:4px;line-height:1.35">White BG Photo<br><strong>2027.01–02 新拍</strong><br>JPG ≤ 2MB</div>
+        <div class="no-print" style="margin-top:6px;font-size:10px;color:var(--primary);font-weight:700">[Click Preview]</div>
+        <input type="file" accept="image/jpeg,image/png" class="no-print" data-photo-upload="1" style="display:none" />
+      </label>
+    `;
+  }
+
+
+  // ==================== TAB 1: KOREA UNIVERSITY (UWAY 5 PAGES + LOR) ====================
+  function renderSimKU() {
+    const f = state.form;
+    const emailCheck = checkDualEmail(f.emailPrimary, f.emailSecondary);
+    const emailStatusBadge = emailCheck.status === "err"
+      ? `<div class="f-trap-alert">⛔ ${escHtml(t(I18N.val.emailSameDomain))}</div>`
+      : (emailCheck.status === "ok"
+          ? `<div style="margin-top:4px;font-size:11.5px;color:var(--green);font-weight:700">${escHtml(t(I18N.val.emailDiffOk))}</div>`
+          : `<div style="margin-top:4px;font-size:11.5px;color:var(--amber);font-weight:700">⚠️ ${{
+              zh: "必填 2 个不同域名的本人有效邮箱（如 Gmail + Outlook）",
+              en: "Enter 2 valid personal emails on DIFFERENT domains (e.g. Gmail + Outlook)",
+              fa: "درج ۲ ایمیل معتبر شخصی با دامنه متفاوت الزامی است"
+            }[state.lang]}</div>`);
+
+    const photoHtml = renderPhotoBox();
+    const hideOtherInReleaseMode = state.printScope === "ku_release" ? "print-hidden-sheet" : "";
+
+    return `
+      <div class="sheet-guide-banner ${hideOtherInReleaseMode}">
+        <div>
+          <strong style="font-size:15px;color:var(--ku-crimson)">${{
+            zh: "📄 仿真页 ①–②｜高丽大学 Online Application Form (입학원서 · UWAY 第1–2页)",
+            en: "📄 Simulated Pages ①–② | Korea Univ. Online Application Form (UWAY Pages 1–2)",
+            fa: "📄 صفحات شبیه‌سازی ۱ و ۲ | فرم ثبت‌نام اینترنتی دانشگاه کره (سامانه UWAY)"
+          }[state.lang]}</strong>
+          <div style="font-size:12.6px;color:var(--text-3)">${{
+            zh: "网申窗口：2027.03.02 10:00 – 03.12 17:00 KST ｜ 纸质必达：03.19(周五) 17:00 KST 安岩站图书馆 126B室",
+            en: "Online Window: Mar 2, 10:00 – Mar 12, 17:00 KST | Paper Cutoff: Mar 19 (Fri) 17:00 KST at Grad Library Rm 126B",
+            fa: "ثبت‌نام آنلاین: ۲ تا ۱۲ مارس | مهلت تحویل کاغذی: جمعه ۱۹ مارس ساعت ۱۷ در اتاق 126B کتابخانه"
+          }[state.lang]}</div>
+        </div>
+        <span class="badge-sign">${escHtml(t(I18N.legend.sign))}</span>
+      </div>
+
+      <div class="sim-paper page-break-after ${hideOtherInReleaseMode}" id="sheet-ku-app" dir="ltr">
+        <div class="paper-header ku">
+          <div>
+            <div class="paper-h-title">KOREA UNIVERSITY GRADUATE SCHOOL</div>
+            <div class="paper-h-sub">Application for Admission — International Students (Fall 2027 · 일반대학원 외국인 특별전형 입학원서)</div>
+          </div>
+          <div class="exam-no-box">
+            <div style="opacity:0.82">Application / Examinee No. (수험번호)</div>
+            <div style="font-weight:800;font-size:12.5px;margin-top:2px">[Auto-Issued After 127,000 KRW Pay]</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px">
+          <div style="flex:1;min-width:280px">
+            <div class="form-sec-caption" style="margin-top:0">
+              <span>1. Application Track & Desired Program (전형구분 및 지원학과)</span>
+              <span class="badge-lock">🔒 Pre-Locked</span>
+            </div>
+            <table class="form-tbl" style="min-width:0;margin-bottom:0">
+              <tr>
+                <th>Application Type<br>(지원자격 구분)</th>
+                <td colspan="3">
+                  <div class="f-locked">☑ <strong>Type 1 (Foreign Nationals / 부모 모두 외국인인 외국인)</strong>: Applicant AND Both Parents are Non-Korean Citizens</div>
+                  <div style="color:#94A3B8;text-decoration:line-through;font-size:12px;margin-top:3px">☐ Type 2: Entire 16-Year Education Completed Outside Korea (전 교육과정 해외이수자)</div>
+                  <div class="f-trap-alert">🚨 TRAP WARNING: NEVER select Type 2! Selecting Type 2 triggers mandatory 12-year elementary/middle/high school Apostille/Consular transcripts!</div>
+                </td>
+              </tr>
+              <tr>
+                <th>Campus & Degree</th>
+                <td><span class="f-locked">Seoul Campus (서울캠퍼스)</span></td>
+                <th>Degree Program</th>
+                <td><span class="f-locked">Master's (석사과정)</span></td>
+              </tr>
+              <tr>
+                <th>Division / College</th>
+                <td><span class="f-locked">✅ College of Health Science (보건과학대학 계열)</span></td>
+                <th>Prior PI Consent</th>
+                <td><span class="f-val">Required (#2 Prof. Wonyoung Jung · 정원영 교수)</span></td>
+              </tr>
+              <tr>
+                <th>Department (학과)</th>
+                <td>
+                  <span class="f-locked">✅ Dept. of Integrated Biomedical & Life Sciences (의생명융합과학과)</span>
+                  <div class="f-trap-alert">⛔ FATAL DEPT TRAP: NEVER pick "College of Medicine (의과대학) → Dept. of Biomedical Sciences (의과학과)"! KU restricts Medicine intl students to Type C/B-C ONLY, permanently blocking Type A 100% Global Leader full scholarship!</div>
+                </td>
+                <th>Major (전공)</th>
+                <td><span class="f-locked">✅ Biomedical Science (바이오의과학)</span></td>
+              </tr>
+              <tr>
+                <th>② Type of Scholarship<br>(UWAY Step ② 必勾!)</th>
+                <td colspan="3">
+                  <span class="f-locked">☑ Apply for International Student Scholarship (외국인 장학금 신청 — MUST manually check on UWAY Step ②; omitting forfeits evaluation! Tier A/B/C announced ~2 wks post-offer)</span>
+                </td>
+              </tr>
+            </table>
+          </div>
+          ${photoHtml}
+        </div>
+
+        <div class="form-sec-caption">
+          <span>2. Applicant Personal & Dual-Domain Contact Info (인적사항 및 연락처)</span>
+          <span style="font-size:11.5px;color:#8B0029;font-weight:700">Exact Passport Spelling</span>
+        </div>
+        <table class="form-tbl">
+          <tr>
+            <th>Surname (성)</th>
+            <td>${fv(f.surname, "Passport Surname")}</td>
+            <th>Given Name (이름)</th>
+            <td>${fv(f.givenName, "Passport Given Name")}</td>
+          </tr>
+          <tr>
+            <th>UWAY Concatenated</th>
+            <td><span class="f-val">${escHtml(getUwayName() || "[Auto: SURNAMEGIVENNAME]")}</span></td>
+            <th>Date of Birth</th>
+            <td>${fv(f.dob, "YYYY-MM-DD")}</td>
+          </tr>
+          <tr>
+            <th>Nationality</th>
+            <td>${fv(f.nationality, "Iran")}</td>
+            <th>Iran National ID</th>
+            <td>${fv(f.iranNatId, "10-Digit National ID")}</td>
+          </tr>
+          <tr>
+            <th>Passport No.</th>
+            <td>${fv(f.passportNo, "Passport No.")}</td>
+            <th>Passport Expiry</th>
+            <td>${fv(f.passportExpiry, "YYYY-MM-DD (Rec ≥2029-03)")}</td>
+          </tr>
+          <tr>
+            <th>Primary Email #1</th>
+            <td>${fv(f.emailPrimary, "primary@gmail.com")}</td>
+            <th>Secondary Email #2<br>(Different Domain!)</th>
+            <td>
+              ${fv(f.emailSecondary, "secondary@outlook.com")}
+              ${emailStatusBadge}
+            </td>
+          </tr>
+          <tr>
+            <th>Direct Mobile (Iran)</th>
+            <td>${fv(f.iranMobile, "+98-...")}</td>
+            <th>Korea Delivery Tel</th>
+            <td>${fv(f.charlottePhone, "010-XXXX-XXXX")} <span style="font-size:11px;color:var(--text-3)">(Charlotte Hub)</span></td>
+          </tr>
+          <tr>
+            <th>Permanent Address (Iran)</th>
+            <td colspan="3">${fv(f.iranAddress, "Iran Home Address")} (Postal: ${fv(f.iranPostal, "Postal Code")})</td>
+          </tr>
+          <tr>
+            <th>Mailing Address in Korea</th>
+            <td colspan="3">${fv(f.seoulAddress, "Charlotte's Seoul Address")} [Zip: ${fv(f.seoulZip, "5-Digit Zip")}]</td>
+          </tr>
+        </table>
+
+        <div class="form-sec-caption">
+          <span>3. Academic Background, Language & Parents' Nationality (학력 · 어학 · 부모 인적사항 — Page 2)</span>
+        </div>
+        <table class="form-tbl">
+          <tr>
+            <th>Bachelor's University</th>
+            <td>${fv(f.univName, "University")} (${fv(f.facultyName, "Faculty")})</td>
+            <th>Degree & Major</th>
+            <td>${fv(f.degreeMajor, "B.S. Major")}</td>
+          </tr>
+          <tr>
+            <th>Attendance Period</th>
+            <td>
+              ${fv(f.attendancePeriod, "YYYY.MM – YYYY.MM")} (${fv(f.regSemesters, "10")} Semesters)
+              <div style="font-size:11px;color:var(--red);font-weight:700">⚠️ KU Guide Item ④ (학위수여(예정)일 명시 필수): Legalized diploma / Plan B 137.5-cr letter MUST state exact Conferral / Expected Graduation YYYY-MM-DD!</div>
+            </td>
+            <th>CGPA & Official %</th>
+            <td>
+              ${fv(f.officialCgpa, "17.50 / 20.00")} → <strong>${fv(f.convertedPct, "87.50 / 100")}</strong>
+              <div style="font-size:11px;color:var(--green);font-weight:700">✓ Primary: Legalized D10-A Cert (87.50% ≥ 85% Type C Waiver) + Wet Scholaro (${fv(f.scholaroGpa, "1月填入")})</div>
+            </td>
+          </tr>
+          <tr>
+            <th>Language Score (IELTS)</th>
+            <td>CBT IELTS (${fv(f.ieltsDate, "2027-02-07")}): ${fv(f.ieltsOverall, "Overall & Subscores")}</td>
+            <th>e-TRF Verification No.</th>
+            <td>${fv(f.ieltsTrfNo, "18-Digit e-TRF No.")} <span style="font-size:11px;color:var(--primary)">(+ Free Portal Send)</span></td>
+          </tr>
+          <tr>
+            <th>Father's Info</th>
+            <td>Name: ${fv(f.fatherName, "Father Full Name")}<br>DOB: ${fv(f.fatherDob, "YYYY-MM-DD")}</td>
+            <th>Father's Nationality & Passport</th>
+            <td>Nationality: <strong>${fv(f.fatherNat, "Iran")}</strong><br>Passport No.: ${fv(f.fatherPassport, "Father Passport No.")}</td>
+          </tr>
+          <tr>
+            <th>Mother's Info</th>
+            <td>Name: ${fv(f.motherName, "Mother Full Name")}<br>DOB: ${fv(f.motherDob, "YYYY-MM-DD")}</td>
+            <th>Mother's Nationality & Passport</th>
+            <td>Nationality: <strong>${fv(f.motherNat, "Iran")}</strong><br>Passport No.: ${fv(f.motherPassport, "Mother Passport No.")}</td>
+          </tr>
+          <tr>
+            <th>Financial Certification</th>
+            <td colspan="3">
+              <span class="f-val">Applicant / Parents Bank Balance Original ≥ 22,000,000 KRW</span> — Issued <strong>2027.02.25–03.02</strong> (≤30 days of portal) & <strong>Frozen through 2027-08-31</strong>
+            </td>
+          </tr>
+        </table>
+
+        <div class="wet-sign-box">
+          <div>
+            <span class="badge-sign">✍️ Print & Wet-Ink Sign (Page 2 Bottom)</span>
+            <div style="font-size:12px;margin-top:4px;color:var(--paper-sub)">I certify that the information provided in this application is true and complete.</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:12px;margin-bottom:6px">Date: <strong>2027 . 03 . 02</strong></div>
+            <div class="wet-sign-line">Applicant's Signature: X ________________________ (Wet-Ink Only)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KU PAGE 3: RELEASE OF INFORMATION FORM -->
+      <div class="sheet-guide-banner warn-red">
+        <div>
+          <strong style="font-size:15px;color:var(--red)">${{
+            zh: "📄 仿真页 ③｜高丽大学 Release of Information Form (학력조회확인서 · 第3页重灾区！)",
+            en: "📄 Simulated Page ③ | KU Release of Information Form (Page 3 — High-Risk Rejection Sheet!)",
+            fa: "📄 صفحه شبیه‌سازی ۳ | فرم استعلام مدرک دانشگاه کره (Release of Information — حساس‌ترین فرم امضای خیس!)"
+          }[state.lang]}</strong>
+          <div style="font-size:12.6px">${{
+            zh: "必勾 I agree、手动填注册总学期数 [10] 与分校学籍办完整英文地址电话，且必须寄交伊朗湿墨亲笔手签原件（交复印件直接拒收！）",
+            en: "Check 'I agree', fill Registered Semesters = [10] + IAU Registrar address/phone, and submit WET-INK ORIGINAL (copies rejected!)",
+            fa: "تیک I agree، درج تعداد کل ترم [10] و تلفن آموزش اردبیل، و الزام قطعی تحویل اصل امضای خیس (فتوکپی فوراً رد می‌شود!)"
+          }[state.lang]}</div>
+        </div>
+        <button class="ctrl-pill no-print" data-print-single="ku_release">🖨️ ${{
+          zh: "单独预览/打印第③页",
+          en: "Print Page ③ Only",
+          fa: "چاپ مجزای صفحه ۳"
+        }[state.lang]}</button>
+      </div>
+
+      <div class="sim-paper page-break-after" id="sheet-ku-release" dir="ltr">
+        <div class="paper-header ku">
+          <div>
+            <div class="paper-h-title">RELEASE OF INFORMATION FORM (학력조회동의서)</div>
+            <div class="paper-h-sub">Korea University Graduate School · Academic Record Verification Authorization (Page 3 of 5)</div>
+          </div>
+          <span class="badge-lock" style="background:#FFFFFF;color:#8B0029">Submit Wet-Ink Original</span>
+        </div>
+
+        <div style="padding:11px 14px;border:1.5px solid #8B0029;border-radius:6px;background:rgba(139,0,41,0.05);margin-bottom:14px;font-size:12.8px">
+          By signing this form, I authorize Korea University Graduate School to verify my enrollment and degree records with my home university.
+          <div style="margin-top:8px;display:flex;gap:24px;font-weight:800">
+            <span style="color:var(--green);font-size:14px">☑ I agree (동의함) <span class="badge-lock">🔒 Must Check</span></span>
+            <span style="color:#94A3B8;text-decoration:line-through">☐ I disagree (동의하지 않음 — NEVER CHECK)</span>
+          </div>
+        </div>
+
+        <table class="form-tbl">
+          <tr>
+            <th>Applicant Full Name</th>
+            <td>${fv(getFullName(), "Given Name + Surname")}</td>
+            <th>Date of Birth</th>
+            <td>${fv(f.dob, "YYYY-MM-DD")}</td>
+          </tr>
+          <tr>
+            <th>Student ID Number</th>
+            <td>${fv(f.studentId, "Undergrad Student ID")}</td>
+            <th>Degree & Major</th>
+            <td>${fv(f.degreeMajor, "B.S. in Clinical Laboratory Sciences")}</td>
+          </tr>
+          <tr>
+            <th>Attendance Period</th>
+            <td>${fv(f.attendancePeriod, "YYYY.MM – YYYY.MM")}</td>
+            <th style="background:rgba(245,158,11,0.22);color:#92400E">★ Number of Registered Semesters<br>(총 등록 학기 수 · 手动必填!)</th>
+            <td style="background:rgba(245,158,11,0.12)">
+              <span style="font-size:16px;font-weight:900;color:#B45309;border:2px solid #D97706;padding:2px 12px;border-radius:6px">${escHtml(f.regSemesters || "10")}</span>
+              <span style="font-size:11.5px;color:#92400E;font-weight:700;margin-left:6px">(10 Full Semesters · 137.50 Credits)</span>
+            </td>
+          </tr>
+          <tr>
+            <th>Name of Institution &<br>Verification Office</th>
+            <td colspan="3"><strong>${fv(f.regOfficeName, "Office of Academic Affairs & Graduates, IAU Ardabil")}</strong></td>
+          </tr>
+          <tr>
+            <th>Institution Street Address</th>
+            <td colspan="2">${fv(f.regOfficeAddr, "Basij Square, Ardabil, Iran")}</td>
+            <td><strong>Zip Code:</strong> ${fv(f.regOfficeZip, "Branch Zip Code")}</td>
+          </tr>
+          <tr>
+            <th>Registrar Official Phone</th>
+            <td><strong>${fv(f.regOfficeTel, "+98-45-33727799")}</strong></td>
+            <th>Official Verification Email</th>
+            <td>${fv(f.regOfficeEmail, "Official @iau.ac.ir Registrar Email")}</td>
+          </tr>
+        </table>
+
+        <div class="locked-verifier-zone">
+          <span class="badge-blank">🚫 Official Verification Response Section — Applicant Must Leave Blank!</span>
+          <div style="font-size:12px;color:var(--paper-sub);margin-top:6px">
+            [For Home University Registrar / Korea University Use Only] Degree Confirmed: □ Yes □ No &nbsp;|&nbsp; Verifier Name & Seal: ______________________
+          </div>
+        </div>
+
+        <div class="wet-sign-box">
+          <div>
+            <span class="badge-sign">✍️ Sign Here — WET-INK HANDWRITTEN SIGNATURE ONLY!</span>
+            <div style="font-size:12px;color:var(--red);font-weight:700;margin-top:4px">
+              ⛔ Photocopies, scanned printouts, or digital tablet styluses are STRICTLY REJECTED! Ship wet-ink original on Mar 3 from Ardabil.
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:12px;margin-bottom:6px">Date: <strong>2027 . 03 . 02</strong></div>
+            <div class="wet-sign-line">Applicant's Signature: X ________________________</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KU PAGES 4 & 5: RECEIPT VS ENVELOPE LABEL -->
+      <div class="sheet-guide-banner ${hideOtherInReleaseMode}">
+        <div>
+          <strong style="font-size:15px;color:var(--ku-crimson)">${{
+            zh: "📄 仿真页 ④–⑤｜第4页 Receipt（自留禁寄）vs 第5页 Document Submission Label（剪下贴信封正面）",
+            en: "📄 Simulated Pages ④–⑤ | Page 4 Receipt (Keep!) vs. Page 5 Document Submission Label (Paste on Envelope!)",
+            fa: "📄 صفحات شبیه‌سازی ۴ و ۵ | تفکیک رسید صفحه ۴ (نزد خودتان بماند) از برچسب صفحه ۵ (الصاق روی پاکت تحویلی به 126B)"
+          }[state.lang]}</strong>
+        </div>
+      </div>
+
+      <div class="sim-paper ${hideOtherInReleaseMode}" dir="ltr">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px">
+          <div style="border:1.5px solid var(--paper-border);border-radius:8px;padding:16px;background:var(--paper-cell-head);opacity:0.92">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px">
+              <strong>Page ④: Receipt of Application (접수증)</strong>
+              <span class="stamp-overlay">📌 自留备查 · 切勿装袋 (KEEP — DO NOT MAIL)</span>
+            </div>
+            <div style="font-size:12.4px;color:var(--paper-sub)">
+              Applicant: <strong>${fv(getFullName(), "Applicant Name")}</strong><br>
+              Department: Integrated Biomedical & Life Sciences (Master's)<br>
+              Fee Paid: 127,000 KRW (Paid via UWAY on 2027.03.02)<br>
+              <em>* Charlotte keeps this receipt in Seoul when dropping off the packet at Room 126B.</em>
+            </div>
+          </div>
+
+          <div class="cut-label-box">
+            <div style="font-size:11.5px;font-weight:800;color:var(--ku-crimson);margin-bottom:8px">✂️ Page ⑤: DOCUMENT SUBMISSION LABEL (서류제출용 봉투표지 — Cut & Paste on Front of Envelope)</div>
+            <div style="font-size:12.3px;border-bottom:1px dashed var(--paper-border);padding-bottom:8px;margin-bottom:10px">
+              <strong>FROM (Sender):</strong> ${fv(getFullName(), "Applicant Name")} (Dept. of Integrated Biomedical & Life Sciences)<br>
+              Korea Return Address: ${fv(f.seoulAddress, "Charlotte's Seoul Address")} [Zip: ${fv(f.seoulZip, "Zip")}] · Tel: ${fv(f.charlottePhone, "010-XXXX-XXXX")}
+            </div>
+            <div style="font-size:13.2px;line-height:1.55">
+              <strong>TO: Graduate School Administration Team</strong><br>
+              <strong style="color:#8B0029;font-size:14px">Room 126B, Graduate School Library (대학원 도서관 126B호)</strong><br>
+              Korea University, 145 Anam-ro, Seongbuk-gu, Seoul 02841, Republic of Korea<br>
+              Tel: <strong>+82-2-3290-1358</strong> (Subway Line 6 · Anam Station)
+            </div>
+            <div style="margin-top:10px;padding:6px 10px;background:var(--green-soft);color:var(--green);border-radius:6px;font-size:12px;font-weight:800">
+              ✅ Walk-In Strongly Recommended by 2027.03.19 (Fri) 17:00 KST! (⛔ NEVER put Recommendation Letter inside this envelope!)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KU SUPPLEMENT: RECOMMENDATION LETTER FORM -->
+      <div class="sheet-guide-banner warn-red ${hideOtherInReleaseMode}">
+        <div>
+          <strong style="font-size:15px;color:var(--red)">${{
+            zh: "✉️ 附表仿真｜KU Official Recommendation Letter Form（认识年月 + 粘贴教授名片框 + 每页手签直发邮箱！）",
+            en: "✉️ Supplement Preview | KU Official Recommendation Form (Acquaintance Duration + Business Card Box + All-Page Sign!)",
+            fa: "✉️ فرم پیوست دانشگاه کره | توصیه‌نامه رسمی (مدت آشنایی + کادر الصاق کارت ویزیت استاد + امضای دستی در تمام صفحات!)"
+          }[state.lang]}</strong>
+        </div>
+      </div>
+
+      <div class="sim-paper ${hideOtherInReleaseMode}" dir="ltr">
+        <div class="paper-header ku">
+          <div>
+            <div class="paper-h-title">LETTER OF RECOMMENDATION (추천서 — Confidential Email Submission ONLY)</div>
+            <div class="paper-h-sub">Recommender Emails Signed PDF Directly from Institutional @iau.ac.ir to: grad_recommendation@korea.ac.kr</div>
+          </div>
+          <span class="badge-sign" style="background:#FFFFFF">NEVER Place in Bag!</span>
+        </div>
+
+        <table class="form-tbl">
+          <tr>
+            <th>Applicant Name</th>
+            <td>${fv(getFullName(), "Applicant Name")}</td>
+            <th>Desired Dept.</th>
+            <td>Integrated Biomedical & Life Sciences (Biomedical Science · M.S.)</td>
+          </tr>
+          <tr>
+            <th>Recommender Name</th>
+            <td>${fv(f.rec1Name, "Recommender 1 Full Name")}</td>
+            <th>Title & Institution</th>
+            <td>${fv(f.rec1Title, "Academic Title")} · ${fv(f.univName, "IAU Ardabil")}</td>
+          </tr>
+          <tr>
+            <th>Official Institutional Email</th>
+            <td>
+              ${fv(f.rec1Email, "professor@iau.ac.ir")}
+              <div style="font-size:11px;color:var(--red);font-weight:700">Must be @iau.ac.ir (Personal Gmail/Yahoo strictly rejected!)</div>
+            </td>
+            <th>Work Phone & Course</th>
+            <td>${fv(f.rec1Phone, "+98-45-...")} (${fv(f.rec1Course, "Course 20/20")})</td>
+          </tr>
+          <tr>
+            <th>Hidden Mandatory Box #1:<br>Acquaintance Duration</th>
+            <td>
+              <strong>How long have you known the applicant?</strong><br>
+              <span style="display:inline-block;margin-top:4px;padding:3px 10px;border:1.5px solid #D97706;border-radius:5px;background:rgba(245,158,11,0.12);font-weight:800">
+                ${fv(f.rec1KnownYrs, "(__) Years (__) Months")}
+              </span>
+            </td>
+            <th>Hidden Mandatory Box #2:<br>Consent Checkbox</th>
+            <td>
+              <span style="color:var(--green);font-weight:800;font-size:13.5px">☑ I agree</span>
+              <div style="font-size:11.5px;color:var(--paper-sub)">Recommender must check "I agree" before signing.</div>
+            </td>
+          </tr>
+        </table>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;align-items:stretch">
+          <div style="border:2px dashed #0284C7;background:rgba(2,132,199,0.06);border-radius:8px;padding:16px;text-align:center;display:flex;flex-direction:column;justify-content:center">
+            <strong style="color:#0369A1;font-size:13.5px">▣ A Copy of Business Card / Faculty ID Card</strong>
+            <div style="font-size:12px;color:var(--paper-sub);margin-top:6px">
+              [Paste / Attach Professor's Official University Business Card or IAU Faculty ID Copy Here]<br>
+              <strong>此处必须粘贴或嵌印推荐教授的官方名片/大学工作证！</strong>
+            </div>
+          </div>
+
+          <div class="wet-sign-box" style="margin-top:0">
+            <div>
+              <span class="badge-sign">✍️ Professor Handwrites Full Name & Signs on ALL Pages!</span>
+              <div style="font-size:12px;color:var(--red);font-weight:700;margin-top:6px">
+                1) Must be handwritten & wet-signed on EVERY page (<code>handwritten and signed on all pages</code>).<br>
+                2) Professor emails PDF directly from <code>@iau.ac.ir</code> to <strong>grad_recommendation@korea.ac.kr</strong> before <strong>2027.03.15</strong> (pre-Nowruz; hard cutoff 03.19).
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // ==================== TAB 2: HANYANG UNIVERSITY (OIA 3 SHEETS) ====================
+  function renderSimHYU() {
+    const f = state.form;
+    const essayLen = (f.hyuEssayDraft || "").length;
+    const essayWords = (f.hyuEssayDraft || "").trim() ? (f.hyuEssayDraft || "").trim().split(/\s+/).length : 0;
+
+    return `
+      <div class="sheet-guide-banner">
+        <div>
+          <strong style="font-size:15px;color:var(--hyu-blue)">${{
+            zh: "📄 仿真页 ①｜汉阳大学 Application Form (입학원서 · OIA 在线系统导出)",
+            en: "📄 Simulated Page ① | Hanyang Univ. Application Form (입학원서 · OIA Portal)",
+            fa: "📄 صفحه شبیه‌سازی ۱ | فرم ثبت‌نام دانشگاه هانیانگ (خروجی سامانه OIA)"
+          }[state.lang]}</strong>
+          <div style="font-size:12.6px;color:var(--text-3)">${{
+            zh: "网申窗口：2027.03.03 – 03.26 17:00 ｜ 邮政必达：04.02(周五) 17:00 KST 汉阳国际馆 218室（❌ 绝对严禁面交！）",
+            en: "Online Window: Mar 3 – Mar 26, 17:00 | Mail Arrival: Apr 2 (Fri) 17:00 KST at Int'l Bldg Rm 218 (❌ Walk-Ins Banned!)",
+            fa: "ثبت‌نام آنلاین: ۳ تا ۲۶ مارس | رسیدن پست سفارشی: تا جمعه ۲ آوریل ساعت ۱۷ به اتاق ۲۱۸ ساختمان بین‌الملل (حضوری ممنوع!)"
+          }[state.lang]}</div>
+        </div>
+        <span class="badge-sign">${escHtml(t(I18N.legend.sign))}</span>
+      </div>
+
+      <div class="sim-paper page-break-after" dir="ltr">
+        <div class="paper-header hyu">
+          <div>
+            <div class="paper-h-title">HANYANG UNIVERSITY — APPLICATION FOR ADMISSION</div>
+            <div class="paper-h-sub">Fall 2027 International Graduate Admissions (2027학년도 후기 외국인 대학원 신입학 입학원서 · OIA)</div>
+          </div>
+          <div class="exam-no-box">
+            <div style="opacity:0.82">Application No. (수험번호)</div>
+            <div style="font-weight:800;font-size:12.2px;margin-top:2px">[Email ID to HYU PI After 142k Pay!]</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px">
+          <div style="flex:1;min-width:280px">
+            <table class="form-tbl" style="min-width:0;margin-bottom:0">
+              <tr>
+                <th>Eligibility Track</th>
+                <td colspan="3">
+                  <span class="f-locked">☑ Type 1 / Track A (부모 모두 외국인인 외국인 — Applicant & Both Parents Non-Korean)</span>
+                  <span class="badge-lock" style="margin-left:6px">🔒 Pre-Locked</span>
+                </td>
+              </tr>
+              <tr>
+                <th>Campus & Degree</th>
+                <td><span class="f-locked">Seoul Campus (서울캠퍼스)</span></td>
+                <th>Degree Program</th>
+                <td><span class="f-locked">Master's (석사과정)</span></td>
+              </tr>
+              <tr>
+                <th>Department (지원학과)</th>
+                <td colspan="3"><span class="f-locked">Department of Life Science (자연과학대학 생명과학과)</span></td>
+              </tr>
+              <tr>
+                <th>Preferred Advisory Prof.<br>(희망 지도교수 · 二选一)</th>
+                <td colspan="3">
+                  <select class="ltr-field" data-select-field="hyuAdvisor" style="font-weight:700;color:var(--hyu-blue)">
+                    <option value="#1a Prof. Jin-Wu Nam (남진우 · BIG Lab — Department of Life Science)" ${f.hyuAdvisor.indexOf("#1a") >= 0 ? "selected" : ""}>#1a Prof. Jin-Wu Nam (남진우 교수 · BIG Lab — Primary Jan 6)</option>
+                    <option value="#1b Prof. Jaewon Cho (조재원 · Department of Life Science — Backup)" ${f.hyuAdvisor.indexOf("#1b") >= 0 ? "selected" : ""}>#1b Prof. Jaewon Cho (조재원 교수 — Conditional Jan 20 +14d Gate)</option>
+                  </select>
+                  <div style="font-size:11.4px;color:var(--green);font-weight:700;margin-top:4px">
+                    ✓ Advisor internally checks & signs 《한국어기준 면제 요청서 (Korean Language Exemption Form · D12)》 during Apr 22–May 12 review.
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+          ${renderPhotoBox()}
+        </div>
+
+        <table class="form-tbl">
+          <tr>
+            <th>Full Passport Name</th>
+            <td>${fv(getFullName(), "Surname + Given Name")}</td>
+            <th>DOB & Nationality</th>
+            <td>${fv(f.dob, "YYYY-MM-DD")} · <strong>${fv(f.nationality, "Iran")}</strong></td>
+          </tr>
+          <tr>
+            <th>Passport No. & Expiry</th>
+            <td>${fv(f.passportNo, "Passport No.")} (Exp: ${fv(f.passportExpiry, "YYYY-MM-DD")})</td>
+            <th>Email & Direct Phone</th>
+            <td>${fv(f.emailPrimary, "Email")} · ${fv(f.iranMobile, "+98-...")}</td>
+          </tr>
+          <tr>
+            <th>Alma Mater & Major</th>
+            <td>${fv(f.univName, "IAU Ardabil")} · ${fv(f.degreeMajor, "B.S. Clinical Lab Sciences")}</td>
+            <th>HISP Scholarship GPA<br>(Lifeline ≥ 80 / 100!)</th>
+            <td>
+              <strong>${fv(f.convertedPct, "87.50 / 100")}</strong> (Raw: ${fv(f.officialCgpa, "17.50 / 20.00")})
+              <div style="font-size:11px;color:var(--red);font-weight:700">🚨 Include Post-01.10 Wet-Stamped Scholaro (${fv(f.scholaroGpa, "1月填入")}) + Legalized 87.50% Cert!</div>
+            </td>
+          </tr>
+          <tr>
+            <th>Parents Verification</th>
+            <td>Father: ${fv(f.fatherName, "Father Name")} (${fv(f.fatherPassport, "Passport")})</td>
+            <th>Mother Verification</th>
+            <td>Mother: ${fv(f.motherName, "Mother Name")} (${fv(f.motherPassport, "Passport")})</td>
+          </tr>
+          <tr>
+            <th>IELTS CBT (Optional+)</th>
+            <td colspan="3">Date: ${fv(f.ieltsDate, "2027-02-07")} · Score: ${fv(f.ieltsOverall, "Score")} · e-TRF: ${fv(f.ieltsTrfNo, "TRF No.")} (Free Portal Send + Color Print; 0 Alma Mater LORs!)</td>
+          </tr>
+        </table>
+
+        <div class="wet-sign-box">
+          <div>
+            <span class="badge-sign">✍️ Wet-Ink Signature Required</span>
+            <div style="font-size:12px;color:var(--paper-sub);margin-top:3px">Print after Charlotte's Mar 3 fee payment, wet-sign in Ardabil, and ship to Seoul.</div>
+          </div>
+          <div class="wet-sign-line">Applicant's Signature: X ________________________ (Date: 2027.03.03)</div>
+        </div>
+      </div>
+
+      <!-- HYU PAGE 2: PLEDGE VS DISCARDED ART PLEDGE -->
+      <div class="sheet-guide-banner">
+        <div>
+          <strong style="font-size:15px;color:var(--hyu-blue)">${{
+            zh: "📄 仿真页 ②｜必交《志愿誓约书 지원서약서》湿墨手签 vs 旁侧红叉丢弃《艺术系作品提交誓约书》防呆对比",
+            en: "📄 Simulated Page ② | Mandatory Pledge (지원서약서 — Wet-Sign!) vs. Discarded Art-Only Pledge (작품제출 서약서)",
+            fa: "📄 صفحه شبیه‌سازی ۲ | تعهدنامه الزامی 지원서약서 (امضای خیس) در برابر فرم مخصوص رشته هنر (دور انداخته شود!)"
+          }[state.lang]}</strong>
+        </div>
+      </div>
+
+      <div class="sim-paper page-break-after" dir="ltr">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px">
+          <div style="border:2px solid var(--hyu-blue);border-radius:8px;padding:16px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <strong style="color:var(--hyu-blue);font-size:14.5px">✅ KEEP & WET-SIGN: 지원서약서 (Applicant Pledge)</strong>
+              <span class="badge-sign">✍️ Sign & Mail</span>
+            </div>
+            <p style="font-size:12.4px;color:var(--paper-sub);margin:0 0 10px">
+              I, <strong>${fv(getFullName(), "Applicant Name")}</strong> (DOB: ${fv(f.dob, "YYYY-MM-DD")}), hereby pledge to abide by the regulations of Hanyang University and authorize academic record verification with <strong>${fv(f.univName, "IAU Ardabil")}</strong>.
+            </p>
+            <div class="wet-sign-box" style="margin-top:8px">
+              <div class="wet-sign-line" style="min-width:180px">Signature: X ___________________</div>
+              <div style="font-size:12px">2027 . 03 . 03</div>
+            </div>
+          </div>
+
+          <div style="border:2px dashed #D93025;border-radius:8px;padding:16px;background:rgba(217,48,37,0.05);position:relative">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+              <strong style="color:#D93025;text-decoration:line-through;font-size:14.5px">작품제출 서약서 (Portfolio / Artwork Pledge)</strong>
+              <span class="stamp-overlay discard-red">🗑️ 丢弃不交 · DISCARD!</span>
+            </div>
+            <p style="font-size:12.4px;color:#991B1B;text-decoration:line-through;margin:0 0 8px">
+              For Art, Music, Design & Physical Education applicants submitting creative portfolios...
+            </p>
+            <div class="f-trap-alert">
+              ⛔ ANTI-BLUNDER RULE: OIA auto-bundles this sheet in the PDF printout—Department of Life Science applicants MUST pull this page out and throw it away! Do NOT sign or mail it!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HYU PAGE 3: ONLINE STUDY PLAN EDITOR + ENVELOPE LABEL -->
+      <div class="sheet-guide-banner warn-red">
+        <div>
+          <strong style="font-size:15px;color:var(--red)">${{
+            zh: "📄 仿真页 ③｜汉阳 OIA 网页端在线文书草稿框 + 专用挂号信封面 발송용 봉투표지（寄国际馆218室 · 严禁面交！）",
+            en: "📄 Simulated Page ③ | HYU OIA Online Study Plan Editor + Official Envelope Cover Label (Rm 218 · NO Walk-Ins!)",
+            fa: "📄 صفحه شبیه‌سازی ۳ | ویرایشگر آنلاین برنامه تحصیلی OIA + برچسب رسمی پاکت پستی اتاق ۲۱۸ (تحویل حضوری ممنوع!)"
+          }[state.lang]}</strong>
+        </div>
+      </div>
+
+      <div class="sim-paper" dir="ltr">
+        <div class="form-sec-caption" style="margin-top:0">
+          <span>A. Online Personal Statement & Study Plan (자기소개 및 학업계획서 — Enter Online on OIA Portal Then Print)</span>
+          <div class="no-print" style="display:flex;gap:8px;align-items:center">
+            <span id="hyu-essay-stat" style="font-size:12px;color:var(--primary);font-weight:700">${essayLen} chars · ${essayWords} words</span>
+            <button class="ctrl-pill" data-copy-field="hyuEssayDraft">📋 Copy Text</button>
+          </div>
+        </div>
+        <textarea dir="ltr" class="ltr-field" rows="6" data-essay-field="hyuEssayDraft"
+          placeholder="[Draft your English Personal Statement & Study Plan here (auto-saved to localStorage). Paste directly into Hanyang OIA web portal during 2027.03.03–03.26 and export the official printout...]">${escHtml(f.hyuEssayDraft || "")}</textarea>
+
+        <div class="cut-label-box" style="margin-top:18px;border-color:var(--hyu-blue)">
+          <div style="font-size:12px;font-weight:800;color:var(--hyu-blue);margin-bottom:8px">
+            ✂️ B. OFFICIAL HANYANG ENVELOPE COVER LABEL — 발송용 봉투표지 (Paste on Outside of A4 Envelope)
+          </div>
+          <div style="font-size:12.4px;border-bottom:1px dashed var(--paper-border);padding-bottom:8px;margin-bottom:10px">
+            <strong>Sender (보내는 사람):</strong> ${fv(getFullName(), "Applicant Name")} · Dept. of Life Science (M.S.)<br>
+            Address: ${fv(f.seoulAddress, "Charlotte's Seoul Address")} [Zip: ${fv(f.seoulZip, "Zip")}] · Tel: ${fv(f.charlottePhone, "010-XXXX-XXXX")}
+          </div>
+          <div style="font-size:13.4px;line-height:1.58">
+            <strong>Recipient (받는 사람): Office of International Affairs (국제처 국제입학팀)</strong><br>
+            <strong style="color:var(--hyu-blue);font-size:14.2px">Room 218, International Building (#108), Hanyang University (한양대학교 국제관 2층 218호)</strong><br>
+            222 Wangsimni-ro, Seongdong-gu, Seoul 04763, Republic of Korea
+          </div>
+          <div class="f-trap-alert" style="margin-top:10px;font-size:12.4px">
+            📑 STRICT <code>1→10</code> BARE A4 PACKING &amp; TRANSLATION LOCKS:<br>
+            1) <strong>Exact <code>1→10</code> Bare A4 Order (NO folders, staples, or clips; 0 Alma Mater LORs!):</strong> ① Application Form → ② Personal Statement &amp; Study Plan → ③ Applicant Pledge (<code>지원서약서</code>; discard Art pledge!) → ④ Bachelor Cert + Consular Legalization → ⑤ 10-Sem Official Transcripts + Consular (<strong>Iran Sworn Translation Lock:</strong> Major = <code>Clinical Laboratory Sciences</code>; Sem 9 <code>مهمان</code> MUST be translated as <code>Guest Course</code> — NEVER <code>Transfer</code>!) → ⑥ Grading Scale/87.50% Rank Cert + Post-01.10 Wet-Stamped Scholaro → ⑦ IELTS e-TRF → ⑧ Applicant Passport → ⑨ Parents' Nationality &amp; Family Cert + Passports → ⑩ Official Stamped Bank Balance (<code>≥$17,000 USD</code> / <code>≥22M KRW</code>, frozen to <code>2027.08.31</code>).<br>
+            2) Mail on <strong>2027.03.25–03.29</strong> via <strong>Korea Post Registered Mail (우체국 등기우편)</strong> &amp; keep the 13-digit tracking receipt (등기번호).<br>
+            3) <strong>❌ WALK-IN DROP-OFF STRICTLY BANNED (방문접수 일체 불가 — Must arrive by 2027.04.02 Fri 17:00 KST)!</strong>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+
+  // ==================== TAB 3: YONSEI UNIVERSITY (ONLINE PORTAL + NON-KOREAN FORM) ====================
+  function renderSimYU() {
+    const f = state.form;
+    const hideOtherInYuConfirm = state.printScope === "yu_confirm" ? "print-hidden-sheet" : "";
+
+    return `
+      <div class="sheet-guide-banner warn-red ${hideOtherInYuConfirm}">
+        <div>
+          <strong style="font-size:15px;color:var(--red)">${{
+            zh: "🚨 延世生死红线横幅｜一旦缴完 $130 USD 报名费，系统永久彻底锁死——严禁改专业代码或替换/补传任何 PDF！",
+            en: "🚨 YONSEI HARD-LOCKOUT ALERT | Once the $130 USD Fee Is Paid, Portal Permanently Locks—NO Editing Majors or Replacing PDFs!",
+            fa: "🚨 هشدار حیاتی قفل یونسی | به محض پرداخت ۱۳۰ دلار اپلای فی، کل سیستم برای همیشه قفل شده و امکان تغییر رشته یا جایگزینی PDF وجود ندارد!"
+          }[state.lang]}</strong>
+          <div style="font-size:12.6px;margin-top:3px">${{
+            zh: "网申窗口：2027年4月上中旬（第1批）｜ 网申期 0 纸质（既不面交也不邮寄，6月中旬录取注册后才交领事认证原件换 CoA）",
+            en: "Round 1 Online: Early–Mid Apr 2027 | 0 Paper at Application (Neither walk-in nor mail; submit physical originals only post-offer in Jun/Jul)",
+            fa: "ثبت‌نام آنلاین دور اول: نیمه اول آوریل | کاغذی در مرحله اپلای: صفر (نه حضوری و نه پستی؛ تحویل اصل مدارک فقط پس از قبولی ژوئن)"
+          }[state.lang]}</div>
+        </div>
+      </div>
+
+      <div class="sim-paper page-break-after ${hideOtherInYuConfirm}" dir="ltr">
+        <div class="paper-header yu">
+          <div>
+            <div class="paper-h-title">YONSEI UNIVERSITY GRADUATE SCHOOL — ONLINE PORTAL</div>
+            <div class="paper-h-sub">Sinchon Campus · Fall 2027 International Admissions (연세대학교 일반대학원 신촌캠퍼스 외국인 온라인 입학지원)</div>
+          </div>
+          <div class="exam-no-box">
+            <div style="opacity:0.85">Portal Fee & Status</div>
+            <div style="font-weight:800;font-size:12.3px;margin-top:2px;color:#FCA5A5">$130 USD → Locks Upon Payment!</div>
+          </div>
+        </div>
+
+        <div style="padding:10px 14px;background:var(--red-soft);border:2px solid var(--red);border-radius:7px;margin-bottom:14px;font-size:12.6px;font-weight:700;color:var(--red)">
+          🔒 FINAL CHECK BEFORE CLICKING PAY ($130 USD via Overseas Card / PayPal): Verify every single PDF scan is legible at 600 DPI—once paid, no file can ever be swapped or added!
+        </div>
+
+        <div style="display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px">
+          <div style="flex:1;min-width:280px">
+            <table class="form-tbl" style="min-width:0;margin-bottom:0">
+              <tr>
+                <th>Admission Track</th>
+                <td colspan="3">
+                  <span class="f-locked">☑ Track 1: Non-Korean applicant whose BOTH parents are Non-Korean citizens</span>
+                  <span class="badge-lock" style="margin-left:6px">🔒 Must Pick Track 1</span>
+                  <div style="font-size:11.3px;color:var(--red);font-weight:700;margin-top:3px">⚠️ Never select Track 2 (Overseas Korean / 16-year overseas track)!</div>
+                </td>
+              </tr>
+              <tr>
+                <th>Campus & Degree</th>
+                <td><span class="f-locked">Sinchon Campus (신촌캠퍼스)</span></td>
+                <th>Degree Program</th>
+                <td><span class="f-locked">Master's (석사과정)</span></td>
+              </tr>
+              <tr>
+                <th>Target Major Code<br>(Confirm in Feb Zoom!)</th>
+                <td colspan="3">
+                  <select class="ltr-field" data-select-field="yuMajorChoice" style="font-weight:700;color:var(--yu-navy)">
+                    <option value="Department of Medical Sciences (의과학과 · BK21 Project)" ${f.yuMajorChoice.indexOf("Medical Sciences") >= 0 ? "selected" : ""}>Department of Medical Sciences (의과학과 · BK21 Project — Cap ≤5p Portfolio)</option>
+                    <option value="Department of Biomedical Systems Informatics (의생명시스템정보학과 · BSI)" ${f.yuMajorChoice.indexOf("Informatics") >= 0 ? "selected" : ""}>Department of Biomedical Systems Informatics (의생명시스템정보학과 · BSI)</option>
+                  </select>
+                  <div style="font-size:11.4px;color:var(--paper-sub);margin-top:3px">Target Lab: #3 Prof. Dukyong Yoon (윤덕용 교수 · CMI Lab, College of Medicine — 100% Tuition Support)</div>
+                </td>
+              </tr>
+              <tr>
+                <th>Direct Personal Contact<br>(Red-Line Rule!)</th>
+                <td colspan="3">
+                  Mobile: <strong>${fv(f.iranMobile, "+98-... Direct Mobile")}</strong> &nbsp;|&nbsp; Email: <strong>${fv(f.emailPrimary, "Direct Applicant Email")}</strong>
+                  <div class="f-trap-alert">⛔ YONSEI CONTACT RULE: Phone & email MUST reach the applicant directly—entering an agent's or proxy's number is strictly prohibited!</div>
+                </td>
+              </tr>
+            </table>
+          </div>
+          ${renderPhotoBox()}
+        </div>
+
+        <!-- YONSEI [ACADEMIC RECORDS - GPA] SPOTLIGHT -->
+        <div style="border:2px solid var(--yu-navy);background:var(--yu-soft);border-radius:9px;padding:14px 16px;margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+            <strong style="font-size:14.2px;color:var(--yu-navy)">🔎 Spotlight: [Academic Records – GPA] Exact Entry for Iran 0–20 Scale</strong>
+            <span class="badge-lock">🔒 Select "Others" → 17.50</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px">
+            <div style="background:var(--paper-bg);border:1.5px solid var(--yu-navy);border-radius:7px;padding:9px 12px">
+              <div style="font-size:11px;color:var(--paper-sub);font-weight:700">1. Grading Scale Dropdown</div>
+              <div style="font-size:15px;font-weight:900;color:var(--yu-navy);margin-top:3px">[ Others &nbsp;&nbsp;▼ ]</div>
+              <div style="font-size:10.8px;color:var(--red);font-weight:700">Do NOT pick 4.0 / 4.3 / 4.5 / 100!</div>
+            </div>
+            <div style="background:var(--paper-bg);border:1.5px solid var(--yu-navy);border-radius:7px;padding:9px 12px">
+              <div style="font-size:11px;color:var(--paper-sub);font-weight:700">2. Cumulative GPA (CGPA)</div>
+              <div style="font-size:15px;font-weight:900;color:var(--green);margin-top:3px">17.50 <span style="font-size:12px;color:var(--paper-sub)">/ Max 20.00</span></div>
+              <div style="font-size:10.8px;color:var(--paper-sub)">Exact 10-semester transcript CGPA</div>
+            </div>
+            <div style="background:var(--paper-bg);border:1.5px solid var(--yu-navy);border-radius:7px;padding:9px 12px">
+              <div style="font-size:11px;color:var(--paper-sub);font-weight:700">3. Mandatory Explanation PDF</div>
+              <div style="font-size:12.2px;font-weight:800;color:var(--primary);margin-top:3px">📎 D10-A (87.50% Scale) + D10-B (Wet Scholaro) Merged PDF</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-sec-caption">
+          <span>Online PDF Attachments & Dual-Channel LORs (Maximum Two — Core Screening Pillar)</span>
+        </div>
+        <table class="form-tbl">
+          <tr>
+            <th>Recommender #1<br>(Med Biochem / Immuno)</th>
+            <td>${fv(f.rec1Name, "Recommender 1 Name")} (${fv(f.rec1Title, "Title")} · ${fv(f.rec1Course, "20/20 Course")})<br>Email: ${fv(f.rec1Email, "prof1@iau.ac.ir")}</td>
+            <th>Recommender #2<br>(Biostatistics 20/20)</th>
+            <td>${fv(f.rec2Name, "Recommender 2 Name")} (${fv(f.rec2Title, "Title")} · ${fv(f.rec2Course, "20/20 Course")})<br>Email: ${fv(f.rec2Email, "prof2@iau.ac.ir")}</td>
+          </tr>
+          <tr>
+            <th>Dual LOR Upload Rule</th>
+            <td colspan="3">
+              <span style="color:var(--green);font-weight:700">✓ Channel A:</span> Portal automated email link to <code>@iau.ac.ir</code> &nbsp;|&nbsp;
+              <span style="color:var(--primary);font-weight:700">✓ Channel B (Iran Firewall Safe!):</span> Yonsei explicitly allows the applicant to directly upload professor-signed LOR PDFs onto the portal!
+            </td>
+          </tr>
+          <tr>
+            <th>Fresh Apr Bank PDF &<br>e-TRF / ≤5p Portfolio</th>
+            <td colspan="3">
+              • <strong>Bank Proof (Win 2):</strong> Re-print a fresh <code>≤30d</code> bank cert (<code>≥22,000,000 KRW</code> / <code>≥$17,000 USD</code> w/ bank seal, frozen to <code>2027-08-31</code>) on <strong>2027.04.03–04.06 (post-Nowruz)</strong> & upload 600 DPI PDF.<br>
+              • <strong>IELTS e-TRF (${fv(f.ieltsTrfNo, "TRF No.")}):</strong> Upload PDF directly on portal (<strong>✓ IELTS One Skill Retake explicitly accepted</strong> within validity; <strong>⛔ Institutional Score Reporting NOT accepted!</strong>).<br>
+              • <strong>Add-On Portfolio Cap (<code>Medical Sciences BK21</code> Items ① & ②):</strong> Upload <code>Academic_Portfolio_Max5Pages.pdf</code> (2p summary + 40+h Vaccine Design cert = ≤5p) strictly in <strong>Research Achievements / Experience</strong> — <span style="color:var(--red);font-weight:800">⛔ NEVER misupload into <code>Proof of employment</code> (재직증명서)!</span>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- YONSEI PAGE 2: 1:1 PRINTABLE STATIC SHEET - LETTER OF CONFIRMATION (NON-KOREAN) -->
+      <div class="sheet-guide-banner">
+        <div>
+          <strong style="font-size:15px;color:var(--yu-navy)">${{
+            zh: "🧾 仿真页 ②｜1:1 可打印静态表 Letter of Confirmation (Non-Korean)（直接打印亲笔手签 → 扫 600 DPI PDF 上传！）",
+            en: "🧾 Printable Static Sheet ② | 1:1 Yonsei Letter of Confirmation (Non-Korean) — Print, Wet-Sign & Scan 600 DPI PDF!",
+            fa: "🧾 فرم چاپی ۱:۱ یونسی | گواهی غیرکره‌ای بودن متقاضی و والدین (چاپ روی A4، امضای دستی و اسکن رنگی ۶۰۰ DPI جهت آپلود)"
+          }[state.lang]}</strong>
+        </div>
+        <button class="ctrl-pill primary-cta no-print" data-print-single="yu_confirm">🖨️ ${{
+          zh: "单独打印此页 A4 净版",
+          en: "Print Clean A4 Sheet",
+          fa: "چاپ تمیز این برگه A4"
+        }[state.lang]}</button>
+      </div>
+
+      <div class="sim-paper" id="sheet-yu-confirm" dir="ltr">
+        <div style="text-align:center;border-bottom:2.5px double #003876;padding-bottom:12px;margin-bottom:16px">
+          <div style="font-size:12.5px;font-weight:700;color:#003876;letter-spacing:1px">YONSEI UNIVERSITY GRADUATE SCHOOL (Sinchon Campus)</div>
+          <h3 style="margin:6px 0 4px;font-size:19px;font-weight:900;letter-spacing:0.3px">LETTER OF CONFIRMATION (Non-Korean)</h3>
+          <div style="font-size:12px;color:var(--paper-sub)">Eligibility Verification for Track 1: Non-Korean Applicant with Both Non-Korean Parents</div>
+        </div>
+
+        <div class="form-sec-caption" style="margin-top:0">1. Applicant Information (지원자 인적사항)</div>
+        <table class="form-tbl">
+          <tr>
+            <th>Full Name (Passport)</th>
+            <td>Surname: <strong>${fv(f.surname, "SURNAME")}</strong> &nbsp;/&nbsp; Given Name: <strong>${fv(f.givenName, "GIVEN NAME")}</strong></td>
+            <th>Date of Birth</th>
+            <td>${fv(f.dob, "YYYY-MM-DD")}</td>
+          </tr>
+          <tr>
+            <th>Current Nationality</th>
+            <td><strong>${fv(f.nationality, "Iran")}</strong></td>
+            <th>Passport Number</th>
+            <td>${fv(f.passportNo, "Passport No.")}</td>
+          </tr>
+          <tr>
+            <th>Degree & Department</th>
+            <td colspan="3">Master's Degree · <strong>${escHtml(f.yuMajorChoice)}</strong></td>
+          </tr>
+          <tr>
+            <th>Ever Held Korean Citizenship?</th>
+            <td colspan="3"><strong>☑ No, I have never held Republic of Korea nationality.</strong> &nbsp;&nbsp; ☐ Yes (Dual / Former Korean)</td>
+          </tr>
+        </table>
+
+        <div class="form-sec-caption">2. Parents' Nationality & Identity Verification (부모 국적 확인사항)</div>
+        <table class="form-tbl">
+          <tr>
+            <th style="width:16%">Relationship</th>
+            <th style="width:28%">Full Name (Passport / Shenasnameh)</th>
+            <th style="width:18%">Date of Birth</th>
+            <th style="width:16%">Nationality</th>
+            <th style="width:22%">Passport No. & Korean Status</th>
+          </tr>
+          <tr>
+            <td><strong>Father (부)</strong></td>
+            <td>${fv(f.fatherName, "Father's Full Name")}</td>
+            <td>${fv(f.fatherDob, "YYYY-MM-DD")}</td>
+            <td><strong>${fv(f.fatherNat, "Iran")}</strong></td>
+            <td>${fv(f.fatherPassport, "Passport No.")}<br><span style="font-size:11px;color:var(--green);font-weight:700">☑ Never Korean Citizen</span></td>
+          </tr>
+          <tr>
+            <td><strong>Mother (모)</strong></td>
+            <td>${fv(f.motherName, "Mother's Full Name")}</td>
+            <td>${fv(f.motherDob, "YYYY-MM-DD")}</td>
+            <td><strong>${fv(f.motherNat, "Iran")}</strong></td>
+            <td>${fv(f.motherPassport, "Passport No.")}<br><span style="font-size:11px;color:var(--green);font-weight:700">☑ Never Korean Citizen</span></td>
+          </tr>
+        </table>
+
+        <div style="border:1px solid var(--paper-border);border-radius:6px;padding:12px 14px;background:var(--paper-cell-head);font-size:12.4px;line-height:1.62;margin:14px 0">
+          <strong>Attestation & Verification Consent:</strong><br>
+          I hereby confirm that neither I nor either of my biological/legal parents holds or has ever held citizenship of the Republic of Korea. I substantiate our family relationship and foreign citizenship with the attached officially translated and MOJ/MFA-authenticated Iranian Family Booklets (<em>Shenasnameh</em>) and valid passports. I understand that any false statement will result in immediate revocation of admission even after enrollment.
+        </div>
+
+        <div class="wet-sign-box">
+          <div>
+            <span class="badge-sign">✍️ Print → Sign by Hand → Scan at 600 DPI Color PDF</span>
+            <div style="font-size:11.8px;color:var(--paper-sub);margin-top:4px">Upload signed PDF onto Yonsei portal before paying the $130 USD application fee.</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:12.5px;margin-bottom:8px">Date: <strong>2027 . 04 . ____</strong></div>
+            <div class="wet-sign-line">Applicant's Signature: X ________________________</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // ==================== TAB 4: CHUNG-ANG UNIVERSITY (UWAY + 3-PROMPT COUNTER + ITEM 16 + CAYSS) ====================
+  function renderPromptStatHtml(val) {
+    const len = (val || "").length;
+    const pct = Math.min(100, Math.round((len / 3000) * 100));
+    let color = "#64748B";
+    let msg = "";
+    if (len === 0) {
+      color = "#64748B";
+      msg = {
+        zh: "待输入英文正文（建议 1,500–3,000 字符，含空格）",
+        en: "Enter English essay (Target: 1,500–3,000 chars incl. spaces)",
+        fa: "متن انگلیسی را وارد کنید (بازه مجاز: ۱,۵۰۰ تا ۳,۰۰۰ کاراکتر)"
+      }[state.lang];
+    } else if (len < 1500) {
+      color = "#D97706";
+      const diff = 1500 - len;
+      msg = {
+        zh: `⚠️ 距 1,500 字符建议下限还差 ${diff} 字符`,
+        en: `⚠️ ${diff} more chars needed to reach 1,500 recommended minimum`,
+        fa: `⚠️ ${diff} کاراکتر تا رسیدن به کف پیشنهادی ۱,۵۰۰ باقی مانده است`
+      }[state.lang];
+    } else if (len <= 3000) {
+      color = "#0F9D58";
+      msg = {
+        zh: `✅ 完美处于 1,500–3,000 字符合规区间！（余量 ${3000 - len} 字符）`,
+        en: `✅ Optimal 1,500–3,000 char range! (${3000 - len} chars remaining)`,
+        fa: `✅ در بازه استاندارد ۱,۵۰۰ تا ۳,۰۰۰ کاراکتر قرار دارد! (${3000 - len} کاراکتر جا دارد)`
+      }[state.lang];
+    } else {
+      color = "#D93025";
+      msg = {
+        zh: `⛔ 已超出 3,000 字符上限 ${len - 3000} 字符！UWAY 系统会直接截断超出部分！`,
+        en: `⛔ Exceeds 3,000-char hard limit by ${len - 3000} chars! UWAY will truncate!`,
+        fa: `⛔ ${len - 3000} کاراکتر بیش از سقف مجاز ۳,۰۰۰! سامانه UWAY متن اضافی را قطع می‌کند!`
+      }[state.lang];
+    }
+    return { len, pct, color, msg };
+  }
+
+  function renderSimCAU() {
+    const f = state.form;
+    const hideOtherInCauConsent = state.printScope === "cau_consent" ? "print-hidden-sheet" : "";
+
+    const promptsMeta = [
+      {
+        key: "cauPrompt1",
+        num: "1",
+        ko: "1. 지원동기",
+        enTitle: "Motivation for Application",
+        ph: "[Prompt 1 — 1,500 to 3,000 chars] Why Chung-Ang University College of Pharmacy & Prof. Yoonji Lee's Computational Medicinal Chemistry Lab? Connect your B.S. in Clinical Laboratory Sciences (17.50/20, 6× 20/20 courses) + M4 hERG-QSAR-SHAP-Dock (quantitative pIC50 regression & Molegro Virtual Docker PDB 7CN0 docking)..."
+      },
+      {
+        key: "cauPrompt2",
+        num: "2",
+        ko: "2. 학업 및 연구계획",
+        enTitle: "Academic & Research Plan",
+        ph: "[Prompt 2 — 1,500 to 3,000 chars] Semester-by-semester M.S. coursework & dry-lab research plan on structure-based drug design, quantitative bioactivity QSAR modeling, and JCR journal publication milestone required for CAYSS retention..."
+      },
+      {
+        key: "cauPrompt3",
+        num: "3",
+        ko: "3. 졸업 후 희망, 경력 및 연구활동, 기타 특이사항",
+        enTitle: "Future Plan, Research Experience & Extracurriculars",
+        ph: "[Prompt 3 — 1,500 to 3,000 chars] Post-M.S. Ph.D./Korean pharma R&D career trajectory, 16 credits (816 hours) of clinical diagnostic laboratory practicum (18.94/20), 3 specialized trainings (incl. 40+ Hours Computational Vaccine Design), and reproducible GitHub repositories..."
+      }
+    ];
+
+    const promptsHtml = promptsMeta.map(pm => {
+      const val = f[pm.key] || "";
+      const st = renderPromptStatHtml(val);
+      return `
+        <div class="prompt-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+            <strong style="font-size:14px;color:var(--cau-blue)">${pm.ko} (${pm.enTitle})</strong>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span id="cnt-${pm.key}" style="font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:800;color:${st.color}">
+                ${st.len.toLocaleString()} / 1,500 chars (Max 3,000)
+              </span>
+              <button class="ctrl-pill no-print" data-copy-field="${pm.key}" style="padding:3px 9px;font-size:11.5px">📋 Copy</button>
+            </div>
+          </div>
+          <textarea dir="ltr" class="ltr-field" rows="6" data-cau-prompt="${pm.key}" placeholder="${escAttr(pm.ph)}">${escHtml(val)}</textarea>
+          <div class="char-bar-track">
+            <div id="bar-${pm.key}" class="char-bar-fill" style="width:${st.pct}%;background:${st.color}"></div>
+          </div>
+          <div id="msg-${pm.key}" style="font-size:11.8px;font-weight:700;color:${st.color};margin-top:5px">${escHtml(st.msg)}</div>
+        </div>
+      `;
+    }).join("");
+
+    const tenMetrics = [
+      "1. Intellectual ability & academic aptitude (지적 능력)",
+      "2. Analytical & problem-solving capability (분석력 및 문제해결력)",
+      "3. Depth of knowledge in major field (전공 학문 기초지식)",
+      "4. Research potential & originality (연구 잠재력 및 독창성)",
+      "5. Laboratory / computational execution skill (실험·실습 수행능력)",
+      "6. Written & oral English proficiency (영어 구사 및 표현력)",
+      "7. Academic motivation & perseverance (학업 열의 및 인내심)",
+      "8. Research ethics & teamwork (연구윤리 및 협동성)",
+      "9. Emotional maturity & adaptability (정서적 안정감 및 적응력)",
+      "10. Overall educational quality & future promise (종합 교육적 자질)"
+    ];
+
+    const metricsRows = tenMetrics.map(m => `
+      <tr>
+        <td style="font-weight:600">${m}</td>
+        <td style="text-align:center;background:rgba(15,157,88,0.12);color:var(--green);font-weight:900">☑ Excellent<br><span style="font-size:10px">(Top 2%)</span></td>
+        <td style="text-align:center;color:#94A3B8">☐ Very Good<br><span style="font-size:10px">(Top 10%)</span></td>
+        <td style="text-align:center;color:#94A3B8">☐ Good<br><span style="font-size:10px">(Top 25%)</span></td>
+        <td style="text-align:center;color:#94A3B8">☐ Average<br><span style="font-size:10px">(Top 50%)</span></td>
+        <td style="text-align:center;color:#94A3B8">☐ Below Avg</td>
+      </tr>
+    `).join("");
+
+    return `
+      <!-- CAU SHEET 1: UWAY APPLICATION FORM -->
+      <div class="sheet-guide-banner ${hideOtherInCauConsent}">
+        <div>
+          <strong style="font-size:15px;color:var(--cau-blue)">${{
+            zh: "📄 仿真页 ①｜中央大学 UWAY Application Form（CAYSS 双边推荐流 + 1原件+1全套复印件规则）",
+            en: "📄 Simulated Page ① | Chung-Ang Univ. UWAY Application Form (CAYSS Workflow + '1 Orig + 1 Copy' Rule)",
+            fa: "📄 صفحه شبیه‌سازی ۱ | فرم ثبت‌نام UWAY دانشگاه چونگ‌آنگ (بورسیه CAYSS + قانون ۱ اصل و ۱ کپی کامل)"
+          }[state.lang]}</strong>
+          <div style="font-size:12.6px;color:var(--text-3)">${{
+            zh: "网申：2027.04.23 – 05.12 ｜ 纸质截止：05.13/14（当天邮戳有效，或地铁9号线黑石站 310馆2楼210室 面交）",
+            en: "Online: Apr 23 – May 12 | Cutoff: May 13/14 (Postmark valid, OR Walk-In at Line 9 Heukseok Bldg 310, 2F Rm 210)",
+            fa: "ثبت‌نام: ۲۳ آوریل تا ۱۲ مه | مهلت: ۱۳/۱۴ مه (ملاک مهر پست یا تحویل حضوری به ساختمان ۳۱۰ طبقه ۲ اتاق ۲۱۰)"
+          }[state.lang]}</div>
+        </div>
+      </div>
+
+      <div class="sim-paper page-break-after ${hideOtherInCauConsent}" dir="ltr">
+        <div class="paper-header cau">
+          <div>
+            <div class="paper-h-title">CHUNG-ANG UNIVERSITY GRADUATE SCHOOL</div>
+            <div class="paper-h-sub">Fall 2027 International Admissions & CAYSS Full-Scholarship Track (중앙대학교 일반대학원 외국인 입학원서 · UWAY)</div>
+          </div>
+          <div class="exam-no-box">
+            <div style="opacity:0.85">Packet Rule</div>
+            <div style="font-weight:800;font-size:12.3px;margin-top:2px">1 Original + 1 Full Copy!</div>
+          </div>
+        </div>
+
+        <div style="padding:10px 14px;background:var(--cau-soft);border:1.5px solid var(--cau-blue);border-radius:7px;margin-bottom:14px;font-size:12.4px">
+          <strong>🏆 CAYSS Full-Scholarship 3-Step Workflow &amp; CAU Exclusive Rules:</strong>
+          (1) <strong>Step 1 (5-Piece Nomination Pack to <code>#4 Prof. Yoonji Lee</code> once she agrees in Feb):</strong> ① Official <code>CAYSS Application Form</code>, ② <code>CV</code>, ③ Undergrad <code>Transcripts</code> scan, ④ Former/current advisor names &amp; emails, ⑤ Research achievements summary →
+          (2) <strong>Step 2 &amp; Step 3 (<code>Individual Guidance</code> — Fee Waiver Alert!):</strong> After PI submits <code>CAYSS Recommendation Form</code> to OIA, <strong>WAIT for CAU OIA's individual portal &amp; <code>100,000 KRW</code> fee-waiver guidance email</strong> (NEVER pay early as a regular self-funded applicant and lock UWAY!) →
+          (3) <strong>JCR Graduation &amp; Grant Acknowledgment Rule:</strong> Submit a JCR international journal paper before graduation &amp; publish/accept within 1 yr post-graduation <code>as sole author or jointly with the advisor</code> + <strong>mandatory designated research grant acknowledgment (<code>지정 연구비 사사 표기 필수</code>)</strong> →
+          (4) <strong>Keep UWAY Admission Ticket (<code>수험표</code>)</strong> for Jun Zoom interview + check <strong>Item #9 (<code>3× کارت ملی</code> copies) &amp; Item #13 (<code>Passport</code>)</strong> w/ <code>gsadmin@cau.ac.kr</code> →
+          (5) <strong><code>1 Orig + 1 Copy</code> Stacking:</strong> Keep the single <code>밀봉 후 첨인</code> flap-signed LOR UNOPENED, photocopy every other sheet (esp. Item #6 Transcript <code>[1 Original and 1 Copy]</code>), and stack cleanly as <strong>[Original Set] + [Copy Set]</strong>!
+        </div>
+
+        <div style="display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px">
+          <div style="flex:1;min-width:280px">
+            <table class="form-tbl" style="min-width:0;margin-bottom:0">
+              <tr>
+                <th>Campus & Track</th>
+                <td><span class="f-locked">Seoul Campus (서울캠퍼스)</span></td>
+                <th>Admission Track</th>
+                <td><span class="f-locked">Pure Foreigner + CAYSS Applicant</span></td>
+              </tr>
+              <tr>
+                <th>Target Department</th>
+                <td colspan="3">
+                  <select class="ltr-field" data-select-field="cauMajorChoice" style="font-weight:700;color:var(--cau-blue)">
+                    <option value="Department of Pharmacy (약학과 · College of Pharmacy)" ${f.cauMajorChoice.indexOf("Pharmacy") >= 0 ? "selected" : ""}>Department of Pharmacy (약학과 · Medicinal Chemistry — #4 Prof. Yoonji Lee)</option>
+                    <option value="Department of Global Innovative Drugs (글로벌혁신신약학과)" ${f.cauMajorChoice.indexOf("Innovative") >= 0 ? "selected" : ""}>Department of Global Innovative Drugs (글로벌혁신신약학과 — Confirm Code w/ PI)</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <th>Applicant & Passport</th>
+                <td>${fv(getFullName(), "Full Name")} (${fv(f.dob, "DOB")})</td>
+                <th>Passport No.</th>
+                <td>${fv(f.passportNo, "Passport No.")} · <strong>${fv(f.nationality, "Iran")}</strong></td>
+              </tr>
+              <tr>
+                <th>Appendix 05-01 GPA<br>(Mandatory Scholaro!)</th>
+                <td colspan="3">
+                  Raw: <strong>${fv(f.officialCgpa, "17.50 / 20.00")}</strong> &nbsp;|&nbsp;
+                  10-Sem Course-by-Course Wet-Stamped Scholaro: <strong>${fv(f.scholaroGpa, "[Enter 4.0 Scale Scholaro GPA]")}</strong>
+                  <span style="font-size:11px;color:var(--green);font-weight:700;margin-left:6px">(Exempt from Embassy stamp; include 1 Orig + 1 Copy!)</span>
+                </td>
+              </tr>
+            </table>
+          </div>
+          ${renderPhotoBox()}
+        </div>
+
+        <div class="wet-sign-box">
+          <div>
+            <span class="badge-sign">✍️ Wet-Ink Signature + Photocopy Set</span>
+            <div style="font-size:12px;color:var(--paper-sub);margin-top:3px">Sign in wet ink, then Charlotte photocopies the entire signed packet 1:1 before sealing!</div>
+          </div>
+          <div class="wet-sign-line">Applicant's Signature: X ________________________ (Date: 2027.04.23)</div>
+        </div>
+      </div>
+
+      <!-- CAU PANEL 2: UWAY ONLINE STUDY PLAN 3-PROMPT LIVE COUNTER -->
+      <div class="sheet-guide-banner warn-red ${hideOtherInCauConsent}">
+        <div>
+          <strong style="font-size:15px;color:var(--red)">${{
+            zh: "⌨️ 仿真面板 ②｜中央大学 UWAY Online Study Plan (학업계획서) 三题实时字符计数器（离线自制表无效！）",
+            en: "⌨️ Interactive Panel ② | CAU UWAY Online Study Plan (학업계획서) 3-Prompt Live Character Counter (Offline Forms INVALID!)",
+            fa: "⌨️ پنل تعاملی ۲ | شمارنده زنده کاراکتر ۳ سؤال برنامه تحصیلی آنلاین در سامانه UWAY چونگ‌آنگ (فرم آفلاین باطل است!)"
+          }[state.lang]}</strong>
+          <div style="font-size:12.6px;font-weight:700">${{
+            zh: "⚠️ 2027 往届原表黑体强制规定：必须在 UWAY 网申网页内在线填写以下 3 道题后导出打印！每题目标 1,500 字符（上限 3,000 字符，实时存入浏览器）",
+            en: "⚠️ Bold Official Rule: MUST be typed online inside UWAY portal across these exact 3 prompts (Target 1,500 chars · Max 3,000 chars each)!",
+            fa: "⚠️ قانون اکید دفترچه: هر ۳ سؤال باید مستقیماً به صورت آنلاین داخل سامانه UWAY تایپ و پرینت شوند (هدف ۱,۵۰۰ تا حداکثر ۳,۰۰۰ کاراکتر)!"
+          }[state.lang]}</div>
+        </div>
+      </div>
+
+      <div class="sim-paper page-break-after ${hideOtherInCauConsent}" dir="ltr">
+        ${promptsHtml}
+      </div>
+
+      <!-- CAU SHEET 3: ITEM #16 DEGREE VERIFICATION FORM & LETTER OF CONSENT -->
+      <div class="sheet-guide-banner">
+        <div>
+          <strong style="font-size:15px;color:var(--cau-blue)">${{
+            zh: "🧾 仿真页 ③｜1:1 还原简章第 16 项 Degree Verification Form & LETTER OF CONSENT（上半页蓝框6项 + 下半页 ★ 4项 + 灰底禁填区！）",
+            en: "🧾 Simulated Sheet ③ | 1:1 CAU Item #16 Degree Verification Form & LETTER OF CONSENT (Upper Blue Box 6 Fields + Lower 4 ★ Fields!)",
+            fa: "🧾 فرم ۱:۱ بند ۱۶ چونگ‌آنگ | استعلام مدرک و رضایت‌نامه (۶ فیلد انگلیسی کادر آبی بالا + ۴ فیلد ستاره‌دار پایین + ناحیه ممنوعه وسط!)"
+          }[state.lang]}</strong>
+        </div>
+        <button class="ctrl-pill primary-cta no-print" data-print-single="cau_consent">🖨️ ${{
+          zh: "单独打印第16项 A4 样表",
+          en: "Print Item #16 Sheet",
+          fa: "چاپ مجزای فرم بند ۱۶"
+        }[state.lang]}</button>
+      </div>
+
+      <div class="sim-paper page-break-after" id="sheet-cau-consent" dir="ltr">
+        <div style="text-align:center;margin-bottom:12px">
+          <div style="font-size:12px;font-weight:700;color:var(--cau-blue)">CHUNG-ANG UNIVERSITY GRADUATE SCHOOL · REQUIRED FORM #16 (해외대학 졸업자 학력조회동의서)</div>
+          <h3 style="margin:4px 0;font-size:18px;font-weight:900">DEGREE VERIFICATION FORM & LETTER OF CONSENT</h3>
+          <div style="font-size:11.8px;color:var(--red);font-weight:700">Official Bold Instruction (파란박스 빈칸 영문기재 제출): Complete ALL 6 English fields in the Upper Blue Box AND the 4 ★ items in the Lower Consent section; sign in wet ink.</div>
+        </div>
+
+        <!-- TOP BLUE REGISTRAR BOX (6 MANDATORY ENGLISH FIELDS) -->
+        <div style="border:2px solid #004C97;background:rgba(0,76,151,0.06);border-radius:8px;padding:12px 15px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:800;color:#004C97;margin-bottom:6px">
+            🏛️ UPPER BLUE BOX — HOME UNIVERSITY VERIFICATION OFFICE (파란박스 빈칸 영문기재 제출 · 6 Mandatory English Fields)
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px 16px;font-size:12.6px">
+            <div><strong>① University (Institution) Name:</strong> ${fv(f.univName, "Islamic Azad University, Ardabil Branch")} (${fv(f.regOfficeName, "Academic Affairs Office")})</div>
+            <div><strong>② Address:</strong> ${fv(f.regOfficeAddr, "Basij Square, Ardabil, Iran")}</div>
+            <div><strong>③ Zip code:</strong> ${fv(f.regOfficeZip, "[Branch 10-Digit Zip Code]")}</div>
+            <div><strong>④ Official E-mail:</strong> ${fv(f.regOfficeEmail, "[Official @iau.ac.ir Verification Email]")}</div>
+            <div><strong>⑤ Tel (incl. Country Code):</strong> <strong>${fv(f.regOfficeTel, "+98-45-33727799")}</strong></div>
+            <div><strong>⑥ Fax:</strong> ${fv(f.regOfficeFax, "[Official Branch Fax or N/A]")}</div>
+          </div>
+        </div>
+
+        <!-- REQUEST BODY WITH ★ HIGHLIGHTS -->
+        <div style="border:1px solid var(--paper-border);border-radius:7px;padding:12px 15px;margin-bottom:12px;font-size:12.8px;line-height:1.7">
+          Dear Sir / Madam,<br>
+          The person named below has applied for admission to the Graduate School of Chung-Ang University. We kindly ask your office to verify the authenticity of the following academic degree record:
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 16px;margin-top:10px;padding:10px;background:rgba(245,158,11,0.10);border:1.5px solid #D97706;border-radius:6px">
+            <div><strong style="color:#B45309">★ Student Name:</strong> ${fv(getFullName(), "Full Passport Name")}</div>
+            <div>
+              <strong style="color:#B45309">★ Degree:</strong>
+              <span style="border:2px solid #D93025;border-radius:999px;padding:1px 8px;font-weight:900;color:#D93025;margin:0 4px">⭕ Bachelor's degree</span>
+              <span style="color:#94A3B8">/ Master's / Doctoral</span>
+            </div>
+            <div><strong style="color:#B45309">★ Major:</strong> ${fv(f.majorShort, "Clinical Laboratory Sciences")}</div>
+            <div><strong style="color:#B45309">★ School Name:</strong> ${fv(f.univName, "Islamic Azad University, Ardabil Branch")}</div>
+          </div>
+        </div>
+
+        <!-- MIDDLE DIAGONAL-STRIPED LOCKED VERIFIER ZONE -->
+        <div class="locked-verifier-zone">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+            <span class="badge-blank" style="background:#FFFFFF;color:#B91C1C;border-color:#B91C1C;font-weight:900">
+              🚫 学校官方核验回函区 · 申请人严禁填写！(FOR OFFICIAL REGISTRAR VERIFICATION ONLY — DO NOT FILL!)
+            </span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;font-size:12.2px;color:#64748B;user-select:none">
+            <div>1. Degree awarded: &nbsp; □ Yes &nbsp;&nbsp; □ No (Incorrect)</div>
+            <div>2. Date of award: &nbsp; ___________________________</div>
+            <div>3. Name and title of verifier: &nbsp; ___________________________</div>
+            <div>4. Official Seal & Verifier Signature: &nbsp; ___________________</div>
+          </div>
+        </div>
+
+        <!-- LOWER HALF: LETTER OF CONSENT -->
+        <div style="border-top:2.5px dashed var(--cau-blue);margin-top:16px;padding-top:14px">
+          <h4 style="margin:0 0 8px;font-size:15.5px;font-weight:900;text-align:center;color:var(--cau-blue)">LETTER OF CONSENT (학력조회동의서)</h4>
+          <p style="font-size:12.4px;color:var(--paper-sub);margin:0 0 10px">
+            To Whom It May Concern: I hereby authorize the Graduate School of Chung-Ang University (or its designated verification agency) to verify my enrollment, attendance, and degree conferral records at my home university.
+          </p>
+          <table class="form-tbl">
+            <tr>
+              <th style="background:rgba(245,158,11,0.18);color:#92400E">★ Student Name</th>
+              <td>${fv(getFullName(), "Full Passport Name")}</td>
+              <th style="background:rgba(245,158,11,0.18);color:#92400E">★ Date of Birth</th>
+              <td>${fv(f.dob, "YYYY-MM-DD")}</td>
+            </tr>
+            <tr>
+              <th style="background:rgba(245,158,11,0.18);color:#92400E">★ Major</th>
+              <td>${fv(f.majorShort, "Clinical Laboratory Sciences")}</td>
+              <th style="background:rgba(217,48,37,0.16);color:#B91C1C">★ Student ID Number<br>(本科学号 · 必填易漏项!)</th>
+              <td style="background:rgba(217,48,37,0.06)">
+                <strong style="font-size:14px">${fv(f.studentId, "[MUST FILL: Undergrad Student ID]")}</strong>
+              </td>
+            </tr>
+          </table>
+
+          <div class="wet-sign-box">
+            <div>
+              <span class="badge-sign">✍️ Wet-Ink Signature & Date (Submit 1 Orig + 1 Copy)</span>
+              <div style="font-size:11.8px;color:var(--paper-sub);margin-top:3px">Fill ONLY the ★ items in English, sign in wet ink, and photocopy for the duplicate set.</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12.5px;margin-bottom:6px">★ Date: <strong>2027 . 04 . 23</strong></div>
+              <div class="wet-sign-line">★ Signature: X ________________________</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CAU SUPPLEMENT: OFFICIAL CAYSS RECOMMENDATION FORM (10 METRICS + FLAP SIGN) -->
+      <div class="sheet-guide-banner ${hideOtherInCauConsent}">
+        <div>
+          <strong style="font-size:15px;color:var(--cau-blue)">${{
+            zh: "✉️ 附表仿真｜CAU Official Recommendation Form（10项素质评价格 + 近2年排名百分比 + 信封封口骑缝亲笔签字 밀봉 후 첨인 示意图）",
+            en: "✉️ Supplement Preview | CAU Official Recommendation Form (10-Metric Grid + 2-Yr Rank % + Sealed Flap-Sign Diagram)",
+            fa: "✉️ فرم پیوست چونگ‌آنگ | توصیه‌نامه رسمی CAYSS (جدول ۱۰ معیاره + درصد رتبه ۲ سال اخیر + راهنمای امضای سرپاکت پلمپ)"
+          }[state.lang]}</strong>
+        </div>
+      </div>
+
+      <div class="sim-paper ${hideOtherInCauConsent}" dir="ltr">
+        <div class="paper-header cau">
+          <div>
+            <div class="paper-h-title">CAU OFFICIAL RECOMMENDATION FORM (CAYSS Mandatory M.S. LOR)</div>
+            <div class="paper-h-sub">Wet-Signed by Alma Mater Advisor, Sealed in Envelope & Hand-Signed Across the Flap (밀봉 후 첨인 — DO NOT OPEN!)</div>
+          </div>
+          <span class="badge-sign" style="background:#FFFFFF">Sealed Physical Orig</span>
+        </div>
+
+        <div style="margin-bottom:10px;font-size:12.6px">
+          <strong>Recommender:</strong> ${fv(f.rec1Name, "Recommender 1 Name")} (${fv(f.rec1Title, "Title")} · ${fv(f.univName, "IAU Ardabil")}) &nbsp;|&nbsp;
+          <strong>Email:</strong> ${fv(f.rec1Email, "prof@iau.ac.ir")} &nbsp;|&nbsp; <strong>Tel:</strong> ${fv(f.rec1Phone, "+98-45-...")}
+        </div>
+
+        <table class="form-tbl" style="font-size:12px">
+          <thead>
+            <tr>
+              <th style="width:38%">10 Evaluation Metrics (평가항목)</th>
+              <th style="text-align:center;color:var(--green)">Excellent<br>(Top 2%)</th>
+              <th style="text-align:center">Very Good<br>(Top 10%)</th>
+              <th style="text-align:center">Good<br>(Top 25%)</th>
+              <th style="text-align:center">Average<br>(Top 50%)</th>
+              <th style="text-align:center">Below Avg</th>
+            </tr>
+          </thead>
+          <tbody>${metricsRows}</tbody>
+        </table>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px;align-items:center;margin-top:12px">
+          <div style="border:1.5px solid var(--cau-blue);background:var(--cau-soft);border-radius:8px;padding:14px">
+            <strong style="color:var(--cau-blue);font-size:13.4px">📊 Mandatory 2-Year Percentile Box:</strong>
+            <div style="margin-top:8px;font-size:13px;line-height:1.8">
+              "In overall academic standing, the applicant ranks in the<br>
+              <strong>Top</strong> <input type="text" class="ltr-field" data-inline-field="cauRankPct" value="${escAttr(f.cauRankPct)}" style="width:66px;display:inline-block;padding:3px 6px;font-weight:800;text-align:center !important" /> <strong>%</strong>
+              among <input type="text" class="ltr-field" data-inline-field="cauCohortSize" value="${escAttr(f.cauCohortSize)}" style="width:60px;display:inline-block;padding:3px 6px;font-weight:800;text-align:center !important" /> students taught by me in the past 2 years."
+            </div>
+            <div style="font-size:11.3px;color:var(--paper-sub);margin-top:5px">
+              * Reference: Official cohort rank is 4 / 32 (Top 12.5%), and 20/20 (#1 top score) in recommender's course!
+            </div>
+          </div>
+
+          <!-- SVG ENVELOPE FLAP SIGNATURE ILLUSTRATION -->
+          <div style="border:2px dashed #D93025;background:rgba(217,48,37,0.05);border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:12.5px;font-weight:800;color:#D93025;margin-bottom:6px">
+              ✉️ 信封封口骑缝亲笔签字示意图 (밀봉 후 첨인 / Signed Across Sealed Flap)
+            </div>
+            <svg viewBox="0 0 320 120" style="width:100%;max-width:300px;height:auto;display:block;margin:0 auto">
+              <rect x="20" y="14" width="280" height="94" rx="6" fill="#FFFFFF" stroke="#475569" stroke-width="2"/>
+              <polygon points="20,14 160,72 300,14" fill="#F1F5F9" stroke="#334155" stroke-width="2"/>
+              <circle cx="160" cy="68" r="14" fill="#FEE2E2" stroke="#D93025" stroke-width="1.8" stroke-dasharray="3 2"/>
+              <path d="M105,46 C125,32 142,68 162,48 C178,33 195,66 218,45" fill="none" stroke="#D93025" stroke-width="2.8" stroke-linecap="round"/>
+              <text x="160" y="98" text-anchor="middle" font-size="11" font-weight="800" fill="#B91C1C">Professor Signs Across Flap Edge · NEVER OPEN!</text>
+            </svg>
+            <div style="font-size:11.3px;color:var(--paper-sub);margin-top:4px">
+              Collect before <strong>2027.03.15</strong> (pre-Nowruz). Charlotte places it UNOPENED inside CAU packet (photocopy envelope exterior only for Copy Set).
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+
+  // ==================== EXPORT TO CHARLOTTE (.TXT) & BACKUP (.JSON) ====================
+  function buildCharlotteTxtPacket() {
+    const f = state.form;
+    const valOr = (v, ph) => {
+      const s = String(v || "").trim();
+      return (!s || s === "+98-" || s === "010-") ? `[PENDING: ${ph}]` : s;
+    };
+    const lines = [
+      "================================================================================",
+      " ARSAN FALL 2027 KOREA M.S. PORTAL COPY-PASTE PACKET (FOR SEOUL CHARLOTTE HUB)",
+      " Generated: " + new Date().toISOString(),
+      " Target Day-1 Blitz: KU (2027.03.02 10:00 KST) | HYU (2027.03.03 10:00 KST)",
+      "================================================================================",
+      "",
+      "[1] APPLICANT PASSPORT & IDENTITY (EXACT UPPERCASE)",
+      "- Passport Surname         : " + valOr(f.surname, "SURNAME"),
+      "- Passport Given Name      : " + valOr(f.givenName, "GIVEN NAME"),
+      "- Full Name (Given+Surname): " + valOr(getFullName(), "FULL NAME"),
+      "- UWAY Space-Free Name     : " + valOr(getUwayName(), "SURNAMEGIVENNAME"),
+      "- Date of Birth (Gregorian): " + valOr(f.dob, "YYYY-MM-DD"),
+      "- Nationality              : " + valOr(f.nationality, "Iran"),
+      "- Passport Number          : " + valOr(f.passportNo, "Passport No."),
+      "- Passport Expiry Date     : " + valOr(f.passportExpiry, "YYYY-MM-DD"),
+      "- Iran National ID (10-dig): " + valOr(f.iranNatId, "Iran National ID"),
+      "",
+      "[2] CONTACTS, DISTINCT-DOMAIN EMAILS & DUAL ADDRESSES",
+      "- Primary Email (#1)       : " + valOr(f.emailPrimary, "Primary Email"),
+      "- Secondary Email (#2 KU!) : " + valOr(f.emailSecondary, "Secondary Email — MUST differ in domain"),
+      "- Iran Direct Mobile       : " + valOr(f.iranMobile, "+98-... (Use on Yonsei! Never use proxy phone!)"),
+      "- Iran Permanent Address   : " + valOr(f.iranAddress, "Iran Home Address") + " [Postal: " + valOr(f.iranPostal, "Zip") + "]",
+      "- Seoul Mailing Address    : " + valOr(f.seoulAddress, "Charlotte Seoul Address") + " [Zip: " + valOr(f.seoulZip, "5-digit Zip") + "]",
+      "- Charlotte Korea Phone    : " + valOr(f.charlottePhone, "010-XXXX-XXXX (Domestic envelope/courier only)"),
+      "",
+      "[3] UNDERGRADUATE RECORD & HOME UNIVERSITY VERIFICATION OFFICE",
+      "- University               : " + f.univName,
+      "- Faculty                  : " + f.facultyName,
+      "- Degree & Major           : " + f.degreeMajor,
+      "- Undergrad Student ID (★) : " + valOr(f.studentId, "Undergraduate Student ID — Mandatory on CAU #16!"),
+      "- Attendance Period        : " + valOr(f.attendancePeriod, "YYYY.MM - YYYY.MM"),
+      "- Registered Semesters     : " + valOr(f.regSemesters, "10") + " (KU Release Form Mandatory Manual Entry)",
+      "- Official CGPA (20-pt)    : " + f.officialCgpa + " (Yonsei Portal: Select 'Others' -> enter 17.50)",
+      "- Official Converted %     : " + f.convertedPct + " (Legalized D10-A Cert)",
+      "- Scholaro 10-Sem 4.0 GPA  : " + valOr(f.scholaroGpa, "Enter post-2027.01.10 Scholaro GPA"),
+      "- Registrar Office Name    : " + f.regOfficeName,
+      "- Registrar Street Address : " + f.regOfficeAddr + " [Zip: " + valOr(f.regOfficeZip, "Branch Zip") + "]",
+      "- Registrar Official Phone : " + f.regOfficeTel,
+      "- Registrar Official Email : " + valOr(f.regOfficeEmail, "Official @iau.ac.ir verification email"),
+      "- Registrar Official Fax   : " + valOr(f.regOfficeFax, "Branch Fax (CAU #16 Blue Box #6)"),
+      "",
+      "[4] PARENTS' VERIFICATION, IELTS CBT & RECOMMENDERS",
+      "- Father Full Name / DOB   : " + valOr(f.fatherName, "Father Name") + " | DOB: " + valOr(f.fatherDob, "YYYY-MM-DD"),
+      "- Father Nationality / Pass: " + f.fatherNat + " | Passport: " + valOr(f.fatherPassport, "Father Passport"),
+      "- Mother Full Name / DOB   : " + valOr(f.motherName, "Mother Name") + " | DOB: " + valOr(f.motherDob, "YYYY-MM-DD"),
+      "- Mother Nationality / Pass: " + f.motherNat + " | Passport: " + valOr(f.motherPassport, "Mother Passport"),
+      "- IELTS CBT Date & Score   : " + f.ieltsDate + " | " + valOr(f.ieltsOverall, "Overall & Subscores"),
+      "- IELTS e-TRF Number       : " + valOr(f.ieltsTrfNo, "18-Digit e-TRF Number"),
+      "- Recommender #1 (KU/YU/CAU): " + valOr(f.rec1Name, "Prof 1 Name") + " | " + valOr(f.rec1Title, "Title") + " | " + valOr(f.rec1Course, "20/20 Course"),
+      "  Email: " + valOr(f.rec1Email, "prof1@iau.ac.ir") + " | Tel: " + valOr(f.rec1Phone, "Tel") + " | Known: " + valOr(f.rec1KnownYrs, "Years/Months"),
+      "- Recommender #2 (YU #2)   : " + valOr(f.rec2Name, "Prof 2 Name") + " | " + valOr(f.rec2Title, "Title") + " | " + valOr(f.rec2Course, "20/20 Course"),
+      "  Email: " + valOr(f.rec2Email, "prof2@iau.ac.ir") + " | Tel: " + valOr(f.rec2Phone, "Tel"),
+      "",
+      "[5] TARGET PORTAL SELECTIONS",
+      "- KU (UWAY)  : Type 1 Pure Foreigner | Seoul | M.S. | Integrated Biomedical & Life Sciences -> Biomedical Science",
+      "- HYU (OIA)  : Type 1 / Track A | Seoul | M.S. | Dept. of Life Science | Advisor: " + f.hyuAdvisor,
+      "- YU (Online): Track 1 Non-Korean | Sinchon | M.S. | " + f.yuMajorChoice,
+      "- CAU (UWAY) : Pure Foreigner + CAYSS | Seoul | M.S. | " + f.cauMajorChoice,
+      "",
+      "================================================================================",
+      "[6] HANYANG OIA ONLINE PERSONAL STATEMENT & STUDY PLAN DRAFT",
+      "================================================================================",
+      (f.hyuEssayDraft || "[No HYU draft entered yet]"),
+      "",
+      "================================================================================",
+      "[7] CHUNG-ANG UWAY ONLINE STUDY PLAN (3 PROMPTS × 1,500–3,000 CHARS)",
+      "================================================================================",
+      "--- Prompt 1: 1. 지원동기 (Motivation) [" + (f.cauPrompt1 || "").length + " chars] ---",
+      (f.cauPrompt1 || "[Empty]"),
+      "",
+      "--- Prompt 2: 2. 학업 및 연구계획 (Study & Research Plan) [" + (f.cauPrompt2 || "").length + " chars] ---",
+      (f.cauPrompt2 || "[Empty]"),
+      "",
+      "--- Prompt 3: 3. 졸업 후 희망, 경력 및 연구활동 (Future & Research) [" + (f.cauPrompt3 || "").length + " chars] ---",
+      (f.cauPrompt3 || "[Empty]"),
+      ""
+    ];
+    return lines.join("\r\n");
+  }
+
+  function triggerDownload(filename, content, mime) {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 150);
+  }
+
+  function copyPlainText(txt, btnEl) {
+    const done = () => {
+      if (!btnEl) return;
+      const orig = btnEl.textContent;
+      btnEl.textContent = "✓ Copied!";
+      setTimeout(() => { btnEl.textContent = orig; }, 1400);
+    };
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function" && window.isSecureContext) {
+      navigator.clipboard.writeText(txt).then(done).catch(() => fallbackCopy(txt, done));
+    } else {
+      fallbackCopy(txt, done);
+    }
+  }
+
+  function fallbackCopy(txt, cb) {
+    const ta = document.createElement("textarea");
+    ta.value = txt;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); if (cb) cb(); } catch (_) {}
+    document.body.removeChild(ta);
+  }
+
+  // ==================== MASTER RENDERERS ====================
+  function applyRootAttrs() {
+    const root = document.documentElement;
+    root.setAttribute("lang", state.lang);
+    root.setAttribute("dir", state.lang === "fa" ? "rtl" : "ltr");
+    root.setAttribute("data-theme", state.theme);
+    document.title = t(I18N.pageTitle);
+    document.body.classList.toggle("a4-preview-on", state.a4Preview);
+  }
+
+  function renderTopbar() {
+    const el = document.getElementById("topbar-root");
+    const themeLabel = state.theme === "dark" ? t(I18N.themeLight) : t(I18N.themeDark);
+    const saveTxt = state.lastSavedTime ? `${t(I18N.saveStatus)} (${state.lastSavedTime})` : t(I18N.saveStatus);
+    el.innerHTML = `
+      <div class="topbar-inner">
+        <div class="brand-cluster">
+          <a class="back-guide-btn" href="./guide.html">${escHtml(t(I18N.backToGuide))}</a>
+          <div>
+            <div class="brand-title">${escHtml(t(I18N.pageTitle))}</div>
+            <div class="brand-sub">${escHtml(t(I18N.pageSub))}</div>
+          </div>
+        </div>
+        <div class="toolbar-cluster">
+          <span class="save-pill" id="save-status-badge">${escHtml(saveTxt)}</span>
+          <button class="ctrl-pill primary-cta" id="btn-export-txt">${escHtml(t(I18N.btnExportTxt))}</button>
+          <button class="ctrl-pill green-cta" id="btn-export-json">${escHtml(t(I18N.btnExportJson))}</button>
+          <label class="ctrl-pill" style="margin:0">
+            ${escHtml(t(I18N.btnImportJson))}
+            <input type="file" id="input-import-json" accept="application/json,.json" style="display:none" />
+          </label>
+          <button class="ctrl-pill" id="btn-print-a4">${escHtml(t(I18N.btnPrintA4))}</button>
+          <div class="lang-switch">
+            <button class="lang-btn ${state.lang === "zh" ? "active" : ""}" data-lang="zh">中文</button>
+            <button class="lang-btn ${state.lang === "en" ? "active" : ""}" data-lang="en">EN</button>
+            <button class="lang-btn ${state.lang === "fa" ? "active" : ""}" data-lang="fa">فارسی</button>
+          </div>
+          <button class="ctrl-pill" id="btn-theme-toggle">${escHtml(themeLabel)}</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderIntakeSection() {
+    const rd = computeReadiness();
+    const collapseBtnTxt = state.intakeCollapsed ? t(I18N.m1Expand) : t(I18N.m1Collapse);
+
+    const groupsHtml = INTAKE_SCHEMA.map(grp => {
+      const fieldsHtml = grp.fields.map(fd => {
+        const isConcat = fd.key === "_uwayConcat";
+        const rawVal = isConcat ? (getUwayName() ? `${getUwayName()}   |   Full: ${getFullName()}` : "") : (state.form[fd.key] || "");
+        const isPending = !fd.readonly && (!String(rawVal).trim() || rawVal === "+98-" || rawVal === "010-");
+        const stateCls = fd.readonly ? "" : (isPending ? "is-pending" : (fd.prefilled ? "is-prefilled" : ""));
+        const valCheck = fd.validator ? getFieldValidation(fd.validator, fd.key) : { status: "none", msg: "" };
+        return `
+          <div class="field-item ${fd.span === 2 ? "field-span-2" : ""}">
+            <label class="field-label">
+              <span>${escHtml(t(fd.label))}</span>
+            </label>
+            <input
+              type="text"
+              dir="ltr"
+              class="ltr-field ${stateCls}"
+              ${isConcat ? `id="uway-concat-preview" readonly` : `data-intake-key="${fd.key}"`}
+              value="${escAttr(rawVal)}"
+              placeholder="${escAttr(fd.placeholder || (isConcat ? "Auto-generated once Surname + Given Name are entered" : ""))}"
+            />
+            <div class="field-hint">${escHtml(t(fd.hint))}</div>
+            ${fd.validator ? `<div id="val-${fd.key}" class="val-msg ${valCheck.status}" style="${valCheck.status === "none" ? "display:none" : ""}">${escHtml(valCheck.msg)}</div>` : ""}
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div class="intake-group">
+          <h3 class="intake-group-title">${escHtml(t(I18N.groups[grp.group]))}</h3>
+          <div class="fields-grid">${fieldsHtml}</div>
+        </div>
+      `;
+    }).join("");
+
+    return `
+      <section class="section-card intake-card-section">
+        <div class="sec-head-row">
+          <div>
+            <h1 class="sec-title">🗂️ ${escHtml(t(I18N.m1Title))}</h1>
+            <p class="sec-sub">${escHtml(t(I18N.ltrNotice))}</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="ctrl-pill" id="btn-reset-defaults">${escHtml(t(I18N.btnResetDefaults))}</button>
+            <button class="ctrl-pill active" id="btn-toggle-intake">${escHtml(collapseBtnTxt)}</button>
+          </div>
+        </div>
+
+        <div class="readiness-bar-wrap">
+          <strong style="font-size:13px">${escHtml(t(I18N.readinessLabel))}:</strong>
+          <div class="readiness-track">
+            <div class="readiness-fill" id="readiness-bar-fill" style="width:${rd.pct}%"></div>
+          </div>
+          <span id="readiness-bar-text" dir="ltr" style="font-weight:800;font-size:13px;color:var(--primary)">${rd.filled} / ${rd.total} (${rd.pct}%)</span>
+        </div>
+
+        ${state.intakeCollapsed ? "" : `<div class="intake-groups-grid">${groupsHtml}</div>`}
+      </section>
+    `;
+  }
+
+  function renderSimHeaderAndTabs() {
+    const tabsHtml = VALID_UNIS.map(u => {
+      const info = I18N.uniTabs[u];
+      return `
+        <button class="uni-tab-btn ${state.activeUni === u ? "active" : ""}" data-uni="${u}">
+          <div class="uni-tab-top">
+            <span>${escHtml(t(info.name))}</span>
+          </div>
+          <div class="uni-tab-sub">${escHtml(t(info.sub))}</div>
+        </button>
+      `;
+    }).join("");
+
+    return `
+      <div class="print-ctrl-bar" id="print-ctrl-bar">
+        <div style="font-weight:700;font-size:13.5px">${escHtml(t(I18N.printBarTitle))}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <select id="select-print-scope" class="ltr-field" style="width:auto;background:#1E293B;color:#FFFFFF;border-color:#475569;font-weight:700">
+            <option value="all" ${state.printScope === "all" ? "selected" : ""}>${escHtml(t(I18N.printScopeAll))}</option>
+            <option value="ku_release" ${state.printScope === "ku_release" ? "selected" : ""}>${escHtml(t(I18N.printScopeKuRelease))}</option>
+            <option value="yu_confirm" ${state.printScope === "yu_confirm" ? "selected" : ""}>${escHtml(t(I18N.printScopeYuConfirm))}</option>
+            <option value="cau_consent" ${state.printScope === "cau_consent" ? "selected" : ""}>${escHtml(t(I18N.printScopeCauConsent))}</option>
+          </select>
+          <button class="ctrl-pill primary-cta" id="btn-trigger-window-print">${escHtml(t(I18N.btnTriggerPrint))}</button>
+          <button class="ctrl-pill" id="btn-exit-print-preview" style="background:#334155;color:#FFFFFF;border-color:#64748B">${escHtml(t(I18N.btnExitPrint))}</button>
+        </div>
+      </div>
+
+      <div class="uni-tabs-bar">${tabsHtml}</div>
+
+      <div class="legend-strip">
+        <strong>${escHtml(t(I18N.legend.title))}</strong>
+        <span class="badge-lock">${escHtml(t(I18N.legend.lock))}</span>
+        <span class="badge-sign">${escHtml(t(I18N.legend.sign))}</span>
+        <span class="badge-blank">${escHtml(t(I18N.legend.blank))}</span>
+      </div>
+    `;
+  }
+
+  function renderActiveSimSheets() {
+    if (state.activeUni === "ku") return renderSimKU();
+    if (state.activeUni === "hyu") return renderSimHYU();
+    if (state.activeUni === "yu") return renderSimYU();
+    return renderSimCAU();
+  }
+
+  function renderAll() {
+    applyRootAttrs();
+    renderTopbar();
+    const main = document.getElementById("main-root");
+    main.innerHTML = `
+      ${renderIntakeSection()}
+      <div id="sim-header-root">${renderSimHeaderAndTabs()}</div>
+      <div id="sim-sheets-root">${renderActiveSimSheets()}</div>
+    `;
+  }
+
+  // Surgical update when typing inside Master Intake so active <input> never loses cursor/IME focus!
+  function refreshIntakeDerivedUI(changedKey, inputEl) {
+    const val = state.form[changedKey] || "";
+    const isPending = !String(val).trim() || val === "+98-" || val === "010-";
+    if (inputEl) {
+      inputEl.classList.toggle("is-pending", isPending);
+    }
+
+    if (changedKey === "surname" || changedKey === "givenName") {
+      const concatEl = document.getElementById("uway-concat-preview");
+      if (concatEl) {
+        concatEl.value = getUwayName() ? `${getUwayName()}   |   Full: ${getFullName()}` : "";
+      }
+    }
+
+    const updateValBox = (id, res) => {
+      const box = document.getElementById(id);
+      if (!box) return;
+      if (res.status === "none") {
+        box.style.display = "none";
+        box.textContent = "";
+      } else {
+        box.style.display = "block";
+        box.className = "val-msg " + res.status;
+        box.textContent = res.msg;
+      }
+    };
+
+    if (changedKey === "passportExpiry") updateValBox("val-passportExpiry", checkPassportExpiry(val));
+    if (changedKey === "emailPrimary" || changedKey === "emailSecondary") {
+      updateValBox("val-emailSecondary", checkDualEmail(state.form.emailPrimary, state.form.emailSecondary));
+    }
+    if (changedKey === "rec1Email") updateValBox("val-rec1Email", checkRecEmail(val));
+    if (changedKey === "rec2Email") updateValBox("val-rec2Email", checkRecEmail(val));
+
+    const rd = computeReadiness();
+    const fillEl = document.getElementById("readiness-bar-fill");
+    const txtEl = document.getElementById("readiness-bar-text");
+    if (fillEl) fillEl.style.width = rd.pct + "%";
+    if (txtEl) txtEl.textContent = `${rd.filled} / ${rd.total} (${rd.pct}%)`;
+
+    const sheetsRoot = document.getElementById("sim-sheets-root");
+    if (sheetsRoot) sheetsRoot.innerHTML = renderActiveSimSheets();
+  }
+
+  // ==================== EVENT DELEGATION ====================
+  document.addEventListener("input", (e) => {
+    const intakeInput = e.target.closest("[data-intake-key]");
+    if (intakeInput) {
+      const k = intakeInput.dataset.intakeKey;
+      state.form[k] = intakeInput.value;
+      persistFormNow();
+      refreshIntakeDerivedUI(k, intakeInput);
+      return;
+    }
+
+    const hyuTa = e.target.closest("[data-essay-field]");
+    if (hyuTa) {
+      const k = hyuTa.dataset.essayField;
+      state.form[k] = hyuTa.value;
+      persistFormNow();
+      const stat = document.getElementById("hyu-essay-stat");
+      if (stat) {
+        const w = hyuTa.value.trim() ? hyuTa.value.trim().split(/\s+/).length : 0;
+        stat.textContent = `${hyuTa.value.length} chars · ${w} words`;
+      }
+      return;
+    }
+
+    const cauTa = e.target.closest("[data-cau-prompt]");
+    if (cauTa) {
+      const k = cauTa.dataset.cauPrompt;
+      state.form[k] = cauTa.value;
+      persistFormNow();
+      const st = renderPromptStatHtml(cauTa.value);
+      const cnt = document.getElementById("cnt-" + k);
+      const bar = document.getElementById("bar-" + k);
+      const msg = document.getElementById("msg-" + k);
+      if (cnt) {
+        cnt.textContent = `${st.len.toLocaleString()} / 1,500 chars (Max 3,000)`;
+        cnt.style.color = st.color;
+      }
+      if (bar) {
+        bar.style.width = st.pct + "%";
+        bar.style.background = st.color;
+      }
+      if (msg) {
+        msg.textContent = st.msg;
+        msg.style.color = st.color;
+      }
+      return;
+    }
+
+    const inlineInput = e.target.closest("[data-inline-field]");
+    if (inlineInput) {
+      state.form[inlineInput.dataset.inlineField] = inlineInput.value;
+      persistFormNow();
+    }
+  });
+
+  document.addEventListener("change", (e) => {
+    const selField = e.target.closest("[data-select-field]");
+    if (selField) {
+      state.form[selField.dataset.selectField] = selField.value;
+      persistFormNow();
+      const sheetsRoot = document.getElementById("sim-sheets-root");
+      if (sheetsRoot) sheetsRoot.innerHTML = renderActiveSimSheets();
+      return;
+    }
+
+    if (e.target.id === "select-print-scope") {
+      applyPrintScopeSelection(e.target.value);
+      return;
+    }
+
+    if (e.target.id === "input-import-json" && e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(String(reader.result || "{}"));
+          const src = parsed.form && typeof parsed.form === "object" ? parsed.form : parsed;
+          Object.keys(INITIAL_FORM_VALUES).forEach(k => {
+            if (typeof src[k] === "string") state.form[k] = src[k];
+          });
+          persistFormNow();
+          renderAll();
+          showToast("✓ JSON Backup Imported!", false);
+        } catch (err) {
+          showToast("⛔ Invalid JSON backup file: " + err.message, true);
+        }
+      };
+      reader.readAsText(e.target.files[0]);
+      e.target.value = "";
+      return;
+    }
+
+    const photoInput = e.target.closest("[data-photo-upload]");
+    if (photoInput && photoInput.files && photoInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        state.photoDataUrl = String(reader.result || "");
+        const sheetsRoot = document.getElementById("sim-sheets-root");
+        if (sheetsRoot) sheetsRoot.innerHTML = renderActiveSimSheets();
+      };
+      reader.readAsDataURL(photoInput.files[0]);
+    }
+  });
+
+  function applyPrintScopeSelection(scope) {
+    state.printScope = scope;
+    state.a4Preview = true;
+    if (scope === "ku_release") state.activeUni = "ku";
+    else if (scope === "yu_confirm") state.activeUni = "yu";
+    else if (scope === "cau_consent") state.activeUni = "cau";
+    safeSet("arsan_forms_uni", state.activeUni);
+    renderAll();
+  }
+
+  document.addEventListener("click", (e) => {
+    const langBtn = e.target.closest(".lang-btn[data-lang]");
+    if (langBtn) {
+      const next = langBtn.dataset.lang;
+      if (VALID_LANGS.includes(next)) {
+        state.lang = next;
+        safeSet(LANG_KEY, next);
+        renderAll();
+      }
+      return;
+    }
+
+    if (e.target.closest("#btn-theme-toggle")) {
+      state.theme = state.theme === "dark" ? "light" : "dark";
+      safeSet(THEME_KEY, state.theme);
+      renderAll();
+      return;
+    }
+
+    if (e.target.closest("#btn-toggle-intake")) {
+      state.intakeCollapsed = !state.intakeCollapsed;
+      renderAll();
+      return;
+    }
+
+    const resetBtn = e.target.closest("#btn-reset-defaults");
+    if (resetBtn) {
+      if (!resetArmed) {
+        resetArmed = true;
+        resetBtn.textContent = "⚠️ Click Again to Confirm Reset";
+        resetBtn.style.borderColor = "var(--red)";
+        resetBtn.style.color = "var(--red)";
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(() => {
+          resetArmed = false;
+          renderAll();
+        }, 4000);
+      } else {
+        resetArmed = false;
+        clearTimeout(resetTimer);
+        state.form = Object.assign({}, INITIAL_FORM_VALUES);
+        persistFormNow();
+        renderAll();
+        showToast("✓ Restored initial academic defaults", false);
+      }
+      return;
+    }
+
+    if (e.target.closest("#btn-export-txt")) {
+      const content = buildCharlotteTxtPacket();
+      triggerDownload("Arsan_2027_Seoul_Charlotte_Portal_CopyPaste_Pack.txt", content, "text/plain;charset=utf-8");
+      showToast("✓ Exported Charlotte .txt Copy-Paste Packet!", false);
+      return;
+    }
+
+    if (e.target.closest("#btn-export-json")) {
+      const payload = JSON.stringify({
+        exportedAt: new Date().toISOString(),
+        version: "arsan_forms_v1",
+        form: state.form
+      }, null, 2);
+      triggerDownload("Arsan_2027_Forms_Backup.json", payload, "application/json;charset=utf-8");
+      showToast("✓ Exported .json Backup!", false);
+      return;
+    }
+
+    if (e.target.closest("#btn-print-a4")) {
+      state.a4Preview = !state.a4Preview;
+      if (!state.a4Preview) state.printScope = "all";
+      renderAll();
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    if (e.target.closest("#btn-exit-print-preview")) {
+      state.a4Preview = false;
+      state.printScope = "all";
+      renderAll();
+      return;
+    }
+
+    if (e.target.closest("#btn-trigger-window-print")) {
+      window.print();
+      return;
+    }
+
+    const singlePrintBtn = e.target.closest("[data-print-single]");
+    if (singlePrintBtn) {
+      applyPrintScopeSelection(singlePrintBtn.dataset.printSingle);
+      const targetIds = {
+        ku_release: "sheet-ku-release",
+        yu_confirm: "sheet-yu-confirm",
+        cau_consent: "sheet-cau-consent"
+      };
+      const tid = targetIds[singlePrintBtn.dataset.printSingle];
+      const targetEl = tid ? document.getElementById(tid) : null;
+      if (targetEl) {
+        const top = Math.max(0, Math.round(window.scrollY + targetEl.getBoundingClientRect().top - 110));
+        window.scrollTo(0, top);
+      }
+      return;
+    }
+
+    const copyBtn = e.target.closest("[data-copy-field]");
+    if (copyBtn) {
+      const key = copyBtn.dataset.copyField;
+      copyPlainText(state.form[key] || "", copyBtn);
+      return;
+    }
+
+    const uniBtn = e.target.closest(".uni-tab-btn[data-uni]");
+    if (uniBtn) {
+      const u = uniBtn.dataset.uni;
+      if (VALID_UNIS.includes(u)) {
+        state.activeUni = u;
+        if (state.printScope !== "all") state.printScope = "all";
+        safeSet("arsan_forms_uni", u);
+        const hdrRoot = document.getElementById("sim-header-root");
+        const sheetsRoot = document.getElementById("sim-sheets-root");
+        if (hdrRoot) hdrRoot.innerHTML = renderSimHeaderAndTabs();
+        if (sheetsRoot) sheetsRoot.innerHTML = renderActiveSimSheets();
+      }
+      return;
+    }
+  });
+
+  let resetArmed = false;
+  let resetTimer = null;
+
+  function showToast(msg, isErr) {
+    let el = document.getElementById("forms-toast");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "forms-toast";
+      el.className = "no-print";
+      el.style.cssText = "position:fixed;bottom:20px;right:20px;z-index:200;padding:10px 16px;border-radius:10px;font-weight:700;font-size:13px;box-shadow:0 10px 25px rgba(0,0,0,0.25);transition:opacity 0.2s";
+      document.body.appendChild(el);
+    }
+    el.style.background = isErr ? "#D93025" : "#0F172A";
+    el.style.color = "#FFFFFF";
+    el.textContent = msg;
+    el.style.opacity = "1";
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.style.opacity = "0"; }, 3000);
+  }
+  renderAll();
+})();
+</script>
+</body>
+</html>
