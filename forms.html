@@ -937,6 +937,9 @@ const INTAKE_SCHEMA = [{"group": "g1", "fields": [{"key": "surname", "span": 1, 
         Object.keys(base).forEach(k => {
           if (typeof parsed[k] === "string") base[k] = parsed[k];
         });
+        if (base.yuMajorChoice && base.yuMajorChoice.indexOf("Medical Sciences") < 0 && base.yuMajorChoice.indexOf("Medicine") < 0) {
+          base.yuMajorChoice = INITIAL_FORM_VALUES.yuMajorChoice;
+        }
       }
     } catch (_) {}
     return base;
@@ -1178,7 +1181,7 @@ const INTAKE_SCHEMA = [{"group": "g1", "fields": [{"key": "surname", "span": 1, 
               <tr>
                 <th>② Type of Scholarship<br>(UWAY Step ② 必勾!)</th>
                 <td colspan="3">
-                  <span class="f-locked">☑ Apply for International Student Scholarship (외국인 장학금 신청 — MUST manually check on UWAY Step ②; omitting forfeits evaluation! Tier A/B/C announced ~2 wks post-offer)</span>
+                  <span class="f-locked">☑ Apply for International Student Scholarship (외국인 장학금 신청 — MUST manually check on UWAY Step ②! Type C = 65% Sem 1 tuition; Type A Global Leader = 100% adm &amp; tuition + one-time mid-semester housing support 2,000,000 KRW [주거지원비 학기 중 1회 총 2,000,000원]; Tier A/B/C announced ~2 wks post-offer)</span>
                 </td>
               </tr>
             </table>
@@ -1283,7 +1286,7 @@ const INTAKE_SCHEMA = [{"group": "g1", "fields": [{"key": "surname", "span": 1, 
           <tr>
             <th>Financial Certification</th>
             <td colspan="3">
-              <span class="f-val">Applicant / Parents Bank Balance Original ≥ 22,000,000 KRW</span> — Issued <strong>2027.02.25–03.02</strong> (≤30 days of portal) & <strong>Frozen through 2027-08-31</strong>
+              <span class="f-val">Applicant / Parents Bank Balance Original ≥ 22,000,000 KRW (≥$17,000 USD; KU Seoul statutory min: 20,000,000 KRW)</span> — Issued <strong>2027.02.25–03.02</strong> (≤30 days of portal) &amp; <strong>Frozen through 2027-08-31</strong> (held untouched ≥6 mos from mid-Jan for D-2 visa statement)
             </td>
           </tr>
         </table>
@@ -1685,10 +1688,15 @@ const INTAKE_SCHEMA = [{"group": "g1", "fields": [{"key": "surname", "span": 1, 
       <div class="sheet-guide-banner warn-red">
         <div>
           <strong style="font-size:15px;color:var(--red)">${{
-            zh: "📄 仿真页 ③｜汉阳 OIA 网页端在线文书草稿框 + 专用挂号信封面 발송용 봉투표지（寄国际馆218室 · 严禁面交！）",
-            en: "📄 Simulated Page ③ | HYU OIA Online Study Plan Editor + Official Envelope Cover Label (Rm 218 · NO Walk-Ins!)",
-            fa: "📄 صفحه شبیه‌سازی ۳ | ویرایشگر آنلاین برنامه تحصیلی OIA + برچسب رسمی پاکت پستی اتاق ۲۱۸ (تحویل حضوری ممنوع!)"
+            zh: "📄 仿真页 ③｜汉阳 OIA 网页端在线文书草稿框 + 专用挂号信封面 발송용 봉투표지（A4裸装1→10法定顺序 · 寄国际馆218室 · 严禁面交！）",
+            en: "📄 Simulated Page ③ | HYU OIA Online Study Plan Editor + Envelope Label (Strict 1→10 Bare A4 Order · Rm 218 · NO Walk-Ins!)",
+            fa: "📄 صفحه شبیه‌سازی ۳ | ویرایشگر آنلاین برنامه تحصیلی OIA + برچسب رسمی پاکت اتاق ۲۱۸ (چیدمان دقیق ۱ تا ۱۰ برگه‌های A4 · حضوری ممنوع!)"
           }[state.lang]}</strong>
+          <div style="font-size:12.3px;margin-top:3px">${{
+            zh: "法定 1→10 顺序：①入学申请书 입학원서 → ②志愿誓约书 지원서약서(弃艺术表) → ③OIA在线导出文书 → ④学位认证原件 → ⑤10学期成绩单认证原件 → ⑥D10-A+鲜章Scholaro → ⑦本人及父母护照彩印 → ⑧三本身份簿双认证(D13) → ⑨彩打雅思e-TRF → ⑩置底选附结构化CV与≤5页作品集",
+            en: "Official 1→10 Order: ① Form (입학원서) → ② Pledge (지원서약서) → ③ OIA Essay → ④ Legalized Diploma → ⑤ Legalized 10-Sem Transcript → ⑥ D10-A + Wet Scholaro → ⑦ Family Passports → ⑧ 3× Shenasnameh (D13) → ⑨ Color IELTS e-TRF → ⑩ Optional CV & ≤5p Portfolio",
+            fa: "ترتیب رسمی ۱ تا ۱۰: ① فرم 입학원서 ← ② تعهدنامه 지원서약서 ← ③ انگیزش‌نامه OIA ← ④ دانشنامه کنسولی ← ⑤ ریزنمرات ۱۰ ترم کنسولی ← ⑥ گواهی D10-A و Scholaro ← ⑦ کپی رنگی پاسپورت‌ها ← ⑧ سه جلد شناسنامه (D13) ← ⑨ چاپ رنگی e-TRF ← ⑩ رزومه و پورتفولیوی ≤۵ صفحه"
+          }[state.lang]}</div>
         </div>
       </div>
 
@@ -1717,8 +1725,8 @@ const INTAKE_SCHEMA = [{"group": "g1", "fields": [{"key": "surname", "span": 1, 
             222 Wangsimni-ro, Seongdong-gu, Seoul 04763, Republic of Korea
           </div>
           <div class="f-trap-alert" style="margin-top:10px;font-size:12.4px">
-            📑 STRICT <code>1→10</code> BARE A4 PACKING &amp; TRANSLATION LOCKS:<br>
-            1) <strong>Exact <code>1→10</code> Bare A4 Order (NO folders, staples, or clips; 0 Alma Mater LORs!):</strong> ① Application Form → ② Personal Statement &amp; Study Plan → ③ Applicant Pledge (<code>지원서약서</code>; discard Art pledge!) → ④ Bachelor Cert + Consular Legalization → ⑤ 10-Sem Official Transcripts + Consular (<strong>Iran Sworn Translation Lock:</strong> Major = <code>Clinical Laboratory Sciences</code>; Sem 9 <code>مهمان</code> MUST be translated as <code>Guest Course</code> — NEVER <code>Transfer</code>!) → ⑥ Grading Scale/87.50% Rank Cert + Post-01.10 Wet-Stamped Scholaro → ⑦ IELTS e-TRF → ⑧ Applicant Passport → ⑨ Parents' Nationality &amp; Family Cert + Passports → ⑩ Official Stamped Bank Balance (<code>≥$17,000 USD</code> / <code>≥22M KRW</code>, frozen to <code>2027.08.31</code>).<br>
+            📑 STRICT <code>1→10</code> BARE A4 PACKING &amp; TRANSLATION LOCKS (Aligned w/ Chapter 6.3 &amp; Official HYU Checklist):<br>
+            1) <strong>Exact <code>1→10</code> Bare A4 Order (NO folders or staples — binder clip OK; 0 Alma Mater LORs!):</strong> ① Application Form (<code>입학원서</code>) → ② Application Pledge (<code>지원서약서</code> — pull out &amp; discard Art-only <code>작품제출 서약서</code>!) → ③ OIA Online-Exported Personal Statement &amp; Study Plan → ④ Korean-Embassy Legalized B.S. Diploma (or Iran-Domestic Plan B) Original → ⑤ Legalized 10-Semester Official Transcript Original (<strong>Iran Sworn Translation Lock:</strong> Major = <code>Clinical Laboratory Sciences</code>; Sem 9 <code>مهمان</code> MUST be translated as <code>Guest Course</code> — NEVER <code>Transfer</code>!) → ⑥ <code>D10-A</code> 87.50% Rank/Scale Conversion Legalized Original + <code>D10-B</code> Post-01.10 IAU Wet-Stamped English <code>Scholaro</code> Original → ⑦ Applicant &amp; Parents Valid Passport High-Res Color Prints → ⑧ 3× Identity Booklets (<code>شناسنامه</code>) MOJ/MFA Dual-Auth Originals (<code>D13</code>) → ⑨ Seoul Color-Printed Verifiable IELTS <code>e-TRF</code> → ⑩ Optional Standalone Structured <code>CV</code> &amp; <code>≤5-Page Portfolio</code> at Bottom <em>(Note: HYU exempts bank proof at application; submit fresh ≤30d bank original before 2027.07.15 for CoA!)</em>.<br>
             2) Mail on <strong>2027.03.25–03.29</strong> via <strong>Korea Post Registered Mail (우체국 등기우편)</strong> &amp; keep the 13-digit tracking receipt (등기번호).<br>
             3) <strong>❌ WALK-IN DROP-OFF STRICTLY BANNED (방문접수 일체 불가 — Must arrive by 2027.04.02 Fri 17:00 KST)!</strong>
           </div>
@@ -1742,9 +1750,9 @@ const INTAKE_SCHEMA = [{"group": "g1", "fields": [{"key": "surname", "span": 1, 
             fa: "🚨 هشدار حیاتی قفل یونسی | به محض پرداخت ۱۳۰ دلار اپلای فی، کل سیستم برای همیشه قفل شده و امکان تغییر رشته یا جایگزینی PDF وجود ندارد!"
           }[state.lang]}</strong>
           <div style="font-size:12.6px;margin-top:3px">${{
-            zh: "网申窗口：2027年4月上中旬（第1批）｜ 网申期 0 纸质（既不面交也不邮寄，6月中旬录取注册后才交领事认证原件换 CoA）",
-            en: "Round 1 Online: Early–Mid Apr 2027 | 0 Paper at Application (Neither walk-in nor mail; submit physical originals only post-offer in Jun/Jul)",
-            fa: "ثبت‌نام آنلاین دور اول: نیمه اول آوریل | کاغذی در مرحله اپلای: صفر (نه حضوری و نه پستی؛ تحویل اصل مدارک فقط پس از قبولی ژوئن)"
+            zh: "网申：2027年4月上中旬（0纸质）｜ 2月面试确认填报 Medical Sciences (BK21, 强制 IELTS ≥ 6.0) 或 Medicine (의학과, IELTS ≥ 5.5) ｜ 5月上旬周五17:00查名单，次周院系指定工作日面试！",
+            en: "Round 1 Online: Early–Mid Apr (0 Paper) | Confirm Medical Sciences (BK21, Mandatory IELTS ≥ 6.0) vs. Medicine (의학과, IELTS ≥ 5.5) in Feb Zoom | Next-wk weekday interview!",
+            fa: "ثبت‌نام آنلاین: نیمه اول آوریل (بدون کاغذ) | تأیید کد بین Medical Sciences (BK21، الزام آیلتس ≥6.0) و Medicine (의학과، آیلتس ≥5.5) در مصاحبه فوریه | مصاحبه روز کاری هفته بعد!"
           }[state.lang]}</div>
         </div>
       </div>
@@ -1786,10 +1794,10 @@ const INTAKE_SCHEMA = [{"group": "g1", "fields": [{"key": "surname", "span": 1, 
                 <th>Target Major Code<br>(Confirm in Feb Zoom!)</th>
                 <td colspan="3">
                   <select class="ltr-field" data-select-field="yuMajorChoice" style="font-weight:700;color:var(--yu-navy)">
-                    <option value="Department of Medical Sciences (의과학과 · BK21 Project)" ${f.yuMajorChoice.indexOf("Medical Sciences") >= 0 ? "selected" : ""}>Department of Medical Sciences (의과학과 · BK21 Project — Cap ≤5p Portfolio)</option>
-                    <option value="Department of Biomedical Systems Informatics (의생명시스템정보학과 · BSI)" ${f.yuMajorChoice.indexOf("Informatics") >= 0 ? "selected" : ""}>Department of Biomedical Systems Informatics (의생명시스템정보학과 · BSI)</option>
+                    <option value="Department of Medical Sciences (의과학과 · BK21 Project)" ${f.yuMajorChoice.indexOf("Medical Sciences") >= 0 ? "selected" : ""}>Department of Medical Sciences (의과학과 · BK21 Project — Mandatory IELTS ≥ 6.0 · Cap ≤5p Portfolio)</option>
+                    <option value="Department of Medicine (의학과 · Confirm Sub-Major Code w/ PI)" ${f.yuMajorChoice.indexOf("Medicine") >= 0 ? "selected" : ""}>Department of Medicine (의학과 · Sub-Major Confirmed w/ #3 Prof. Yoon — IELTS ≥ 5.5)</option>
                   </select>
-                  <div style="font-size:11.4px;color:var(--paper-sub);margin-top:3px">Target Lab: #3 Prof. Dukyong Yoon (윤덕용 교수 · CMI Lab, College of Medicine — 100% Tuition Support)</div>
+                  <div style="font-size:11.4px;color:var(--paper-sub);margin-top:3px">Target Lab: #3 Prof. Dukyong Yoon (윤덕용 교수 · CMI Lab, College of Medicine — 100% Tuition Support). <strong>Note:</strong> Yonsei's international catalog has NO standalone <code>의생명시스템정보학과</code> recruitment dept (that is PI's medical school classroom name)—confirm <code>Medical Sciences (BK21)</code> vs. <code>Medicine (의학과)</code> sub-major code in Feb Zoom!</div>
                 </td>
               </tr>
               <tr>
@@ -1848,9 +1856,9 @@ const INTAKE_SCHEMA = [{"group": "g1", "fields": [{"key": "surname", "span": 1, 
           <tr>
             <th>Fresh Apr Bank PDF &<br>e-TRF / ≤5p Portfolio</th>
             <td colspan="3">
-              • <strong>Bank Proof (Win 2):</strong> Re-print a fresh <code>≤30d</code> bank cert (<code>≥22,000,000 KRW</code> / <code>≥$17,000 USD</code> w/ bank seal, frozen to <code>2027-08-31</code>) on <strong>2027.04.03–04.06 (post-Nowruz)</strong> & upload 600 DPI PDF.<br>
-              • <strong>IELTS e-TRF (${fv(f.ieltsTrfNo, "TRF No.")}):</strong> Upload PDF directly on portal (<strong>✓ IELTS One Skill Retake explicitly accepted</strong> within validity; <strong>⛔ Institutional Score Reporting NOT accepted!</strong>).<br>
-              • <strong>Add-On Portfolio Cap (<code>Medical Sciences BK21</code> Items ① & ②):</strong> Upload <code>Academic_Portfolio_Max5Pages.pdf</code> (2p summary + 40+h Vaccine Design cert = ≤5p) strictly in <strong>Research Achievements / Experience</strong> — <span style="color:var(--red);font-weight:800">⛔ NEVER misupload into <code>Proof of employment</code> (재직증명서)!</span>
+              • <strong>Bank Proof (Win 2):</strong> Re-print a fresh <code>≤30d</code> bank cert (<code>≥22,000,000 KRW</code> [Yonsei Sinchon statutory minimum!] / <code>≥$17,000 USD</code> w/ bank seal, frozen to <code>2027-08-31</code>) on <strong>2027.04.03–04.06 (post-Nowruz)</strong> &amp; upload 600 DPI PDF.<br>
+              • <strong>IELTS e-TRF (${fv(f.ieltsTrfNo, "TRF No.")}):</strong> <strong>Mandatory <code>IELTS ≥ 6.0</code> for <code>Medical Sciences (BK21 Project)</code></strong> (general <code>Medicine 의학과</code> min <code>5.5</code>); upload PDF directly on portal (<strong>✓ IELTS One Skill Retake explicitly accepted</strong> within validity; <strong>⛔ Institutional Score Reporting NOT accepted!</strong>).<br>
+              • <strong>Add-On Portfolio Cap (<code>Medical Sciences BK21</code> Items ① &amp; ②):</strong> Upload <code>Academic_Portfolio_Max5Pages.pdf</code> (2p summary + 40+h Vaccine Design cert = ≤5p) strictly in <strong>Research Achievements / Experience</strong> — <span style="color:var(--red);font-weight:800">⛔ NEVER misupload into <code>Proof of employment</code> (재직증명서)!</span>
             </td>
           </tr>
         </table>
@@ -2071,9 +2079,9 @@ const INTAKE_SCHEMA = [{"group": "g1", "fields": [{"key": "surname", "span": 1, 
             fa: "📄 صفحه شبیه‌سازی ۱ | فرم ثبت‌نام UWAY دانشگاه چونگ‌آنگ (بورسیه CAYSS + قانون ۱ اصل و ۱ کپی کامل)"
           }[state.lang]}</strong>
           <div style="font-size:12.6px;color:var(--text-3)">${{
-            zh: "网申：2027.04.23 – 05.12 ｜ 纸质截止：05.13/14（当天邮戳有效，或地铁9号线黑石站 310馆2楼210室 面交）",
-            en: "Online: Apr 23 – May 12 | Cutoff: May 13/14 (Postmark valid, OR Walk-In at Line 9 Heukseok Bldg 310, 2F Rm 210)",
-            fa: "ثبت‌نام: ۲۳ آوریل تا ۱۲ مه | مهلت: ۱۳/۱۴ مه (ملاک مهر پست یا تحویل حضوری به ساختمان ۳۱۰ طبقه ۲ اتاق ۲۱۰)"
+            zh: "网申：2027.04.23–05.12（先等 OIA Step 3 个人指引邮件！2027春季简章免入学金98万+4学期学费959.30万/学期，若需缴10万报名费由Charlotte代付）｜ 截止：05.13/14 邮戳有效或黑石站 310馆210室 面交",
+            en: "Online: Apr 23–May 12 (Wait OIA Step 3 email! 2027 Spring Guide waives 980k adm + 4-sem 9.593M/sem tuition; Charlotte pays 100k app fee if required) | Cutoff: May 13/14",
+            fa: "ثبت‌نام: ۲۳ آوریل تا ۱۲ مه (انتظار ایمیل راهنمای Step 3 از OIA؛ معافیت ورودی ۹۸۰ هزار + شهریه ۹.۵۹۳ میلیون در هر ترم؛ پرداخت ۱۰۰ هزار اپلای فی توسط شارلوت در صورت لزوم)"
           }[state.lang]}</div>
         </div>
       </div>
@@ -2082,7 +2090,7 @@ const INTAKE_SCHEMA = [{"group": "g1", "fields": [{"key": "surname", "span": 1, 
         <div class="paper-header cau">
           <div>
             <div class="paper-h-title">CHUNG-ANG UNIVERSITY GRADUATE SCHOOL</div>
-            <div class="paper-h-sub">Fall 2027 International Admissions & CAYSS Full-Scholarship Track (중앙대학교 일반대학원 외국인 입학원서 · UWAY)</div>
+            <div class="paper-h-sub">Fall 2027 International Admissions &amp; CAYSS Full-Scholarship Track (중앙대학교 일반대학원 외국인 입학원서 · UWAY)</div>
           </div>
           <div class="exam-no-box">
             <div style="opacity:0.85">Packet Rule</div>
@@ -2091,11 +2099,11 @@ const INTAKE_SCHEMA = [{"group": "g1", "fields": [{"key": "surname", "span": 1, 
         </div>
 
         <div style="padding:10px 14px;background:var(--cau-soft);border:1.5px solid var(--cau-blue);border-radius:7px;margin-bottom:14px;font-size:12.4px">
-          <strong>🏆 CAYSS Full-Scholarship 3-Step Workflow &amp; CAU Exclusive Rules:</strong>
+          <strong>🏆 CAYSS Full-Scholarship 3-Step Workflow &amp; CAU 2027 Official Calibrations:</strong>
           (1) <strong>Step 1 (5-Piece Nomination Pack to <code>#4 Prof. Yoonji Lee</code> once she agrees in Feb):</strong> ① Official <code>CAYSS Application Form</code>, ② <code>CV</code>, ③ Undergrad <code>Transcripts</code> scan, ④ Former/current advisor names &amp; emails, ⑤ Research achievements summary →
-          (2) <strong>Step 2 &amp; Step 3 (<code>Individual Guidance</code> — Fee Waiver Alert!):</strong> After PI submits <code>CAYSS Recommendation Form</code> to OIA, <strong>WAIT for CAU OIA's individual portal &amp; <code>100,000 KRW</code> fee-waiver guidance email</strong> (NEVER pay early as a regular self-funded applicant and lock UWAY!) →
+          (2) <strong>Step 2 &amp; Step 3 (<code>Individual Guidance</code> — 2027 Fee Clause Update!):</strong> After PI submits <code>CAYSS Recommendation Form</code> to OIA, <strong>WAIT for CAU OIA's Step 3 Individual Guidance email before filling UWAY</strong> (NEVER pay blindly upfront and lock UWAY! Note: Fall 2026 included an app fee waiver, whereas the latest <code>2027 Spring Guide (p.20)</code> waives Admission Fee <code>980,000 KRW</code> + 4-Semester 100% Tuition [<code>9,593,000 KRW/sem</code>; Sem 1 total <code>10,573,000 KRW</code>] and removed the application fee waiver—if the <code>100,000 KRW</code> portal fee applies, Charlotte pays it normally per Step 3 guidance) →
           (3) <strong>JCR Graduation &amp; Grant Acknowledgment Rule:</strong> Submit a JCR international journal paper before graduation &amp; publish/accept within 1 yr post-graduation <code>as sole author or jointly with the advisor</code> + <strong>mandatory designated research grant acknowledgment (<code>지정 연구비 사사 표기 필수</code>)</strong> →
-          (4) <strong>Keep UWAY Admission Ticket (<code>수험표</code>)</strong> for Jun Zoom interview + check <strong>Item #9 (<code>3× کارت ملی</code> copies) &amp; Item #13 (<code>Passport</code>)</strong> w/ <code>gsadmin@cau.ac.kr</code> →
+          (4) <strong>Keep UWAY Admission Ticket (<code>수험표</code>) + Mar Email to <code>gsadmin@cau.ac.kr</code>:</strong> Confirm Seoul <code>e-TRF</code> print, <strong>Item #9 (<code>3× کارت ملی</code> copies) &amp; Item #13 (<code>Passport</code>)</strong>, and whether late-Jan legalized Diploma/Transcript originals remain valid in May (per Guide pp.12–13, strict <code>≤90d</code> notarization applies ONLY to Item #8 Family Relationship <code>D13</code>!) →
           (5) <strong><code>1 Orig + 1 Copy</code> Stacking:</strong> Keep the single <code>밀봉 후 첨인</code> flap-signed LOR UNOPENED, photocopy every other sheet (esp. Item #6 Transcript <code>[1 Original and 1 Copy]</code>), and stack cleanly as <strong>[Original Set] + [Copy Set]</strong>!
         </div>
 
